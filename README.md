@@ -1,3 +1,3 @@
 # CrowdLabel
 
-Open-source crowdsourced data labelling platform.
+Crowdsourced data labelling platform.
