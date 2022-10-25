@@ -1,1 +1,5 @@
 __pycache__
+*.aux
+*.log
+*.out
+*.toc
