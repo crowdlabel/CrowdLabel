@@ -26,5 +26,15 @@ def init_db():
     Base.metadata.create_all(engine)
 
 
+def drop_db():
+
+    engine = create_engine(
+        "mysql+pymysql://root:cxq1974328@127.0.0.1:3306/crowdlabel?charset=utf8"
+    )
+
+    Base.metadata.drop_all(engine)
+
+
 if __name__ == '__main__':
+    drop_db()
     init_db()
