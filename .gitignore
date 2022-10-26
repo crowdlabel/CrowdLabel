@@ -3,3 +3,5 @@ __pycache__
 *.log
 *.out
 *.toc
+
+src/test.py
