@@ -1,16 +1,16 @@
 from sqlalchemy import create_engine
 from sqlalchemy.ext.declarative import declarative_base
-
+from sqlalchemy import Column, Integer, String
 Base = declarative_base()
 
 
 class User(Base):
     __tablename__ = 'user'
-    username = Coloum(String(64), unique=True)
-    password = Coloum(String(64))
-    email = Coloum(String(64))
-    type = Coloum(Integer)
-    status = Coloum(Integer)
+    username = Column(String(64), unique=True, primary_key=True)
+    password = Column(String(1024))
+    email = Column(String(64))
+    type = Column(Integer)
+    status = Column(Integer)
 
     def __init__(self, username, password, email, type, status):
         self.username = username
@@ -18,6 +18,13 @@ class User(Base):
         self.email = email
         self.type = type
         self.status = status
-        self.engine = create_engine(
-            "mysql://root:cxq1974328@127.0.0.1/crowdlabel?charset=utf-8")
-        Base.metadata.create_all(self.engine)
+
+
+def init_db():
+    engine = create_engine(
+        "mysql+pymysql://root:cxq1974328@127.0.0.1:3306/crowdlabel?charset=utf8")
+    Base.metadata.create_all(engine)
+
+
+if __name__ == '__main__':
+    init_db()
