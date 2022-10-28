@@ -8,7 +8,7 @@ class User(Base):
     __tablename__ = 'user'
     username = Column(String(64), unique=True, primary_key=True)
     password = Column(String(1024))
-    email = Column(String(64))
+    email = Column(String(320))
     type = Column(Integer)
     status = Column(Integer)
 

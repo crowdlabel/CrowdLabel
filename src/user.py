@@ -20,3 +20,6 @@ class Requester(User):
 class Contractor(User):
     def __init__(self) -> None:
         super().__init__()
+
+def get_user_info(username):
+    pass
