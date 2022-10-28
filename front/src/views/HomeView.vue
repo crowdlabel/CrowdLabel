@@ -7,12 +7,18 @@
 
 <script>
 // @ is an alias to /src
-import HelloWorld from '@/components/HelloWorld.vue'
+// import HelloWorld from '@/components/HelloWorld.vue'
 
 export default {
   name: 'HomeView',
   components: {
-    HelloWorld
+    // HelloWorld
   }
 }
 </script>
+
+<style scoped>
+h1,h2{
+  font-weight: normal;
+}
+</style>
