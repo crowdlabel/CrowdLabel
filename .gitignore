@@ -3,5 +3,6 @@ __pycache__
 *.log
 *.out
 *.toc
+*.key
 .vscode
 src/test.py
