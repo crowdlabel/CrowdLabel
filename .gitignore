@@ -4,5 +4,6 @@ __pycache__
 *.out
 *.toc
 *.key
+config.yaml
 .vscode
-src/test.py
+__test__.py

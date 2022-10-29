@@ -9,6 +9,11 @@ api = Blueprint('api', __name__)
 API_VERSION = 1
 
 
+@api.route('/hello')
+def hello():
+    return 'hello'
+
+
 
 @api.route(f'/login', methods=['POST'])
 def login():
@@ -28,7 +33,7 @@ def login():
     else:
         return False
 
-@api.route(f'/register', methods=['POST'])
+@api.route('/register', methods=['POST'])
 def register():
     username = request.form['username']
     password = request.form['password']

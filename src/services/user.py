@@ -1,37 +1,13 @@
 from checkers.user import *
 from sqlalchemy.orm import sessionmaker, scoped_session
-from sqlalchemy import create_engine
-from database import User
-from password import hash, verify
-from emailverification import generate_verification_code, send_verification_email
+from sqlalchemy import create_engine, and_
+from models.user import User
+from utils.hasher import hash, verify
+from utils.emailverification import generate_verification_code, send_verification_email
 engine = create_engine(
     "mysql+pymysql://root:cxq1974328@127.0.0.1:3306/crowdlabel?charset=utf8"
 )
 Connection = sessionmaker(bind=engine)
-
-"""
-There are two types of users:
-    - Requester: creates tasks to be completed
-    - Worker: completes tasks
-
-class User:
-    def __init__(self,
-            username,
-            password,
-            name,
-            email,
-            phone) -> None:
-        pass
-
-class Requester(User):
-    def __init__(self) -> None:
-        super().__init__()
-
-class Contractor(User):
-    def __init__(self) -> None:
-        super().__init__()
-
-"""
 
 
 def get_user_info(username: str) -> dict:
@@ -78,32 +54,7 @@ def set_user_info(new_info: dict) -> bool:
     """
 
 
-def create_user(username, email, password, usertype):
-    args = locals()
-    for arg in args:
-        if not format_checkers[arg](args[arg]):
-            return arg
 
-    password = hash(password)
-    con = scoped_session(Connection)
-    
-    verification_code = generate_verification_code()
-
-    user = User(
-        username=username,
-        password=password,
-        email=email,
-        usertype=usertype,
-        status=0,
-        verification_code=verification_code
-    )
-    con.add(user)
-    con.commit()
-    con.close()
-
-    send_verification_email(email, verification_code)
-
-    return 'ok'
 
 def verify_email(username, email, verification_code):
     con = scoped_session(Connection)
@@ -144,3 +95,53 @@ def username_exists(username):
 
 def email_exists(email):
     return field_exists('email', email)
+
+
+class UserService:
+    def __init__(self):
+        pass
+
+    def create_user(username, email, password, usertype):
+        args = locals()
+        for arg in args:
+            if not format_checkers[arg](args[arg]):
+                return arg
+
+        password = hash(password)
+        con = scoped_session(Connection)
+        
+        verification_code = generate_verification_code()
+
+        user = User(
+            username=username,
+            password=password,
+            email=email,
+            usertype=usertype,
+            status=0,
+            verification_code=verification_code
+        )
+        con.add(user)
+        con.commit()
+        con.close()
+
+        send_verification_email(email, verification_code)
+
+        return 'ok'
+
+
+    def login(username: str, password: str):
+        if (not check_username_format(username) or
+                not check_password_format(password)):
+
+            return False
+
+        password = hash(password)
+        con = scoped_session(Connection)
+        res = con.query(User).filter(
+            and_(User.username == username, User.password == password))
+        correct_credentials = bool(len(res.all()))
+
+        if correct_credentials:
+            return "ok"
+        else:
+            return "false"
