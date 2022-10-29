@@ -14,7 +14,7 @@ class User(Base):
     status = Column(Integer)
     verification_code = Column(String(6))
 
-    def __init__(self, username, password, email, usertype, status, verification_code='00000'):
+    def __init__(self, username, password, email, usertype, status, verification_code='000000'):
         self.username = username
         self.password = password
         self.email = email
