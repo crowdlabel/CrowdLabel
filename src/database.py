@@ -11,13 +11,15 @@ class User(Base):
     email = Column(String(320))
     usertype = Column(Integer)
     status = Column(Integer)
+    verification_code = Column(String(6))
 
-    def __init__(self, username, password, email, usertype, status):
+    def __init__(self, username, password, email, usertype, status, verification_code='00000'):
         self.username = username
         self.password = password
         self.email = email
         self.usertype = usertype
         self.status = status
+        self.verfication_code = verification_code
 
 
 def init_db():

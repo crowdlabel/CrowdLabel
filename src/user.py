@@ -3,6 +3,7 @@ from sqlalchemy.orm import sessionmaker, scoped_session
 from sqlalchemy import create_engine
 from database import User
 from password import hash, verify
+from emailverification import generate_verification_code, send_verification_email
 engine = create_engine(
     "mysql+pymysql://root:cxq1974328@127.0.0.1:3306/crowdlabel?charset=utf8"
 )
@@ -85,19 +86,38 @@ def create_user(username, email, password, usertype):
 
     password = hash(password)
     con = scoped_session(Connection)
+    
+    verification_code = generate_verification_code()
+
     user = User(
         username=username,
         password=password,
         email=email,
         usertype=usertype,
-        status=0
+        status=0,
+        verification_code=verification_code
     )
     con.add(user)
     con.commit()
     con.close()
 
+    send_verification_email(email, verification_code)
+
     return 'ok'
 
+def verify_email(username, email, verification_code):
+    con = scoped_session(Connection)
+    res = con.query(User).filter(User.username == username).all()
+    if len(res) == 1:
+        user = res[0]
+    else:
+        return 'bad'
+
+    if user.email == email and user.verification_code == verification_code:
+        # TODO: update user status
+        return 'ok'
+
+    return 'bad'
 
 def correct_credentials(username, password):
     con = scoped_session(Connection)
