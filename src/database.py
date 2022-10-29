@@ -2,7 +2,8 @@ from sqlalchemy import create_engine, Column, Integer, String
 from sqlalchemy.ext.declarative import declarative_base
 Base = declarative_base()
 
-from checkers.user import MAX_USERNAME_LENGTH
+
+MAX_USERNAME_LENGTH = 64
 
 class User(Base):
     __tablename__ = 'user'
