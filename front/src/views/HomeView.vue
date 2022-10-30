@@ -102,7 +102,7 @@ body{
 }
 .homepage{
   width:100%;
-  height:1200px;
+  height:1220px;
 }
 #mid{
   height:480px;
