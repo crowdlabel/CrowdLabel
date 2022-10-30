@@ -1,19 +1,18 @@
 from flask import request, Blueprint
-from user import *
-from flask_restful import Resource
-
+from services.user import UserService
+from flask_restx import Resource
+from login_required import login_required
 
 api = Blueprint('api', __name__)
 
+us = UserService()
 
 API_VERSION = 1
 
 
 @api.route('/hello')
 def hello():
-    return 'hello'
-
-
+    return {'hello': 'world'}
 
 @api.route(f'/login', methods=['POST'])
 def login():
@@ -27,30 +26,41 @@ def login():
 
     username = request.form['username']
     password = request.form['password']
-    if correct_credentials(username, password):
-        # TODO: return JWT
-        return True
+    if UserService.correct_credentials(username, password):
+        # TODO: return JWT, response code success
+        return {
+            'jwt': ''
+        }
     else:
+        # TODO: response code fail
         return False
 
 @api.route('/register', methods=['POST'])
 def register():
+    # TODO: 
     username = request.form['username']
     password = request.form['password']
-    if username_exists(username):
+    email = request.form['email']
+    usertype = 0
+    response = us.create_user(username, email, password, usertype)
+    if us.username_exists(username):
         login_message = "温馨提示：用户已存在，请直接登录"
         return
     else:
-        create_user(
+        us.create_user(
             username,
             request.form['email'],
             password,
             0
         )
 
+@api.route('/availability')
+def availability():
+    pass
 
 
 @api.route('/user/<username>')
+@login_required
 def user(username):
     return 'requested info for ' + username
 

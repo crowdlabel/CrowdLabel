@@ -1,4 +1,4 @@
-from sqlalchemy import create_engine, Column, Integer, String
+from sqlalchemy import Column, Integer, String
 from sqlalchemy.ext.declarative import declarative_base
 Base = declarative_base()
 
@@ -21,23 +21,3 @@ class User(Base):
         self.usertype = usertype
         self.status = status
         self.verfication_code = verification_code
-
-
-def init_db():
-    engine = create_engine(
-        "mysql+pymysql://root:cxq1974328@127.0.0.1:3306/crowdlabel?charset=utf8"
-    )
-    Base.metadata.create_all(engine)
-
-
-def drop_db():
-
-    engine = create_engine(
-        "mysql+pymysql://root:cxq1974328@127.0.0.1:3306/crowdlabel?charset=utf8"
-    )
-    Base.metadata.drop_all(engine)
-
-
-if __name__ == '__main__':
-    drop_db()
-    init_db()

@@ -9,99 +9,11 @@ engine = create_engine(
 )
 Connection = sessionmaker(bind=engine)
 
-
-def get_user_info(username: str) -> dict:
-    """
-    Gets the information about a user
-    
-    Also needs to consider if the user is logged in,
-    and if the user is requesting their own info
-
-    Returns:
-    """
-    info = {
-        'username': '',
-        'email': '',
-        'type': '',
-        'status': '',
-        'tasks_completed': []
-    }
-
-    con = scoped_session(Connection)
-    res = con.query(User).filter(User.username == username).all()
-    if len(res) == 0:
-        return {}
-    pass
-
-
-
-def set_user_info(new_info: dict) -> bool:
-    """
-    Sets user info
-
-    `new_info`: is a dict where the field to be set, and the value is the new info
-    Returns True if the info was set correctly
-
-    E.g.:
-    {
-        'email': 'example@gmail.com',
-        'password': 'new_password'
-    }
-    Will update the email and password
-
-    If the field doesn't exist, or the value fails checks, return False
-
-    """
-
-
-
-
-def verify_email(username, email, verification_code):
-    con = scoped_session(Connection)
-    res = con.query(User).filter(User.username == username).all()
-    if len(res) == 1:
-        user = res[0]
-    else:
-        return 'bad'
-
-    if user.email == email and user.verification_code == verification_code:
-        # TODO: update user status
-        return 'ok'
-
-    return 'bad'
-
-def correct_credentials(username, password):
-    con = scoped_session(Connection)
-    res = con.query(User).filter(User.username == username).all()
-
-    if (len(res) == 0):
-        return False
-
-    user = res[0]
-
-    return verify(user.password, password)
-
-
-def field_exists(field, value):
-    con = scoped_session(Connection)
-    res = con.query(User).filter(User.__dict__[field] == value).all()
-    if len(res) > 1:
-        raise ValueError(f'Duplicate {field}: {str(res.all()[0])}')
-    else:
-        return len(res) == 1
-
-def username_exists(username):
-    return field_exists('username', username)
-
-def email_exists(email):
-    return field_exists('email', email)
-
-
 class UserService:
     def __init__(self):
         pass
 
-    def create_user(username, email, password, usertype):
+    def create_user(self, username, email, password, usertype):
         args = locals()
         for arg in args:
             if not format_checkers[arg](args[arg]):
@@ -128,8 +40,18 @@ class UserService:
 
         return 'ok'
 
+    def correct_credentials(self, username, password):
+        con = scoped_session(Connection)
+        res = con.query(User).filter(User.username == username).all()
 
-    def login(username: str, password: str):
+        if (len(res) == 0):
+            return False
+
+        user = res[0]
+
+        return verify(user.password, password)
+
+    def login(self, username: str, password: str):
         if (not check_username_format(username) or
                 not check_password_format(password)):
 
@@ -145,3 +67,78 @@ class UserService:
             return "ok"
         else:
             return "false"
+
+    def get_user_info(self, username: str) -> dict:
+        """
+        Gets the information about a user
+        
+        Also needs to consider if the user is logged in,
+        and if the user is requesting their own info
+
+        Returns:
+        """
+        info = {
+            'username': '',
+            'email': '',
+            'type': '',
+            'status': '',
+            'tasks_completed': []
+        }
+
+        con = scoped_session(Connection)
+        res = con.query(User).filter(User.username == username).all()
+        if len(res) == 0:
+            return {}
+        pass
+
+
+
+    def set_user_info(self, new_info: dict) -> bool:
+        """
+        Sets user info
+
+        `new_info`: is a dict where the field to be set, and the value is the new info
+        Returns True if the info was set correctly
+
+        E.g.:
+        {
+            'email': 'example@gmail.com',
+            'password': 'new_password'
+        }
+        Will update the email and password
+
+        If the field doesn't exist, or the value fails checks, return False
+
+        """
+
+
+    def verify_email(self, username, email, verification_code):
+        con = scoped_session(Connection)
+        res = con.query(User).filter(User.username == username).all()
+        if len(res) == 1:
+            user = res[0]
+        else:
+            return 'bad'
+
+        if user.email == email and user.verification_code == verification_code:
+            # TODO: update user status
+            return 'ok'
+
+        return 'bad'
+
+
+
+
+    def __field_exists(self, field, value):
+        con = scoped_session(Connection)
+        res = con.query(User).filter(User.__dict__[field] == value).all()
+        if len(res) > 1:
+            raise ValueError(f'Duplicate {field}: {str(res.all()[0])}')
+        else:
+            return len(res) == 1
+
+    def username_exists(self, username):
+        return self.__field_exists('username', username)
+
+    def email_exists(self, email):
+        return self.__field_exists('email', email)
