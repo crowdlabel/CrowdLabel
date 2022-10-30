@@ -226,17 +226,17 @@ body{
 }
 #image_sender{
   float:left;
-  top: 40px;
+  top: 30px;
   left: 30px;
   width: 40%;
-  position: relative;
+  position: absolute;
 }
 #image_receiver{
-  top: 40px;
+  top: 30px;
   right: 30px;
   float:right;
   width: 40%;
-  position:relative;
+  position:absolute;
 }
 .type_page{
   width: 100%;
@@ -251,10 +251,10 @@ body{
   width:120px;
 }
 #type_or{
-  position: relative;
+  position: absolute;
   width: 40px;
   top: 40%;
-  left:6%;
+  left:47%;
   font-size: 28px;
 }
 .type_select{
@@ -262,22 +262,36 @@ body{
   height: 350px;
 }
 #chinese_sender{
-  position:relative;
+  position:absolute;
   left: 15%;
-  top: 40px;
+  top: 340px;
 }
 #chinese_receiver{
   float: right;
-  position: relative;
+  position: absolute;
   right:15%;
-  top: 40px;
+  top: 340px;
 }
 .login_btn{
   position: relative;
-  width: 40%;
-  height: 40vw;
+  width: 37%;
+  height: 21vw;
   background: transparent;
   color: transparent;
   border-color: transparent;
+}
+::v-deep .el-button:focus, .el-button:hover{
+  color:transparent;
+  background:transparent;
+}
+#sender{
+  position:absolute;
+  top: 50px;
+  left:5%;
+}
+#receiver{
+  position:absolute;
+  top: 50px;
+  right:5%;
 }
 </style>
