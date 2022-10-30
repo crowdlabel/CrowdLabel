@@ -37,14 +37,32 @@
           <div class="smalltriangle">
           </div>
         </div>
-        <div class="triangle1"></div>
-        <div class="triangle2"></div>
       </el-main>
-      <div class="intro">
-          <h1 class="frontinfo">数据标注平台</h1>
-          <p class="infotext">支持计算机视觉、语言工程、自然语言处理多类型数据标注，多重审核，高效高质</p>
-        </div>
     </el-container>
+    <div id="decoration">
+      <div class="triangle1"></div>
+      <div class="triangle2"></div>
+    </div>
+    <div class="intro">
+      <h1 class="frontinfo">数据标注平台</h1>
+      <p class="infotext">支持计算机视觉、语言工程、自然语言处理多类型数据标注，多重审核，高效高质</p>
+    </div>
+
+    <div class="info_page">
+      <div id="brief_intro">
+
+      </div>
+      <div id="demonstration">
+
+      </div>
+      <div id="team_info">
+
+      </div>
+    </div>
+    <div class="footer">
+
+    </div>
+
   </div>
 </template>
 
@@ -76,10 +94,21 @@ div{
   white-space: nowrap;
 }
 body{
+  padding-right: 0px !important;
   margin-top: 0px !important;
   margin-bottom: 0px !important;
   margin-left: 0px !important;
   margin-right: 0px !important;
+}
+.homepage{
+  width:100%;
+  height:1200px;
+}
+#mid{
+  height:480px;
+}
+#main{
+  height:540px;
 }
 .maintop{
   height: 480px;
@@ -151,6 +180,7 @@ body{
   font-size: 24px;
 }
 #topnav{
+  width: 100%;
   background-color: #3C1C66;
 }
 .smalltriangle{
@@ -163,6 +193,10 @@ body{
   border-top: 25px solid #E5E5E5 !important;
   border-width: 15px;
   border-style:solid;
+}
+#decoration{
+  width: 100%;
+  height: 70px;
 }
 .triangle1{
   position:absolute;
@@ -188,17 +222,17 @@ body{
 }
 .intro{
   width:100%;
-  height: 30%;
+  height: 100px;
 }
 .frontinfo{
   position:relative;
-  top: 80px;
+  top: 0px;
   font-family: 'PangMenZhengDaoBiaoTi';
   font-size: 55px;
 }
 .infotext{
   position: relative;
-  top: 90px;
+  top: 10px;
   font-family: 'SourceHanSansSC';
   font-size: 18px;
 }
@@ -210,7 +244,6 @@ body{
 ::v-deep .el-dialog__body{
   padding: 0;
 }
-
 
 .sender{
   width:40px;

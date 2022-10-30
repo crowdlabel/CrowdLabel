@@ -12,12 +12,14 @@
 @import '@/assets/font/font.css';
 body{
   margin: 0 !important;
+  padding-right: 0px !important;
 }
 #app {
   font-family: Avenir, Helvetica, Arial, sans-serif;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
   text-align: center;
+  
 }
 
 nav {
