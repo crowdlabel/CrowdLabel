@@ -1,32 +1,24 @@
-from flask import request, Blueprint
+from base import app
 from services.user import UserService
-from flask_restx import Resource
 from login_required import login_required
+from utils.emailverification import send_verification_email
 
-api = Blueprint('api', __name__)
+from pydantic import BaseModel
 
 us = UserService()
 
 API_VERSION = 1
 
+class LoginCredentials(BaseModel):
+    username: str
+    password: str
 
-@api.route('/hello')
-def hello():
-    return {'hello': 'world'}
+@app.post('/login')
+async def login(credentials: LoginCredentials):
 
-@api.route(f'/login', methods=['POST'])
-def login():
-    """
-    Accepts credentials in the following dict format:
-    {
-        'username': '',
-        'password': '',
-    }
-    """
-
-    username = request.form['username']
-    password = request.form['password']
-    if UserService.correct_credentials(username, password):
+    if us.correct_credentials(
+        credentials.username,
+        credentials.password):
         # TODO: return JWT, response code success
         return {
             'jwt': ''
@@ -35,56 +27,50 @@ def login():
         # TODO: response code fail
         return False
 
-@api.route('/register', methods=['POST'])
-def register():
+
+class RegistrationCredentials(BaseModel):
+    username: str
+    email: str
+    password: str
+    usertype: int
+
+@app.post('/register')
+async def register(credentials: RegistrationCredentials):
     # TODO: 
-    username = request.form['username']
-    password = request.form['password']
-    email = request.form['email']
-    usertype = 0
-    response = us.create_user(username, email, password, usertype)
-    if us.username_exists(username):
-        login_message = "温馨提示：用户已存在，请直接登录"
-        return
+    response = us.create_user(
+        credentials.username,
+        credentials.email,
+        credentials.password,
+        credentials.usertype)
+    if response != 'ok':
+        return {
+            'error': f'{response} already exists'
+        }, 400
     else:
-        us.create_user(
-            username,
-            request.form['email'],
-            password,
-            0
-        )
-
-@api.route('/availability')
-def availability():
-    pass
+        return 200
 
 
-@api.route('/user/<username>')
+class Availability(BaseModel):
+    username: str | None = None
+    email: str | None = None
+
+@app.post('/availability', response_model=Availability)
+async def availability(fields: Availability):
+    availability = Availability()
+    availability.username = 'true'
+    availability.email = 'true'
+    return availability
+
+
+@app.get('/user/<username>')
 @login_required
-def user(username):
+async def user(username):
     return 'requested info for ' + username
 
-@api.route('/tasks')
-def tasks():
-    return 'api: tasks'
 
-@api.route('/task/<id>')
-def task(id):
-    return 'requested task with id ' + str(id)
-
-@api.route('/verify', methods=['POST'])
+@app.post('/verify')
 def verify():
     username = request.form['username']
     email = request.form['email']
     verification_code = request.form['code']
     verify_email(username, email, verification_code)
-
-
-@api.route('/admin')
-def admin():
-    return 'admin'
-
-
-@api.route('/about')
-def about():
-    return 'Software Engineering 2022 fall group project'

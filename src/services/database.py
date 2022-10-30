@@ -1,4 +1,4 @@
-from sqlalchemy import create_engine
+from sqlalchemy import create_engine, and_
 from sqlalchemy.ext.declarative import declarative_base
 Base = declarative_base()
 from utils.config import get_config
