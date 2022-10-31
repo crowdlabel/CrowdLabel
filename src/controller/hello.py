@@ -1,5 +1,5 @@
+from base import app
 
-
-@api.route('/hello')
-def hello():
+@app.route('/hello')
+async def hello():
     return {'hello': 'world'}

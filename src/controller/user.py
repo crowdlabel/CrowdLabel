@@ -1,11 +1,10 @@
 from base import app
-from services.user import UserService
+from services.user import *
 from login_required import login_required
 from utils.emailverification import send_verification_email
 
 from pydantic import BaseModel
 
-us = UserService()
 
 API_VERSION = 1
 
@@ -16,7 +15,7 @@ class LoginCredentials(BaseModel):
 @app.post('/login')
 async def login(credentials: LoginCredentials):
 
-    if us.correct_credentials(
+    if correct_credentials(
         credentials.username,
         credentials.password):
         # TODO: return JWT, response code success
@@ -25,7 +24,9 @@ async def login(credentials: LoginCredentials):
         }
     else:
         # TODO: response code fail
-        return False
+        return {
+            'error': 'Incorrect credentials'
+        }
 
 
 class RegistrationCredentials(BaseModel):
@@ -37,7 +38,7 @@ class RegistrationCredentials(BaseModel):
 @app.post('/register')
 async def register(credentials: RegistrationCredentials):
     # TODO: 
-    response = us.create_user(
+    response = create_user(
         credentials.username,
         credentials.email,
         credentials.password,
