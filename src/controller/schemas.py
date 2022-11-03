@@ -1,5 +1,6 @@
 from pydantic import BaseModel
-from fastapi import Response, status
+from fastapi.responses import JSONResponse
+from fastapi import status
 
 class JSONError:
     def __init__(self, status_code, content):
@@ -8,7 +9,7 @@ class JSONError:
     def description(self):
         return self.content['description']
     def response(self):
-        return Response(
+        return JSONResponse(
             content = self.content,
             status_code = self.status_code,
         )
