@@ -32,8 +32,6 @@ def create_user(username, email, password, usertype):
             'error': 'exists'
         }
 
-    
-
     password = hash(password)
     con = scoped_session(Connection)
     
@@ -53,7 +51,10 @@ def create_user(username, email, password, usertype):
 
     send_verification_email(email, verification_code)
 
-    return 'ok'
+    return {
+        'arg': 'ok',
+        'error': 'ok'
+    }
 
 async def correct_credentials(username: str, password: str) -> bool:
     return username == 'username' and password == 'password'
