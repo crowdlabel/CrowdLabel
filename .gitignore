@@ -6,4 +6,5 @@ __pycache__
 *.key
 config.yaml
 .vscode
+coding.sh
 __test__.py

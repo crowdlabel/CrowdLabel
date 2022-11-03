@@ -1,5 +1,12 @@
-from base import app
+from .base import *
 
-@app.route('/hello')
-async def hello():
-    return {'hello': 'world'}
+
+class HelloRequest(BaseModel):
+    msg: str
+
+class HelloResponse(BaseModel):
+    hello: str
+
+@app.post('/hello', response_model=HelloResponse)
+async def hello(request: HelloRequest):
+    return HelloResponse(hello=request.msg)

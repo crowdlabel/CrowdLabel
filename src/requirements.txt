@@ -1,0 +1,7 @@
+argon2-cffi
+flask
+flask_mail
+email-validator
+SQLAlchemy
+pyyaml
+pymysql

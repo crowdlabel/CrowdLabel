@@ -4,15 +4,35 @@ from models.user import User
 from utils.hasher import *
 from utils.emailverification import *
 
-from database import *
+from .database import *
 Connection = sessionmaker(bind=engine)
 
 
 def create_user(username, email, password, usertype):
+    # get the arguments as a dictionary
     args = locals()
+
+    # check arguments' formats
     for arg in args:
         if not format_checkers[arg](args[arg]):
-            return arg
+            return {
+                'arg': arg,
+                'error': 'format',
+            }
+
+    # check existance
+    if username_exists(username):
+        return {
+            'arg': 'username',
+            'error': 'exists',
+        }
+    if email_exists(email):
+        return {
+            'arg': 'email',
+            'error': 'exists'
+        }
+
+    
 
     password = hash(password)
     con = scoped_session(Connection)
@@ -35,7 +55,8 @@ def create_user(username, email, password, usertype):
 
     return 'ok'
 
-def correct_credentials(username, password):
+async def correct_credentials(username: str, password: str) -> bool:
+    return username == 'username' and password == 'password'
     con = scoped_session(Connection)
     res = con.query(User).filter(User.username == username).all()
 
@@ -46,22 +67,22 @@ def correct_credentials(username, password):
 
     return verify(user.password, password)
 
-def login(username: str, password: str):
+async def login(username: str, password: str) -> bool | str:
+    """
+    Logins in a user
+    Returns a jwt if login successful
+    Returns `False` otherwise
+    """
     if (not check_username_format(username) or
-            not check_password_format(password)):
-
+        not check_password_format(password)):
         return False
 
-    password = hash(password)
-    con = scoped_session(Connection)
-    res = con.query(User).filter(
-        and_(User.username == username, User.password == password))
-    correct_credentials = bool(len(res.all()))
+    if not await correct_credentials(username, password):
+        return False
 
-    if correct_credentials:
-        return "ok"
-    else:
-        return "false"
+    jwt = get_jwt(username)
+
+    return jwt
 
 def get_user_info(username: str) -> dict:
     """
@@ -86,7 +107,8 @@ def get_user_info(username: str) -> dict:
         return {}
     pass
 
-
+def get_jwt(username: str) -> str:
+    return 'jwt_test'
 
 def set_user_info(new_info: dict) -> bool:
     """

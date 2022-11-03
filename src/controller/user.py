@@ -1,59 +1,70 @@
-from base import app
-from services.user import *
-from login_required import login_required
+from .base import *
+import services.user
+from .login_required import login_required
 from utils.emailverification import send_verification_email
-
-from pydantic import BaseModel
+from fastapi import Response
+from fastapi.responses import JSONResponse
+from .schemas import *
 
 
 API_VERSION = 1
 
-class LoginCredentials(BaseModel):
-    username: str
-    password: str
-
-@app.post('/login')
-async def login(credentials: LoginCredentials):
-
-    if correct_credentials(
-        credentials.username,
-        credentials.password):
-        # TODO: return JWT, response code success
-        return {
-            'jwt': ''
-        }
-    else:
-        # TODO: response code fail
-        return {
-            'error': 'Incorrect credentials'
-        }
 
 
-class RegistrationCredentials(BaseModel):
-    username: str
-    email: str
-    password: str
-    usertype: int
 
-@app.post('/register')
-async def register(credentials: RegistrationCredentials):
+
+
+
+
+
+@app.post('/login',
+    response_model=JWT,
+    status_code=200,
+    description='Successful login. Returns the `jwt` associated with the provided credentials.',
+    responses = {
+        login_error.status_code: login_error.response_doc()
+    }
+)
+async def login(credentials: Credentials):
+
+    jwt = await services.user.login(credentials.username, credentials.password)
+
+    if not jwt:
+        return login_error.response()
+
+    return {'jwt': jwt}
+
+
+
+
+@app.post('/register',
+    response_model=JWT,
+    status_code=201,
+    description='Successful registration. Returns the `jwt` associated with the newly-created account',
+    responses = {
+        login_error.status_code: login_error.response_doc()
+    }
+)
+async def register(details: Registration):
     # TODO: 
-    response = create_user(
-        credentials.username,
-        credentials.email,
-        credentials.password,
-        credentials.usertype)
+    response = services.user.create_user(
+        details.username,
+        details.email,
+        details.password,
+        details.usertype)
     if response != 'ok':
         return {
             'error': f'{response} already exists'
         }, 400
+
+    
     else:
         return 200
 
 
 class Availability(BaseModel):
-    username: str | None = None
-    email: str | None = None
+    username: str | None
+    email: str | None
 
 @app.post('/availability', response_model=Availability)
 async def availability(fields: Availability):

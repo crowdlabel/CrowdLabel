@@ -1,5 +1,5 @@
-from base import app
-from login_required import login_required
+from .base import app
+from .login_required import login_required
 
 @app.get('/tasks')
 @login_required
