@@ -53,7 +53,7 @@ def create_user(username, email, password, usertype):
 
     return {
         'arg': 'ok',
-        'error': 'ok'
+        'error': 'ok',
     }
 
 async def correct_credentials(username: str, password: str) -> bool:
