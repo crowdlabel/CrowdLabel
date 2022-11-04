@@ -10,3 +10,9 @@ async def tasks():
 @login_required
 def task(id):
     return 'requested task with id ' + str(id)
+
+@app.post(
+    '/upload_task',
+)
+def upload_task():
+    pass

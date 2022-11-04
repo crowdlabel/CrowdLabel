@@ -130,19 +130,22 @@ def set_user_info(new_info: dict) -> bool:
     """
 
 
-def verify_email(username, email, verification_code):
+def verify_email(email: str, verification_code: str) -> bool:
     con = scoped_session(Connection)
-    res = con.query(User).filter(User.username == username).all()
+    res = con.query(User).filter(User.email == email).all()
     if len(res) == 1:
         user = res[0]
     else:
-        return 'bad'
+        return False
 
-    if user.email == email and user.verification_code == verification_code:
-        # TODO: update user status
-        return 'ok'
+    if user.verification_code != verification_code:
+        return False
 
-    return 'bad'
+    
+    # TODO: update user verification status
+
+
+    return True
 
 
 

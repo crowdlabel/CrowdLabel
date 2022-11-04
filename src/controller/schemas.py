@@ -35,6 +35,11 @@ class Credentials(BaseModel):
 class Registration(Email, Credentials):
     usertype: int
 
+class AuthenticatedRequest(BaseModel):
+    jwt: str
+
+class UserInfoRequest(AuthenticatedRequest):
+    username: str
 
 class JWT(BaseModel):
     jwt: str
@@ -44,4 +49,21 @@ login_error = JSONError(
     {'description': 'Username or password incorrect.'}
 )
 
+authentication_error = JSONError(
+    status.HTTP_401_UNAUTHORIZED,
+    {'description': 'Unauthenticated. Try checking your JWT.'}
+)
 
+forbidden_error = JSONError(
+    status.HTTP_403_FORBIDDEN,
+    {'description': 'You have insufficient permissions to access the content.'}
+)
+
+class Availability(BaseModel):
+    username: str | None
+    email: str | None
+
+rate_limit_error = JSONError(
+    status.HTTP_429_TOO_MANY_REQUESTS,
+    {'description': 'Too many requests.'}
+)

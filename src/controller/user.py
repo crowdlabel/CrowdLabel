@@ -62,9 +62,6 @@ async def register(details: Registration):
         return 200
 
 
-class Availability(BaseModel):
-    username: str | None
-    email: str | None
 
 @app.post('/availability', response_model=Availability)
 async def availability(fields: Availability):
