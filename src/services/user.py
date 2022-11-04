@@ -56,7 +56,7 @@ def create_user(username, email, password, usertype):
         'error': 'ok',
     }
 
-async def correct_credentials(username: str, password: str) -> bool:
+async def check_credentials(username: str, password: str) -> bool:
     return username == 'username' and password == 'password'
     con = scoped_session(Connection)
     res = con.query(User).filter(User.username == username).all()
@@ -78,7 +78,7 @@ async def login(username: str, password: str) -> bool | str:
         not check_password_format(password)):
         return False
 
-    if not await correct_credentials(username, password):
+    if not await check_credentials(username, password):
         return False
 
     jwt = get_jwt(username)
