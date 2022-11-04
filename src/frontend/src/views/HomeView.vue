@@ -69,7 +69,7 @@
 <script>
 // @ is an alias to /src
 // import HelloWorld from '@/components/HelloWorld.vue'
-
+import axios from 'axios'
 export default {
   data() {
     return {
@@ -79,6 +79,27 @@ export default {
   methods: {
     chooseType: function () {
       this.dialogVisible = true
+    },
+    senderType: function (){
+      axios.get('http://127.0.0.1:5000/signin', {params:{
+                username: this.username
+                }
+            }).then((res) => {
+                console.log(res)
+                this.$router.push({
+                    name: 'connected',
+                    params: {
+                    username: this.username,
+                    usage: res.data
+                    }
+                })
+                })
+            .catch((error) => {
+                console.log(error)
+            })
+    },
+    receiverType: function () {
+
     }
   }
 }
