@@ -3,7 +3,7 @@ __pycache__
 *.log
 *.out
 *.toc
-
+config.yaml
 src/test.py
 
 .DS_Store
