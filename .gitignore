@@ -3,6 +3,7 @@ __pycache__
 *.log
 *.out
 *.toc
+*.test
 config.yaml
 src/test.py
 
