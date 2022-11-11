@@ -1,0 +1,41 @@
+{% extends 'base.html' %}
+
+
+
+{% block content %}
+
+<script>
+    async function submit() {
+        url = document.getElementById('url').value;
+        method = document.getElementById('method').value;
+        request_body = JSON.parse(document.getElementById('request-body').value);
+        console.log(url, method, request_body);
+        response_json = await fetch_json(url, method, request_body);
+        console.log(response);
+        document.getElementById('response').innerText = JSON.stringify(response_json);
+    }
+
+
+</script>
+
+<h1>Request</h1>
+
+<table>
+  <tr><td>URL</td><td><input type="text" id="url"></td></tr>
+  <tr><td>Method</td><td><input type="text" id="method"></td></tr>
+  <tr><td>Request body</td><td><textarea id="request-body" rows="16" cols="80"></textarea></td></tr>
+  
+</table>
+
+
+<br>
+
+<button id="submit" onclick="submit()">Send request</button>
+
+<h1>Response</h1>
+
+<div id="response"></div>
+
+
+  
+{% endblock %}
