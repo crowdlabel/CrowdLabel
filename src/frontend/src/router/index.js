@@ -3,6 +3,7 @@ import VueRouter from 'vue-router'
 import HomeView from '../views/HomeView.vue'
 import ReceiverLogin from '../views/ReceiverLogin.vue'
 import SenderLogin from '../views/SenderLogin.vue'
+import ProjectsHallView from '../views/ProjectsHallView.vue'
 import axios from 'axios'
 import VueAxios from 'vue-axios'
 
@@ -29,9 +30,14 @@ const routes = [
     component: ReceiverLogin
   },
   {
-    path: './senderlogin',
+    path: '/senderlogin',
     name: 'senderlogin',
     component: SenderLogin
+  },
+  {
+    path: '/projects',
+    name: 'projects',
+    component: ProjectsHallView
   }
 ]
 
