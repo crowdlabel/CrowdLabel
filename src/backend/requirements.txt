@@ -8,3 +8,5 @@ PyYAML==6.0
 SQLAlchemy==1.4.42
 uvicorn
 aiofiles
+python-multipart
+pymysql

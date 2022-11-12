@@ -44,6 +44,12 @@ class UserInfoRequest(AuthenticatedRequest):
 class JWT(BaseModel):
     jwt: str
 
+class AuthenticatedRequest(BaseModel):
+    jwt: str
+
+class Task(AuthenticatedRequest):
+    id: str
+
 login_error = JSONError(
     status.HTTP_401_UNAUTHORIZED,
     {'description': 'Username or password incorrect.'}
