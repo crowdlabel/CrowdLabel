@@ -8,7 +8,7 @@ from .database import *
 Connection = sessionmaker(bind=engine)
 
 
-def create_user(username, email, password, usertype):
+def create_user(username, email, password, user_type):
     # get the arguments as a dictionary
     args = locals()
 
@@ -41,7 +41,7 @@ def create_user(username, email, password, usertype):
         username=username,
         password=password,
         email=email,
-        usertype=usertype,
+        user_type=user_type,
         status=0,
         verification_code=verification_code
     )

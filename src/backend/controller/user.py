@@ -6,16 +6,7 @@ from fastapi import Response
 from fastapi.responses import JSONResponse
 from .schemas import *
 
-
 API_VERSION = 1
-
-
-
-
-
-
-
-
 
 @app.post('/login',
     response_model=JWT,
@@ -51,7 +42,7 @@ async def register(details: Registration):
         details.username,
         details.email,
         details.password,
-        details.usertype)
+        details.user_type)
     if response != 'ok':
         return {
             'error': f'{response} already exists'
@@ -59,7 +50,11 @@ async def register(details: Registration):
 
     
     else:
-        return 200
+        return {
+            'username': details.username,
+            'email': details.email,
+            'user_type': details.user_type,
+        }, 200
 
 
 
@@ -75,11 +70,3 @@ async def availability(fields: Availability):
 @login_required
 async def user(username):
     return 'requested info for ' + username
-
-
-@app.post('/verify')
-def verify():
-    username = request.form['username']
-    email = request.form['email']
-    verification_code = request.form['code']
-    verify_email(username, email, verification_code)

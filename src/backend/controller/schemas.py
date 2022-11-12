@@ -33,7 +33,7 @@ class Credentials(BaseModel):
     password: str
 
 class Registration(Email, Credentials):
-    usertype: int
+    user_type: int
 
 class AuthenticatedRequest(BaseModel):
     jwt: str
