@@ -18,4 +18,4 @@
 }
 ```
 
-This JSON file is to be saved as `
+This JSON file is to be saved as `task.json`. The file extensions of all other resources should match the content in order for the resource to be rendered properly.
