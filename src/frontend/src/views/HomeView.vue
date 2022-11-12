@@ -11,6 +11,7 @@
           :visible.sync="dialogVisible"
           :before-close="handleClose"
           width="50%"
+          min-width="800px"
           class="dialogClass"
           border-radius="12px">
           <div class="type_page">
@@ -330,7 +331,7 @@ body{
 .login_btn{
   position: relative;
   width: 37%;
-  height: 21vw;
+  height: 320px;
   background: transparent;
   color: transparent;
   border-color: transparent;
@@ -348,5 +349,8 @@ body{
   position:absolute;
   top: 50px;
   right:5%;
+}
+::v-deep .el-dialog{
+  min-width: 750px !important;
 }
 </style>
