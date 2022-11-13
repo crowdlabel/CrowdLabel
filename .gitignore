@@ -18,6 +18,8 @@ node_modules
 .env.local
 .env.*.local
 
+src/frontend/src/assets/font
+
 # Log files
 npm-debug.log*
 yarn-debug.log*
