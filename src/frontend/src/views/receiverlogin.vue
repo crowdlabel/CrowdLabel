@@ -25,25 +25,25 @@
                     </el-tab-pane>
                     <el-tab-pane label="注册" name="second">
                         <div class="center_form">
-                            <!-- <el-form :model="ruleForm" status-icon :rules="rules" ref="ruleForm" label-width="100px" class="demo-ruleForm">
-                                <el-form-item label="用户名" prop="name">
-                                    <el-input type="" v-model="ruleForm.checkUsername" autocomplete="off"></el-input>
+                            <el-form :model="ruleForm" status-icon :rules="rules" ref="ruleForm" label-width="100px" class="demo-ruleForm">
+                                <el-form-item prop="name">
+                                    <el-input placeholder="请输入用户名" type="" v-model="ruleForm.checkUsername" autocomplete="off"></el-input>
                                 </el-form-item>
-                                <el-form-item label="密码" prop="pass">
-                                    <el-input type="password" v-model="ruleForm.pass" autocomplete="off"></el-input>
+                                <el-form-item prop="pass">
+                                    <el-input placeholder="请输入密码" type="password" v-model="ruleForm.pass" autocomplete="off"></el-input>
                                 </el-form-item>
-                                <el-form-item label="确认密码" prop="checkPass">
-                                    <el-input type="password" v-model="ruleForm.checkPass" autocomplete="off"></el-input>
+                                <el-form-item prop="checkPass">
+                                    <el-input placeholder="请确认密码" type="password" v-model="ruleForm.checkPass" autocomplete="off"></el-input>
                                 </el-form-item>
-                                <el-form-item label="邮箱地址" prop="email">
-                                    <el-input type="email"></el-input>
-                                    <el-button @click="verifyEmail()">验证</el-button>
+                                <el-form-item prop="email">
+                                    <el-input placeholder="请输入邮箱地址" type="email"></el-input>
+                                    <el-button class="button_verify" @click="verifyEmail()">验证</el-button>
                                 </el-form-item>
                                 <el-form-item>
                                     <el-button type="primary" @click="submitRegister('ruleForm')">提交</el-button>
                                     <el-button @click="resetForm('ruleForm')">返回</el-button>
                                 </el-form-item>
-                            </el-form> -->
+                            </el-form>
                         </div>
                     </el-tab-pane>
                 </el-tabs>
@@ -75,7 +75,7 @@
                 }
             };
             return {
-                activeName: 'first',
+                activeName: 'second',
                 ruleForm: {
                     pass: '',
                     checkPass: '',
@@ -116,7 +116,10 @@
             },
             resetForm(formName) {
                 this.$refs[formName].resetFields();
-            }
+            },
+            backToMain: function (){
+                this.$router.push('/')
+            },
         }
     };
 </script>
@@ -141,6 +144,14 @@
     height: 100px;
     width: 100%;
 }
+::v-deep .button_verify{
+    position:absolute;
+    top: 0px;
+    left: 90%;
+    width:10% !important;
+    padding-left:0px !important;
+    padding-right:0px !important;
+}
 ::v-deep .el-tabs__header{
     margin-left:auto;
     margin-right:auto;
@@ -164,15 +175,18 @@
     margin-bottom: 5px !important;
     width:100%;
 }
+::v-deep .el-input{
+    width: 80%;
+}
 ::v-deep .el-button--primary{
-    width:100%;
+    width:80%;
     background-color: #5D3BE6;
     border-color: #5D3BE6;
     margin-top: 30px;
     margin-bottom: 20px;
 }
 ::v-deep .el-button--default{
-    width:100%;
+    width:80%;
     margin-left: 0px !important;
 }
 ::v-deep .el-button.el-button--primary:focus, .el-button.el-button--primary:hover{
@@ -185,7 +199,6 @@
 }
 ::v-deep .el-form-item.el-form-item--feedback{
     display: flex;
-    flex-direction: column;
 }
 .login_logo{
     position:relative;
@@ -195,9 +208,9 @@
 .bar_mid{
     position:relative;
     margin-right:0px !important;
-    left:20%;
+    left:10%;
     height:500px;
-    width: 60%;
+    width: 80%;
 }
 .select_bar_mid{
     position:relative;
