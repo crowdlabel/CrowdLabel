@@ -9,7 +9,6 @@
 
       <el-dialog
           :visible.sync="dialogVisible"
-          :before-close="handleClose"
           width="50%"
           min-width="800px"
           class="dialogClass"
@@ -41,8 +40,8 @@
       </el-main>
     </el-container>
     <div id="decoration">
-      <div class="triangle1"></div>
-      <div class="triangle2"></div>
+      <img src="../assets/triangleleft.png" class="triangle1">
+      <img src="../assets/triangleright.png" class="triangle2">
     </div>
     <div class="intro">
       <h1 class="frontinfo">数据标注平台</h1>
@@ -50,18 +49,31 @@
     </div>
 
     <div class="info_page">
-      <div id="brief_intro">
-
+      <div class="info_page_left">
+        <div class="info_page_box" id="brief_intro">
+          <h2 class="info_page_h2">平台简介</h2>
+          
+        </div>
+        <div class="info_page_box" id="demonstration">
+          <h2 class="info_page_h2">任务示例</h2>
+        </div>
       </div>
-      <div id="demonstration">
 
-      </div>
-      <div id="team_info">
+      <div class="info_page_right">
+        <div class="info_page_box" id="team_info">
+          <h2 class="info_page_h2">设计团队</h2>
 
+        </div>
       </div>
     </div>
-    <div class="footer">
 
+    <div class="footer">
+      <div id="team_contact">
+        <p>联系方式 | 电话：+86 1xx-xxxx-xxxx</p>
+      </div>
+      <div id="team_email">
+        <p>邮箱：xxxx20@mails.tsinghua.edu.cn</p>
+      </div>
     </div>
 
   </div>
@@ -83,26 +95,10 @@ export default {
     },
     senderType: function (){
       this.$router.push('/senderlogin')
-      // axios.get('http://localhost:8002/senderlogin', {params:{
-      //           username: this.username
-      //           }
-      //       }).then((res) => {
-      //           console.log(res)
-      //           this.$router.push({
-      //               name: 'connected',
-      //               params: {
-      //               username: this.username,
-      //               usage: res.data
-      //               }
-      //           })
-      //           })
-      //       .catch((error) => {
-      //           console.log(error)
-      //       })
     },
     receiverType: function () {
       this.$router.push('/receiverlogin')
-    }
+    },
   }
 }
 </script>
@@ -123,6 +119,47 @@ body{
   margin-left: 0px !important;
   margin-right: 0px !important;
 }
+.info_page{
+  display: flex;
+  height:470px;
+}
+/* to continue...with info_page */
+.info_page_left{  
+  position: relative;
+  top: 30px;
+  height: 440px;
+  width:50%;
+}
+.info_page_right{
+  position: relative;
+  top: 30px;
+  width:50%;
+  height:440px;
+}
+.info_page_box{
+  position:relative;
+  border-style: solid;
+  border-radius: 12px;
+  border-color: #391E5C;
+}
+#brief_intro{
+  left:110px;
+  width:60%;
+  height: 170px;
+}
+#team_info{
+  top: 30px;
+  width:60%;
+  left: 80px;
+  height: 320px;
+}
+#demonstration{
+  width: 60%;
+  top: 30px;
+  height:200px;
+  left:110px;
+}
+
 .homepage{
   width:100%;
   height:1220px;
@@ -222,26 +259,17 @@ body{
   height: 70px;
 }
 .triangle1{
-  position:absolute;
-  top:540px;
-  left:0%;
-  height: 0px;
-  width: 0px;
-  z-index: 1;
-  border-top: 70px solid #D0B4F5 !important;
-  border-right: solid transparent;
-  border-right-width: 770px;
+  position:relative;
+  float:left;
+  width:50%;
+  height:70px;
 }
 .triangle2{
-  position:absolute;
-  top:540px;
-  right:0%;
-  height: 0px;
-  width: 0px;
-  z-index: 1;
-  border-top: 70px solid #D0B4F5 !important;
-  border-left: solid transparent;
-  border-left-width: 770px;
+  position: relative;
+  float:right;
+  width:50%;
+  height:70px;
+
 }
 .intro{
   width:100%;
@@ -353,4 +381,28 @@ body{
 ::v-deep .el-dialog{
   min-width: 750px !important;
 }
+.footer{
+  position:relative;
+  background-color: #391E5C;
+  height:40px;
+}
+#team_contact{
+  float: left;
+  margin-top: 5px !important;
+  margin-left: 10px !important;
+  font-family: 'PangMenZhengDaoBiaoTi';
+  font-size: 20px;
+  color:white;
+  width:40%;
+}
+#team_email{
+  float:right;
+  margin-top: 5px !important;
+  margin-right: 30px !important;
+  font-family: 'PangMenZhengDaoBiaoTi';
+  color:white;
+  font-size: 20px;
+  width:40%;
+}
+
 </style>
