@@ -163,6 +163,7 @@ body{
 .homepage{
   width:100%;
   height:1220px;
+  min-width: 800px;
 }
 #mid{
   height:480px;
@@ -174,12 +175,14 @@ body{
   height: 480px;
   background-size: cover;
   background-color: black;
+  min-width:800px;
 }
 .mainimage{
   position: absolute;
   left: 10%;
   height:480px;
   width: 90%;
+  min-width:800px;
   background-image: url("../assets/crowdlabel_templogo2.jpg");
   background-position: center;
   background-size: cover;
@@ -367,6 +370,7 @@ body{
 ::v-deep .el-button:focus, .el-button:hover{
   color:transparent;
   background:transparent;
+  border-color:#5D3BE6;
 }
 #sender{
   position:absolute;

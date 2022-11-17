@@ -41,7 +41,7 @@
                                 </el-form-item>
                                 <el-form-item>
                                     <el-button type="primary" @click="submitRegister('ruleForm')">提交</el-button>
-                                    <el-button @click="resetForm('ruleForm')">返回</el-button>
+                                    <el-button @click="backToMain()">返回</el-button>
                                 </el-form-item>
                             </el-form>
                         </div>
@@ -74,6 +74,20 @@
                 callback();
                 }
             };
+            var validateName = (rule, value, callback) => {
+                if (value === '') {
+                callback(new Error('请再次输入用户名'));
+                } else {
+                callback();
+                }
+            };
+            var validateEmail = (rule, value, callback) => {
+                if (value === '') {
+                callback(new Error('请输入邮箱'));
+                } else {
+                callback();
+                }
+            };
             return {
                 activeName: 'second',
                 ruleForm: {
@@ -81,11 +95,17 @@
                     checkPass: '',
                 },
                 rules: {
+                    name: [
+                        { validator: validateName, trigger: 'blur'}
+                    ],
                     pass: [
                         { validator: validatePass, trigger: 'blur'}
                     ],
                     checkPass: [
                         { validator: validatePass2, trigger: 'blur' }
+                    ],
+                    email : [
+                        { validator: validateEmail, trigger: 'blur'}
                     ]
                 }
             };
@@ -137,6 +157,7 @@
     height: 600px;
     display: flex;
     flex-direction: column;
+    min-width: 400px;
 }
 .logo_mid{
     position:relative;
