@@ -27,7 +27,7 @@
                         <div class="center_form">
                             <el-form :model="ruleForm" status-icon :rules="rules" ref="ruleForm" label-width="100px" class="demo-ruleForm">
                                 <el-form-item prop="name">
-                                    <el-input placeholder="请输入用户名" type="" v-model="ruleForm.checkUsername" autocomplete="off"></el-input>
+                                    <el-input placeholder="请输入用户名" v-model="ruleForm.name" autocomplete="off"></el-input>
                                 </el-form-item>
                                 <el-form-item prop="pass">
                                     <el-input placeholder="请输入密码" type="password" v-model="ruleForm.pass" autocomplete="off"></el-input>
@@ -36,8 +36,11 @@
                                     <el-input placeholder="请确认密码" type="password" v-model="ruleForm.checkPass" autocomplete="off"></el-input>
                                 </el-form-item>
                                 <el-form-item prop="email">
-                                    <el-input placeholder="请输入邮箱地址" type="email"></el-input>
-                                    <el-button class="button_verify" @click="verifyEmail()">验证</el-button>
+                                    <el-input placeholder="请输入邮箱地址" v-model="email"></el-input>
+                                    <div class="verify_code">
+                                        <el-input placeholder="请输入验证码" type="" autocomplete="off" class="input_verify"></el-input>
+                                        <el-button :disabled="disable" class="button_verify" @click="verifyEmail()">{{text}}</el-button>
+                                    </div>
                                 </el-form-item>
                                 <el-form-item>
                                     <el-button type="primary" @click="submitRegister('ruleForm')">提交</el-button>
@@ -78,6 +81,9 @@
                 if (value === '') {
                 callback(new Error('请再次输入用户名'));
                 } else {
+                if (this.ruleForm.name !== '') {
+                    this.$refs.ruleForm.validateField('name')
+                }
                 callback();
                 }
             };
@@ -89,6 +95,10 @@
                 }
             };
             return {
+                text: "发送验证码",
+                time: 60,
+                timer: null,
+                disable: false,
                 activeName: 'second',
                 ruleForm: {
                     pass: '',
@@ -109,6 +119,14 @@
                     ]
                 }
             };
+        },
+        created () {
+            const time = localStorage.getItem('time');
+            if (time && time>0) {
+                this.text = time + "s后重新发送"
+                this.time = time
+                this.verifyEmail();
+            }
         },
         methods: {
             handleTabClick(tab, event){
@@ -140,6 +158,23 @@
             backToMain: function (){
                 this.$router.push('/')
             },
+            verifyEmail () {
+                this.disable=true
+                this.text = this.time + "s后重新发送"
+                localStorage.setItem('time', this.time)
+                this.timer = setInterval(() => {
+                    if (this.time > 0) {
+                        this.time--
+                        localStorage.setItem('time', this.time)
+                        this.text = this.time + "s后重新发送"
+                    } else {
+                        clearInterval(this.timer);
+                        this.time = 60
+                        this.disable = false
+                        this.text = '重新发送'
+                    }
+                }, 1000)
+            }
         }
     };
 </script>
@@ -151,8 +186,8 @@
     border-radius: 20px;
     border-color: #5D3BE6;
     top:10%;
-    left:28%;
-    width:44%;
+    left:35%;
+    width:30%;
     position:absolute;
     height: 600px;
     display: flex;
@@ -165,14 +200,31 @@
     height: 100px;
     width: 100%;
 }
+.verify_code{
+    top: 20px;
+    position: relative;
+    display:inline-block;
+    width:80%;
+}
+::v-deep .el-form-item__error {
+    left: 10%;
+}
 ::v-deep .button_verify{
+    width:50% !important;
+    float: right;
+}
+::v-deep .input_verify{
+    width:50% !important;
+    float: left;
+}
+/* ::v-deep .button_verify{
     position:absolute;
     top: 0px;
     left: 90%;
     width:10% !important;
     padding-left:0px !important;
     padding-right:0px !important;
-}
+} */
 ::v-deep .el-tabs__header{
     margin-left:auto;
     margin-right:auto;
@@ -193,7 +245,7 @@
 }
 ::v-deep .el-form-item__content{
     margin-left:0px !important;
-    margin-bottom: 5px !important;
+    margin-bottom: 0px !important;
     width:100%;
 }
 ::v-deep .el-input{
@@ -203,7 +255,7 @@
     width:80%;
     background-color: #5D3BE6;
     border-color: #5D3BE6;
-    margin-top: 30px;
+    margin-top: 0px;
     margin-bottom: 20px;
 }
 ::v-deep .el-button--default{
@@ -223,7 +275,7 @@
 }
 .login_logo{
     position:relative;
-    top: 30px;
+    top: 10px;
     width: 70%;
 }
 .bar_mid{

@@ -143,7 +143,7 @@ body{
   border-color: #391E5C;
 }
 #brief_intro{
-  left:110px;
+  left:140px;
   width:60%;
   height: 170px;
 }
@@ -157,7 +157,7 @@ body{
   width: 60%;
   top: 30px;
   height:200px;
-  left:110px;
+  left:140px;
 }
 
 .homepage{
@@ -179,7 +179,6 @@ body{
 }
 .mainimage{
   position: absolute;
-  left: 10%;
   height:480px;
   width: 90%;
   min-width:800px;
