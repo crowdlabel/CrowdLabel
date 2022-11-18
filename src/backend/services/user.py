@@ -12,7 +12,8 @@ Connection = sessionmaker(bind=engine)
 import random
 
 def send_verification_email(email, verification_code) -> str:
-    if not check_email_format
+    if not check_email_format(email):
+        return 'email format'
     email_sender.send_email(
         'CrowdLabel 邮箱验证码',
         verification_code,
@@ -26,12 +27,14 @@ def create_user(username, email, password, user_type):
     args = locals()
 
     # check arguments' formats
+
     for arg in args:
         if not format_checkers[arg](args[arg]):
             return {
                 'arg': arg,
                 'error': 'format',
             }
+
 
     # check existance
     if username_exists(username):

@@ -19,8 +19,8 @@ class User(Base):
 
     def __init__(self, username, password, email, user_type, status, verification_code='000000'):
         self.username = username
-        self.password = password
+        self.password_ciphertext = password
         self.email = email
         self.user_type = user_type
         self.status = status
-        self.verfication_code = verification_code
+        self.verification_code = verification_code
