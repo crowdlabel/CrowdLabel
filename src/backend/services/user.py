@@ -1,17 +1,20 @@
 from checkers.user import *
 from sqlalchemy.orm import sessionmaker, scoped_session
+from sqlalchemy.ext.asyncio import AsyncSession
 from models.user import User
+from models.email import Email
 from utils.hasher import *
 from utils.emailsender import EmailSender
 
 email_sender = EmailSender()
 
 from .database import *
-Connection = sessionmaker(bind=engine)
+Connection = sessionmaker(bind=engine,expire_on_commit=False,class_=AsyncSession)
+con = scoped_session(Connection)
 
 import random
 
-def send_verification_email(email, verification_code) -> bool:
+def send_verification_email(email) -> bool:
 
     if not check_email_format(email):
         return False
@@ -20,6 +23,14 @@ def send_verification_email(email, verification_code) -> bool:
 
     # TODO: add email and verification code to db,
     # or update the verification code of an existing email
+
+    if email_exist_Email(email):
+        res = con.query(Email).filter(Email.__dict__['email'] == email).first()
+        res.verification_code = verification_code
+    else: 
+        email_create = Email(email=email,verification_code = verification_code)
+        con.add(email_create)
+        con.commit()
 
     email_sender.send_email(
         'CrowdLabel 邮箱验证码',
@@ -66,14 +77,18 @@ def create_user(
             'error': 'exists'
         }
 
-
+    if not email_code_match(email,verification_code):
+        return {
+            'arg': 'verification code ',
+            'error': 'mismatch'
+        }
     # check verification code
 
 
     # TODO: check if `email` and `verification_code` match in the db
 
+
     password_hashed = hash(password)
-    con = scoped_session(Connection)
     
 
     
@@ -88,7 +103,6 @@ def create_user(
     
     con.add(user)
     con.commit()
-    con.close()
 
     return {
         'arg': 'ok',
@@ -124,7 +138,6 @@ def get_user_info(username: str) -> dict:
         'tasks_completed': []
     }
 
-    con = scoped_session(Connection)
     res = con.query(User).filter(User.username == username).all()
     if len(res) == 0:
         return {}
@@ -152,16 +165,27 @@ def set_user_info(new_info: dict) -> bool:
 
 
 
-def __field_exists(field, value):
-    con = scoped_session(Connection)
+async def __field_exists(field, value):
     res = con.query(User).filter(User.__dict__[field] == value).all()
     if len(res) > 1:
         raise ValueError(f'Duplicate {field}: {str(res.all()[0])}')
     else:
         return len(res) == 1
-
+async def __field_exists_Email(field,value):
+    res = con.query(Email).filter(Email.__dict__[field] == value).all()
+    if len(res) > 1:
+        raise ValueError(f'Duplicate {field}: {str(res.all()[0])}')
+    else:
+        return len(res) == 1
 def username_exists(username):
     return __field_exists('username', username)
 
 def email_exists(email):
     return __field_exists('email', email)
+
+def email_exist_Email(email):
+    return __field_exists_Email('email', email)
+
+def email_code_match(email,code):
+    res = con.query(Email).filter(Email.__dict__['email'] == email).first()
+    return res.verification_code == code
