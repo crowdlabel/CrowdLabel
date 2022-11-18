@@ -8,6 +8,7 @@ config.yaml
 src/test.py
 .vscode
 *.jar
+*.db
 
 .DS_Store
 node_modules
