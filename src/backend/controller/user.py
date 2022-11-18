@@ -5,6 +5,7 @@ from utils.emailverification import send_verification_email
 from fastapi import Response
 from fastapi.responses import JSONResponse
 from .schemas import *
+from services.user import username_exists, email_exists
 
 API_VERSION = 1
 
@@ -62,8 +63,15 @@ async def register(details: Registration):
 @app.post('/availability', response_model=Availability)
 async def availability(fields: Availability):
     availability = Availability()
-    availability.username = 'true'
-    availability.email = 'true'
+    try:
+        availability.username = username_exists(fields.username)
+    except:
+        availability.username = False
+    try:
+        availability.email = email_exists(fields.email)
+    except:
+        availability.email = False
+    
     return availability
 
 
