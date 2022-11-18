@@ -4,14 +4,14 @@ Base = declarative_base()
 
 
 MAX_USERNAME_LENGTH = 64
-CIPHERTEXT_LENGTH = 97 # len(hash('test'))
+HASH_LENGTH = 97 # len(hash('test'))
 MAX_EMAIL_LENGTH = 320 # RFC
 VERIFICATION_CODE_LENGTH = 6
 
 class User(Base):
     __tablename__ = 'user'
     username = Column(String(MAX_USERNAME_LENGTH), unique=True, primary_key=True)
-    password_ciphertext = Column(String(CIPHERTEXT_LENGTH))
+    password_hashed = Column(String(HASH_LENGTH))
     email = Column(String(MAX_EMAIL_LENGTH))
     user_type = Column(Integer)
     status = Column(Integer)
