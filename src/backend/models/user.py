@@ -15,12 +15,10 @@ class User(Base):
     email = Column(String(MAX_EMAIL_LENGTH))
     user_type = Column(Integer)
     status = Column(Integer)
-    verification_code = Column(String(VERIFICATION_CODE_LENGTH))
 
-    def __init__(self, username, password, email, user_type, status, verification_code='000000'):
+    def __init__(self, username, password_hashed, email, user_type, status):
         self.username = username
-        self.password_ciphertext = password
+        self.password_hashed = password_hashed
         self.email = email
         self.user_type = user_type
         self.status = status
-        self.verification_code = verification_code

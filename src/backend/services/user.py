@@ -11,9 +11,16 @@ Connection = sessionmaker(bind=engine)
 
 import random
 
-def send_verification_email(email, verification_code) -> str:
+def send_verification_email(email, verification_code) -> bool:
+
     if not check_email_format(email):
-        return 'email format'
+        return False
+
+    verification_code = str(random.randint(0, 999999)).rjust(6, '0')
+
+    # TODO: add email and verification code to db,
+    # or update the verification code of an existing email
+
     email_sender.send_email(
         'CrowdLabel 邮箱验证码',
         verification_code,
@@ -22,7 +29,17 @@ def send_verification_email(email, verification_code) -> str:
     )
 
 
-def create_user(username, email, password, user_type):
+    return True
+
+
+def create_user(
+    username: str,
+    email: str,
+    password: str,
+    user_type: int,
+    verification_code: str,
+):
+
     # get the arguments as a dictionary
     args = locals()
 
@@ -34,6 +51,7 @@ def create_user(username, email, password, user_type):
                 'arg': arg,
                 'error': 'format',
             }
+
 
 
     # check existance
@@ -48,21 +66,26 @@ def create_user(username, email, password, user_type):
             'error': 'exists'
         }
 
-    password = hash(password)
+
+    # check verification code
+
+
+    # TODO: check if `email` and `verification_code` match in the db
+
+    password_hashed = hash(password)
     con = scoped_session(Connection)
     
 
-    # 6 digit verification code
-    verification_code = str(random.randint(0, 999999)).rjust(6, '0')
+    
 
     user = User(
-        username=username,
-        password=password,
-        email=email,
-        user_type=user_type,
+        username,
+        password_hashed,
+        email,
+        user_type,
         status=0,
-        verification_code=verification_code
     )
+    
     con.add(user)
     con.commit()
     con.close()
@@ -83,23 +106,6 @@ async def check_credentials(username: str, password: str) -> bool:
     user = res[0]
 
     return verify(user.password, password)
-
-async def login(username: str, password: str) -> bool | str:
-    """
-    Logins in a user
-    Returns a jwt if login successful
-    Returns `False` otherwise
-    """
-    if (not check_username_format(username) or
-        not check_password_format(password)):
-        return False
-
-    if not await check_credentials(username, password):
-        return False
-
-    jwt = get_jwt(username)
-
-    return jwt
 
 def get_user_info(username: str) -> dict:
     """
