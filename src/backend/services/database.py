@@ -1,14 +1,14 @@
 from sqlalchemy import create_engine, and_
 from sqlalchemy.ext.declarative import declarative_base
+from models.user import User
 Base = declarative_base()
-from utils.config import get_config
+#from utils.config import get_config
 
-db_params = f"mysql+pymysql://{get_config('db.user')}:{get_config('db.password')}\
-    @{get_config('db.host')}:{get_config('db.port')}/crowdlabel?charset=utf8"
+db_params = f"sqlite:///crowdlabel.db"
 
 engine = create_engine(db_params)
 def init_db():
-    Base.metadata.create_all(engine)
+    User.__table__.create(engine, checkfirst=True)
 
 
 def drop_db():

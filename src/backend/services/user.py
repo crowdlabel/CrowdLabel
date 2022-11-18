@@ -13,12 +13,14 @@ def create_user(username, email, password, user_type):
     args = locals()
 
     # check arguments' formats
+
     for arg in args:
         if not format_checkers[arg](args[arg]):
             return {
                 'arg': arg,
                 'error': 'format',
             }
+
 
     # check existance
     if username_exists(username):
@@ -48,8 +50,7 @@ def create_user(username, email, password, user_type):
     con.add(user)
     con.commit()
     con.close()
-
-    send_verification_email(email, verification_code)
+    #send_verification_email(email, verification_code)
 
     return {
         'arg': 'ok',

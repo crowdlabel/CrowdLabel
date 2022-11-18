@@ -29,7 +29,7 @@ async def login(credentials: Credentials):
 
 
 @app.post('/register',
-    response_model=JWT,
+    #response_model=JWT,
     status_code=201,
     description='Successful registration. Returns the `jwt` associated with the newly-created account',
     responses = {
@@ -38,6 +38,7 @@ async def login(credentials: Credentials):
 )
 async def register(details: Registration):
     # TODO: 
+    print(details)
     response = services.user.create_user(
         details.username,
         details.email,
