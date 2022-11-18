@@ -54,8 +54,55 @@
         </div>
         <div class="main_body">
             <div class="search_bar">
+                <el-input v-model="input" placeholder="搜索任务"></el-input>
+                <el-button type="primary" icon="el-icon-search"></el-button>
             </div>
-            
+            <div class="filter">
+              <p class="title_filter">筛选：</p>
+              <el-button type="success" round>全部</el-button>
+              <el-button round>文字任务</el-button>
+              <el-button round>图像任务</el-button>
+              <el-button round>视频任务</el-button>
+              <el-button round>音频任务</el-button>
+            </div>
+            <div class="order_by">
+              <p class="title_order_by">排序：</p>
+              <el-button type="success" round>发布时间</el-button>
+              <el-button round>热度</el-button>
+            </div>
+            <div class="test">
+            </div>
+            <div class="display_projects">
+              <div class="display_projects_row">
+                <div class="project">
+                  <img height="150px" width="230px"/>
+                </div>
+                <div class="project">
+                  <img height="150px" width="230px"/>
+                </div>
+                <div class="project">
+                  <img height="150px" width="230px"/>
+                </div>
+              </div>
+              <div class="display_projects_row">
+                <div class="project">
+                  <img height="150px" width="230px"/>
+                </div>
+                <div class="project">
+                  <img height="150px" width="230px"/>
+                </div>
+                <div class="project">
+                  <img height="150px" width="230px"/>
+                </div>
+              </div>
+            </div>
+            <div class="pagination">
+              <el-pagination
+                background
+                layout="prev, pager, next"
+                 :total=100>
+              </el-pagination>
+            </div>
         </div>
     </div>
   </div>
@@ -68,6 +115,7 @@
 import axios from 'axios'
 export default {
   data() {
+    page_num = 100;
     return {
       dialogVisible: false
     };
@@ -234,10 +282,146 @@ export default {
     cursor: pointer;
     flex:1;
     height: calc(100vh - 50px);
+    min-width: 1000px;
 }
+
 .search_bar {
-    box-sizing: border-box;
-    flex-direction: row;
+  flex-direction: row;
+  display: flex;
 }
+
+::v-deep .el-input {
+  width: 75% !important;
+  margin-left: 100px;
+}
+
+::v-deep .el-input__inner { 
+  font-size: 15px;
+  min-width: 400px;
+  height: 50px;
+  border-radius: 0px;
+  margin-top: 40px;
+  margin-right: 0px;
+}
+
+::v-deep .el-input__inner:focus { 
+  border-radius: 0px;
+  border-color: #5D3BE6;
+}
+
+::v-deep .el-button--primary {
+  margin-top: 40px;
+  margin-right: 80px;
+  padding: 0px 20px;
+  border-width: 0px;
+  border-radius: 0px 4px 4px 0px;
+  background-color: #5D3BE6;
+  font-size: 20px;
+  min-width: 80px;
+}
+
+::v-deep .el-button--primary:hover{
+  background-color: rgba(84,47,238,.8);
+}
+
+::v-deep .el-button--primary:focus {
+  background-color: #5D3BE6;
+}
+
+
+.filter {
+  flex-direction: row;
+  display: flex;
+  align-items:center;
+  margin: 20px 100px 0px 100px;
+}
+.title_filter {
+  padding: 0px;
+  font-size: 14px;
+  color:rgba(0,0,0,.6);
+}
+::v-deep .el-button--success {
+  margin: 0px 0px 0px 10px;
+  height: 30px;
+  padding: 0px 0px !important;
+  border-width: 0.5px;
+  background-color: #5D3BE6;
+  font-size: 12.5px;
+  min-width: 80px;
+}
+::v-deep .el-button--success:hover{
+  background-color: #5D3BE6;
+}
+
+::v-deep .el-button--success:focus {
+  background-color: #5D3BE6;
+}
+
+::v-deep .el-button--default.is-round {
+  margin: 0px 0px 0px 10px;
+  height: 30px;
+  border-width: 0.5px;
+  padding: 0px 0px !important;
+  border-color: #5D3BE6;
+  color:#5D3BE6;
+  font-size: 12.5px;
+  min-width: 80px;
+}
+::v-deep .el-button--default.is-round:hover{
+  background-color: #5D3BE6;
+  border-width: 0.5px;
+  color: #fff;
+}
+
+::v-deep .el-button--default.is-round:focus {
+  background-color: #5D3BE6;
+  border-width: 0.5px;
+  color: #fff;
+}
+
+.order_by {
+  flex-direction: row;
+  display: flex;
+  align-items:center;
+  margin: 0px 100px 0px 100px;
+}
+.title_order_by {
+  padding: 0px;
+  font-size: 14px;
+  color:rgba(0,0,0,.6);
+}
+
+.display_projects {
+  flex-direction: column;
+  display: flex;
+  align-items:center;
+  margin: 20px 100px;
+}
+
+.display_projects_row {
+  flex-direction: row;
+  display: flex;
+  margin: 8px 0px;
+}
+
+.project {
+  margin: 0px 10px;
+}
+
+::v-deep .el-pagination {
+  margin-top: 20px;
+  margin-bottom: 20px;
+}
+::v-deep .el-pagination.is-background .el-pager li.active {
+  background-color: #5D3BE6 !important;
+}
+::v-deep .el-pagination.is-background .el-pager li.active:hover {
+  color: #fff !important;
+}
+::v-deep .el-pagination.is-background .el-pager li:hover {
+  background-color: #5D3BE6 !important;
+  color: #fff !important;
+}
+
 
 </style>
