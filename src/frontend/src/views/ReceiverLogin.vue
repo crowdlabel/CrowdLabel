@@ -10,7 +10,7 @@
                         <div class="center_form">
                             <el-form :model="ruleForm" status-icon :rules="rules" ref="ruleForm" label-width="100px" class="demo-ruleForm">
                                 <el-form-item prop="name">
-                                    <el-input placeholder="请输入用户名" type="" v-model="ruleForm.checkUsername" autocomplete="off"></el-input>
+                                    <el-input placeholder="请输入用户名" v-model="ruleForm.name" autocomplete="off"></el-input>
                                 </el-form-item>
                     
                                 <el-form-item prop="pass">
@@ -36,7 +36,7 @@
                                     <el-input placeholder="请确认密码" type="password" v-model="ruleForm.checkPass" autocomplete="off"></el-input>
                                 </el-form-item>
                                 <el-form-item prop="email">
-                                    <el-input placeholder="请输入邮箱地址" v-model="email"></el-input>
+                                    <el-input placeholder="请输入邮箱地址" v-model="ruleForm.email" autocomplete="off"></el-input>
                                 </el-form-item>
                                 <el-form-item>
                                     <div class="verify_code">
@@ -275,6 +275,9 @@
 }
 ::v-deep .el-form-item.el-form-item--feedback{
     display: flex;
+}
+::v-deep .el-input__inner:focus{
+    border-color: #5D3BE6;
 }
 .login_logo{
     position:relative;
