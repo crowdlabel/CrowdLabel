@@ -9,20 +9,15 @@ from pydantic import BaseModel
 from utils.config import get_config
 from utils.hasher import hash, verify
 
-# to get a string like this run:
-# openssl rand -hex 32
 SECRET_KEY = get_config('auth.key')
 ALGORITHM = "HS256"
 ACCESS_TOKEN_EXPIRE_MINUTES = 30
 
-
 fake_users_db = {
     "johndoe": {
         "username": "johndoe",
-        "full_name": "John Doe",
         "email": "johndoe@example.com",
         "hashed_password": "$argon2id$v=19$m=65536,t=3,p=4$J0w2TOvIofzW/1N0o8eJlw$SQNB7R+uRC/HFuZYHwrROOsP+hBSi5hOdykBf1jv65s",
-        "disabled": False,
     }
 }
 
@@ -39,8 +34,6 @@ class TokenData(BaseModel):
 class User(BaseModel):
     username: str
     email: str | None = None
-    full_name: str | None = None
-    disabled: bool | None = None
 
 
 class UserInDB(User):
@@ -62,9 +55,7 @@ def get_user(db, username: str):
 
 def authenticate_user(fake_db, username: str, password: str):
     user = get_user(fake_db, username)
-    if not user:
-        return False
-    if not verify(user.hashed_password, password):
+    if not user or not verify(user.hashed_password, password):
         return False
     return user
 
@@ -99,13 +90,6 @@ async def get_current_user(token: str = Depends(oauth2_scheme)):
         raise credentials_exception
     return user
 
-
-async def get_current_active_user(current_user: User = Depends(get_current_user)):
-    if current_user.disabled:
-        raise HTTPException(status_code=400, detail="Inactive user")
-    return current_user
-
-
 @app.post("/token", response_model=Token)
 async def login_for_access_token(form_data: OAuth2PasswordRequestForm = Depends()):
     user = authenticate_user(fake_users_db, form_data.username, form_data.password)
@@ -122,11 +106,26 @@ async def login_for_access_token(form_data: OAuth2PasswordRequestForm = Depends(
     return {"access_token": access_token, "token_type": "bearer"}
 
 
-@app.get("/users/me/", response_model=User)
-async def read_users_me(current_user: User = Depends(get_current_active_user)):
-    return current_user
+'''
+@app.post('/login',
+    response_model=JWT,
+    status_code=200,
+    description='Successful login. Returns the `jwt` associated with the provided credentials.',
+    responses = {
+        login_error.status_code: login_error.response_doc()
+    }
+)
+async def login(credentials: Credentials):
 
+    jwt = await services.user.login(credentials.username, credentials.password)
 
-@app.get("/users/me/items/")
-async def read_own_items(current_user: User = Depends(get_current_active_user)):
-    return [{"item_id": "Foo", "owner": current_user.username}]
+    if not jwt:
+        return login_error.response()
+
+    return {'jwt': jwt}
+'''
+
+@app.post('/logout')
+async def logout():
+    # TODO: implement jwt invalidation
+    pass
