@@ -1,0 +1,1 @@
+java -jar .\openapi-generator-cli-6.2.1.jar generate -i .\openapi.json -g javascript -o openapi-generator
