@@ -1,12 +1,13 @@
 from .base import app
 from datetime import datetime, timedelta
 
-from fastapi import Depends, FastAPI, HTTPException, status
+from fastapi import Depends, HTTPException, status
 from fastapi.security import OAuth2PasswordBearer, OAuth2PasswordRequestForm
 from jose import JWTError, jwt
 from pydantic import BaseModel
 
 from utils.config import get_config
+from utils.hasher import hash, verify
 
 # to get a string like this run:
 # openssl rand -hex 32
@@ -20,7 +21,7 @@ fake_users_db = {
         "username": "johndoe",
         "full_name": "John Doe",
         "email": "johndoe@example.com",
-        "hashed_password": "$2b$12$EixZaYVK1fsbw1ZfbX3OXePaWxn96p36WQoeG6Lruj3vjPGga31lW",
+        "hashed_password": "$argon2id$v=19$m=65536,t=3,p=4$J0w2TOvIofzW/1N0o8eJlw$SQNB7R+uRC/HFuZYHwrROOsP+hBSi5hOdykBf1jv65s",
         "disabled": False,
     }
 }
@@ -46,19 +47,11 @@ class UserInDB(User):
     hashed_password: str
 
 
-pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
 
 oauth2_scheme = OAuth2PasswordBearer(tokenUrl="token")
 
-app = FastAPI()
 
 
-def verify_password(plain_password, hashed_password):
-    return pwd_context.verify(plain_password, hashed_password)
-
-
-def get_password_hash(password):
-    return pwd_context.hash(password)
 
 
 def get_user(db, username: str):
@@ -71,7 +64,7 @@ def authenticate_user(fake_db, username: str, password: str):
     user = get_user(fake_db, username)
     if not user:
         return False
-    if not verify_password(password, user.hashed_password):
+    if not verify(user.hashed_password, password):
         return False
     return user
 

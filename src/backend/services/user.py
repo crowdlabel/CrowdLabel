@@ -2,10 +2,23 @@ from checkers.user import *
 from sqlalchemy.orm import sessionmaker, scoped_session
 from models.user import User
 from utils.hasher import *
-from utils.emailverification import *
+from utils.emailsender import EmailSender
+
+email_sender = EmailSender()
 
 from .database import *
 Connection = sessionmaker(bind=engine)
+
+import random
+
+def send_verification_email(email, verification_code) -> str:
+    if not check_email_format
+    email_sender.send_email(
+        'CrowdLabel 邮箱验证码',
+        verification_code,
+        'noreply@crowdlabel.org',
+        [email]
+    )
 
 
 def create_user(username, email, password, user_type):
@@ -35,7 +48,9 @@ def create_user(username, email, password, user_type):
     password = hash(password)
     con = scoped_session(Connection)
     
-    verification_code = generate_verification_code()
+
+    # 6 digit verification code
+    verification_code = str(random.randint(0, 999999)).rjust(6, '0')
 
     user = User(
         username=username,
@@ -48,8 +63,6 @@ def create_user(username, email, password, user_type):
     con.add(user)
     con.commit()
     con.close()
-
-    send_verification_email(email, verification_code)
 
     return {
         'arg': 'ok',
@@ -108,14 +121,13 @@ def get_user_info(username: str) -> dict:
         return {}
     pass
 
-def get_jwt(username: str) -> str:
-    return 'jwt_test'
-
 def set_user_info(new_info: dict) -> bool:
     """
     Sets user info
 
-    `new_info`: is a dict where the field to be set, and the value is the new info
+    `new_info`: is a dict where the key is the field to be set,
+                and the value is the new info
+
     Returns True if the info was set correctly
 
     E.g.:
@@ -128,25 +140,6 @@ def set_user_info(new_info: dict) -> bool:
     If the field doesn't exist, or the value fails checks, return False
 
     """
-
-
-def verify_email(email: str, verification_code: str) -> bool:
-    con = scoped_session(Connection)
-    res = con.query(User).filter(User.email == email).all()
-    if len(res) == 1:
-        user = res[0]
-    else:
-        return False
-
-    if user.verification_code != verification_code:
-        return False
-
-    
-    # TODO: update user verification status
-
-
-    return True
-
 
 
 

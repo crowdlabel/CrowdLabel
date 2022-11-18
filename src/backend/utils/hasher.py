@@ -1,26 +1,24 @@
 from argon2 import PasswordHasher
 
-
 hasher = PasswordHasher()
 
-def hash(password: str) -> str:
+def hash(plain: str) -> str:
     """
-    Returns the cipher of `plain`,
+    Returns the hash of `plain`,
     and empty string if hashing failed
     """
 
     try:
-        return hasher.hash(password)
+        return hasher.hash(plain)
     except:
         return ''
 
-
-def verify(cipher: str, password: str) -> bool:
+def verify(cipher: str, plain: str) -> bool:
     """
     Returns `True` if the hash of `plain` is `cipher`
     Returns `False` if `plain` and `cipher` don't match, or exception was raised
     """
     try:
-        return bool(hasher.verify(cipher, password))
+        return bool(hasher.verify(cipher, plain))
     except:
         return False
