@@ -37,8 +37,10 @@
                                 </el-form-item>
                                 <el-form-item prop="email">
                                     <el-input placeholder="请输入邮箱地址" v-model="email"></el-input>
+                                </el-form-item>
+                                <el-form-item>
                                     <div class="verify_code">
-                                        <el-input placeholder="请输入验证码" type="" autocomplete="off" class="input_verify"></el-input>
+                                        <el-input placeholder="请输入验证码" autocomplete="off" class="input_verify"></el-input>
                                         <el-button :disabled="disable" class="button_verify" @click="verifyEmail()">{{text}}</el-button>
                                     </div>
                                 </el-form-item>
@@ -79,7 +81,7 @@
             };
             var validateName = (rule, value, callback) => {
                 if (value === '') {
-                callback(new Error('请再次输入用户名'));
+                callback(new Error('请输入用户名'));
                 } else {
                 if (this.ruleForm.name !== '') {
                     this.$refs.ruleForm.validateField('name')
@@ -101,8 +103,10 @@
                 disable: false,
                 activeName: 'second',
                 ruleForm: {
+                    name: '',
                     pass: '',
                     checkPass: '',
+                    email: ''
                 },
                 rules: {
                     name: [
@@ -201,7 +205,6 @@
     width: 100%;
 }
 .verify_code{
-    top: 20px;
     position: relative;
     display:inline-block;
     width:80%;
