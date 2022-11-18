@@ -9,15 +9,15 @@
                     <el-tab-pane label="登录" name="first">
                         <div class="center_form">
                             <el-form :model="ruleForm" status-icon :rules="rules" ref="ruleForm" label-width="100px" class="demo-ruleForm">
-                                <el-form-item prop="name">
-                                    <el-input placeholder="请输入用户名" v-model="ruleForm.name" autocomplete="off"></el-input>
+                                <el-form-item prop="loginname">
+                                    <el-input placeholder="请输入用户名" v-model="ruleForm.loginname" autocomplete="off"></el-input>
                                 </el-form-item>
                     
-                                <el-form-item prop="pass">
-                                    <el-input placeholder="请输入密码" type="password" v-model="ruleForm.pass" autocomplete="off"></el-input>
+                                <el-form-item prop="loginpass">
+                                    <el-input placeholder="请输入密码" type="password" v-model="ruleForm.loginpass" autocomplete="off"></el-input>
                                 </el-form-item>
                                 <el-form-item>
-                                    <el-button type="primary" @click="submitLogin('ruleForm')">确认</el-button>
+                                    <el-button type="primary" @click="submitLogin()">确认</el-button>
                                     <el-button @click="backToMain()">返回</el-button>
                                 </el-form-item>
                             </el-form>
@@ -36,7 +36,7 @@
                                     <el-input placeholder="请确认密码" type="password" v-model="ruleForm.checkPass" autocomplete="off"></el-input>
                                 </el-form-item>
                                 <el-form-item prop="email">
-                                    <el-input placeholder="请输入邮箱地址" v-model="ruleForm.email" autocomplete="off"></el-input>
+                                    <el-input placeholder="请输入邮箱地址" v-model="ruleForm.email"></el-input>
                                 </el-form-item>
                                 <el-form-item>
                                     <div class="verify_code">
@@ -45,7 +45,7 @@
                                     </div>
                                 </el-form-item>
                                 <el-form-item>
-                                    <el-button type="primary" @click="submitRegister('ruleForm')">提交</el-button>
+                                    <el-button type="primary" @click="submitRegister()">提交</el-button>
                                     <el-button @click="backToMain()">返回</el-button>
                                 </el-form-item>
                             </el-form>
@@ -64,6 +64,9 @@
                 if (value === '') {
                 callback(new Error('请输入密码'));
                 } else {
+                if (!/^[\x21-\x7e]{8,64}$/.test(value)) {
+                    callback(new Error('密码格式错误'));
+                }
                 if (this.ruleForm.checkPass !== '') {
                     this.$refs.ruleForm.validateField('checkPass');
                 }
@@ -96,6 +99,20 @@
                 callback();
                 }
             };
+            var validateLoginName = (rule, value, callback) => {
+                if (value===''){
+                    callback(new Error('请输入用户名'));
+                } else {
+                    callback();
+                }
+            };
+            var validateLoginPass = (rule, value, callback) => {
+                if (value===''){
+                    callback(new Error('请输入密码'))
+                } else {
+                    callback();
+                }
+            }
             return {
                 text: "发送验证码",
                 time: 60,
@@ -103,6 +120,8 @@
                 disable: false,
                 activeName: 'second',
                 ruleForm: {
+                    loginname: '',
+                    loginpass: '',
                     name: '',
                     pass: '',
                     checkPass: '',
@@ -120,6 +139,12 @@
                     ],
                     email : [
                         { validator: validateEmail, trigger: 'blur'}
+                    ],
+                    loginpass: [
+                        { validator: validateLoginPass, trigger: 'blur'}
+                    ],
+                    loginname: [
+                        { validator: validateLoginName, trigger: 'blur'}
                     ]
                 }
             };
@@ -220,14 +245,10 @@
     width:50% !important;
     float: left;
 }
-/* ::v-deep .button_verify{
-    position:absolute;
-    top: 0px;
-    left: 90%;
-    width:10% !important;
-    padding-left:0px !important;
-    padding-right:0px !important;
-} */
+
+::v-deep .el-input__inner:focus{
+    border-color: #5D3BE6;
+}
 ::v-deep .el-tabs__header{
     margin-left:auto;
     margin-right:auto;
@@ -275,9 +296,6 @@
 }
 ::v-deep .el-form-item.el-form-item--feedback{
     display: flex;
-}
-::v-deep .el-input__inner:focus{
-    border-color: #5D3BE6;
 }
 .login_logo{
     position:relative;
