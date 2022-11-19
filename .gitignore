@@ -3,17 +3,12 @@ __pycache__
 *.log
 *.out
 *.toc
-<<<<<<< HEAD
-config.yaml
-src/test.py
-=======
 *.test
 config.yaml
 src/test.py
 .vscode
 *.jar
 *.db
->>>>>>> c3a20207517309ea64aecf7f728cc064a83b634d
 
 .DS_Store
 node_modules
@@ -23,20 +18,12 @@ node_modules
 /tests/e2e/screenshots/
 
 
-<<<<<<< HEAD
-=======
-
-
->>>>>>> c3a20207517309ea64aecf7f728cc064a83b634d
 # local env files
 .env.local
 .env.*.local
 
-<<<<<<< HEAD
-src/frontend/src/assets/font
+src/frontend/src/assets/
 
-=======
->>>>>>> c3a20207517309ea64aecf7f728cc064a83b634d
 # Log files
 npm-debug.log*
 yarn-debug.log*
@@ -50,8 +37,4 @@ pnpm-debug.log*
 *.ntvs*
 *.njsproj
 *.sln
-<<<<<<< HEAD
 *.sw?
-=======
-*.sw?
->>>>>>> c3a20207517309ea64aecf7f728cc064a83b634d
