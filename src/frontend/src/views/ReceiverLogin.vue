@@ -307,7 +307,6 @@
 ::v-deep .el-input__inner:focus{
     border-color: #5D3BE6;
 }
-
 ::v-deep .el-tabs__header{
     margin-left:auto;
     margin-right:auto;

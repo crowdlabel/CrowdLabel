@@ -1,5 +1,8 @@
 __pycache__
 *.log
+*.out
+*.toc
+*.test
 config.yaml
 .vscode
 *.jar
@@ -13,11 +16,11 @@ node_modules
 /tests/e2e/screenshots/
 
 
-
-
 # local env files
 .env.local
 .env.*.local
+
+src/frontend/src/assets/
 
 # Log files
 npm-debug.log*
