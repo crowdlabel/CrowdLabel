@@ -1,6 +1,5 @@
 from .base import *
 import services.user
-from .login_required import login_required
 from fastapi import Response
 from fastapi.responses import JSONResponse
 from .schemas import *
@@ -68,6 +67,5 @@ async def availability(fields: Availability):
 
 
 @app.get('/user/<username>')
-@login_required
 async def user(username):
     return 'requested info for ' + username

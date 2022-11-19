@@ -1,17 +1,14 @@
 from .base import app
-from .login_required import login_required
 from utils.filetransfer import *
 from fastapi import APIRouter
 
 task_router = APIRouter(prefix='/task')
 
 @app.get('/tasks')
-@login_required
 async def tasks():
     return 'api: tasks'
 
 @task_router.get('/')
-@login_required
 def task(id):
     return 'requested task with id ' + str(id)
 

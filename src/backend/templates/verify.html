@@ -1,0 +1,13 @@
+{% extends 'base.html' %}
+
+Login page
+
+{% block content %}
+<form action="/verify" method="post">
+    <label for="code"><b>Code</b></label>
+    <input type="text" placeholder="Code" name="code" required>
+    <button type="submit">Register</button>
+    {% if message %} {{message}} {% endif %}
+    </div>
+</form>
+{% endblock %}
