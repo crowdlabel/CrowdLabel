@@ -1,5 +1,11 @@
 
 
+<<<<<<< HEAD
+def create_task():
+    pass
+
+
+=======
 
 def __verify_task_format():
     pass
@@ -20,3 +26,4 @@ def edit_task(id):
 
 def delete_task(id):
     pass
+>>>>>>> dev

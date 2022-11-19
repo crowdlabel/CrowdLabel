@@ -60,7 +60,6 @@ async def create_user(
     args = locals()
 
     # check arguments' formats
-
     for arg in args:
         if not format_checkers[arg](args[arg]):
             return {
