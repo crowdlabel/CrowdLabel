@@ -1,0 +1,35 @@
+{% extends 'base.html' %}
+
+Login page
+
+
+{% block content %}
+
+<script type="text/javascript"> 
+  function register() {
+  var username = document.getElementById('username').value
+  var password = document.getElementById('password').value
+  var email = document.getElementById('email').value
+  var code = document.getElementById('code').value 
+  fetch_json('register','POST',{'username':username,
+                                            'password':password,
+                                            'email':email,
+                                            'verification_code':code,
+                                            'user_type':0})
+
+  }
+</script>     
+<label for="username"><b>Username</b></label>
+<input id='username' type="text" placeholder="Enter Username" name="username" required>
+
+<label for="password"><b>Password</b></label>
+<input id='password' type="password" placeholder="Enter Password" name="password" required>
+<label for="email"><b>Email</b></label>
+<input id='email' type="text" placeholder="Enter email" name="email" required>
+<button type='button'>SendCode</button>
+<label for="code"><b>Code</b></label>
+<input  id='code' type="text" placeholder="Code" name="code" required>
+<button onclick="register()">Register</button>
+{% if message %} {{message}} {% endif %}
+
+{% endblock %}

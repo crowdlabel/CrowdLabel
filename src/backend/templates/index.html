@@ -1,0 +1,11 @@
+{% extends 'base.html' %}
+{% block title %}Home{% endblock %}
+
+{% block content %}
+<h1>Index</h1>
+Welcome on my awesome homepage.
+<a href="/login">Login</a>
+<a href="/register">Register</a>
+<a href="/about">About</a>
+{% if username %} {{username}} {% endif %}
+{% endblock %}
