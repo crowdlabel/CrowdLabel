@@ -1,8 +1,6 @@
 from sqlalchemy import Column, Integer, String ,ForeignKey
 from sqlalchemy.ext.declarative import declarative_base
-Base = declarative_base()
-
-
+from .basicbase import Base
 MAX_RESULT_LENGTH = 512
 
 class ChildResults(Base):
