@@ -14,7 +14,13 @@ con = scoped_session(Connection)
 
 import random
 
-def send_verification_email(email) -> bool:
+async def send_verification_email(email) -> bool:
+    """
+    Sends verification email
+    
+    Returns `True` if the email was sent successfully,
+    `False` otherwise
+    """
 
     if not check_email_format(email):
         return False
@@ -39,11 +45,10 @@ def send_verification_email(email) -> bool:
         [email]
     )
 
-
     return True
 
 
-def create_user(
+async def create_user(
     username: str,
     email: str,
     password: str,
@@ -100,7 +105,7 @@ def create_user(
         user_type,
         status=0,
     )
-    
+
     con.add(user)
     con.commit()
 
@@ -121,7 +126,7 @@ async def check_credentials(username: str, password: str) -> bool:
 
     return verify(user.password, password)
 
-def get_user_info(username: str) -> dict:
+async def get_user_info(username: str) -> dict:
     """
     Gets the information about a user
     
@@ -143,7 +148,7 @@ def get_user_info(username: str) -> dict:
         return {}
     pass
 
-def set_user_info(new_info: dict) -> bool:
+async def set_user_info(new_info: dict) -> bool:
     """
     Sets user info
 
@@ -160,7 +165,6 @@ def set_user_info(new_info: dict) -> bool:
     Will update the email and password
 
     If the field doesn't exist, or the value fails checks, return False
-
     """
 
 
@@ -180,7 +184,7 @@ async def __field_exists_Email(field,value):
 def username_exists(username):
     return __field_exists('username', username)
 
-def email_exists(email):
+async def email_exists(email):
     return __field_exists('email', email)
 
 def email_exist_Email(email):

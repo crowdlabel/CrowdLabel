@@ -1,30 +1,22 @@
 from .base import *
 import services.user
 from .login_required import login_required
-from utils.emailverification import send_verification_email
 from fastapi import Response
 from fastapi.responses import JSONResponse
 from .schemas import *
-from services.user import username_exists, email_exists
+from services.user import username_exists, email_exists, send_verification_email
 
-API_VERSION = 1
+@app.post('/verify_email',
 
-@app.post('/login',
-    response_model=JWT,
-    status_code=200,
-    description='Successful login. Returns the `jwt` associated with the provided credentials.',
-    responses = {
-        login_error.status_code: login_error.response_doc()
-    }
 )
-async def login(credentials: Credentials):
+async def verify_email(email: Email):
+    """
+    Sends a verification email
+    Returns 
+    """
+    return await send_verification_email(email)
 
-    jwt = await services.user.login(credentials.username, credentials.password)
 
-    if not jwt:
-        return login_error.response()
-
-    return {'jwt': jwt}
 
 
 
@@ -32,7 +24,7 @@ async def login(credentials: Credentials):
 @app.post('/register',
     #response_model=JWT,
     status_code=201,
-    description='Successful registration. Returns the `jwt` associated with the newly-created account',
+    description='Successful registration. Returns the username, email, and user_type of the newly-created account.',
     responses = {
         login_error.status_code: login_error.response_doc()
     }
