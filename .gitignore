@@ -1,11 +1,6 @@
 __pycache__
-*.aux
 *.log
-*.out
-*.toc
-*.test
 config.yaml
-src/test.py
 .vscode
 *.jar
 *.db
