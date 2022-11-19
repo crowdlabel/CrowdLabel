@@ -3,7 +3,7 @@ from .login_required import login_required
 from utils.filetransfer import *
 from fastapi import APIRouter
 
-task_router = APIRouter('/task')
+task_router = APIRouter(prefix='/task')
 
 @app.get('/tasks')
 @login_required
