@@ -1,6 +1,7 @@
 from models.task import Task
 from sqlalchemy.orm import sessionmaker, scoped_session
 from sqlalchemy.ext.asyncio import AsyncSession
+from sqlalchemy import select
 from .database import *
 Connection = sessionmaker(bind=engine,expire_on_commit=False,class_=AsyncSession)
 con = scoped_session(Connection)
@@ -26,7 +27,6 @@ async def create_task(
         creator,
         details
     )
-    print(task)
     con.add(task)
     await con.commit()
     print(123)
@@ -41,5 +41,13 @@ def get_task(id):
 def edit_task(id):
     pass
 
-def delete_task(id):
-    pass
+async def delete_task(id):
+    async with con.begin():
+        result = await con.execute(select(Task).where(Task.id==id))
+        target = result.scalars().first()
+        if target == None:
+            raise ValueError('not found task id {id}')
+        await con.delete(target)
+        # for item in result:
+        #     await con.delete(item)
+    await con.commit()

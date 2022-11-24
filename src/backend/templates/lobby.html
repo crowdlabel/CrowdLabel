@@ -18,8 +18,9 @@ Lobby
                                             'details':details,
                                             })
     }
-
-    function set_file() {
+    async function delete_task() {
+        id = document.getElementById('delete_id').value;
+        fetch_json('delete_task','POST',{'id':id})
 
     }
 
@@ -37,7 +38,8 @@ Lobby
 <br>
 
 <button id="submit" onclick="submit()">create task</button>
-
+<input type = 'text' id="delete_id">
+<button id="delete" onclick="delete_task()">delete task</button>
 
 <h1>Response</h1>
 

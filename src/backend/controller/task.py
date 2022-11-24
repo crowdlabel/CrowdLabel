@@ -29,7 +29,13 @@ async def create_task(details:TaskInfo):
             'creator': details.creator,
             'details': details.details,
         }, 200
-
+@app.post('/delete_task')
+async def delete_task(details:ID):
+    response = await services.task.delete_task(details.id)
+    if response != 'ok':
+        return {
+            'error' : f'delete failed'
+        },400
 @task_router.get('/')
 def task(id):
     return 'requested task with id ' + str(id)

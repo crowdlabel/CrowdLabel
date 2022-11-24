@@ -23,6 +23,8 @@ class JSONError:
             }
         }
 
+class ID(BaseModel):
+    id :str
 
 class Email(BaseModel):
     email: str
