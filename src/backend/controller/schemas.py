@@ -24,11 +24,13 @@ class JSONError:
         }
 
 class ID(BaseModel):
-    id :str
+    id :int 
 
 class Email(BaseModel):
     email: str
 
+class TaskDetails(ID):
+    details:str
 
 class Credentials(BaseModel):
     username: str

@@ -1,7 +1,7 @@
 from models.task import Task
 from sqlalchemy.orm import sessionmaker, scoped_session
 from sqlalchemy.ext.asyncio import AsyncSession
-from sqlalchemy import select
+from sqlalchemy import select ,update
 from .database import *
 Connection = sessionmaker(bind=engine,expire_on_commit=False,class_=AsyncSession)
 con = scoped_session(Connection)
@@ -35,19 +35,41 @@ async def create_task(
         'error': 'ok',
     }
 
-def get_task(id):
+async def get_task(id):
     pass
 
-def edit_task(id):
-    pass
+async def edit_task(id,details):
+    async with con.begin():
+        result = await con.execute(select(Task).where(Task.id==id))
+        target = result.scalars().first()
+        if target is None:
+            return{
+                "status":"not found",
+            },400
+        target.details= details
+        await con.flush()
+        con.expunge(target)
+    return {
+        "status":"ok",
+        "id" :target.id,
+        "name":target.name,
+        "creator":target.creator,
+        "details":target.details
+    }
+    
 
 async def delete_task(id):
     async with con.begin():
         result = await con.execute(select(Task).where(Task.id==id))
         target = result.scalars().first()
         if target == None:
-            raise ValueError('not found task id {id}')
+            return {
+                "status": 'not found'
+            },400
         await con.delete(target)
         # for item in result:
         #     await con.delete(item)
     await con.commit()
+    return {
+        'status':'ok'
+    },200

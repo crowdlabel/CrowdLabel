@@ -32,10 +32,32 @@ async def create_task(details:TaskInfo):
 @app.post('/delete_task')
 async def delete_task(details:ID):
     response = await services.task.delete_task(details.id)
-    if response != 'ok':
+    if response['status'] != 'ok':
         return {
             'error' : f'delete failed'
         },400
+    else :
+        return {
+            'id':details.id
+        },200
+@app.post('/edit_task')
+async def edit_task(details:TaskDetails):
+    response = await services.task.edit_task(
+        details.id,
+        details.details
+    )
+    if response['status'] != 'ok':
+        return {
+            'error': 'edit failed'
+        },400
+    else:
+        return {
+            'id':response['id'],
+            'name':response['name'],
+            'creator':response['creator'],
+            'details':response['details']
+            
+        }
 @task_router.get('/')
 def task(id):
     return 'requested task with id ' + str(id)

@@ -19,9 +19,17 @@ Lobby
                                             })
     }
     async function delete_task() {
-        id = document.getElementById('delete_id').value;
+        id = document.getElementById('id').value;
         fetch_json('delete_task','POST',{'id':id})
 
+    }
+    async function edit_task(){
+        id = document.getElementById('id').value;
+        edit_details = document.getElementById('edit_details').value;
+        fetch_json('edit_task',"POST",{
+            "id":id,
+            "details":edit_details
+        })
     }
 
 </script>
@@ -38,8 +46,12 @@ Lobby
 <br>
 
 <button id="submit" onclick="submit()">create task</button>
-<input type = 'text' id="delete_id">
+<label for="id"><b>id</b></label>
+<input  id='id' type="text" placeholder="id" name="id">
 <button id="delete" onclick="delete_task()">delete task</button>
+<label for="edit_details"><b>details</b></label>
+<input  id='edit_details' type="text" placeholder="edit_details" name="edit_details">
+<button id="edit" onclick="edit_task()">edit task</button>
 
 <h1>Response</h1>
 
