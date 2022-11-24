@@ -23,7 +23,6 @@ class Question(Base):
     resource = Column(String(MAX_RES_LENGTH))
     options = Column(String(MAX_OPT_LENGTH))
     task_id = Column(Integer,ForeignKey('task.id'))
-    #question = relationship('Task',backref=backref('question'))
     def __init__(self, type, prompt, resource, options,task_id) -> None:
         self.type =type
         self.prompt = prompt

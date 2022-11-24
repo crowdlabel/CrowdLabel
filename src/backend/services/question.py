@@ -29,27 +29,27 @@ async def create_question(
     )
     con.add(question)
     await con.commit()
-    print(12312321)
     return {
         'arg': 'ok',
         'error': 'ok',
     }
 
-# async def get_task(id):
-#     async with con.begin():
-#         result = await con.execute(select(Task).where(Task.id==id))
-#         target = result.scalars().first()
-#         if target is None:
-#             return{
-#                 "status":"not found",
-#             },400
-#     return {
-#         "status":"ok",
-#         "id" :target.id,
-#         "name":target.name,
-#         "creator":target.creator,
-#         "details":target.details
-#     },200
+async def get_question(id):
+    async with con.begin():
+        result = await con.execute(select(Question).where(Question.id==id))
+        target = result.scalars().first()
+        if target is None:
+            return{
+                "status":"not found",
+            },400
+    return {
+        "status":"ok",
+        "type" :target.type,
+        "prompt":target.prompt,
+        "resource":target.resource,
+        "options":target.options,
+        "task_id":target.task_id
+    },200
 
 # async def edit_task(id,details):
 #     async with con.begin():

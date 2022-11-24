@@ -24,9 +24,11 @@ async def create_question(details:QuestionInfo):
         }, 400
     else:
         return {
-            'name': details.name,
-            'creator': details.creator,
-            'details': details.details,
+        "type":details.type,
+        "prompt":details.prompt,
+        "resource":details.resource,
+        "options":details.options,
+        "task_id":details.task_id
         }, 200
 @app.post('/delete_task')
 async def delete_task(details:ID):
@@ -57,20 +59,21 @@ async def edit_task(details:TaskDetails):
             'details':response[0]['details']
             
         }
-@app.post('/get_task')
-async def get_task(details:ID):
-    response = await services.task.get_task(details.id)
+@app.post('/get_question')
+async def get_question(details:ID):
+    response = await services.question.get_question(details.id)
     if response[0]["status"] != "ok":
         return {
             'error' : f'not found id {details.id}'
         },400
     else :
         return {
-            'id':response[0]['id'],
-            'name':response[0]['name'],
-            'creator':response[0]['creator'],
-            'details':response[0]['details']
+            
+            "type":response[0]["type"],
+            "prompt":response[0]["prompt"],
+            "resource":response[0]["resource"],
+            "options":response[0]["options"],
+            "task_id":response[0]["task_id"]
+        
         },200
 
-async def download_results():
-    return await download_file('main.py')
