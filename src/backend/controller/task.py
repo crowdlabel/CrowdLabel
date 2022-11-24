@@ -8,6 +8,10 @@ task_router = APIRouter(prefix='/task')
 async def tasks():
     return 'api: tasks'
 
+@app.get('create_task')
+async def create_task():
+    pass
+
 @task_router.get('/')
 def task(id):
     return 'requested task with id ' + str(id)

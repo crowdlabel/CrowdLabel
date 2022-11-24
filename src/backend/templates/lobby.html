@@ -1,0 +1,44 @@
+{% extends 'base.html' %}
+
+Lobby
+
+
+{% block content %}
+<script>
+
+    var file;
+
+    async function submit() {
+        name = document.getElementById('name').value;
+        creator = document.getElementById('creator_name').value;
+        details = document.getElementById('details');
+        fetch_json('create_task','POST',{'name':name,
+                                            'creator':creator,
+                                            'details':details,
+                                            })
+    }
+
+    function set_file() {
+
+    }
+
+</script>
+
+<h1>Create Task</h1>
+
+<table>
+  <tr><td>Name</td><td><input type="text" id="name"></td></tr>
+  <tr><td>creator name</td><td><input type="text" id="creator_name"></td></tr>
+  <tr><td>details</td><td><textarea id="details" rows="16" cols="80"></textarea></td></tr>
+</table>
+
+
+<br>
+
+<button id="submit" onclick="submit()">create task</button>
+
+
+<h1>Response</h1>
+
+<div id="response"></div>
+ {% endblock %}
