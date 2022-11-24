@@ -30,9 +30,9 @@ async def create_question(details:QuestionInfo):
         "options":details.options,
         "task_id":details.task_id
         }, 200
-@app.post('/delete_task')
-async def delete_task(details:ID):
-    response = await services.task.delete_task(details.id)
+@app.post('/delete_question')
+async def delete_question(details:ID):
+    response = await services.question.delete_question(details.id)
     if response[0]['status'] != 'ok':
         return {
             'error' : f'delete failed'

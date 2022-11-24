@@ -20,9 +20,9 @@ Question
                                              'task_id':task_id            
                                             })
     }
-    async function delete_task() {
+    async function delete_question() {
         id = document.getElementById('id').value;
-        fetch_json('delete_task','POST',{'id':id})
+        fetch_json('delete_question','POST',{'id':id})
 
     }
     async function edit_task(){
@@ -67,10 +67,10 @@ Question
 <button id="submit" onclick="submit()">create question</button>
 <label for="id"><b>id</b></label>
 <input  id='id' type="text" placeholder="id" name="id">
-<button id="delete" onclick="delete_task()">delete task</button>
+<button id="delete" onclick="delete_question()">delete question</button>
 <label for="edit_details"><b>details</b></label>
 <input  id='edit_details' type="text" placeholder="edit_details" name="edit_details">
-<button id="edit" onclick="edit_task()">edit task</button>
+<button id="edit" onclick="edit_question()">edit question</button>
 <button id="get_info" onclick="get_info()">get_info</button>
 <h1>Info</h1>
 <table> 

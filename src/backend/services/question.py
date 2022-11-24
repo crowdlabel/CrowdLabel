@@ -71,18 +71,18 @@ async def get_question(id):
 #     }
     
 
-# async def delete_task(id):
-#     async with con.begin():
-#         result = await con.execute(select(Task).where(Task.id==id))
-#         target = result.scalars().first()
-#         if target == None:
-#             return {
-#                 "status": 'not found'
-#             },400
-#         await con.delete(target)
-#         # for item in result:
-#         #     await con.delete(item)
-#     await con.commit()
-#     return {
-#         'status':'ok'
-#     },200
+async def delete_question(id):
+    async with con.begin():
+        result = await con.execute(select(Question).where(Question.id==id))
+        target = result.scalars().first()
+        if target == None:
+            return {
+                "status": 'not found'
+            },400
+        await con.delete(target)
+        # for item in result:
+        #     await con.delete(item)
+    await con.commit()
+    return {
+        'status':'ok'
+    },200
