@@ -43,7 +43,7 @@ Lobby
         document.getElementById('info_name').innerHTML=response1[0].name;
         document.getElementById('info_creator').innerHTML=response1[0].creator
         document.getElementById('info_details').innerHTML=response1[0].details
-
+        document.getElementById('question').innerHTML=response1[0].questions
     }
 
 </script>
@@ -70,7 +70,8 @@ Lobby
 <table> 
     <tr><td>Name</td><td id ='info_name'></td></tr>
     <tr><td>creator name</td><td id = 'info_creator'></td></tr>
-    <tr><td>details</td><td><textarea id="info_details" rows="16" cols="80">{{details}}</textarea></td></tr>
+    <tr><td>details</td><td><textarea id="info_details" rows="16" cols="80"></textarea></td></tr>
+    <tr><td>questions</td><td id = 'question'></td></tr>
 </table>
 
 

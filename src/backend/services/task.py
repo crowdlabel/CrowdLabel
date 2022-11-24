@@ -1,5 +1,5 @@
 from models.task import Task
-from sqlalchemy.orm import sessionmaker, scoped_session
+from sqlalchemy.orm import sessionmaker, scoped_session, selectinload
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy import select ,update
 from .database import *
@@ -37,18 +37,24 @@ async def create_task(
 
 async def get_task(id):
     async with con.begin():
-        result = await con.execute(select(Task).where(Task.id==id))
+        result = await con.execute(select(Task).where(Task.id==id).options(selectinload(Task.questions)))
         target = result.scalars().first()
         if target is None:
             return{
                 "status":"not found",
             },400
+        s= ''
+        for q in target.questions:
+            print(q.prompt)
+            s = s+q.prompt+'\n'
+
     return {
         "status":"ok",
         "id" :target.id,
         "name":target.name,
         "creator":target.creator,
-        "details":target.details
+        "details":target.details,
+        "questions":s
     },200
 
 async def edit_task(id,details):
