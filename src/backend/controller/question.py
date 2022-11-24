@@ -41,11 +41,15 @@ async def delete_question(details:ID):
         return {
             'id':details.id
         },200
-@app.post('/edit_task')
-async def edit_task(details:TaskDetails):
-    response = await services.task.edit_task(
+@app.post('/edit_question')
+async def edit_question(details:IDWithQuestionInfo):
+    response = await services.question.edit_question(
         details.id,
-        details.details
+        details.type,
+        details.prompt,
+        details.resource,
+        details.options,
+        details.task_id
     )
     if response[0]['status'] != 'ok':
         return {
@@ -53,10 +57,11 @@ async def edit_task(details:TaskDetails):
         },400
     else:
         return {
-            'id':response[0]['id'],
-            'name':response[0]['name'],
-            'creator':response[0]['creator'],
-            'details':response[0]['details']
+            "type":response[0]["type"],
+            "prompt":response[0]["prompt"],
+            "resource":response[0]["resource"],
+            "options":response[0]["options"],
+            "task_id":response[0]["task_id"]
             
         }
 @app.post('/get_question')
@@ -68,7 +73,6 @@ async def get_question(details:ID):
         },400
     else :
         return {
-            
             "type":response[0]["type"],
             "prompt":response[0]["prompt"],
             "resource":response[0]["resource"],

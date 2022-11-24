@@ -51,24 +51,29 @@ async def get_question(id):
         "task_id":target.task_id
     },200
 
-# async def edit_task(id,details):
-#     async with con.begin():
-#         result = await con.execute(select(Task).where(Task.id==id))
-#         target = result.scalars().first()
-#         if target is None:
-#             return{
-#                 "status":"not found",
-#             },400
-#         target.details= details
-#         await con.flush()
-#         con.expunge(target)
-#     return {
-#         "status":"ok",
-#         "id" :target.id,
-#         "name":target.name,
-#         "creator":target.creator,
-#         "details":target.details
-#     }
+async def edit_question(id,type,prompt,resource,options,task_id):
+    async with con.begin():
+        result = await con.execute(select(Question).where(Question.id==id))
+        target = result.scalars().first()
+        if target is None:
+            return{
+                "status":"not found",
+            },400
+        target.type= type
+        target.prompt =prompt
+        target.resource = resource
+        target.options = options
+        target.task_id = task_id
+        await con.flush()
+        con.expunge(target)
+    return {
+        "status":"ok",
+        "type" :target.type,
+        "prompt":target.prompt,
+        "resource":target.resource,
+        "options":target.options,
+        "task_id":target.task_id
+    },200
     
 
 async def delete_question(id):

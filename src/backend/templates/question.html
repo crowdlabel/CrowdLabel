@@ -25,13 +25,21 @@ Question
         fetch_json('delete_question','POST',{'id':id})
 
     }
-    async function edit_task(){
+    async function edit_question(){
         id = document.getElementById('id').value;
-        edit_details = document.getElementById('edit_details').value;
-        fetch_json('edit_task',"POST",{
-            "id":id,
-            "details":edit_details
-        })
+        type = document.getElementById('type').value;
+        prompt_ = document.getElementById('prompt').value;
+        resource = document.getElementById('resource').value;
+        options = document.getElementById('options').value;
+        task_id = document.getElementById('task_id').value;
+        fetch_json('edit_question',"POST",{
+                            "id":id,
+                            'type':type,
+                            'prompt':prompt_,
+                            'resource':resource,
+                            'options':options,
+                            'task_id':task_id
+                            })
     }
     async function get_info(){
         id = document.getElementById('id').value;

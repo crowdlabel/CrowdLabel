@@ -50,7 +50,8 @@ class QuestionInfo(BaseModel):
     resource:str
     options:str
     task_id :int
-
+class IDWithQuestionInfo(QuestionInfo):
+    id :int
 class AuthenticatedRequest(BaseModel):
     jwt: str
 
