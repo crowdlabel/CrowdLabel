@@ -36,7 +36,20 @@ async def create_task(
     }
 
 async def get_task(id):
-    pass
+    async with con.begin():
+        result = await con.execute(select(Task).where(Task.id==id))
+        target = result.scalars().first()
+        if target is None:
+            return{
+                "status":"not found",
+            },400
+    return {
+        "status":"ok",
+        "id" :target.id,
+        "name":target.name,
+        "creator":target.creator,
+        "details":target.details
+    },200
 
 async def edit_task(id,details):
     async with con.begin():

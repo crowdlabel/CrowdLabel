@@ -32,7 +32,7 @@ async def create_task(details:TaskInfo):
 @app.post('/delete_task')
 async def delete_task(details:ID):
     response = await services.task.delete_task(details.id)
-    if response['status'] != 'ok':
+    if response[0]['status'] != 'ok':
         return {
             'error' : f'delete failed'
         },400
@@ -46,18 +46,32 @@ async def edit_task(details:TaskDetails):
         details.id,
         details.details
     )
-    if response['status'] != 'ok':
+    if response[0]['status'] != 'ok':
         return {
             'error': 'edit failed'
         },400
     else:
         return {
-            'id':response['id'],
-            'name':response['name'],
-            'creator':response['creator'],
-            'details':response['details']
+            'id':response[0]['id'],
+            'name':response[0]['name'],
+            'creator':response[0]['creator'],
+            'details':response[0]['details']
             
         }
+@app.post('/get_task')
+async def get_task(details:ID):
+    response = await services.task.get_task(details.id)
+    if response[0]["status"] != "ok":
+        return {
+            'error' : f'not found id {details.id}'
+        },400
+    else :
+        return {
+            'id':response[0]['id'],
+            'name':response[0]['name'],
+            'creator':response[0]['creator'],
+            'details':response[0]['details']
+        },200
 @task_router.get('/')
 def task(id):
     return 'requested task with id ' + str(id)
