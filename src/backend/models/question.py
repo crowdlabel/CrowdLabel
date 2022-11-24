@@ -22,11 +22,12 @@ class Question(Base):
     resource = Column(String(MAX_RES_LENGTH))
     options = Column(String(MAX_OPT_LENGTH))
     task_id = Column(Integer,ForeignKey('task.id'))
-    def __init__(self, type, prompt, resource, options) -> None:
+    def __init__(self, type, prompt, resource, options,task_id) -> None:
         self.type =type
         self.prompt = prompt
         self.resource = resource
         self.options = options
+        self.task_id = task_id
 
 class MultipleChoice(Question):
     def __init__(self, type, prompt, options, answer=None) -> None:

@@ -1,0 +1,82 @@
+{% extends 'base.html' %}
+
+Question
+
+{% block content %}
+<script>
+
+    var file;
+
+    async function submit() {
+        type = document.getElementById('type').value;
+        prompt_ = document.getElementById('prompt').value;
+        resource = document.getElementById('resource').value;
+        options = document.getElementById('options').value;
+        task_id = document.getElementById('task_id').value;
+        fetch_json('create_question','POST',{'type':type,
+                                             'prompt':prompt_,
+                                             'resource':resource,
+                                             'options':options,
+                                             'task_id':task_id            
+                                            })
+    }
+    async function delete_task() {
+        id = document.getElementById('id').value;
+        fetch_json('delete_task','POST',{'id':id})
+
+    }
+    async function edit_task(){
+        id = document.getElementById('id').value;
+        edit_details = document.getElementById('edit_details').value;
+        fetch_json('edit_task',"POST",{
+            "id":id,
+            "details":edit_details
+        })
+    }
+    async function get_info(){
+        id = document.getElementById('id').value;
+        response=fetch_json('get_task',"POST",{
+            "id":id,
+        })
+        
+        let response1 = await response
+
+
+        document.getElementById('info_name').innerHTML=response1[0].name;
+        document.getElementById('info_creator').innerHTML=response1[0].creator
+        document.getElementById('info_details').innerHTML=response1[0].details
+
+    }
+
+</script>
+<h1>Create Question</h1>
+
+<table>
+  <tr><td>Type</td><td><input type="text" id="type"></td></tr>
+  <tr><td>Prompt</td><td><input type="text" id="prompt"></td></tr>
+  <tr><td>Resource</td><td><input type="text" id="resource"></td></tr>
+  <tr><td>options</td><td><input type="text" id="options"></td></tr>
+  <tr><td>task_id</td><td><input type="text" id="task_id"></td></tr>
+</table>
+
+
+<br>
+
+<button id="submit" onclick="submit()">create question</button>
+<label for="id"><b>id</b></label>
+<input  id='id' type="text" placeholder="id" name="id">
+<button id="delete" onclick="delete_task()">delete task</button>
+<label for="edit_details"><b>details</b></label>
+<input  id='edit_details' type="text" placeholder="edit_details" name="edit_details">
+<button id="edit" onclick="edit_task()">edit task</button>
+<button id="get_info" onclick="get_info()">get_info</button>
+<h1>Info</h1>
+<table> 
+    <tr><td>Name</td><td id ='info_name'></td></tr>
+    <tr><td>creator name</td><td id = 'info_creator'></td></tr>
+    <tr><td>details</td><td><textarea id="info_details" rows="16" cols="80">{{details}}</textarea></td></tr>
+</table>
+
+
+<div id="response"></div>
+ {% endblock %}

@@ -44,7 +44,12 @@ class TaskInfo(BaseModel):
     name : str
     creator : str
     details : str
-
+class QuestionInfo(BaseModel):
+    type: str
+    prompt :str
+    resource:str
+    options:str
+    task_id :int
 
 class AuthenticatedRequest(BaseModel):
     jwt: str
