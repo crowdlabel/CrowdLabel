@@ -11,7 +11,8 @@ Lobby
     async function submit() {
         name = document.getElementById('name').value;
         creator = document.getElementById('creator_name').value;
-        details = document.getElementById('details');
+        details = document.getElementById('details').value;
+
         fetch_json('create_task','POST',{'name':name,
                                             'creator':creator,
                                             'details':details,

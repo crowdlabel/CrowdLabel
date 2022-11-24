@@ -1,6 +1,8 @@
 from .base import app
 from utils.filetransfer import *
+import services.task
 from fastapi import APIRouter
+from .schemas import *
 
 task_router = APIRouter(prefix='/task')
 
@@ -8,9 +10,25 @@ task_router = APIRouter(prefix='/task')
 async def tasks():
     return 'api: tasks'
 
-@app.get('create_task')
-async def create_task():
-    pass
+@app.post('/create_task')
+async def create_task(details:TaskInfo):
+    response = await services.task.create_task(
+        details.name,
+        details.creator,
+        details.details)
+    print(response)
+    if response != 'ok':
+        return {
+            'error': f'{response} already exists'
+        }, 400
+
+    
+    else:
+        return {
+            'name': details.name,
+            'creator': details.creator,
+            'details': details.details,
+        }, 200
 
 @task_router.get('/')
 def task(id):

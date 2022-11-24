@@ -36,6 +36,12 @@ class Registration(Email, Credentials):
     user_type: int
     verification_code: str
 
+class TaskInfo(BaseModel):
+    name : str
+    creator : str
+    details : str
+
+
 class AuthenticatedRequest(BaseModel):
     jwt: str
 

@@ -26,10 +26,10 @@ async def create_task(
         creator,
         details
     )
-
+    print(task)
     con.add(task)
-    con.commit()
-
+    await con.commit()
+    print(123)
     return {
         'arg': 'ok',
         'error': 'ok',

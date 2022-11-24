@@ -6,9 +6,10 @@ MAX_DETAIL_LENGTH = 512
 class Task(Base):
     __tablename__ = 'task'
     id = Column(Integer,unique = True, primary_key=True,autoincrement=True)
-    name = Column(String(MAX_NAME_LENGTH))
     creator = Column(String(MAX_NAME_LENGTH))
     details  = Column(String(MAX_DETAIL_LENGTH))
+    name = Column(String(MAX_NAME_LENGTH))
+    
     def __init__(self,name,creator,detail) -> None:
         self.name=name
         self.creator = creator
