@@ -1,0 +1,94 @@
+{% extends 'base.html' %}
+
+Question
+
+{% block content %}
+<script>
+
+    var file;
+
+    async function submit() {
+        type = document.getElementById('type').value;
+        prompt_ = document.getElementById('prompt').value;
+        resource = document.getElementById('resource').value;
+        options = document.getElementById('options').value;
+        task_id = document.getElementById('task_id').value;
+        fetch_json('create_question','POST',{'type':type,
+                                             'prompt':prompt_,
+                                             'resource':resource,
+                                             'options':options,
+                                             'task_id':task_id            
+                                            })
+    }
+    async function delete_question() {
+        id = document.getElementById('id').value;
+        fetch_json('delete_question','POST',{'id':id})
+
+    }
+    async function edit_question(){
+        id = document.getElementById('id').value;
+        type = document.getElementById('type').value;
+        prompt_ = document.getElementById('prompt').value;
+        resource = document.getElementById('resource').value;
+        options = document.getElementById('options').value;
+        task_id = document.getElementById('task_id').value;
+        fetch_json('edit_question',"POST",{
+                            "id":id,
+                            'type':type,
+                            'prompt':prompt_,
+                            'resource':resource,
+                            'options':options,
+                            'task_id':task_id
+                            })
+    }
+    async function get_info(){
+        id = document.getElementById('id').value;
+        response=fetch_json('get_question',"POST",{
+            "id":id,
+        })
+        
+        let response1 = await response
+
+
+        document.getElementById('info_type').innerHTML=response1[0].type;
+        document.getElementById('info_prompt').innerHTML=response1[0].prompt
+        document.getElementById('info_resource').innerHTML=response1[0].resource
+        document.getElementById('info_options').innerHTML=response1[0].options
+        document.getElementById('info_task_id').innerHTML=response1[0].task_id
+
+    }
+
+</script>
+<h1>Create Question</h1>
+
+<table>
+  <tr><td>Type</td><td><input type="text" id="type"></td></tr>
+  <tr><td>Prompt</td><td><input type="text" id="prompt"></td></tr>
+  <tr><td>Resource</td><td><input type="text" id="resource"></td></tr>
+  <tr><td>options</td><td><input type="text" id="options"></td></tr>
+  <tr><td>task_id</td><td><input type="text" id="task_id"></td></tr>
+</table>
+
+
+<br>
+
+<button id="submit" onclick="submit()">create question</button>
+<label for="id"><b>id</b></label>
+<input  id='id' type="text" placeholder="id" name="id">
+<button id="delete" onclick="delete_question()">delete question</button>
+<label for="edit_details"><b>details</b></label>
+<input  id='edit_details' type="text" placeholder="edit_details" name="edit_details">
+<button id="edit" onclick="edit_question()">edit question</button>
+<button id="get_info" onclick="get_info()">get_info</button>
+<h1>Info</h1>
+<table> 
+    <tr><td>Type</td><td id ='info_type'></td></tr>
+    <tr><td>Prompt</td><td id = 'info_prompt'></td></tr>
+    <tr><td>Resource</td><td id = 'info_resource'></td></tr>
+    <tr><td>Options</td><td id = 'info_options'></td></tr>
+    <tr><td>Task_id</td><td id = 'info_task_id'></td></tr>
+</table>
+
+
+<div id="response"></div>
+ {% endblock %}

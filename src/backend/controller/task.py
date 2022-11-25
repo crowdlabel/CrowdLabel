@@ -1,6 +1,8 @@
 from .base import app
 from utils.filetransfer import *
+import services.task
 from fastapi import APIRouter
+from .schemas import *
 
 task_router = APIRouter(prefix='/task')
 
@@ -8,6 +10,69 @@ task_router = APIRouter(prefix='/task')
 async def tasks():
     return 'api: tasks'
 
+@app.post('/create_task')
+async def create_task(details:TaskInfo):
+    response = await services.task.create_task(
+        details.name,
+        details.creator,
+        details.details)
+    print(response)
+    if response != 'ok':
+        return {
+            'error': f'{response} already exists'
+        }, 400
+
+    
+    else:
+        return {
+            'name': details.name,
+            'creator': details.creator,
+            'details': details.details,
+        }, 200
+@app.post('/delete_task')
+async def delete_task(details:ID):
+    response = await services.task.delete_task(details.id)
+    if response[0]['status'] != 'ok':
+        return {
+            'error' : f'delete failed'
+        },400
+    else :
+        return {
+            'id':details.id
+        },200
+@app.post('/edit_task')
+async def edit_task(details:TaskDetails):
+    response = await services.task.edit_task(
+        details.id,
+        details.details
+    )
+    if response[0]['status'] != 'ok':
+        return {
+            'error': 'edit failed'
+        },400
+    else:
+        return {
+            'id':response[0]['id'],
+            'name':response[0]['name'],
+            'creator':response[0]['creator'],
+            'details':response[0]['details']
+            
+        }
+@app.post('/get_task')
+async def get_task(details:ID):
+    response = await services.task.get_task(details.id)
+    if response[0]["status"] != "ok":
+        return {
+            'error' : f'not found id {details.id}'
+        },400
+    else :
+        return {
+            'id':response[0]['id'],
+            'name':response[0]['name'],
+            'creator':response[0]['creator'],
+            'details':response[0]['details'],
+            'questions':response[0]['questions']
+        },200
 @task_router.get('/')
 def task(id):
     return 'requested task with id ' + str(id)

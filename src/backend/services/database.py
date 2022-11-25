@@ -7,10 +7,12 @@ from models.question import Question
 from models.results import Results
 from models.task import Task
 from models.user import User
+import os
 import asyncio
 #from utils.config import get_config
+BASE_DIR = os.path.abspath(os.path.dirname(__file__))
 
-db_params = f"sqlite+aiosqlite:///crowdlabel.db"
+db_params = f"sqlite+aiosqlite:///"+os.path.join(BASE_DIR,"crowdlabel.db")
 
 engine = create_async_engine(db_params)
 async def init_models():
