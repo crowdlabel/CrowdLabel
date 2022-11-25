@@ -23,10 +23,14 @@ class JSONError:
             }
         }
 
+class ID(BaseModel):
+    id :int 
 
 class Email(BaseModel):
     email: str
 
+class TaskDetails(ID):
+    details:str
 
 class Credentials(BaseModel):
     username: str
@@ -36,6 +40,18 @@ class Registration(Email, Credentials):
     user_type: int
     verification_code: str
 
+class TaskInfo(BaseModel):
+    name : str
+    creator : str
+    details : str
+class QuestionInfo(BaseModel):
+    type: str
+    prompt :str
+    resource:str
+    options:str
+    task_id :int
+class IDWithQuestionInfo(QuestionInfo):
+    id :int
 class AuthenticatedRequest(BaseModel):
     jwt: str
 
