@@ -17,13 +17,13 @@
           <div class="left_nav">
               <ul class="left_nav_list_top">
                   <li>
-                      <a aria-current="page" class="left_nav_list_item left_nav_list_item_active" data-external="true" href="/senderhome">
+                      <a aria-current="page" class="left_nav_list_item left_nav_list_item_active" data-external="true" href="/sendermission">
                           <img src="../assets/folder_active.png" height="21" width="20">
                           <p class="list_item_title">我的任务</p>
                       </a>
                   </li>
                   <li>
-                      <a aria-current="page" class="left_nav_list_item" data-external="true" href="/credits">
+                      <a aria-current="page" class="left_nav_list_item" data-external="true" href="/sendercredits">
                           <img src="../assets/credits.png" height="19" width="20">
                           <p class="list_item_title">我的积分</p>
                       </a>
