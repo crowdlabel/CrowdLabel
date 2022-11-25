@@ -3,6 +3,7 @@ from controller.controllers import *
 from fastapi.openapi.utils import get_openapi
 import json
 import argparse
+from utils.config import load_config
 
 def generate_doc():
     with open('openapi.json', 'w') as f:
@@ -22,7 +23,7 @@ def parse_args():
     return args
 
 if __name__ == '__main__':
-    
+    load_config()
     args = parse_args()
     if args.docs:
         generate_doc()
