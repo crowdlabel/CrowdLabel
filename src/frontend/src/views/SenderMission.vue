@@ -17,13 +17,13 @@
           <div class="left_nav">
               <ul class="left_nav_list_top">
                   <li>
-                      <a aria-current="page" class="left_nav_list_item left_nav_list_item_active" data-external="true" href="/sendermission">
+                      <a aria-current="page" class="left_nav_list_item left_nav_list_item_active" data-external="true" href="/senderhome">
                           <img src="../assets/folder_active.png" height="21" width="20">
                           <p class="list_item_title">我的任务</p>
                       </a>
                   </li>
                   <li>
-                      <a aria-current="page" class="left_nav_list_item" data-external="true" href="/sendercredits">
+                      <a aria-current="page" class="left_nav_list_item" data-external="true" href="/credits">
                           <img src="../assets/credits.png" height="19" width="20">
                           <p class="list_item_title">我的积分</p>
                       </a>
@@ -46,18 +46,71 @@
                   </li>
               </ul>
           </div>
+          <!-- <div class="main_body">
+              <div class="search_bar">
+                  <el-input v-model="input" placeholder="搜索任务"></el-input>
+                  <el-button type="primary" icon="el-icon-search"></el-button>
+              </div>
+              <div class="filter">
+                <p class="title_filter">筛选：</p>
+                <el-button type="success" round>全部</el-button>
+                <el-button round>文字任务</el-button>
+                <el-button round>图像任务</el-button>
+                <el-button round>视频任务</el-button>
+                <el-button round>音频任务</el-button>
+              </div>
+              <div class="order_by">
+                <p class="title_order_by">排序：</p>
+                <el-button type="success" round>发布时间</el-button>
+                <el-button round>热度</el-button>
+              </div>
+              <div class="test">
+              </div>
+              <div class="display_projects">
+                <div class="display_projects_row">
+                  <div class="project">
+                    <img height="150px" width="230px"/>
+                  </div>
+                  <div class="project">
+                    <img height="150px" width="230px"/>
+                  </div>
+                  <div class="project">
+                    <img height="150px" width="230px"/>
+                  </div>
+                </div>
+                <div class="display_projects_row">
+                  <div class="project">
+                    <img height="150px" width="230px"/>
+                  </div>
+                  <div class="project">
+                    <img height="150px" width="230px"/>
+                  </div>
+                  <div class="project">
+                    <img height="150px" width="230px"/>
+                  </div>
+                </div>
+              </div>
+              <div class="pagination">
+                <el-pagination
+                  background
+                  layout="prev, pager, next"
+                   :total=100>
+                </el-pagination>
+              </div>
+          </div> -->
       </div>
     </div>
   </template>
   
   
   <script>
+  // @ is an alias to /src
+  // import HelloWorld from '@/components/HelloWorld.vue'
   import axios from 'axios'
   export default {
     data() {
-      return {
-
-      }
+    //   page_num = 100;
+      
     },
     methods: {
       
@@ -76,14 +129,14 @@
       height: 50px;
       position: sticky;
       top: 0;
-      z-index: 1;
+      z-index: 1000;
   }
   .top_nav_trigger {
       align-items: center;
       box-shadow: 1.2px 0 0 0 rgb(0 0 0 / 10%);
       box-sizing: border-box;
+      cursor: pointer;
       display: flex;
-      cursor: default;
       min-width: 230px;
       max-width: 230px;
       padding-left: 20px;
@@ -91,8 +144,8 @@
   .page_title {
       align-items: center;
       box-sizing: border-box;
+      cursor: pointer;
       display: flex;
-      cursor: default;
       justify-content: space-between;
       padding-left: 20px;
       min-width: 120px;
@@ -188,6 +241,42 @@
       padding: 15px;
       font-size: 15px;
   }
+  
+  .main_body {
+      box-sizing: border-box;
+      flex-direction: column;
+      position: relative;
+      display: flex;
+      cursor: pointer;
+      flex:1;
+      height: calc(100vh - 50px);
+      min-width: 1000px;
+  }
+  
+  .search_bar {
+    flex-direction: row;
+    display: flex;
+  }
+  
+  ::v-deep .el-input {
+    width: 75% !important;
+    margin-left: 100px;
+  }
+  
+  ::v-deep .el-input__inner { 
+    font-size: 15px;
+    min-width: 400px;
+    height: 50px;
+    border-radius: 0px;
+    margin-top: 40px;
+    margin-right: 0px;
+  }
+  
+  ::v-deep .el-input__inner:focus { 
+    border-radius: 0px;
+    border-color: #5D3BE6;
+  }
+  
   ::v-deep .el-button--primary {
     margin-top: 40px;
     margin-right: 80px;
@@ -207,6 +296,18 @@
     background-color: #5D3BE6;
   }
   
+  
+  .filter {
+    flex-direction: row;
+    display: flex;
+    align-items:center;
+    margin: 20px 100px 0px 100px;
+  }
+  .title_filter {
+    padding: 0px;
+    font-size: 14px;
+    color:rgba(0,0,0,.6);
+  }
   ::v-deep .el-button--success {
     margin: 0px 0px 0px 10px;
     height: 30px;
