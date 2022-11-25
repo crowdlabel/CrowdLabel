@@ -103,7 +103,7 @@
                 if (value === '') {
                 callback(new Error('请输入邮箱'));
                 } else {
-                    let mailReg = /^([a-zA-Z0-9_-]+)@([a-zA-Z0-9_-]+)((.[a-zA-Z0-9_-]+)+)$/
+                    let mailReg = /^([a-zA-Z0-9_-]+(.[a-zA-Z0-9])?)@([a-zA-Z0-9_-]+)((.[a-zA-Z0-9_-]+)+)$/
                     if (!mailReg.test(value)){
                         callback(new Error('邮箱格式错误'));
                     } else {
@@ -118,17 +118,12 @@
                     }
                 }
             };
+            // waiting for backend ...
             var validateLoginName = (rule, value, callback) => {
                 if (value===''){
                     callback(new Error('请输入用户名'));
                 } else {
-                    let temp = fetch_json('availability','POST',{'username':value,
-                                                'email':''});
-                    if (temp.username) {
-                        callback(new Error('用户名已被占用'));
-                    } else {
-                        callback();
-                    }
+                    callback();
                 }
             };
             var validateLoginPass = (rule, value, callback) => {
@@ -166,7 +161,6 @@
                     checkPass: '',
                     email: '',
                     verif: ''
-
                 },
                 rules: {
                     name: [
@@ -203,6 +197,7 @@
             }
         },
         methods: {
+            // waiting for backend ...
             checkRegisterSubmit(formName) {
                 this.$refs[formName].validate((valid) => {
                     if (valid) {
