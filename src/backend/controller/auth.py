@@ -11,7 +11,7 @@ from utils.hasher import hash, verify
 
 SECRET_KEY = get_config('auth.key')
 ALGORITHM = "HS256"
-ACCESS_TOKEN_EXPIRE_MINUTES = 30
+ACCESS_TOKEN_EXPIRE_MINUTES = 1
 
 fake_users_db = {
     "johndoe": {
@@ -20,6 +20,7 @@ fake_users_db = {
         "hashed_password": "$argon2id$v=19$m=65536,t=3,p=4$J0w2TOvIofzW/1N0o8eJlw$SQNB7R+uRC/HFuZYHwrROOsP+hBSi5hOdykBf1jv65s",
     }
 }
+
 
 
 class Token(BaseModel):
@@ -34,16 +35,14 @@ class TokenData(BaseModel):
 class User(BaseModel):
     username: str
     email: str | None = None
+    full_name: str | None = None
+    disabled: bool | None = None
 
 
 class UserInDB(User):
     hashed_password: str
 
-
-
 oauth2_scheme = OAuth2PasswordBearer(tokenUrl="token")
-
-
 
 
 
@@ -55,7 +54,9 @@ def get_user(db, username: str):
 
 def authenticate_user(fake_db, username: str, password: str):
     user = get_user(fake_db, username)
-    if not user or not verify(user.hashed_password, password):
+    if not user:
+        return False
+    if not verify(user.hashed_password, password):
         return False
     return user
 
@@ -90,6 +91,13 @@ async def get_current_user(token: str = Depends(oauth2_scheme)):
         raise credentials_exception
     return user
 
+
+async def get_current_active_user(current_user: User = Depends(get_current_user)):
+    if current_user.disabled:
+        raise HTTPException(status_code=400, detail="Inactive user")
+    return current_user
+
+
 @app.post("/token", response_model=Token)
 async def login_for_access_token(form_data: OAuth2PasswordRequestForm = Depends()):
     user = authenticate_user(fake_users_db, form_data.username, form_data.password)
@@ -104,28 +112,3 @@ async def login_for_access_token(form_data: OAuth2PasswordRequestForm = Depends(
         data={"sub": user.username}, expires_delta=access_token_expires
     )
     return {"access_token": access_token, "token_type": "bearer"}
-
-
-'''
-@app.post('/login',
-    response_model=JWT,
-    status_code=200,
-    description='Successful login. Returns the `jwt` associated with the provided credentials.',
-    responses = {
-        login_error.status_code: login_error.response_doc()
-    }
-)
-async def login(credentials: Credentials):
-
-    jwt = await services.user.login(credentials.username, credentials.password)
-
-    if not jwt:
-        return login_error.response()
-
-    return {'jwt': jwt}
-'''
-
-@app.post('/logout')
-async def logout():
-    # TODO: implement jwt invalidation
-    pass
