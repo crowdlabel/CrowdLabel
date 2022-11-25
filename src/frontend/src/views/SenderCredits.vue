@@ -217,7 +217,7 @@
       padding: 12px;
   }
   .left_nav_spacer {
-      height: calc(100vh - 329.2px);
+      height: calc(100vh - 289.2px);
       flex: 1;
   }
   .left_nav_list_item {

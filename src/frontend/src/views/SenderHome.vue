@@ -76,7 +76,7 @@
       height: 50px;
       position: sticky;
       top: 0;
-      z-index: 1000;
+      z-index: 1;
   }
   .top_nav_trigger {
       align-items: center;
@@ -164,7 +164,7 @@
       padding: 12px;
   }
   .left_nav_spacer {
-      height: calc(100vh - 329.2px);
+      height: calc(100vh - 289.2px);
       flex: 1;
   }
   .left_nav_list_item {
