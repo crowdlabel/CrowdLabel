@@ -8,6 +8,7 @@ import HistoryView from '../views/HistoryView.vue'
 import CreditsView from '../views/CreditsView.vue'
 import axios from 'axios'
 import VueAxios from 'vue-axios'
+import SenderHome from '../views/SenderHome.vue'
 
 Vue.use(VueRouter)
 Vue.use(VueAxios, axios)
@@ -42,6 +43,11 @@ const routes = [
     path: '/credits',
     name: 'credits',
     component: CreditsView
+  },
+  {
+    path: '/senderhome',
+    name: 'senderhome',
+    component: SenderHome
   }
 ]
 
