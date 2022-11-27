@@ -60,7 +60,6 @@
 </template>
 
 <script>
-import fetch_json from '../../static/js/fetch'
 export default {
     data () {
         var userType = 1;
@@ -96,7 +95,8 @@ export default {
                 if (!/^[\x21-\x7e]{3,64}$/.test(value)) {
                     callback(new Error('用户名格式错误:请输入3-64位用户名'));
                 } else {
-                    let checkname = fetch_json('http://localhost:8081/availability', 'POST', {'username':value, 'email':''});
+                    let self = this
+                    let checkname = self.fetch_json('http://localhost:8000/availability', 'POST', {'username':value, 'email':''});
                     if (checkname.username){
                         callback(new Error('用户名已被占用'));
                     } else {
@@ -114,7 +114,8 @@ export default {
                     callback(new Error('邮箱格式错误'));
                 } else {
                     this.disable = false;
-                    let checkmail = fetch_json('availability', 'POST', {'username':'', 'email':value});
+                    let self = this
+                    let checkmail = self.fetch_json('http://localhost:8000/availability', 'POST', {'username':'', 'email':value});
                     if (checkmail.email) {
                         callback(new Error('邮箱已被占用'));
                     } else {
