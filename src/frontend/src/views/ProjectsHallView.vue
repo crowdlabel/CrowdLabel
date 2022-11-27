@@ -73,24 +73,66 @@
             <div class="display_projects">
               <div class="display_projects_row">
                 <div class="project">
-                  <img height="150px" width="230px"/>
+                  <el-card :body-style="{ padding: '0px' }">
+                    <img src="../assets/image_placeholder.png" class="project_image">
+                    <div style="padding: 0px;">
+                      <p class="project_title">任务标题</p>
+                      <div class="bottom clearfix">
+                      </div>
+                    </div>
+                  </el-card>
                 </div>
                 <div class="project">
-                  <img height="150px" width="230px"/>
+                  <el-card :body-style="{ padding: '0px' }">
+                    <img src="../assets/image_placeholder.png" class="project_image">
+                    <div style="padding: 0px;">
+                      <p class="project_title">任务标题</p>
+                      <div class="bottom clearfix">
+                      </div>
+                    </div>
+                  </el-card>
                 </div>
                 <div class="project">
-                  <img height="150px" width="230px"/>
+                  <el-card :body-style="{ padding: '0px' }">
+                    <img src="../assets/image_placeholder.png" class="project_image">
+                    <div style="padding: 0px;">
+                      <p class="project_title">任务标题</p>
+                      <div class="bottom clearfix">
+                      </div>
+                    </div>
+                  </el-card>
                 </div>
               </div>
               <div class="display_projects_row">
                 <div class="project">
-                  <img height="150px" width="230px"/>
+                  <el-card :body-style="{ padding: '0px' }">
+                    <img src="../assets/image_placeholder.png" class="project_image">
+                    <div style="padding: 0px;">
+                      <p class="project_title">任务标题</p>
+                      <div class="bottom clearfix">
+                      </div>
+                    </div>
+                  </el-card>
                 </div>
                 <div class="project">
-                  <img height="150px" width="230px"/>
+                  <el-card :body-style="{ padding: '0px' }">
+                    <img src="../assets/image_placeholder.png" class="project_image">
+                    <div style="padding: 0px;">
+                      <p class="project_title">任务标题</p>
+                      <div class="bottom clearfix">
+                      </div>
+                    </div>
+                  </el-card>
                 </div>
                 <div class="project">
-                  <img height="150px" width="230px"/>
+                  <el-card :body-style="{ padding: '0px' }">
+                    <img src="../assets/image_placeholder.png" class="project_image">
+                    <div style="padding: 0px;">
+                      <p class="project_title">任务标题</p>
+                      <div class="bottom clearfix">
+                      </div>
+                    </div>
+                  </el-card>
                 </div>
               </div>
             </div>
@@ -398,7 +440,7 @@ export default {
   flex-direction: column;
   display: flex;
   align-items:center;
-  margin: 20px 100px;
+  margin: 10px 100px;
 }
 
 .display_projects_row {
@@ -427,4 +469,13 @@ export default {
 }
 
 
+.project_title {
+  text-align: left;
+  margin: 0px 9px 8px 9px;
+  font-size: 13px;
+}
+.project_image {
+  height: 130px;
+  width: 250px;
+}
 </style>

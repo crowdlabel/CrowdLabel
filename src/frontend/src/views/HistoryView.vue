@@ -70,7 +70,7 @@
               <el-scrollbar style="height: 100%">
                 <!-- 用于展示下拉，填充的内容 -->
                 <div class="scroll_element">
-                  <img class="project_image">
+                  <img src="../assets/image_placeholder.png" class="project_image">
                   <div class="scroll_element_text">
                     <h4 class="project_title">任务名称</h4>
                     <p class="project_detail">任务类型: 文字</p>
@@ -80,7 +80,7 @@
                   </div>
                 </div>
                 <div class="scroll_element">
-                  <img class="project_image">
+                  <img src="../assets/image_placeholder.png" class="project_image">
                   <div class="scroll_element_text">
                     <h4 class="project_title">任务名称</h4>
                     <p class="project_detail">任务类型: 文字</p>
@@ -90,7 +90,7 @@
                   </div>
                 </div>
                 <div class="scroll_element">
-                  <img class="project_image">
+                  <img src="../assets/image_placeholder.png" class="project_image">
                   <div class="scroll_element_text">
                     <h4 class="project_title">任务名称</h4>
                     <p class="project_detail">任务类型: 文字</p>
@@ -100,7 +100,7 @@
                   </div>
                 </div>
                 <div class="scroll_element">
-                  <img class="project_image">
+                  <img src="../assets/image_placeholder.png" class="project_image">
                   <div class="scroll_element_text">
                     <h4 class="project_title">任务名称</h4>
                     <p class="project_detail">任务类型: 文字</p>
@@ -110,7 +110,7 @@
                   </div>
                 </div>
                 <div class="scroll_element">
-                  <img class="project_image">
+                  <img src="../assets/image_placeholder.png" class="project_image">
                   <div class="scroll_element_text">
                     <h4 class="project_title">任务名称</h4>
                     <p class="project_detail">任务类型: 文字</p>
@@ -120,7 +120,7 @@
                   </div>
                 </div>
                 <div class="scroll_element">
-                  <img class="project_image">
+                  <img src="../assets/image_placeholder.png" class="project_image">
                   <div class="scroll_element_text">
                     <h4 class="project_title">任务名称</h4>
                     <p class="project_detail">任务类型: 文字</p>
@@ -130,7 +130,7 @@
                   </div>
                 </div>
                 <div class="scroll_element">
-                  <img class="project_image">
+                  <img src="../assets/image_placeholder.png" class="project_image">
                   <div class="scroll_element_text">
                     <h4 class="project_title">任务名称</h4>
                     <p class="project_detail">任务类型: 文字</p>
@@ -140,7 +140,7 @@
                   </div>
                 </div>
                 <div class="scroll_element">
-                  <img class="project_image">
+                  <img src="../assets/image_placeholder.png" class="project_image">
                   <div class="scroll_element_text">
                     <h4 class="project_title">任务名称</h4>
                     <p class="project_detail">任务类型: 文字</p>
@@ -150,7 +150,7 @@
                   </div>
                 </div>
                 <div class="scroll_element">
-                  <img class="project_image">
+                  <img src="../assets/image_placeholder.png" class="project_image">
                   <div class="scroll_element_text">
                     <h4 class="project_title">任务名称</h4>
                     <p class="project_detail">任务类型: 文字</p>
@@ -160,7 +160,7 @@
                   </div>
                 </div>
                 <div class="scroll_element">
-                  <img class="project_image">
+                  <img src="../assets/image_placeholder.png" class="project_image">
                   <div class="scroll_element_text">
                     <h4 class="project_title">任务名称</h4>
                     <p class="project_detail">任务类型: 文字</p>
@@ -170,7 +170,7 @@
                   </div>
                 </div>
                 <div class="scroll_element">
-                  <img class="project_image">
+                  <img src="../assets/image_placeholder.png" class="project_image">
                   <div class="scroll_element_text">
                     <h4 class="project_title">任务名称</h4>
                     <p class="project_detail">任务类型: 文字</p>
