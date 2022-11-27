@@ -1,5 +1,5 @@
 <template>
-  <div>
+  <div class="all">
     <div class="top_nav">
       <div class="top_nav_trigger">
         <img src="../assets/label.png" alt="label" height="26">
@@ -69,8 +69,6 @@
               <p class="title_order_by">排序：</p>
               <el-button type="success" round>发布时间</el-button>
               <el-button round>热度</el-button>
-            </div>
-            <div class="test">
             </div>
             <div class="display_projects">
               <div class="display_projects_row">
@@ -152,6 +150,11 @@ export default {
 
 <style scoped>
 @import '@/assets/font/font.css';
+
+.all {
+  min-width: 1150px;
+  min-height: 700px;
+}
 
 .top_nav {
     background-color: #fff;
