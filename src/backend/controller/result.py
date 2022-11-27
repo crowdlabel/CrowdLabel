@@ -51,7 +51,7 @@ async def edit_result(details:ID):
             'id':response[0]['id'],
             'task_id':response[0]['task_id'],
             'date_download':response[0]['date_download'],
-            'task_name':response[0]['task_name'],
+            'name':response[0]['name'],
             'date_created':response[0]['date_created']
             
         }
@@ -66,7 +66,6 @@ async def get_result(details:ID):
         return {
             'id':response[0]['id'],
             'name':response[0]['name'],
-            'creator':response[0]['creator'],
             'details':response[0]['details'],
             'questions':response[0]['questions']
         },200

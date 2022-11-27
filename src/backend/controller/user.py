@@ -5,7 +5,6 @@ from fastapi.responses import JSONResponse
 from .schemas import *
 from services.user import username_exists, email_exists, send_verification_email
 from .auth import User, get_current_active_user, Depends
-
 @app.post('/verify_email',
 
 )
@@ -14,7 +13,7 @@ async def verify_email(email: Email):
     Sends a verification email
     Returns 
     """
-    return await send_verification_email(email)
+    return await send_verification_email(email.email)
 
 
 

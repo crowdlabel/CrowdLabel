@@ -21,18 +21,8 @@ task
     }
     async function edit_result(){
         id = document.getElementById('id').value;
-        type = document.getElementById('type').value;
-        prompt_ = document.getElementById('prompt').value;
-        resource = document.getElementById('resource').value;
-        options = document.getElementById('options').value;
-        task_id = document.getElementById('task_id').value;
         fetch_json('edit_result',"POST",{
-                            "id":id,
-                            'type':type,
-                            'prompt':prompt_,
-                            'resource':resource,
-                            'options':options,
-                            'task_id':task_id
+                            "id":id,    
                             })
     }
     async function get_info(){

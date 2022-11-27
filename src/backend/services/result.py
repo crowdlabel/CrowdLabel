@@ -3,6 +3,7 @@ from sqlalchemy.orm import sessionmaker, scoped_session, selectinload
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy import select ,update
 from .database import *
+import datetime
 Connection = sessionmaker(bind=engine,expire_on_commit=False,class_=AsyncSession)
 con = scoped_session(Connection)
 def __verify_result_format():
@@ -51,7 +52,7 @@ async def get_result(id):
         "date_download":target.date_download
     },200
 
-async def edit_result(id,details):
+async def edit_result(id):
     async with con.begin():
         result = await con.execute(select(Results).where(Results.id==id))
         target = result.scalars().first()
@@ -59,16 +60,18 @@ async def edit_result(id,details):
             return{
                 "status":"not found",
             },400
-        target.details= details
+        print('type is',type(datetime.datetime.now()))
+        target.date_download=datetime.datetime.now()
         await con.flush()
         con.expunge(target)
     return {
         "status":"ok",
-        "id" :target.id,
+        "id" :id,
         "name":target.name,
-        "creator":target.creator,
-        "details":target.details
-    }
+        "task_id":target.task_id,
+        "date_created":target.date_created,
+        "date_download":target.date_download
+    },200
     
 
 async def delete_result(id):

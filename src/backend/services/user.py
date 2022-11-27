@@ -5,7 +5,7 @@ from models.user import User
 from models.email import Email
 from utils.hasher import *
 from utils.emailsender import EmailSender
-
+from sqlalchemy import select ,update
 email_sender = EmailSender()
 
 from .database import *
@@ -29,15 +29,18 @@ async def send_verification_email(email) -> bool:
 
     # TODO: add email and verification code to db,
     # or update the verification code of an existing email
-
-    if email_exist_Email(email):
-        res = con.query(Email).filter(Email.__dict__['email'] == email).first()
-        res.verification_code = verification_code
-    else: 
-        email_create = Email(email=email,verification_code = verification_code)
-        con.add(email_create)
-        con.commit()
-
+    async with con.begin():
+        res= await con.execute(select(Email).where(Email.email==email))
+        target = res.scalars().first()
+        if target is None:
+            email_create = Email(email=email,code = verification_code)
+            con.add(email_create)
+            await con.commit()
+        else:
+            print(f'update code from {target.verification_code} to {verification_code}')
+            target.verification_code = verification_code
+            await con.flush()
+            con.expunge(target)
     email_sender.send_email(
         'CrowdLabel 邮箱验证码',
         verification_code,
@@ -185,9 +188,6 @@ def username_exists(username):
 
 async def email_exists(email):
     return __field_exists('email', email)
-
-def email_exist_Email(email):
-    return __field_exists_Email('email', email)
 
 def email_code_match(email,code):
     res = con.query(Email).filter(Email.__dict__['email'] == email).first()
