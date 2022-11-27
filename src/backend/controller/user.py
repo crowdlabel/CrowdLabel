@@ -4,6 +4,7 @@ from fastapi import Response
 from fastapi.responses import JSONResponse
 from .schemas import *
 from services.user import username_exists, email_exists, send_verification_email
+from .auth import User, get_current_active_user, Depends
 
 @app.post('/verify_email',
 
@@ -50,22 +51,18 @@ async def register(details: Registration):
         }, 200
 
 
+class AvailabilityResponse(BaseModel): 
+    username: bool
+    email: bool
 
-@app.post('/availability', response_model=Availability)
+@app.post('/availability', response_model=AvailabilityResponse)
 async def availability(fields: Availability):
-    availability = Availability()
-    try:
-        availability.username = username_exists(fields.username)
-    except:
-        availability.username = False
-    try:
-        availability.email = email_exists(fields.email)
-    except:
-        availability.email = False
+    fields.username = True
+    fields.email = True
     
-    return availability
+    return fields
 
 
 @app.get('/user/<username>')
-async def user(username):
-    return 'requested info for ' + username
+async def user(username, current_user: User = Depends(get_current_active_user)):
+    return 'requested info for ' + username + ' as ' + str(current_user)
