@@ -31,11 +31,12 @@ async def verify_email(email: Email):
 async def register(details: Registration):
     # TODO: 
     print(details)
-    response = services.user.create_user(
+    response =await services.user.create_user(
         details.username,
         details.email,
         details.password,
-        details.user_type)
+        details.user_type,
+        details.verification_code)
     if response != 'ok':
         return {
             'error': f'{response} already exists'
