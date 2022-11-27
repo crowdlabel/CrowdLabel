@@ -4,4 +4,4 @@ from .task import *
 from .user import *
 from .auth import *
 from .question import *
-# from .misc import *
+from .result import *
