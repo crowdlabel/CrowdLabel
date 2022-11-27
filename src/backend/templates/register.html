@@ -18,6 +18,10 @@ Login page
                                             'user_type':0})
 
   }
+  function send_message(){
+    var email = document.getElementById('email').value
+    fetch_json('verify_email','POST',{'email':email})
+  }
 </script>     
 <label for="username"><b>Username</b></label>
 <input id='username' type="text" placeholder="Enter Username" name="username" required>
@@ -26,7 +30,7 @@ Login page
 <input id='password' type="password" placeholder="Enter Password" name="password" required>
 <label for="email"><b>Email</b></label>
 <input id='email' type="text" placeholder="Enter email" name="email" required>
-<button type='button'>SendCode</button>
+<button type='button'onclick = "send_message()">SendCode</button>
 <label for="code"><b>Code</b></label>
 <input  id='code' type="text" placeholder="Code" name="code" required>
 <button onclick="register()">Register</button>
