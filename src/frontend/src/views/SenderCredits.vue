@@ -1,106 +1,106 @@
 <template>
-    <div>
-      <div class="top_nav">
-        <div class="top_nav_trigger">
-          <img src="../assets/label.png" alt="label" height="26">
-          <h2 class="logo">CrowdLabel</h2>
-        </div>
-        <div class="page_title">
-          <h3 class="title">任务大厅</h3>
-          <img src="../assets/notifications.svg" alt="label" height="24">
-        </div>
-        <div class="my_account">
-          <img src="../assets/my_account.svg" alt="label" height="23">
-        </div>
+  <div>
+    <div class="top_nav">
+      <div class="top_nav_trigger">
+        <img src="../assets/label.png" alt="label" height="26">
+        <h2 class="logo">CrowdLabel</h2>
       </div>
-      <div class="body">
-          <div class="left_nav">
-              <ul class="left_nav_list_top">
-                  <li>
-                      <a aria-current="page" class="left_nav_list_item left_nav_list_item_active" data-external="true" href="/senderhome">
-                          <img src="../assets/folder_active.png" height="21" width="20">
-                          <p class="list_item_title">我的任务</p>
-                      </a>
-                  </li>
-                  <li>
-                      <a aria-current="page" class="left_nav_list_item" data-external="true" href="/credits">
-                          <img src="../assets/credits.png" height="19" width="20">
-                          <p class="list_item_title">我的积分</p>
-                      </a>
-                  </li>
-                  <li tag="li" class="left_nav_spacer">
-                  </li>
-              </ul>
-              <ul class="left_nav_list_bottom">
-                  <li>
-                      <a aria-current="page" class="left_nav_list_item" data-external="true" href="/settings">
-                          <img src="../assets/settings.png" height="20" width="20">
-                          <p class="list_item_title">设置</p>
-                      </a>
-                  </li>
-                  <li>
-                      <a aria-current="page" class="left_nav_list_item" data-external="true" href="/about_us">
-                          <img src="../assets/about.png" height="20" width="20">
-                          <p class="list_item_title">关于我们</p>
-                      </a>
-                  </li>
-              </ul>
-          </div>
-          <!-- <div class="main_body">
-              <div class="search_bar">
-                  <el-input v-model="input" placeholder="搜索任务"></el-input>
-                  <el-button type="primary" icon="el-icon-search"></el-button>
-              </div>
-              <div class="filter">
-                <p class="title_filter">筛选：</p>
-                <el-button type="success" round>全部</el-button>
-                <el-button round>文字任务</el-button>
-                <el-button round>图像任务</el-button>
-                <el-button round>视频任务</el-button>
-                <el-button round>音频任务</el-button>
-              </div>
-              <div class="order_by">
-                <p class="title_order_by">排序：</p>
-                <el-button type="success" round>发布时间</el-button>
-                <el-button round>热度</el-button>
-              </div>
-              <div class="test">
-              </div>
-              <div class="display_projects">
-                <div class="display_projects_row">
-                  <div class="project">
-                    <img height="150px" width="230px"/>
-                  </div>
-                  <div class="project">
-                    <img height="150px" width="230px"/>
-                  </div>
-                  <div class="project">
-                    <img height="150px" width="230px"/>
-                  </div>
-                </div>
-                <div class="display_projects_row">
-                  <div class="project">
-                    <img height="150px" width="230px"/>
-                  </div>
-                  <div class="project">
-                    <img height="150px" width="230px"/>
-                  </div>
-                  <div class="project">
-                    <img height="150px" width="230px"/>
-                  </div>
-                </div>
-              </div>
-              <div class="pagination">
-                <el-pagination
-                  background
-                  layout="prev, pager, next"
-                   :total=100>
-                </el-pagination>
-              </div>
-          </div> -->
+      <div class="page_title">
+        <h3 class="title">任务大厅</h3>
+        <img src="../assets/notifications.svg" alt="label" height="24">
+      </div>
+      <div class="my_account">
+        <img src="../assets/my_account.svg" alt="label" height="23">
       </div>
     </div>
-  </template>
+    <div class="body">
+      <div class="left_nav">
+          <ul class="left_nav_list_top">
+              <li>
+                  <a aria-current="page" class="left_nav_list_item left_nav_list_item_active" data-external="true" href="/senderhome">
+                      <img src="../assets/folder_active.png" height="21" width="20">
+                      <p class="list_item_title">我的任务</p>
+                  </a>
+              </li>
+              <li>
+                  <a aria-current="page" class="left_nav_list_item" data-external="true" href="/credits">
+                      <img src="../assets/credits.png" height="19" width="20">
+                      <p class="list_item_title">我的积分</p>
+                  </a>
+              </li>
+              <li tag="li" class="left_nav_spacer">
+              </li>
+          </ul>
+          <ul class="left_nav_list_bottom">
+              <li>
+                  <a aria-current="page" class="left_nav_list_item" data-external="true" href="/settings">
+                      <img src="../assets/settings.png" height="20" width="20">
+                      <p class="list_item_title">设置</p>
+                  </a>
+              </li>
+              <li>
+                  <a aria-current="page" class="left_nav_list_item" data-external="true" href="/about_us">
+                      <img src="../assets/about.png" height="20" width="20">
+                      <p class="list_item_title">关于我们</p>
+                  </a>
+              </li>
+          </ul>
+      </div>
+      <!-- <div class="main_body">
+          <div class="search_bar">
+              <el-input v-model="input" placeholder="搜索任务"></el-input>
+              <el-button type="primary" icon="el-icon-search"></el-button>
+          </div>
+          <div class="filter">
+            <p class="title_filter">筛选：</p>
+            <el-button type="success" round>全部</el-button>
+            <el-button round>文字任务</el-button>
+            <el-button round>图像任务</el-button>
+            <el-button round>视频任务</el-button>
+            <el-button round>音频任务</el-button>
+          </div>
+          <div class="order_by">
+            <p class="title_order_by">排序：</p>
+            <el-button type="success" round>发布时间</el-button>
+            <el-button round>热度</el-button>
+          </div>
+          <div class="test">
+          </div>
+          <div class="display_projects">
+            <div class="display_projects_row">
+              <div class="project">
+                <img height="150px" width="230px"/>
+              </div>
+              <div class="project">
+                <img height="150px" width="230px"/>
+              </div>
+              <div class="project">
+                <img height="150px" width="230px"/>
+              </div>
+            </div>
+            <div class="display_projects_row">
+              <div class="project">
+                <img height="150px" width="230px"/>
+              </div>
+              <div class="project">
+                <img height="150px" width="230px"/>
+              </div>
+              <div class="project">
+                <img height="150px" width="230px"/>
+              </div>
+            </div>
+          </div>
+          <div class="pagination">
+            <el-pagination
+              background
+              layout="prev, pager, next"
+                :total=100>
+            </el-pagination>
+          </div>
+      </div> -->
+    </div>
+  </div>
+</template>
   
   
   <script>
