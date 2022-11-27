@@ -43,7 +43,7 @@
                                     <div class="verify_code">
                                         <el-input placeholder="请输入验证码" autocomplete="off" v-model="ruleForm.verif" class="input_verify" id="registerverification"></el-input>
 
-                                        <el-button :disabled="disable" class="button_verify" @click="verifyEmail()">{{text}}</el-button>
+                                        <el-button :disabled="disable" class="button_verify" @click="verifyEmailbtn()">{{text}}</el-button>
                                     </div>
                                 </el-form-item>
                                 <el-form-item>
@@ -60,33 +60,32 @@
 </template>
 
 <script>
-import fetch_json from '../../static/js/fetch'
 export default {
     data () {
         var userType = 1;
+        var ready_username;
+        var ready_password;
+        var ready_email;
+        var ready_verification;
 
         var validatePass = (rule, value, callback) => {
             if (value === '') {
-            callback(new Error('请输入密码'));
+                callback(new Error('请输入密码'));
             } else {
             if (!/^[\x21-\x7e]{8,64}$/.test(value)) {
                 callback(new Error('密码格式错误:请输入8-64位密码'));
             }
-            // seems like we dont need this part
-            // if (this.ruleForm.checkPass !== '') {
-            //     this.$refs.ruleForm.validateField('checkPass');
-            // }
-
-            callback();
+                callback();
             }
         };
         var validatePass2 = (rule, value, callback) => {
             if (value === '') {
-            callback(new Error('请再次输入密码'));
+                callback(new Error('请再次输入密码'));
             } else if (value !== this.ruleForm.pass) {
-            callback(new Error('两次输入密码不一致!'));
+                callback(new Error('两次输入密码不一致!'));
             } else {
-            callback();
+                this.ready_password = value
+                callback();
             }
         };
         var validateName = (rule, value, callback) => {
@@ -96,10 +95,12 @@ export default {
                 if (!/^[\x21-\x7e]{3,64}$/.test(value)) {
                     callback(new Error('用户名格式错误:请输入3-64位用户名'));
                 } else {
-                    let checkname = fetch_json('http://localhost:8081/availability', 'POST', {'username':value, 'email':''});
+                    let self = this
+                    let checkname = self.fetch_json('http://localhost:8000/availability', 'POST', {'username':value, 'email':''});
                     if (checkname.username){
                         callback(new Error('用户名已被占用'));
                     } else {
+                        this.ready_username = value
                         callback();
                     }
                 }
@@ -114,10 +115,12 @@ export default {
                     callback(new Error('邮箱格式错误'));
                 } else {
                     this.disable = false;
-                    let checkmail = fetch_json('availability', 'POST', {'username':'', 'email':value});
+                    let self = this
+                    let checkmail = self.fetch_json('http://localhost:8000/availability', 'POST', {'username':'', 'email':value});
                     if (checkmail.email) {
                         callback(new Error('邮箱已被占用'));
                     } else {
+                        this.ready_email = value;
                         this.disable = false;
                         callback();
                     }
@@ -155,7 +158,7 @@ export default {
         };
         return {
             text: "发送验证码",
-            time: 60,
+            time: 5,
             timer: null,
             disable: true,
             activeName: 'second',
@@ -199,7 +202,7 @@ export default {
         if (time && time>0) {
             this.text = time + "s后重新发送"
             this.time = time
-            this.verifyEmail();
+            this.verifyEmailbtn();
         }
     },
     methods: {
@@ -253,8 +256,10 @@ export default {
         backToMain: function (){
             this.$router.push('/')
         },
-        verifyEmail () {
+        verifyEmailbtn () {
             this.disable=true
+            console.log(this.ready_email);
+            this.fetch_json('http://localhost:8000/verify_email', 'POST', {"email":this.ready_email});
             this.text = this.time + "s后重新发送"
             localStorage.setItem('time', this.time)
             this.timer = setInterval(() => {
@@ -264,7 +269,7 @@ export default {
                     this.text = this.time + "s后重新发送"
                 } else {
                     clearInterval(this.timer);
-                    this.time = 60
+                    this.time = 5
                     this.disable = false
                     this.text = '发送验证码'
 
