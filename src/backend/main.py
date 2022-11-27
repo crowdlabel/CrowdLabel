@@ -23,7 +23,7 @@ def parse_args():
     return args
 
 if __name__ == '__main__':
-    load_config()
+    #load_config()
     args = parse_args()
     if args.docs:
         generate_doc()
