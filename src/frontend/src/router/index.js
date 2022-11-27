@@ -51,16 +51,16 @@ const routes = [
     name: 'senderhome',
     component: SenderHome,
     redirect:'/sendermission',
-    children: [
-      {
-        path: '/sendermission', name:'sendermission',
-        component: SenderMission
-      },
-      {
-        path: '/sendercredits', name:'sendercredits',
-        component: SenderCredits
-      }
-    ]
+  },
+  {
+    path: '/sendermission',
+    name:'sendermission',
+    component: SenderMission
+  },
+  {
+    path: '/sendercredits',
+    name:'sendercredits',
+    component: SenderCredits
   }
 ]
 
