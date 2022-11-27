@@ -47,7 +47,18 @@ const routes = [
   {
     path: '/senderhome',
     name: 'senderhome',
-    component: SenderHome
+    component: SenderHome,
+    redirect:'/sendermission',
+    children: [
+      {
+        path: '/sendermission', name:'sendermission',
+        component: (resolve) => require(['../views/SenderMission'], resolve),
+      },
+      {
+        path: '/sendercredits', name:'sendercredits',
+        component: (resolve) => require(['../views/SenderCredits'], resolve),
+      }
+    ]
   }
 ]
 
