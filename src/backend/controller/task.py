@@ -71,7 +71,8 @@ async def get_task(details:ID):
             'name':response[0]['name'],
             'creator':response[0]['creator'],
             'details':response[0]['details'],
-            'questions':response[0]['questions']
+            'questions':response[0]['questions'],
+            'results':response[0]['results']
         },200
 @task_router.get('/')
 def task(id):

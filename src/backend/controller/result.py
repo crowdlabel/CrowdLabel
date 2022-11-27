@@ -13,11 +13,9 @@ async def results():
 @app.post('/create_result')
 async def create_result(details:ResultInfo):
     response = await services.result.create_result(
-        details.name,
-        details.creator,
-        details.details)
-    print(response)
-    if response != 'ok':
+        details.task_name,
+        details.task_ID)
+    if response[0]['status'] != 'ok':
         return {
             'error': f'{response} already exists'
         }, 400
@@ -25,9 +23,8 @@ async def create_result(details:ResultInfo):
     
     else:
         return {
-            'name': details.name,
-            'creator': details.creator,
-            'details': details.details,
+            'name': details.task_name,
+            'id': details.task_ID
         }, 200
 @app.post('/delete_result')
 async def delete_result(details:ID):
@@ -41,10 +38,9 @@ async def delete_result(details:ID):
             'id':details.id
         },200
 @app.post('/edit_result')
-async def edit_result(details:ResultDetails):
+async def edit_result(details:ID):
     response = await services.result.edit_result(
         details.id,
-        details.details
     )
     if response[0]['status'] != 'ok':
         return {
@@ -53,9 +49,10 @@ async def edit_result(details:ResultDetails):
     else:
         return {
             'id':response[0]['id'],
-            'name':response[0]['name'],
-            'creator':response[0]['creator'],
-            'details':response[0]['details']
+            'task_id':response[0]['task_id'],
+            'date_download':response[0]['date_download'],
+            'task_name':response[0]['task_name'],
+            'date_created':response[0]['date_created']
             
         }
 @app.post('/get_result')

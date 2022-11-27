@@ -14,8 +14,8 @@ class Results(Base):
     id = Column(Integer,unique=True,primary_key = True)
     name = Column(String(MAX_USERNAME_LENGTH))
     task_id = Column(Integer,ForeignKey('task.id'))
-    date_created = Column(DateTime)
-    date_download = Column(DateTime,default = datetime.now)
+    date_created = Column(DateTime,default = datetime.datetime.now)
+    date_download = Column(DateTime)
     def __init__(self, task_id, name):
-        self.tasK_id = id 
+        self.task_id = task_id 
         self.name = name 

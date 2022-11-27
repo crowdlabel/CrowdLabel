@@ -3,6 +3,7 @@ from sqlalchemy.orm import sessionmaker, scoped_session, selectinload
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy import select ,update
 from .database import *
+import datetime
 Connection = sessionmaker(bind=engine,expire_on_commit=False,class_=AsyncSession)
 con = scoped_session(Connection)
 def __verify_task_format():
@@ -37,7 +38,7 @@ async def create_task(
 
 async def get_task(id):
     async with con.begin():
-        result = await con.execute(select(Task).where(Task.id==id).options(selectinload(Task.questions)))
+        result = await con.execute(select(Task).where(Task.id==id).options(selectinload(Task.questions),selectinload(Task.results)))
         target = result.scalars().first()
         if target is None:
             return{
@@ -45,19 +46,21 @@ async def get_task(id):
             },400
         s= ''
         for q in target.questions:
-            print(q.prompt)
             s = s+q.prompt+'\n'
-
+        result = ''
+        for r in target.results:
+            result = result+str(r.date_created)+'\n'
     return {
         "status":"ok",
         "id" :target.id,
         "name":target.name,
         "creator":target.creator,
         "details":target.details,
-        "questions":s
+        "questions":s,
+        "results":result    
     },200
 
-async def edit_task(id,details):
+async def edit_task(id):
     async with con.begin():
         result = await con.execute(select(Task).where(Task.id==id))
         target = result.scalars().first()
@@ -65,16 +68,17 @@ async def edit_task(id,details):
             return{
                 "status":"not found",
             },400
-        target.details= details
+        target.date_download = datetime.datetime.now
         await con.flush()
         con.expunge(target)
     return {
         "status":"ok",
         "id" :target.id,
-        "name":target.name,
-        "creator":target.creator,
-        "details":target.details
-    }
+        "task_name":target.task_name,
+        "task_id":target.task_id,
+        "date_create":target.date_created,
+        "date_download":target.date_download
+    },200
     
 
 async def delete_task(id):

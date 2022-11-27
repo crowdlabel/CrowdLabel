@@ -4,3 +4,4 @@ from .task import *
 from .user import *
 from .misc import *
 from .question import *
+from .result import *

@@ -13,48 +13,42 @@ def __verify_result_format():
 
 async def create_result(
     name: str,
-    creator: str,
-    details: str
+    id:int 
 ):
 
     # get the arguments as a dictionary
     if not __verify_result_format():
-        return False
+        return {
+            'status':'error'
+        },400
 
 
     result = Results(
-        name,
-        creator,
-        details
+        id,name
     )
     con.add(result)
     await con.commit()
-    print(123)
     return {
+        'status':'ok',
         'arg': 'ok',
         'error': 'ok',
-    }
+    },200   
 
 async def get_result(id):
     async with con.begin():
-        result = await con.execute(select(Results).where(Results.id==id))#.options(selectinload(Task.questions)))
+        result = await con.execute(select(Results).where(Results.id==id)) #.options(selectinload(Task.questions)))
         target = result.scalars().first()
         if target is None:
             return{
                 "status":"not found",
             },400
-        s= ''
-        for q in target.questions:
-            print(q.prompt)
-            s = s+q.prompt+'\n'
-
     return {
         "status":"ok",
         "id" :target.id,
         "name":target.name,
-        "creator":target.creator,
-        "details":target.details,
-        "questions":s
+        "task_id":target.task_id,
+        "date_created":target.date_created,
+        "date_download":target.date_download
     },200
 
 async def edit_result(id,details):
