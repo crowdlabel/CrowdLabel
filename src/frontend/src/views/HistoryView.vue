@@ -1,5 +1,5 @@
 <template>
-  <div>
+  <div class="all">
     <div class="top_nav">
       <div class="top_nav_trigger">
         <img src="../assets/label.png" alt="label" height="26">
@@ -53,7 +53,134 @@
             </ul>
         </div>
         <div class="main_body">
-            
+            <div class="filter">
+              <p class="title_filter">筛选：</p>
+              <el-button type="success" round>全部</el-button>
+              <el-button round>文字任务</el-button>
+              <el-button round>图像任务</el-button>
+              <el-button round>视频任务</el-button>
+              <el-button round>音频任务</el-button>
+            </div>
+            <div class="order_by">
+              <p class="title_order_by">排序：</p>
+              <el-button type="success" round>发布时间</el-button>
+              <el-button round>热度</el-button>
+            </div>
+            <div class="scroll_view">
+              <el-scrollbar style="height: 100%">
+                <!-- 用于展示下拉，填充的内容 -->
+                <div class="scroll_element">
+                  <img class="project_image">
+                  <div class="scroll_element_text">
+                    <h4 class="project_title">任务名称</h4>
+                    <p class="project_detail">任务类型: 文字</p>
+                    <p class="project_detail">完成时间: 2022年11月27日</p>
+                    <p class="project_detail">审核状态: 通过</p>
+                    <p class="project_detail">获得积分: 15</p>
+                  </div>
+                </div>
+                <div class="scroll_element">
+                  <img class="project_image">
+                  <div class="scroll_element_text">
+                    <h4 class="project_title">任务名称</h4>
+                    <p class="project_detail">任务类型: 文字</p>
+                    <p class="project_detail">完成时间: 2022年11月27日</p>
+                    <p class="project_detail">审核状态: 通过</p>
+                    <p class="project_detail">获得积分: 15</p>
+                  </div>
+                </div>
+                <div class="scroll_element">
+                  <img class="project_image">
+                  <div class="scroll_element_text">
+                    <h4 class="project_title">任务名称</h4>
+                    <p class="project_detail">任务类型: 文字</p>
+                    <p class="project_detail">完成时间: 2022年11月27日</p>
+                    <p class="project_detail">审核状态: 通过</p>
+                    <p class="project_detail">获得积分: 15</p>
+                  </div>
+                </div>
+                <div class="scroll_element">
+                  <img class="project_image">
+                  <div class="scroll_element_text">
+                    <h4 class="project_title">任务名称</h4>
+                    <p class="project_detail">任务类型: 文字</p>
+                    <p class="project_detail">完成时间: 2022年11月27日</p>
+                    <p class="project_detail">审核状态: 通过</p>
+                    <p class="project_detail">获得积分: 15</p>
+                  </div>
+                </div>
+                <div class="scroll_element">
+                  <img class="project_image">
+                  <div class="scroll_element_text">
+                    <h4 class="project_title">任务名称</h4>
+                    <p class="project_detail">任务类型: 文字</p>
+                    <p class="project_detail">完成时间: 2022年11月27日</p>
+                    <p class="project_detail">审核状态: 通过</p>
+                    <p class="project_detail">获得积分: 15</p>
+                  </div>
+                </div>
+                <div class="scroll_element">
+                  <img class="project_image">
+                  <div class="scroll_element_text">
+                    <h4 class="project_title">任务名称</h4>
+                    <p class="project_detail">任务类型: 文字</p>
+                    <p class="project_detail">完成时间: 2022年11月27日</p>
+                    <p class="project_detail">审核状态: 通过</p>
+                    <p class="project_detail">获得积分: 15</p>
+                  </div>
+                </div>
+                <div class="scroll_element">
+                  <img class="project_image">
+                  <div class="scroll_element_text">
+                    <h4 class="project_title">任务名称</h4>
+                    <p class="project_detail">任务类型: 文字</p>
+                    <p class="project_detail">完成时间: 2022年11月27日</p>
+                    <p class="project_detail">审核状态: 通过</p>
+                    <p class="project_detail">获得积分: 15</p>
+                  </div>
+                </div>
+                <div class="scroll_element">
+                  <img class="project_image">
+                  <div class="scroll_element_text">
+                    <h4 class="project_title">任务名称</h4>
+                    <p class="project_detail">任务类型: 文字</p>
+                    <p class="project_detail">完成时间: 2022年11月27日</p>
+                    <p class="project_detail">审核状态: 通过</p>
+                    <p class="project_detail">获得积分: 15</p>
+                  </div>
+                </div>
+                <div class="scroll_element">
+                  <img class="project_image">
+                  <div class="scroll_element_text">
+                    <h4 class="project_title">任务名称</h4>
+                    <p class="project_detail">任务类型: 文字</p>
+                    <p class="project_detail">完成时间: 2022年11月27日</p>
+                    <p class="project_detail">审核状态: 通过</p>
+                    <p class="project_detail">获得积分: 15</p>
+                  </div>
+                </div>
+                <div class="scroll_element">
+                  <img class="project_image">
+                  <div class="scroll_element_text">
+                    <h4 class="project_title">任务名称</h4>
+                    <p class="project_detail">任务类型: 文字</p>
+                    <p class="project_detail">完成时间: 2022年11月27日</p>
+                    <p class="project_detail">审核状态: 通过</p>
+                    <p class="project_detail">获得积分: 15</p>
+                  </div>
+                </div>
+                <div class="scroll_element">
+                  <img class="project_image">
+                  <div class="scroll_element_text">
+                    <h4 class="project_title">任务名称</h4>
+                    <p class="project_detail">任务类型: 文字</p>
+                    <p class="project_detail">完成时间: 2022年11月27日</p>
+                    <p class="project_detail">审核状态: 通过</p>
+                    <p class="project_detail">获得积分: 15</p>
+                  </div>
+                </div>
+              </el-scrollbar>
+            </div>
         </div>
     </div>
   </div>
@@ -102,6 +229,11 @@ export default {
 
 <style scoped>
 @import '@/assets/font/font.css';
+
+.all {
+  min-width: 1150px;
+  min-height: 700px;
+}
 
 .top_nav {
     background-color: #fff;
@@ -233,9 +365,118 @@ export default {
     flex:1;
     height: calc(100vh - 50px);
 }
-.search_bar {
-    box-sizing: border-box;
-    flex-direction: row;
+::v-deep .el-button--primary {
+  margin-top: 40px;
+  margin-right: 80px;
+  padding: 0px 20px;
+  border-width: 0px;
+  border-radius: 0px 4px 4px 0px;
+  background-color: #5D3BE6;
+  font-size: 20px;
+  min-width: 80px;
 }
 
+::v-deep .el-button--primary:hover{
+  background-color: rgba(84,47,238,.8);
+}
+
+::v-deep .el-button--primary:focus {
+  background-color: #5D3BE6;
+}
+
+.filter {
+  flex-direction: row;
+  display: flex;
+  align-items:center;
+  margin: 20px 60px 0px 60px;
+}
+.title_filter {
+  padding: 0px;
+  font-size: 14px;
+  color:rgba(0,0,0,.6);
+}
+::v-deep .el-button--success {
+  margin: 0px 0px 0px 10px;
+  height: 30px;
+  padding: 0px 0px !important;
+  border-width: 0.5px;
+  background-color: #5D3BE6;
+  font-size: 12.5px;
+  min-width: 80px;
+}
+::v-deep .el-button--success:hover{
+  background-color: #5D3BE6;
+}
+
+::v-deep .el-button--success:focus {
+  background-color: #5D3BE6;
+}
+
+::v-deep .el-button--default.is-round {
+  margin: 0px 0px 0px 10px;
+  height: 30px;
+  border-width: 0.5px;
+  padding: 0px 0px !important;
+  border-color: #5D3BE6;
+  color:#5D3BE6;
+  font-size: 12.5px;
+  min-width: 80px;
+}
+::v-deep .el-button--default.is-round:hover{
+  background-color: #5D3BE6;
+  border-width: 0.5px;
+  color: #fff;
+}
+
+::v-deep .el-button--default.is-round:focus {
+  background-color: #5D3BE6;
+  border-width: 0.5px;
+  color: #fff;
+}
+
+.order_by {
+  flex-direction: row;
+  display: flex;
+  align-items:center;
+  margin: 0px 60px 0px 60px;
+}
+.title_order_by {
+  padding: 0px;
+  font-size: 14px;
+  color:rgba(0,0,0,.6);
+}
+
+.scroll_view {
+  border-top: 1.2px solid rgba(0,0,0,.1);
+  margin-top: 20px;
+  height: 80%;
+}
+
+.scroll_element {
+  height: fit-content;
+  border-bottom: 1.2px solid rgba(0,0,0,.1);
+  flex-direction: row;
+  display: flex;
+  padding: 20px 25px;
+}
+
+.scroll_element_text {
+  margin: 0px 20px;
+  flex-direction: column;
+  display: flex;
+  align-items: flex-start;
+}
+.project_title {
+  margin: 0px 0px 3px 0px;
+}
+.project_detail {
+  margin: 0px;
+  font-size: 10px;
+  color: rgba(0,0,0,.7);
+}
+.project_image {
+  height: 87px;
+  width: 100px;
+  align-self:center;
+}
 </style>
