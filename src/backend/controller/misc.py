@@ -9,7 +9,7 @@ templates = Jinja2Templates(directory='templates')
 
 @app.get('/', response_class=HTMLResponse)
 async def index(request: Request):
-    return templates.TemplateResponse(f'index.html', {'request': request})
+    return templates.TemplateResponse(f'HomeView.vue', {'request': request})
 
 @app.get('/favicon.ico', response_class=FileResponse)
 async def favicon(request: Request):
@@ -17,4 +17,4 @@ async def favicon(request: Request):
 
 @app.get('/{page}', response_class=HTMLResponse)
 async def get_page(request: Request, page: str):
-    return templates.TemplateResponse(f'{page}.html', {'request': request})
+    return templates.TemplateResponse(f'{page}.vue', {'request': request})
