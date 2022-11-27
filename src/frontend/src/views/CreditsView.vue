@@ -1,5 +1,5 @@
 <template>
-  <div>
+  <div class="all">
     <div class="top_nav">
       <div class="top_nav_trigger">
         <img src="../assets/label.png" alt="label" height="26">
@@ -53,8 +53,39 @@
             </ul>
         </div>
         <div class="main_body">
-            <div class="search_bar">
+          <h3 class="sub_title">数据概览</h3>
+          <div class="row">
+            <div class="box_overview">
+              <p class="box_title">近7日收入</p>
+              <div class="box_credits">
+                <p class="box_number">27.5</p>
+                <p class="box_unit">积分</p>
+              </div> 
             </div>
+            <div class="box_overview">
+              <p class="box_title">累计总收入</p>
+              <div class="box_credits">
+                <p class="box_number">126.3</p>
+                <p class="box_unit">积分</p>
+              </div>
+            </div>
+          </div>
+          <h3 class="sub_title">积分提现</h3>
+          <div class="row">
+            <div class="box_pay">
+              <p class="box_title">微信 ></p>
+              <img src="../assets/wechat.png" height="100px">
+            </div>
+            <div class="box_pay">
+              <p class="box_title">支付宝 ></p>
+              <img class="img_alipay" src="../assets/alipay.png" height="85px">
+            </div>
+            <div class="box_pay">
+              <p class="box_title">银行卡 ></p>
+              <img class="img_credit_card" src="../assets/credit_card.png" height="70px">
+            </div>
+          </div>
+          
             
         </div>
     </div>
@@ -104,6 +135,11 @@ export default {
 
 <style scoped>
 @import '@/assets/font/font.css';
+
+.all {
+  min-width: 1150px;
+  min-height: 700px;
+}
 
 .top_nav {
     background-color: #fff;
@@ -238,6 +274,80 @@ export default {
 .search_bar {
     box-sizing: border-box;
     flex-direction: row;
+}
+
+.sub_title{
+  vertical-align: middle;
+  text-align: left;
+  font-size: 18px;
+  font-weight: bold;
+  color:black;
+  margin-left: 50px;
+  margin-top: 30px;
+}
+.row {
+  box-sizing: border-box;
+  flex-direction: row;
+  position: relative;
+  display: flex;
+  margin-left:70px
+}
+.box_overview{
+  background: rgba(84,47,238,.05);
+  margin: 10px 0px 0px 30px;
+	padding: 10px;
+	width: 355px;
+	height: 220px;
+	border-radius: 8px;
+	font-size: 14px;
+}
+.box_title {
+  text-align: left;
+  margin-left: 15px;
+  font-size: 15px;
+  color: rgba(0,0,0,0.7);
+}
+.box_credits {
+  box-sizing: border-box;
+  flex-direction: row;
+  position: relative;
+  display: flex;
+  margin-left: 60px;
+  line-height: 50px;
+  vertical-align: middle;
+}
+.box_number {
+  text-align: left;
+  vertical-align: text-bottom;
+  font-size: 45px;
+  margin: 0px 0px 0px 0px;
+  color: rgba(84,47,238,1);
+  font-weight: bold;
+}
+.box_unit {
+  text-align: left;
+  vertical-align: sub;
+  font-size: 16px;
+  margin: 0px 0px 0px 6px;
+  color: rgba(0,0,0,1);
+  padding-top: 7px;
+}
+
+.box_pay{
+  background: rgba(0,0,0,.03);
+  margin: 10px 0px 0px 20px;
+	padding: 10px;
+	width: 230px;
+	height: 190px;
+	border-radius: 8px;
+	font-size: 14px;
+}
+
+.img_alipay {
+  margin-top: 5px;
+}
+.img_credit_card {
+  margin-top: 10px;
 }
 
 </style>
