@@ -9,6 +9,8 @@ import CreditsView from '../views/CreditsView.vue'
 import axios from 'axios'
 import VueAxios from 'vue-axios'
 import SenderHome from '../views/SenderHome.vue'
+import SenderCredits from '../views/SenderCredits.vue'
+import SenderMission from '../views/SenderMission.vue'
 
 Vue.use(VueRouter)
 Vue.use(VueAxios, axios)
@@ -52,11 +54,11 @@ const routes = [
     children: [
       {
         path: '/sendermission', name:'sendermission',
-        component: (resolve) => require(['../views/SenderMission'], resolve),
+        component: SenderMission
       },
       {
         path: '/sendercredits', name:'sendercredits',
-        component: (resolve) => require(['../views/SenderCredits'], resolve),
+        component: SenderCredits
       }
     ]
   }
