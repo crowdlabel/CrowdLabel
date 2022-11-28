@@ -138,7 +138,6 @@ export default {
 
 .all {
   min-width: 1150px;
-  min-height: 700px;
 }
 
 .top_nav {
@@ -211,11 +210,6 @@ export default {
     box-sizing: border-box;
     flex-direction: column;
     position: relative;
-    display: flex;
-    cursor: pointer;
-    flex:1;
-    justify-content: space-between;
-    height: 100%;
 }
 .left_nav_list_top {
     box-sizing: border-box;
@@ -269,7 +263,6 @@ export default {
     display: flex;
     cursor: pointer;
     flex:1;
-    height: calc(100vh - 50px);
 }
 .search_bar {
     box-sizing: border-box;
@@ -290,7 +283,8 @@ export default {
   flex-direction: row;
   position: relative;
   display: flex;
-  margin-left:70px
+  margin-left: 70px;
+  margin-bottom: 20px;
 }
 .box_overview{
   background: rgba(84,47,238,.05);

@@ -231,8 +231,7 @@ export default {
 @import '@/assets/font/font.css';
 
 .all {
-  min-width: 1150px;
-  min-height: 700px;
+  min-width: 1000px;
 }
 
 .top_nav {
@@ -305,11 +304,6 @@ export default {
     box-sizing: border-box;
     flex-direction: column;
     position: relative;
-    display: flex;
-    cursor: pointer;
-    flex:1;
-    justify-content: space-between;
-    height: 100%;
 }
 .left_nav_list_top {
     box-sizing: border-box;
@@ -364,6 +358,7 @@ export default {
     cursor: pointer;
     flex:1;
     height: calc(100vh - 50px);
+    min-height: 140px;
 }
 ::v-deep .el-button--primary {
   margin-top: 40px;
@@ -449,7 +444,8 @@ export default {
 .scroll_view {
   border-top: 1.2px solid rgba(0,0,0,.1);
   margin-top: 20px;
-  height: 80%;
+  height: calc(100vh - 187px);
+  min-height: 140px;
 }
 
 .scroll_element {
