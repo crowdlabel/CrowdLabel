@@ -46,14 +46,16 @@ user_types = {
 def check_user_type_format(user_type: int) -> bool:
     if type(user_type) != int:
         return False
-
     return user_type in user_types
+def check_verification_code_format(verification_code:str )->bool:
+    return re.fullmatch(r'\d{6}',verification_code)
 
 format_checkers = {
     'username': check_username_format,
     'password': check_password_format,
     'email': check_email_format,
     'user_type': check_user_type_format,
+    'verification_code':check_verification_code_format
 }
 
 if __name__ == '__main__':

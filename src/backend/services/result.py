@@ -1,4 +1,4 @@
-from models.task import Task
+from models.results import Results
 from sqlalchemy.orm import sessionmaker, scoped_session, selectinload
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy import select ,update
@@ -6,84 +6,77 @@ from .database import *
 import datetime
 Connection = sessionmaker(bind=engine,expire_on_commit=False,class_=AsyncSession)
 con = scoped_session(Connection)
-def __verify_task_format():
+def __verify_result_format():
     return True
 
 
     
 
-async def create_task(
+async def create_result(
     name: str,
-    creator: str,
-    details: str
+    id:int 
 ):
 
     # get the arguments as a dictionary
-    if not __verify_task_format():
-        return False
+    if not __verify_result_format():
+        return {
+            'status':'error'
+        },400
 
 
-    task = Task(
-        name,
-        creator,
-        details
+    result = Results(
+        id,name
     )
-    con.add(task)
+    con.add(result)
     await con.commit()
-    print(123)
     return {
+        'status':'ok',
         'arg': 'ok',
         'error': 'ok',
-    }
+    },200   
 
-async def get_task(id):
+async def get_result(id):
     async with con.begin():
-        result = await con.execute(select(Task).where(Task.id==id).options(selectinload(Task.questions),selectinload(Task.results)))
+        result = await con.execute(select(Results).where(Results.id==id)) #.options(selectinload(Task.questions)))
         target = result.scalars().first()
         if target is None:
             return{
                 "status":"not found",
             },400
-        s= ''
-        for q in target.questions:
-            s = s+q.prompt+'\n'
-        result = ''
-        for r in target.results:
-            result = result+str(r.date_created)+'\n'
     return {
         "status":"ok",
         "id" :target.id,
         "name":target.name,
-        "creator":target.creator,
-        "details":target.details,
-        "questions":s,
-        "results":result    
+        "task_id":target.task_id,
+        "date_created":target.date_created,
+        "date_download":target.date_download
     },200
 
-async def edit_task(id):
+async def edit_result(id):
     async with con.begin():
-        result = await con.execute(select(Task).where(Task.id==id))
+        result = await con.execute(select(Results).where(Results.id==id))
         target = result.scalars().first()
         if target is None:
             return{
                 "status":"not found",
             },400
-        target.date_download = datetime.datetime.now
+        print('type is',type(datetime.datetime.now()))
+        target.date_download=datetime.datetime.now()
         await con.flush()
         con.expunge(target)
     return {
         "status":"ok",
-        "id" :target.id,
-        "task_name":target.task_name,
+        "id" :id,
+        "name":target.name,
         "task_id":target.task_id,
-        "date_create":target.date_created,
+        "date_created":target.date_created,
         "date_download":target.date_download
     },200
     
 
-async def delete_task(id):
+async def delete_result(id):
     async with con.begin():
-        result = await con.execute(select(Task).where(Task.id==id))
+        result = await con.execute(select(Results).where(Results.id==id))
         target = result.scalars().first()
         if target == None:
             return {

@@ -11,6 +11,7 @@ class Task(Base):
     details  = Column(String(MAX_DETAIL_LENGTH))
     name = Column(String(MAX_NAME_LENGTH))
     questions = relationship('Question')
+    results = relationship('Results')
     def __init__(self,name,creator,detail) -> None:
         self.name=name
         self.creator = creator

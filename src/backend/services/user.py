@@ -5,7 +5,7 @@ from models.user import User
 from models.email import Email
 from utils.hasher import *
 from utils.emailsender import EmailSender
-
+from sqlalchemy import select ,update
 email_sender = EmailSender()
 
 from .database import *
@@ -29,15 +29,18 @@ async def send_verification_email(email) -> bool:
 
     # TODO: add email and verification code to db,
     # or update the verification code of an existing email
-
-    if email_exist_Email(email):
-        res = con.query(Email).filter(Email.__dict__['email'] == email).first()
-        res.verification_code = verification_code
-    else: 
-        email_create = Email(email=email,verification_code = verification_code)
-        con.add(email_create)
-        con.commit()
-
+    async with con.begin():
+        res= await con.execute(select(Email).where(Email.email==email))
+        target = res.scalars().first()
+        if target is None:
+            email_create = Email(email=email,code = verification_code)
+            con.add(email_create)
+            await con.commit()
+        else:
+            print(f'update code from {target.verification_code} to {verification_code}')
+            target.verification_code = verification_code
+            await con.flush()
+            con.expunge(target)
     email_sender.send_email(
         'CrowdLabel 邮箱验证码',
         verification_code,
@@ -70,25 +73,30 @@ async def create_user(
 
 
     # check existance
-    if username_exists(username):
+    if await username_exists(username):
         return {
             'arg': 'username',
             'error': 'exists',
         }
-    if email_exists(email):
+    if await email_exists(email):
         return {
             'arg': 'email',
             'error': 'exists'
         }
-
-    if not email_code_match(email,verification_code):
-        return {
-            'arg': 'verification code ',
-            'error': 'mismatch'
-        }
+    async with con.begin():
+        res= await con.execute(select(Email).where(Email.email==email))
+        target = res.scalars().first()
+        if target is None:
+            return {
+                'arg': 'email',
+                'error': 'notfound'
+            }
+        if target.verification_code != verification_code:
+            return {
+                'arg': 'verification_code',
+                'error': 'mismatch'
+            }
     # check verification code
-
-
     # TODO: check if `email` and `verification_code` match in the db
 
 
@@ -106,7 +114,7 @@ async def create_user(
     )
 
     con.add(user)
-    con.commit()
+    await con.commit()
 
     return {
         'arg': 'ok',
@@ -168,27 +176,20 @@ async def set_user_info(new_info: dict) -> bool:
 
 
 
-async def __field_exists(field, value):
-    res = con.query(User).filter(User.__dict__[field] == value).all()
-    if len(res) > 1:
-        raise ValueError(f'Duplicate {field}: {str(res.all()[0])}')
-    else:
-        return len(res) == 1
-async def __field_exists_Email(field,value):
-    res = con.query(Email).filter(Email.__dict__[field] == value).all()
-    if len(res) > 1:
-        raise ValueError(f'Duplicate {field}: {str(res.all()[0])}')
-    else:
-        return len(res) == 1
-def username_exists(username):
-    return __field_exists('username', username)
+
+async def username_exists(username):
+    async with con.begin():
+        res= await con.execute(select(User).where(User.username==username))
+        target = res.scalars().first()
+    if target is None:
+        return False
+    return True
 
 async def email_exists(email):
-    return __field_exists('email', email)
+    async with con.begin():
+        res= await con.execute(select(User).where(User.email==email))
+        target = res.scalars().first()
+    if target is None:
+        return False
+    return True
 
-def email_exist_Email(email):
-    return __field_exists_Email('email', email)
-
-def email_code_match(email,code):
-    res = con.query(Email).filter(Email.__dict__['email'] == email).first()
-    return res.verification_code == code

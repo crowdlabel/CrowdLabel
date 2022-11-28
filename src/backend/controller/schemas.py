@@ -66,6 +66,9 @@ class AuthenticatedRequest(BaseModel):
 
 class Task(AuthenticatedRequest):
     id: str
+class ResultInfo(BaseModel):
+    task_name:str
+    task_ID:int
 
 login_error = JSONError(
     status.HTTP_401_UNAUTHORIZED,

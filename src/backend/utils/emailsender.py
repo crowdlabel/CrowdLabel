@@ -1,6 +1,6 @@
 from flask import Flask
 import flask_mail
-
+import threading
 from datetime import datetime
 from utils.config import get_config
 
@@ -15,6 +15,9 @@ class EmailSender:
         self.app.config['MAIL_USE_SSL'] = False
         self.app.config['MAIL_USE_TLS'] = True
         self.mail_obj = flask_mail.Mail(self.app)
+    def send_async_email(self,app, msg):
+        with app.app_context():
+            self.mail_obj.send(msg)
 
     def send_email(self,
         subject: str,
@@ -33,8 +36,8 @@ class EmailSender:
             recipients=recipients
         )
         app = self.app
-        with app.app_context():
-            self.mail_obj.send(msgObject)
+        thr = threading.Thread(target =self.send_async_email, args = [app,msgObject])#创建线程
+        thr.start()
 
 if __name__ == '__main__':
     sender = EmailSender()
