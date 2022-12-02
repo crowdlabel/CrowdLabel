@@ -7,11 +7,13 @@
       </div>
       <div class="page_title">
         <h3 class="title">我的积分</h3>
-        <img src="../assets/notifications.svg" alt="label" height="24">
+          <a class="notifications" data-external="true" href="/notifications">
+            <img src="../assets/notifications.svg" alt="label" height="24"/>
+          </a>
       </div>
-      <div class="my_account">
-        <img src="../assets/my_account.svg" alt="label" height="23">
-      </div>
+        <a class="my_account" data-external="true" href="/myaccount">
+            <img src="../assets/my_account.svg" alt="label" height="24"/>
+        </a>
     </div>
     <div class="body">
         <div class="left_nav">
@@ -154,7 +156,6 @@ export default {
     align-items: center;
     box-shadow: 1.2px 0 0 0 rgb(0 0 0 / 10%);
     box-sizing: border-box;
-    cursor: pointer;
     display: flex;
     min-width: 230px;
     max-width: 230px;
@@ -163,12 +164,19 @@ export default {
 .page_title {
     align-items: center;
     box-sizing: border-box;
-    cursor: pointer;
     display: flex;
     justify-content: space-between;
     padding-left: 20px;
     min-width: 120px;
     flex: 1;
+}
+.notifications {
+    align-items: center;
+    align-self: center;
+    cursor: pointer;
+    display: flex;
+    justify-content: center;
+    position: relative;
 }
 .my_account {
     align-items: center;
@@ -218,6 +226,8 @@ export default {
     flex-direction: column;
     margin: 0;
     padding: 12px;
+    height: calc(100vh - 50px - 132.2px);
+    min-height: 180px;
 }
 .left_nav_list_bottom {
     box-sizing: border-box;
@@ -246,10 +256,15 @@ export default {
     padding: 0 13px;
     text-decoration: none;
     white-space: nowrap;
+    margin: 5px 0px;
+}
+.left_nav_list_item:hover {
+    background-color: rgba(0,0,0,.06);
 }
 .left_nav_list_item_active {
     background-color: rgba(84,47,238,.14);
     color: rgba(84,47,238,1);
+    pointer-events: none;
 }
 .list_item_title {
     padding: 15px;
@@ -261,7 +276,6 @@ export default {
     flex-direction: column;
     position: relative;
     display: flex;
-    cursor: pointer;
     flex:1;
 }
 .search_bar {
@@ -335,6 +349,7 @@ export default {
 	height: 190px;
 	border-radius: 8px;
 	font-size: 14px;
+  cursor: pointer;
 }
 
 .img_alipay {
