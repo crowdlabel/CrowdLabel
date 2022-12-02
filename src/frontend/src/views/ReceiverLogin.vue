@@ -62,12 +62,6 @@
 <script>
 export default {
     data () {
-        var userType = 1;
-        var ready_username;
-        var ready_password;
-        var ready_email;
-        var ready_verification;
-
         var validatePass = (rule, value, callback) => {
             if (value === '') {
                 callback(new Error('请输入密码'));
@@ -84,7 +78,6 @@ export default {
             } else if (value !== this.ruleForm.pass) {
                 callback(new Error('两次输入密码不一致!'));
             } else {
-                this.ready_password = value
                 callback();
             }
         };
@@ -100,7 +93,6 @@ export default {
                     if (checkname.username){
                         callback(new Error('用户名已被占用'));
                     } else {
-                        this.ready_username = value
                         callback();
                     }
                 }
@@ -120,7 +112,6 @@ export default {
                     if (checkmail.email) {
                         callback(new Error('邮箱已被占用'));
                     } else {
-                        this.ready_email = value;
                         this.disable = false;
                         callback();
                     }
@@ -218,8 +209,7 @@ export default {
         checkRegisterSubmit(formName) {
             this.$refs[formName].validate((valid) => {
                 if (valid) {
-                    alert('submit!');
-                    this.$router.push('/projects')
+                    alert('successfully registered!');
                 } else {
                     console.log('error submit!!');
                     return false;
@@ -233,6 +223,18 @@ export default {
         submitRegister(formName) {
             this.$refs[formName].validate((valid) => {
             if (valid) {
+                let ready_username = document.getElementById('registername').value;
+                let ready_password = document.getElementById('registerpassword').value;
+                let ready_email = document.getElementById('registeremail').value;
+                let ready_verification = document.getElementById('registerverification').value
+                console.log(ready_verification);
+                this.fetch_json('http://localhost:8000/register','POST',{
+                    "username": ready_username,
+                    "password": ready_password,
+                    "email": ready_email,
+                    "user_type": 1,
+                    "verification_code": ready_verification
+                });
                 alert('registered!');
             } else {
                 console.log('error registration!!');
@@ -259,7 +261,8 @@ export default {
         verifyEmailbtn () {
             this.disable=true
             console.log(this.ready_email);
-            this.fetch_json('http://localhost:8000/verify_email', 'POST', {"email":this.ready_email});
+            let ready_email = document.getElementById('registeremail').value
+            this.fetch_json('http://localhost:8000/verify_email', 'POST', {"email":ready_email});
             this.text = this.time + "s后重新发送"
             localStorage.setItem('time', this.time)
             this.timer = setInterval(() => {
