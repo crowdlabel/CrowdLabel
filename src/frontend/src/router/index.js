@@ -6,6 +6,9 @@ import SenderLogin from '../views/SenderLogin.vue'
 import ProjectsHallView from '../views/ProjectsHallView.vue'
 import HistoryView from '../views/HistoryView.vue'
 import CreditsView from '../views/CreditsView.vue'
+import MyAccountView from '../views/MyAccountView.vue'
+import EditMyAccountView from '../views/EditMyAccountView.vue'
+import NotificationsView from '../views/NotificationsView.vue'
 import axios from 'axios'
 import VueAxios from 'vue-axios'
 import SenderHome from '../views/SenderHome.vue'
@@ -45,6 +48,21 @@ const routes = [
     path: '/credits',
     name: 'credits',
     component: CreditsView
+  },
+  {
+    path: '/myaccount',
+    name: 'myaccount',
+    component: MyAccountView
+  },
+  {
+    path: '/editmyaccount',
+    name: 'editmyaccount',
+    component: EditMyAccountView
+  },
+  {
+    path: '/notifications',
+    name: 'notifications',
+    component: NotificationsView
   },
   {
     path: '/senderhome',

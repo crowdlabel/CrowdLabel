@@ -7,11 +7,13 @@
       </div>
       <div class="page_title">
         <h3 class="title">任务大厅</h3>
-        <img src="../assets/notifications.svg" alt="label" height="24">
+          <a class="notifications" data-external="true" href="/notifications">
+            <img src="../assets/notifications.svg" alt="label" height="24"/>
+          </a>
       </div>
-      <div class="my_account">
-        <img src="../assets/my_account.svg" alt="label" height="23">
-      </div>
+        <a class="my_account" data-external="true" href="/myaccount">
+            <img src="../assets/my_account.svg" alt="label" height="24"/>
+        </a>
     </div>
     <div class="body">
         <div class="left_nav">
@@ -73,24 +75,66 @@
             <div class="display_projects">
               <div class="display_projects_row">
                 <div class="project">
-                  <img height="150px" width="230px"/>
+                  <el-card :body-style="{ padding: '0px' }">
+                    <img src="../assets/image_placeholder.png" class="project_image">
+                    <div style="padding: 0px;">
+                      <p class="project_title">任务标题</p>
+                      <div class="bottom clearfix">
+                      </div>
+                    </div>
+                  </el-card>
                 </div>
                 <div class="project">
-                  <img height="150px" width="230px"/>
+                  <el-card :body-style="{ padding: '0px' }">
+                    <img src="../assets/image_placeholder.png" class="project_image">
+                    <div style="padding: 0px;">
+                      <p class="project_title">任务标题</p>
+                      <div class="bottom clearfix">
+                      </div>
+                    </div>
+                  </el-card>
                 </div>
                 <div class="project">
-                  <img height="150px" width="230px"/>
+                  <el-card :body-style="{ padding: '0px' }">
+                    <img src="../assets/image_placeholder.png" class="project_image">
+                    <div style="padding: 0px;">
+                      <p class="project_title">任务标题</p>
+                      <div class="bottom clearfix">
+                      </div>
+                    </div>
+                  </el-card>
                 </div>
               </div>
               <div class="display_projects_row">
                 <div class="project">
-                  <img height="150px" width="230px"/>
+                  <el-card :body-style="{ padding: '0px' }">
+                    <img src="../assets/image_placeholder.png" class="project_image">
+                    <div style="padding: 0px;">
+                      <p class="project_title">任务标题</p>
+                      <div class="bottom clearfix">
+                      </div>
+                    </div>
+                  </el-card>
                 </div>
                 <div class="project">
-                  <img height="150px" width="230px"/>
+                  <el-card :body-style="{ padding: '0px' }">
+                    <img src="../assets/image_placeholder.png" class="project_image">
+                    <div style="padding: 0px;">
+                      <p class="project_title">任务标题</p>
+                      <div class="bottom clearfix">
+                      </div>
+                    </div>
+                  </el-card>
                 </div>
                 <div class="project">
-                  <img height="150px" width="230px"/>
+                  <el-card :body-style="{ padding: '0px' }">
+                    <img src="../assets/image_placeholder.png" class="project_image">
+                    <div style="padding: 0px;">
+                      <p class="project_title">任务标题</p>
+                      <div class="bottom clearfix">
+                      </div>
+                    </div>
+                  </el-card>
                 </div>
               </div>
             </div>
@@ -152,8 +196,7 @@ export default {
 @import '@/assets/font/font.css';
 
 .all {
-  min-width: 1150px;
-  min-height: 700px;
+  min-width: 1250px;
 }
 
 .top_nav {
@@ -170,7 +213,6 @@ export default {
     align-items: center;
     box-shadow: 1.2px 0 0 0 rgb(0 0 0 / 10%);
     box-sizing: border-box;
-    cursor: pointer;
     display: flex;
     min-width: 230px;
     max-width: 230px;
@@ -179,12 +221,19 @@ export default {
 .page_title {
     align-items: center;
     box-sizing: border-box;
-    cursor: pointer;
     display: flex;
     justify-content: space-between;
     padding-left: 20px;
     min-width: 120px;
     flex: 1;
+}
+.notifications {
+    align-items: center;
+    align-self: center;
+    cursor: pointer;
+    display: flex;
+    justify-content: center;
+    position: relative;
 }
 .my_account {
     align-items: center;
@@ -226,11 +275,6 @@ export default {
     box-sizing: border-box;
     flex-direction: column;
     position: relative;
-    display: flex;
-    cursor: pointer;
-    flex:1;
-    justify-content: space-between;
-    height: 100%;
 }
 .left_nav_list_top {
     box-sizing: border-box;
@@ -239,6 +283,8 @@ export default {
     flex-direction: column;
     margin: 0;
     padding: 12px;
+    height: calc(100vh - 50px - 132.2px);
+    min-height: 180px;
 }
 .left_nav_list_bottom {
     box-sizing: border-box;
@@ -267,10 +313,15 @@ export default {
     padding: 0 13px;
     text-decoration: none;
     white-space: nowrap;
+    margin: 5px 0px;
+}
+.left_nav_list_item:hover {
+    background-color: rgba(0,0,0,.06);
 }
 .left_nav_list_item_active {
     background-color: rgba(84,47,238,.14);
     color: rgba(84,47,238,1);
+    pointer-events: none;
 }
 .list_item_title {
     padding: 15px;
@@ -282,10 +333,7 @@ export default {
     flex-direction: column;
     position: relative;
     display: flex;
-    cursor: pointer;
     flex:1;
-    height: calc(100vh - 50px);
-    min-width: 1000px;
 }
 
 .search_bar {
@@ -398,7 +446,7 @@ export default {
   flex-direction: column;
   display: flex;
   align-items:center;
-  margin: 20px 100px;
+  margin: 10px 100px;
 }
 
 .display_projects_row {
@@ -409,6 +457,7 @@ export default {
 
 .project {
   margin: 0px 10px;
+  cursor: pointer;
 }
 
 ::v-deep .el-pagination {
@@ -427,4 +476,13 @@ export default {
 }
 
 
+.project_title {
+  text-align: left;
+  margin: 0px 9px 8px 9px;
+  font-size: 13px;
+}
+.project_image {
+  height: 130px;
+  width: 250px;
+}
 </style>
