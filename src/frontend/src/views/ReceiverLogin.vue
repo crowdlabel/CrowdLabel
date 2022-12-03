@@ -8,17 +8,16 @@
                 <el-tabs stretch v-model="activeName" @tab-click="handleTabClick">
                     <el-tab-pane label="登录" name="first">
                         <div class="center_form">
-                            <el-form :model="ruleForm" status-icon :rules="rules" ref="ruleForm" label-width="100px" class="demo-ruleForm">
+                            <el-form :model="loginRuleForm" status-icon :rules="loginRules" ref="loginRuleForm" label-width="100px" class="demo-ruleForm">
                                 <el-form-item prop="loginname">
-                                    <el-input placeholder="请输入用户名" v-model="ruleForm.loginname" id="loginusername" autocomplete="off"></el-input>
+                                    <el-input placeholder="请输入用户名" v-model="loginRuleForm.loginname" id="loginusername" autocomplete="off"></el-input>
                                 </el-form-item>
                     
                                 <el-form-item prop="loginpass">
-                                    <el-input placeholder="请输入密码" type="password" v-model="ruleForm.loginpass" id="loginpassword" autocomplete="off"></el-input>
+                                    <el-input placeholder="请输入密码" type="password" v-model="loginRuleForm.loginpass" id="loginpassword" autocomplete="off"></el-input>
                                 </el-form-item>
                                 <el-form-item>
-                                    <el-button type="primary" @click="submitLogin()">确认</el-button>
-
+                                    <el-button type="primary" @click="submitLogin('loginRuleForm')">登录</el-button>
                                     <el-button @click="backToMain()">返回</el-button>
                                 </el-form-item>
                             </el-form>
@@ -42,12 +41,11 @@
                                 <el-form-item prop="verif">
                                     <div class="verify_code">
                                         <el-input placeholder="请输入验证码" autocomplete="off" v-model="ruleForm.verif" class="input_verify" id="registerverification"></el-input>
-
                                         <el-button :disabled="disable" class="button_verify" @click="verifyEmailbtn()">{{text}}</el-button>
                                     </div>
                                 </el-form-item>
                                 <el-form-item>
-                                    <el-button type="primary" @click="submitRegister('ruleForm')">提交</el-button>
+                                    <el-button type="primary" @click="submitRegister('ruleForm')">注册</el-button>
                                     <el-button @click="backToMain()">返回</el-button>
                                 </el-form-item>
                             </el-form>
@@ -153,13 +151,23 @@ export default {
             disable: true,
             activeName: 'second',
             ruleForm: {
-                loginname: '',
-                loginpass: '',
                 name: '',
                 pass: '',
                 checkPass: '',
                 email: '',
                 verif: ''
+            },
+            loginRuleForm: {
+                loginname: '',
+                loginpass: ''
+            },
+            loginRules: {
+                loginpass: [
+                    { validator: validateLoginPass, trigger: 'blur'}
+                ],
+                loginname: [
+                    { validator: validateLoginName, trigger: 'blur'}
+                ]
             },
             rules: {
                 name: [
@@ -173,12 +181,6 @@ export default {
                 ],
                 email : [
                     { validator: validateEmail, trigger: 'change'}
-                ],
-                loginpass: [
-                    { validator: validateLoginPass, trigger: 'blur'}
-                ],
-                loginname: [
-                    { validator: validateLoginName, trigger: 'blur'}
                 ],
                 verif: [
                     { validator: validateVerif, trigger: 'blur' }
@@ -247,20 +249,20 @@ export default {
                 let ready_login_password = document.getElementById('loginpassword').value;
                 console.log(ready_login_username);
                 console.log(ready_login_password);
-                const user = {
-                    username: ready_login_username,
-                    password: ready_login_password
-                };
-                let login_checker = this.fetch('http://localhost:8000/login',{
+                const data = new FormData();
+                data.append('username', ready_login_username);
+                data.append('password', ready_login_password);
+                fetch('http://localhost:8000/token',{
                     method: 'POST',
-                    body: JSON.stringify(user)
+                    body: data
+                }).then(res => {
+                    if (res.status == 200){
+                        alert('logging in...');
+                        this.$router.push('/projects');
+                    } else {
+                        alert('wrong username or password!')
+                    }
                 });
-                if (login_checker){
-                    alert('logging in...');
-                    this.$route.push
-                } else {
-                    alert('wrong username or password!')
-                }
             } else {
                 console.log('error username or password');
                 return false;
@@ -271,7 +273,7 @@ export default {
             this.$refs[formName].resetFields();
         },
         backToMain: function (){
-            this.$router.push('/projects');
+            this.$router.push('/');
         },
         verifyEmailbtn () {
             this.disable=true
