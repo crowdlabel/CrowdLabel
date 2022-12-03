@@ -2,38 +2,28 @@
   <div class="all">
     <div class="top_nav">
       <div class="top_nav_trigger">
-        <img src="../assets/label.png" alt="label" height="26">
-        <h2 class="logo">CrowdLabel</h2>
+        <a aria-current="page" class="back_button" data-external="true" href="/projects">
+          <img src="../assets/back.png" height="18" width="18">
+            <p class="list_item_title">返回任务大厅</p>
+        </a>
       </div>
       <div class="page_title">
-        <h3 class="title">我的积分</h3>
-          <a class="notifications" data-external="true" href="/notifications">
-            <img src="../assets/notifications.svg" alt="label" height="24"/>
-          </a>
+        <h3 class="title">个人信息</h3>
       </div>
-        <a class="my_account" data-external="true" href="/myaccount">
-            <img src="../assets/my_account.svg" alt="label" height="24"/>
-        </a>
     </div>
     <div class="body">
         <div class="left_nav">
             <ul class="left_nav_list_top">
                 <li>
-                    <a aria-current="page" class="left_nav_list_item" data-external="true" href="/projects">
-                        <img src="../assets/folder.png" height="21" width="20">
-                        <p class="list_item_title">任务大厅</p>
+                    <a aria-current="page" class="left_nav_list_item left_nav_list_item_active" data-external="true" href="/projects">
+                        <img src="../assets/my_account_2_active.png" height="21" width="20">
+                        <p class="list_item_title">个人信息</p>
                     </a>
                 </li>
                 <li>
-                    <a aria-current="page" class="left_nav_list_item" data-external="true" href="/history">
-                        <img src="../assets/history.png" height="19" width="20">
-                        <p class="list_item_title">历史记录</p>
-                    </a>
-                </li>
-                <li>
-                    <a aria-current="page" class="left_nav_list_item left_nav_list_item_active" data-external="true" href="/credits">
-                        <img src="../assets/credits_active.png" height="19" width="20">
-                        <p class="list_item_title">我的积分</p>
+                    <a aria-current="page" class="left_nav_list_item" data-external="true" href="/notifications">
+                        <img src="../assets/notifications_2.png" height="20" width="20">
+                        <p class="list_item_title">消息中心</p>
                     </a>
                 </li>
                 <li tag="li" class="left_nav_spacer">
@@ -55,40 +45,24 @@
             </ul>
         </div>
         <div class="main_body">
-          <h3 class="sub_title">数据概览</h3>
-          <div class="row">
-            <div class="box_overview">
-              <p class="box_title">近7日收入</p>
-              <div class="box_credits">
-                <p class="box_number">27.5</p>
-                <p class="box_unit">积分</p>
-              </div> 
-            </div>
-            <div class="box_overview">
-              <p class="box_title">累计总收入</p>
-              <div class="box_credits">
-                <p class="box_number">126.3</p>
-                <p class="box_unit">积分</p>
+            <div class="user_info_row">
+              <img class="profile_pic" src="../assets/image_placeholder.png"/>
+              <div class="user_info_column">
+                <p class="username">用户名</p>
+                <p class="user_info_line">邮箱：example@123.com</p>
+                <p class="user_info_line">手机号：18912345678</p>
+                <p class="user_info_line">密码：********</p>
+                <p class="user_info_line">积分：256</p>
               </div>
             </div>
-          </div>
-          <h3 class="sub_title">积分提现</h3>
-          <div class="row">
-            <div class="box_pay">
-              <p class="box_title">微信 ></p>
-              <img src="../assets/wechat.png" height="100px">
+            <div class="button_row">
+                <a href="/editmyaccount">
+                  <el-button type="primary" plain href="/editmyaccount">编辑个人信息</el-button>
+                </a>
+                <a href="/credits">
+                  <el-button type="primary">我的积分</el-button>
+                </a>
             </div>
-            <div class="box_pay">
-              <p class="box_title">支付宝 ></p>
-              <img class="img_alipay" src="../assets/alipay.png" height="85px">
-            </div>
-            <div class="box_pay">
-              <p class="box_title">银行卡 ></p>
-              <img class="img_credit_card" src="../assets/credit_card.png" height="70px">
-            </div>
-          </div>
-          
-            
         </div>
     </div>
   </div>
@@ -139,7 +113,7 @@ export default {
 @import '@/assets/font/font.css';
 
 .all {
-  min-width: 1150px;
+  min-width: 1000px;
 }
 
 .top_nav {
@@ -156,10 +130,27 @@ export default {
     align-items: center;
     box-shadow: 1.2px 0 0 0 rgb(0 0 0 / 10%);
     box-sizing: border-box;
+    cursor: pointer;
     display: flex;
     min-width: 230px;
     max-width: 230px;
-    padding-left: 20px;
+    padding-left: 10px;
+}
+.back_button {
+    box-sizing: border-box;
+    display: flex;
+    align-items: center;
+    border-radius: 10px;
+    color: rgba(0,0,0,.7);
+    cursor: pointer;
+    font-size: 16px;
+    height: 40px;
+    text-decoration: none;
+    white-space: nowrap;
+    padding: 0px 10px;
+}
+.back_button:hover {
+  background-color: rgba(0,0,0,.06);
 }
 .page_title {
     align-items: center;
@@ -170,31 +161,14 @@ export default {
     min-width: 120px;
     flex: 1;
 }
-.notifications {
-    align-items: center;
-    align-self: center;
-    cursor: pointer;
-    display: flex;
-    justify-content: center;
-    position: relative;
-}
 .my_account {
     align-items: center;
     align-self: center;
-    cursor: pointer;
     display: flex;
     justify-content: center;
     margin-left: 10px;
     margin-right: 20px;
     position: relative;
-}
-.logo{
-  vertical-align: middle;
-  text-align: left;
-  font-family: 'Lobster';
-  font-size: 22px;
-  color:black;
-  padding: 8px;
 }
 .title{
   vertical-align: middle;
@@ -207,8 +181,6 @@ export default {
     display: flex;
     flex: 1;
     flex-direction: row;
-    min-height: 100%;
-    min-width: 100%;
 }
 
 .left_nav {
@@ -227,7 +199,7 @@ export default {
     margin: 0;
     padding: 12px;
     height: calc(100vh - 50px - 132.2px);
-    min-height: 180px;
+    min-height: 135px;
 }
 .left_nav_list_bottom {
     box-sizing: border-box;
@@ -266,6 +238,9 @@ export default {
     color: rgba(84,47,238,1);
     pointer-events: none;
 }
+.left_nav_list_item_active:hover {
+    background-color: rgba(0,0,0,.06);
+}
 .list_item_title {
     padding: 15px;
     font-size: 15px;
@@ -283,80 +258,67 @@ export default {
     flex-direction: row;
 }
 
-.sub_title{
+.username{
   vertical-align: middle;
   text-align: left;
-  font-size: 18px;
+  font-size: 22px;
   font-weight: bold;
   color:black;
-  margin-left: 50px;
-  margin-top: 30px;
+  margin: 5px 5px 10px 5px;
 }
-.row {
-  box-sizing: border-box;
-  flex-direction: row;
-  position: relative;
+.user_info_row {
+  text-align: left;
+  margin-left: 100px;
+  margin-top: 80px;
   display: flex;
-  margin-left: 70px;
-  margin-bottom: 20px;
-}
-.box_overview{
-  background: rgba(84,47,238,.05);
-  margin: 10px 0px 0px 30px;
-	padding: 10px;
-	width: 355px;
-	height: 220px;
-	border-radius: 8px;
-	font-size: 14px;
-}
-.box_title {
-  text-align: left;
-  margin-left: 15px;
-  font-size: 15px;
-  color: rgba(0,0,0,0.7);
-}
-.box_credits {
-  box-sizing: border-box;
   flex-direction: row;
-  position: relative;
+}
+.profile_pic {
+  height: 200px;
+  width: 200px;
+  border-radius: 50%;
+}
+.user_info_column {
+  align-self: center;
+  margin: 0px 50px 10px 50px;
   display: flex;
-  margin-left: 60px;
-  line-height: 50px;
-  vertical-align: middle;
+  flex-direction: column;
 }
-.box_number {
+.user_info_line {
+  margin: 3px;
+  display: flex;
+  flex-direction: column;
+}
+
+.button_row {
   text-align: left;
-  vertical-align: text-bottom;
-  font-size: 45px;
-  margin: 0px 0px 0px 0px;
-  color: rgba(84,47,238,1);
-  font-weight: bold;
+  margin: 0px 0px 50px 350px;
 }
-.box_unit {
-  text-align: left;
-  vertical-align: sub;
-  font-size: 16px;
-  margin: 0px 0px 0px 6px;
-  color: rgba(0,0,0,1);
-  padding-top: 7px;
+::v-deep .el-button--primary {
+  border-color: #5D3BE6;
+  background-color: #5D3BE6;
+  margin-right: 10px;
 }
-
-.box_pay{
-  background: rgba(0,0,0,.03);
-  margin: 10px 0px 0px 20px;
-	padding: 10px;
-	width: 230px;
-	height: 190px;
-	border-radius: 8px;
-	font-size: 14px;
-  cursor: pointer;
+::v-deep .el-button--primary:hover{
+  background-color: rgba(84,47,238,.7);
+  border-color: rgba(84,47,238,.1);
+}
+::v-deep .el-button--primary:focus {
+  background-color: #5D3BE6;
+  border-color: #5D3BE6;
 }
 
-.img_alipay {
-  margin-top: 5px;
+::v-deep .el-button--primary.is-plain {
+  border-color: #5D3BE6;
+  color: #5D3BE6;
+  background-color: #fff;
 }
-.img_credit_card {
-  margin-top: 10px;
+::v-deep .el-button--primary.is-plain:hover{
+  background-color: #5D3BE6;
+  border-color: #5D3BE6;
 }
-
+::v-deep .el-button--primary.is-plain:focus {
+  background-color: #5D3BE6;
+  border-color: #5D3BE6;
+}
 </style>
