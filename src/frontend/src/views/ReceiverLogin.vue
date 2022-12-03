@@ -118,7 +118,6 @@ export default {
                 }
             }
         };
-        // waiting for backend ...
         var validateLoginName = (rule, value, callback) => {
             if (value===''){
                 callback(new Error('请输入用户名'));
@@ -206,17 +205,16 @@ export default {
             });
             return response.json();
         },
-        checkRegisterSubmit(formName) {
-            this.$refs[formName].validate((valid) => {
-                if (valid) {
-                    alert('successfully registered!');
-                } else {
-                    console.log('error submit!!');
-                    return false;
-                }
-            });
-        },
-
+        // checkRegisterSubmit(formName) {
+        //     this.$refs[formName].validate((valid) => {
+        //         if (valid) {
+        //             alert('successfully registered!');
+        //         } else {
+        //             console.log('error submit!!');
+        //             return false;
+        //         }
+        //     });
+        // },
         handleTabClick(tab, event){
             console.log(tab, event)
         },
@@ -227,7 +225,6 @@ export default {
                 let ready_password = document.getElementById('registerpassword').value;
                 let ready_email = document.getElementById('registeremail').value;
                 let ready_verification = document.getElementById('registerverification').value
-                console.log(ready_verification);
                 this.fetch_json('http://localhost:8000/register','POST',{
                     "username": ready_username,
                     "password": ready_password,
@@ -235,7 +232,8 @@ export default {
                     "user_type": 1,
                     "verification_code": ready_verification
                 });
-                alert('registered!');
+                alert('successfully registered!');
+                this.activeName = "first"
             } else {
                 console.log('error registration!!');
                 return false;
@@ -245,7 +243,24 @@ export default {
         submitLogin(formName) {
             this.$refs[formName].validate((valid) => {
             if (valid) {
-                alert('logging in...');
+                let ready_login_username = document.getElementById('loginusername').value;
+                let ready_login_password = document.getElementById('loginpassword').value;
+                console.log(ready_login_username);
+                console.log(ready_login_password);
+                const user = {
+                    username: ready_login_username,
+                    password: ready_login_password
+                };
+                let login_checker = this.fetch('http://localhost:8000/login',{
+                    method: 'POST',
+                    body: JSON.stringify(user)
+                });
+                if (login_checker){
+                    alert('logging in...');
+                    this.$route.push
+                } else {
+                    alert('wrong username or password!')
+                }
             } else {
                 console.log('error username or password');
                 return false;
@@ -256,7 +271,7 @@ export default {
             this.$refs[formName].resetFields();
         },
         backToMain: function (){
-            this.$router.push('/')
+            this.$router.push('/projects');
         },
         verifyEmailbtn () {
             this.disable=true
