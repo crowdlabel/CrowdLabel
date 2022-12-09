@@ -58,20 +58,32 @@
               <h2 id="create_title">创建您新任务</h2>
             </div>
             <div class="create_main">
-              <el-form label-width="80px">
-                <el-form-item>
-                  <el-input placeholder="请输入任务名称"  class="mission_name"></el-input>
+              <el-form label-width="80px" ref="form" :model="form">
+                <el-form-item prop="name" required>
+                  <el-input placeholder="请输入任务名称"  class="mission_name" v-model="form.name"></el-input>
                 </el-form-item>
-                <el-form-item label="任务类型:" class="mission_type">
-                  <el-radio-group>
+                <el-form-item label="任务类型:" class="mission_type" prop="type" required>
+                  <el-radio-group v-model="form.type">
                     <el-radio label="图像标注"></el-radio>
                     <el-radio label="图像分类"></el-radio>
                     <el-radio label="音频标注"></el-radio>
                     <el-radio label="文本标注"></el-radio>
                   </el-radio-group>
                 </el-form-item>
-                <el-form-item label="上传文件" class="mission_file">
-                  <el-button type="primary" @click="upload" size="mini" class="upload_btn"></el-button>
+                <el-form-item label="任务简介:" class="mission_brief" prop="brief" required>
+                  <el-input type="textarea" v-model="form.brief" class="brief_input"></el-input>
+                </el-form-item>
+                <el-form-item label="任务详情:" class="mission_details" prop="details" required>
+                  <el-input type="textarea" v-model="form.details" class="details_input"></el-input>
+                </el-form-item>
+                <el-form-item label="上传文件:" class="mission_file" required>
+                  <el-upload class="upload_file" action="https://jsonplaceholder.typicode.com/posts/"
+                    :multiple=false
+                    accept=".zip,.rar"
+                    >
+                    <el-button type="primary" size="small" class="click_upload_btn">点击上传</el-button>
+                    <div slot="tip" class="el-upload__tip">只能上传zip/rar文件</div>
+                  </el-upload>
                 </el-form-item>
                 <el-form-item>
                   <el-button type="primary" class="create_now" @click="create_new_project">立即创建</el-button>
@@ -176,6 +188,13 @@
       // page_num = 5;
       return {
         dialogVisible: false,
+        // fileList: [],
+        form: {
+          name: '',
+          type: '',
+          brief: '',
+          details: '',
+        },
       }
     },
     methods: {
@@ -185,9 +204,15 @@
       createProject () {
         this.dialogVisible = true;
       },
-      upload () {
-
-      },
+      // handleRemove(file, fileList){
+      //   console.log(file, fileList)
+      // },
+      // handlePreview(file) {
+      //   console.log(file);
+      // },
+      // beforeRemove(file, fileList){
+      //   return this.$confirm('确定移除 ${ file.name }?');
+      // },
       create_new_project () {
 
       },
@@ -200,8 +225,8 @@
 @import '@/assets/font/font.css';
 
 ::v-deep .dialogClass .el-dialog{
-  width: 40% !important;
-  min-width: 500px;
+  width: 50% !important;
+  min-width: 700px;
   border-radius: 12px;
 }
 ::v-deep .el-dialog__body{
@@ -369,16 +394,19 @@
   border-width: 0px;
   border-radius: 0px 4px 4px 0px;
   background-color: #5D3BE6;
+  border-color: #5D3BE6;
   font-size: 20px;
   min-width: 80px;
 }
 
 ::v-deep .el-button--primary:hover{
   background-color: rgba(84,47,238,.8);
+  border-color: #5D3BE6;
 }
 
 ::v-deep .el-button--primary:focus {
   background-color: #5D3BE6;
+  border-color: #5D3BE6;
 }
 ::v-deep .el-button.el-button--default:focus, .el-button.el-button--default:hover{
     color: #5D3BE6;
@@ -402,6 +430,7 @@
   padding: 0px 0px !important;
   border-width: 0.5px;
   background-color: #5D3BE6;
+  border-color: #5D3BE6;
   font-size: 12.5px;
   min-width: 80px;
 }
@@ -411,6 +440,7 @@
 
 ::v-deep .el-button--success:focus {
   background-color: #5D3BE6;
+  border-color: #5D3BE6;
 }
 
 ::v-deep .el-button--default.is-round {
@@ -431,6 +461,7 @@
 
 ::v-deep .el-button--default.is-round:focus {
   background-color: #5D3BE6;
+  border-color: #5D3BE6;
   border-width: 0.5px;
   color: #fff;
 }
@@ -554,4 +585,76 @@
   margin-left: 30px !important;
   margin-right: 30px !important;
 }
-  </style>
+
+.upload_file{
+  float: left;
+  width: 80%;
+}
+
+::v-deep .el-form-item__label{
+  width: 100px !important;
+}
+
+.click_upload_btn{
+  position: relative !important;
+  width: 70px;
+  border-radius: 8px !important;
+  float:left;
+  margin-top: 0px;
+  font-size:12px;
+  padding: 8px 2px;
+
+}
+
+::v-deep .el-upload__tip{
+  float:left;
+  position: relative;
+  width: 120px;
+  line-height: 25px;
+}
+
+::v-deep .el-radio-group{
+  position: relative;
+  float: left;
+  top: 14px !important;
+}
+.mission_name{
+  font-size: 14px !important;
+  /* height: 36px !important; */
+  line-height:30px !important;
+}
+
+::v-deep .el-form-item__label{
+  position: relative;
+  float: left !important;;
+}
+
+.mission_brief{
+  margin-left: 30px;
+  margin-right: 30px;
+}
+
+.mission_details{
+  margin-left: 30px;
+  margin-right: 30px;
+}
+
+::v-deep .el-textarea{
+  width:80% !important;
+  min-height: 40px !important;
+  left: -20px;
+}
+
+::v-deep .el-upload-list{
+  float: left;
+  width: 40%;
+}
+
+::v-deep .el-upload{
+  position: relative !important;
+  top: 7px;
+  float: left !important;
+  width: 80px;
+}
+
+</style>
