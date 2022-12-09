@@ -34,12 +34,12 @@ task
         let response1 = await response
 
 
-        document.getElementById('info_type').innerHTML=response1[0].type;
-        document.getElementById('info_prompt').innerHTML=response1[0].prompt
-        document.getElementById('info_resource').innerHTML=response1[0].resource
-        document.getElementById('info_options').innerHTML=response1[0].options
-        document.getElementById('info_task_id').innerHTML=response1[0].task_id
-
+        document.getElementById('info_Id').innerHTML=response1[0].id;
+        document.getElementById('info_Name').innerHTML=response1[0].name
+        document.getElementById('info_Task_id').innerHTML=response1[0].task_id
+        document.getElementById('info_Date_created').innerHTML=response1[0].date_created
+        document.getElementById('info_Date_download').innerHTML=response1[0].date_download
+        document.getElementById('info_child').innerHTML=response1[0].info
     }
 
 </script>
@@ -63,11 +63,13 @@ task
 <button id="get_info" onclick="get_info()">get_info</button>
 <h1>Info</h1>
 <table> 
-    <tr><td>Type</td><td id ='info_type'></td></tr>
-    <tr><td>Prompt</td><td id = 'info_prompt'></td></tr>
-    <tr><td>Resource</td><td id = 'info_resource'></td></tr>
-    <tr><td>Options</td><td id = 'info_options'></td></tr>
-    <tr><td>Task_id</td><td id = 'info_task_id'></td></tr>
+    <tr><td>Id</td><td id ='info_Id'></td></tr>
+    <tr><td>Name</td><td id = 'info_Name'></td></tr>
+    <tr><td>Task_id</td><td id = 'info_Task_id'></td></tr>
+    <tr><td>Date_created</td><td id = 'info_Date_created'></td></tr>
+    <tr><td>Date_download</td><td id = 'info_Date_download'></td></tr>
+    <tr><td>Child results</td><td><textarea id="info_child" rows="16" cols="80"></textarea></td></tr>
+
 </table>
 
 

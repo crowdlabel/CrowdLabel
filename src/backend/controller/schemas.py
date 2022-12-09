@@ -32,6 +32,9 @@ class Email(BaseModel):
 class TaskDetails(ID):
     details:str
 
+class ChildTaskResponse(ID):
+    response:str
+
 class Credentials(BaseModel):
     username: str
     password: str
@@ -69,6 +72,9 @@ class Task(AuthenticatedRequest):
 class ResultInfo(BaseModel):
     task_name:str
     task_ID:int
+class ChildResultInfo(BaseModel):
+    response:str
+    result_id:int 
 
 login_error = JSONError(
     status.HTTP_401_UNAUTHORIZED,
