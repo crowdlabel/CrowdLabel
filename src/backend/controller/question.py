@@ -1,7 +1,7 @@
 from .base import app
 import services.question
 from fastapi import APIRouter
-from .schemas import *
+from schemas.schemas import *
 
 question_router = APIRouter(prefix='/question')
 

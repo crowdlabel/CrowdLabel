@@ -1,7 +1,6 @@
+from .base import app
+
 from .auth import *
-from .hello import *
-from .task import *
-from .user import *
-from .misc import *
-from .question import *
-from .result import *
+from .tasks import *
+from .users import *
+from .routers import *
