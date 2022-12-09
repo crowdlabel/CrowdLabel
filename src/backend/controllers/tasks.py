@@ -1,18 +1,25 @@
-from .base import app
-from utils.filetransfer import *
-import services.task
-from fastapi import APIRouter
-from .schemas import *
+from fastapi import Depends, UploadFile
+from fastapi.routing import APIRouter
+from utils.filetransfer import download_file, upload_file
+from .auth import User, get_current_user
+import services.task as ts
+from schemas.schemas import *
 
-task_router = APIRouter(prefix='/task')
 
-@app.get('/tasks')
-async def tasks():
-    return 'api: tasks'
+router = APIRouter()
 
-@app.post('/create_task')
-async def create_task(details:TaskInfo):
-    response = await services.task.create_task(
+@router.get('/')
+async def get_tasks(current_user: User = Depends(get_current_user)):
+    """
+    Task search
+    """
+    tasks = ts.get_tasks()
+    print(tasks)
+    return tasks
+
+@router.post('/')
+async def create_task(details: TaskInfo):
+    response = await ts.create_task(
         details.name,
         details.creator,
         details.details)
@@ -29,9 +36,17 @@ async def create_task(details:TaskInfo):
             'creator': details.creator,
             'details': details.details,
         }, 200
-@app.post('/delete_task')
+
+@router.post(
+    '/upload',
+)
+async def upload_task(in_file: UploadFile, data: str):
+    upload_file(in_file, 'upload.test')
+
+
+@router.delete('/')
 async def delete_task(details:ID):
-    response = await services.task.delete_task(details.id)
+    response = await ts.delete_task(details.id)
     if response[0]['status'] != 'ok':
         return {
             'error' : f'delete failed'
@@ -40,9 +55,10 @@ async def delete_task(details:ID):
         return {
             'id':details.id
         },200
-@app.post('/edit_task')
+
+@router.patch('/')
 async def edit_task(details:TaskDetails):
-    response = await services.task.edit_task(
+    response = await ts.edit_task(
         details.id,
         details.details
     )
@@ -58,12 +74,14 @@ async def edit_task(details:TaskDetails):
             'details':response[0]['details']
             
         }
-@app.post('/get_task')
-async def get_task(details:ID):
-    response = await services.task.get_task(details.id)
+
+    
+@router.get('/<id>')
+async def get_task(id: ID, current_user = Depends(get_current_user)):
+    response = await ts.get_task(id)
     if response[0]["status"] != "ok":
         return {
-            'error' : f'not found id {details.id}'
+            'error' : f'not found id {id}'
         },400
     else :
         return {
@@ -74,19 +92,11 @@ async def get_task(details:ID):
             'questions':response[0]['questions'],
             'results':response[0]['results']
         },200
-@task_router.get('/')
-def task(id):
-    return 'requested task with id ' + str(id)
 
-@task_router.post(
-    '/upload',
+
+@router.get(
+    '/<id>/download-results',
 )
-async def upload_task(in_file: UploadFile, data: str):
-    upload_file(in_file, 'upload.test')
-
-
-@task_router.get(
-    '/download',
-)
-async def download_results():
+async def download_task_results(id: ID, current_user = Depends(get_current_user)):
+    ts.create_task_results_file(id)
     return await download_file('main.py')

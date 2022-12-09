@@ -1,11 +1,10 @@
-import uvicorn
-from controller.controllers import *
-from fastapi.openapi.utils import get_openapi
-import json
 import argparse
-from utils.config import load_config
+import json
+import uvicorn
+from fastapi.openapi.utils import get_openapi
+from controllers.routers import app
 
-def generate_doc():
+def generate_docs():
     with open('openapi.json', 'w') as f:
         json.dump(get_openapi(
             title=app.title,
@@ -15,18 +14,22 @@ def generate_doc():
             routes=app.routes,
         ), f)
 
-
 def parse_args():
     parser = argparse.ArgumentParser()
     parser.add_argument('--docs', action='store_true')
     args = parser.parse_args()
     return args
 
-if __name__ == '__main__':
-    #load_config()
+
+def main():
+    # to view API documentation, visit 127.0.0.1:8000/docs
     args = parse_args()
     if args.docs:
-        generate_doc()
-    else:
-        uvicorn.run('main:app', host='localhost', port=8000, reload=False)
-    # to view API documentation, visit 127.0.0.1:8000/docs
+        generate_docs()
+        return
+
+    uvicorn.run('main:app', host='localhost', port=8000, reload=False)
+
+if __name__ == '__main__':
+    main()
+    

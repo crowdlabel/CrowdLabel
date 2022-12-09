@@ -9,7 +9,7 @@ con = scoped_session(Connection)
 def __verify_task_format():
     return True
 
-
+from typing import Iterable
     
 
 async def create_task(
@@ -51,14 +51,53 @@ async def get_task(id):
         for r in target.results:
             result = result+str(r.date_created)+'\n'
     return {
-        "status":"ok",
-        "id" :target.id,
-        "name":target.name,
-        "creator":target.creator,
-        "details":target.details,
-        "questions":s,
-        "results":result    
-    },200
+        "status": "ok",
+        "id" : target.id,
+        "name": target.name,
+        "creator": target.creator,
+        "details": target.details,
+        "questions": s,
+        "results": result    
+    }, 200
+
+
+async def get_tasks(
+    username: str,
+    name: str=None,
+    tags: Iterable=None,
+    reward: float=None,
+    questions_min: int=1,
+    questions_max: int=-1,
+    creator: str=None,
+    result_count: int=-1,
+    page: int=1,
+    sort_criteria: str=None,
+    sort_ascending: bool=True,
+):
+    """
+    Gets the tasks matching the search criteria
+
+    Parameters:
+        `username`: username of the querier
+        `name`: name of the task
+        `tags`: Iterable of tags
+        `creator`: username of the person who created the task
+        `reward`: number of tokens rewarded upon task completion
+        `questions_min`: minimum number of questions in the task
+        `questions_max`: maximum number of questions in the task
+        `page`: the page
+        `page_size`: the size of each page; if -1 then `page` would not be considered and all results will be returned
+            e.g., if `page` is 2 and `page_size` is 10, then it will return the 11th to 20th results, inclusive
+            e.g., if `page` is _ and `page_size` is -1, then it will return all the results
+        `sort_criteria`: criteria that the results should be sorted against
+        `sort_ascending`: True to sort in ascending order, False to sort in descending order
+
+
+    Returns: list of Tasks queried, and total number of tasks
+
+    """
+    total = 10
+    return [], total
 
 async def edit_task(id):
     async with con.begin():
@@ -96,3 +135,14 @@ async def delete_task(id):
     return {
         'status':'ok'
     },200
+
+
+async def create_task_results_file(id):
+
+    """
+    Create the ZIP file containing the results of the task with ID `id
+    """
+
+
+    
+    pass

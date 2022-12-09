@@ -2,7 +2,7 @@ from .base import app
 from utils.filetransfer import *
 import services.result
 from fastapi import APIRouter
-from .schemas import *
+from schemas.schemas import *
 
 result_router = APIRouter(prefix='/result')
 

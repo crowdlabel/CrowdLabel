@@ -1,14 +1,16 @@
-from .base import app
-
 from datetime import datetime, timedelta
-
 from fastapi import Depends, HTTPException, status
+from fastapi.routing import APIRouter
 from fastapi.security import OAuth2PasswordBearer, OAuth2PasswordRequestForm
 from jose import JWTError, jwt
 from pydantic import BaseModel
 
 from utils.hasher import hash, verify
 from utils.config import get_config
+
+
+router = APIRouter()
+
 
 SECRET_KEY = get_config('auth.key')
 ALGORITHM = 'HS256'
@@ -99,7 +101,7 @@ async def get_current_active_user(current_user: User = Depends(get_current_user)
     return current_user
 
 
-@app.post('/token', response_model=Token)
+@router.post('/token', response_model=Token)
 async def login_for_access_token(form_data: OAuth2PasswordRequestForm = Depends()):
     user = authenticate_user(fake_users_db, form_data.username, form_data.password)
     if not user:
