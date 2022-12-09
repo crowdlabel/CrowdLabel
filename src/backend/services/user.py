@@ -5,7 +5,11 @@ from models.user import User
 from models.email import Email
 from utils.hasher import *
 from utils.emailsender import EmailSender
-from sqlalchemy import select ,update
+from sqlalchemy import select, update
+from fakedata import fake_users
+
+
+
 email_sender = EmailSender()
 
 from .database import *
@@ -121,8 +125,13 @@ async def create_user(
         'error': 'ok',
     }
 
-async def check_credentials(username: str, password: str) -> bool:
-    return username == 'username' and password == 'password'
+
+
+
+async def authenticate(username: str, password: str) -> bool:
+    return (username in fake_users and
+        verify(fake_users[username]['password_hashed'], password))
+
     con = scoped_session(Connection)
     res = con.query(User).filter(User.username == username).all()
 

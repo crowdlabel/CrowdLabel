@@ -12,20 +12,15 @@ class AvailabilityResponse(BaseModel):
 
 
 
-
-
-class Email(BaseModel):
-    email: str
-
-
-class Credentials(BaseModel):
+class RegistrationResponse(BaseModel):
     username: str
-    password: str
-
-
-class Registration(Email, Credentials):
+    email: str
     user_type: int
-    verification_code: str
+
+class RegistrationRequest(RegistrationResponse):
+    password: str
+    verification_code: int
+
 
 class UserInfoRequest:
     username: str

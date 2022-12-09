@@ -3,7 +3,7 @@ from fastapi.routing import APIRouter
 from utils.filetransfer import download_file, upload_file
 from .auth import User, get_current_user
 import services.task as ts
-from schemas.schemas import *
+from schemas.tasks import TaskInfo, ID, TaskDetails
 
 
 router = APIRouter()
@@ -75,9 +75,9 @@ async def edit_task(details:TaskDetails):
             
         }
 
-    
-@router.get('/<id>')
-async def get_task(id: ID, current_user = Depends(get_current_user)):
+@router.get('/{id}')
+async def get_task(id: int, current_user = Depends(get_current_user)):
+
     response = await ts.get_task(id)
     if response[0]["status"] != "ok":
         return {
@@ -91,12 +91,15 @@ async def get_task(id: ID, current_user = Depends(get_current_user)):
             'details':response[0]['details'],
             'questions':response[0]['questions'],
             'results':response[0]['results']
-        },200
+        }, 200
 
 
-@router.get(
-    '/<id>/download-results',
-)
-async def download_task_results(id: ID, current_user = Depends(get_current_user)):
-    ts.create_task_results_file(id)
-    return await download_file('main.py')
+
+@router.get('/{id}/download-results',)
+async def download_task_results(id: int, current_user = Depends(get_current_user)):
+    filename = ts.create_task_results_file(id)
+    return await download_file(filename)
+
+@router.patch('/{id}')
+async def edit_task(id: int, current_user = Depends(get_current_user)):
+    return 'editing task'

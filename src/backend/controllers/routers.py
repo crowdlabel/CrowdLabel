@@ -3,7 +3,7 @@ from .base import app
 
 from . import auth, tasks, users
 
-app_router = APIRouter()
+app_router = APIRouter(prefix='')
 
 app_router.include_router(auth.router, prefix='', tags=['auth'])
 app_router.include_router(tasks.router, prefix='/tasks', tags=['tasks'])
