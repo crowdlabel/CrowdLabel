@@ -1,7 +1,7 @@
 from fastapi.routing import APIRouter
 import services.user
 from .responses import *
-from schemas.schemas import *
+from schemas.users import Email, Registration, AvailabilityRequest, AvailabilityResponse
 from services.user import username_exists, email_exists, send_verification_email
 from .auth import User, Depends, get_current_user
 
@@ -52,12 +52,10 @@ async def register(details: Registration):
         }, 200
 
 
-class AvailabilityResponse(BaseModel): 
-    username: bool
-    email: bool
+
 
 @router.post('/availability', response_model=AvailabilityResponse)
-async def availability(fields: Availability):
+async def availability(fields: AvailabilityRequest):
     fields.username = True
     fields.email = True
     
