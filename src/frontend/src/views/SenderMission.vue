@@ -79,7 +79,7 @@
                 <el-form-item label="上传文件:" class="mission_file" required>
                   <el-upload class="upload_file" action="https://jsonplaceholder.typicode.com/posts/"
                     :multiple=false
-                    
+                    accept=".zip,.rar"
                     >
                     <el-button type="primary" size="small" class="click_upload_btn">点击上传</el-button>
                     <div slot="tip" class="el-upload__tip">只能上传zip/rar文件</div>
