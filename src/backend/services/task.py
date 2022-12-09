@@ -15,25 +15,31 @@ def __verify_task_format():
 async def create_task(
     name: str,
     creator: str,
-    details: str
+    type:int,
+    details:str,
+    introduction: str,
+    path:str
 ):
 
     # get the arguments as a dictionary
     if not __verify_task_format():
-        return False
+        return {
+            'status':'error'
+        }
 
 
     task = Task(
         name,
         creator,
-        details
+        details,
+        introduction,
+        type,
+        path
     )
     con.add(task)
     await con.commit()
-    print(123)
     return {
-        'arg': 'ok',
-        'error': 'ok',
+        'status':'ok'
     }
 
 async def get_task(id):
@@ -55,12 +61,14 @@ async def get_task(id):
         "id" :target.id,
         "name":target.name,
         "creator":target.creator,
+        "introduction":target.introduction,
+        "type":target.type,
         "details":target.details,
         "questions":s,
-        "results":result    
+        "results":result,
+        "path":target.path   
     },200
-
-async def edit_task(id):
+async def edit_task(id,details,introduction):
     async with con.begin():
         result = await con.execute(select(Task).where(Task.id==id))
         target = result.scalars().first()
@@ -68,16 +76,18 @@ async def edit_task(id):
             return{
                 "status":"not found",
             },400
-        target.date_download = datetime.datetime.now
+        target.details= details
+        target.introduction = introduction
         await con.flush()
         con.expunge(target)
     return {
         "status":"ok",
         "id" :target.id,
-        "task_name":target.task_name,
-        "task_id":target.task_id,
-        "date_create":target.date_created,
-        "date_download":target.date_download
+        "name":target.name,
+        "creator":target.creator,
+        "introduction":target.introduction,
+        "type":target.type,
+        "details":target.details
     },200
     
 

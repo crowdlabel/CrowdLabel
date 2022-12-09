@@ -15,11 +15,13 @@ async def create_task(details:TaskInfo):
     response = await services.task.create_task(
         details.name,
         details.creator,
-        details.details)
-    print(response)
-    if response != 'ok':
+        details.type,
+        details.details,
+        details.introduction,
+        details.path)
+    if response['status'] != 'ok':
         return {
-            'error': f'{response} already exists'
+            'error': f'already exists'
         }, 400
 
     
@@ -28,6 +30,9 @@ async def create_task(details:TaskInfo):
             'name': details.name,
             'creator': details.creator,
             'details': details.details,
+            'introduction':details.introduction,
+            'type':details.type,
+            'path':details.path
         }, 200
 @app.post('/delete_task')
 async def delete_task(details:ID):
@@ -44,7 +49,8 @@ async def delete_task(details:ID):
 async def edit_task(details:TaskDetails):
     response = await services.task.edit_task(
         details.id,
-        details.details
+        details.details,
+        details.introduction
     )
     if response[0]['status'] != 'ok':
         return {
@@ -55,8 +61,8 @@ async def edit_task(details:TaskDetails):
             'id':response[0]['id'],
             'name':response[0]['name'],
             'creator':response[0]['creator'],
-            'details':response[0]['details']
-            
+            'details':response[0]['details'],
+            'introduction':response[0]['introduction']
         }
 @app.post('/get_task')
 async def get_task(details:ID):
@@ -72,7 +78,10 @@ async def get_task(details:ID):
             'creator':response[0]['creator'],
             'details':response[0]['details'],
             'questions':response[0]['questions'],
-            'results':response[0]['results']
+            'results':response[0]['results'],
+            'type':response[0]['type'],
+            'introduction':response[0]['introduction'],
+            'path':response[0]['path']
         },200
 @task_router.get('/')
 def task(id):

@@ -31,6 +31,7 @@ class Email(BaseModel):
 
 class TaskDetails(ID):
     details:str
+    introduction:str
 
 class ChildTaskResponse(ID):
     response:str
@@ -46,7 +47,10 @@ class Registration(Email, Credentials):
 class TaskInfo(BaseModel):
     name : str
     creator : str
-    details : str
+    details: str
+    introduction : str
+    type : int 
+    path : str
 class QuestionInfo(BaseModel):
     type: str
     prompt :str
