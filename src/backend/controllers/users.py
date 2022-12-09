@@ -9,7 +9,7 @@ from .auth import User, Depends, get_current_user
 router = APIRouter()
 
 
-@router.post('/verify_email',
+@router.post('/verify-email',
 
 )
 async def verify_email(email: Email) -> bool:

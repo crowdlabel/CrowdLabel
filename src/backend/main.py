@@ -2,7 +2,7 @@ import argparse
 import json
 import uvicorn
 from fastapi.openapi.utils import get_openapi
-from controller.routers import *
+from controllers.routers import app
 
 def generate_docs():
     with open('openapi.json', 'w') as f:
