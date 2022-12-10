@@ -51,6 +51,9 @@ class TaskInfo(BaseModel):
     introduction : str
     type : int 
     path : str
+
+class FilePath(ID):
+    path:str
 class QuestionInfo(BaseModel):
     type: str
     prompt :str

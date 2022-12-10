@@ -64,6 +64,27 @@ async def edit_task(details:TaskDetails):
             'details':response[0]['details'],
             'introduction':response[0]['introduction']
         }
+
+@app.post('/get_task_question')
+async def get_task(details:ID):
+    response = await services.task.get_task(details.id)
+    if response[0]["status"] != "ok":
+        return {
+            'error' : f'not found id {details.id}'
+        },400
+    else :
+        return {
+            'id':response[0]['id'],
+            'name':response[0]['name'],
+            'creator':response[0]['creator'],
+            'details':response[0]['details'],
+            'questions':response[0]['questions'],
+            'results':response[0]['results'],
+            'type':response[0]['type'],
+            'introduction':response[0]['introduction'],
+            'path':response[0]['path']
+        },200
+
 @app.post('/get_task')
 async def get_task(details:ID):
     response = await services.task.get_task(details.id)

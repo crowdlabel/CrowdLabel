@@ -42,6 +42,25 @@ async def create_task(
         'status':'ok'
     }
 
+async def get_task_question(id):
+    async with con.begin():
+        result = await con.execute(select(Task).where(Task.id==id).options(selectinload(Task.questions)))
+        target = result.scalars().first()
+        if target is None:
+            return{
+                "status":"not found",
+            },400
+        return {
+            "status":"ok",
+            "id" :target.id,
+            "name":target.name,
+            "creator":target.creator,
+            "introduction":target.introduction,
+            "type":target.type,
+            "details":target.details,
+            "questions":target.questions,
+            "path":target.path   
+        },200
 async def get_task(id):
     async with con.begin():
         result = await con.execute(select(Task).where(Task.id==id).options(selectinload(Task.questions),selectinload(Task.results)))

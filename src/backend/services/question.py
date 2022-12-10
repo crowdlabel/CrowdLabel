@@ -1,15 +1,32 @@
 from models.question import Question
+from models.task import Task
 from sqlalchemy.orm import sessionmaker, scoped_session
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy import select ,update
 from .database import *
+import json
 Connection = sessionmaker(bind=engine,expire_on_commit=False,class_=AsyncSession)
 con = scoped_session(Connection)
 def __verify_question_format():
     return True
 
 
-    
+async def create_question_from_file(
+    task_id:int,
+    file_path:str
+):
+    if not __verify_question_format():
+        return False
+    file = json.load(open(file_path,'r'))
+    async with con.begin():
+        result = await con.execute(select(Task).where(Task.id==task_id))
+        target = result.scalars().first()
+        type = target.type
+    for question in file:
+        await create_question(type,file[question]['prompt'],file_path,file[question]['options'],task_id)
+    return {
+        'status':'ok'
+    }
 
 async def create_question(
     type: str,
@@ -23,15 +40,13 @@ async def create_question(
     if not __verify_question_format():
         return False
 
-
     question = Question(
         type,prompt,resource,options,task_id
     )
     con.add(question)
     await con.commit()
     return {
-        'arg': 'ok',
-        'error': 'ok',
+        'status':'ok'
     }
 
 async def get_question(id):
