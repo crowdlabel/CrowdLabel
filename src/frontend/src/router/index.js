@@ -9,6 +9,7 @@ import CreditsView from '../views/CreditsView.vue'
 import MyAccountView from '../views/MyAccountView.vue'
 import EditMyAccountView from '../views/EditMyAccountView.vue'
 import NotificationsView from '../views/NotificationsView.vue'
+import ProjectDetailView from '../views/ProjectDetailView'
 import QuestionAudio from '../views/QuestionAudio.vue'
 import QuestionText from '../views/QuestionText.vue'
 import QuestionImageClassify from '../views/QuestionImageClassify.vue'
@@ -67,6 +68,11 @@ const routes = [
     path: '/notifications',
     name: 'notifications',
     component: NotificationsView
+  },
+  {
+    path: '/project_detail',
+    name: 'project_detail',
+    component: ProjectDetailView
   },
   {
     path: '/question_text',
