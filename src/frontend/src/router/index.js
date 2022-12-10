@@ -9,6 +9,10 @@ import CreditsView from '../views/CreditsView.vue'
 import MyAccountView from '../views/MyAccountView.vue'
 import EditMyAccountView from '../views/EditMyAccountView.vue'
 import NotificationsView from '../views/NotificationsView.vue'
+import QuestionAudio from '../views/QuestionAudio.vue'
+import QuestionText from '../views/QuestionText.vue'
+import QuestionImageClassify from '../views/QuestionImageClassify.vue'
+import QuestionImageIdentify from '../views/QuestionImageIdentify.vue'
 import axios from 'axios'
 import VueAxios from 'vue-axios'
 import SenderHome from '../views/SenderHome.vue'
@@ -63,6 +67,26 @@ const routes = [
     path: '/notifications',
     name: 'notifications',
     component: NotificationsView
+  },
+  {
+    path: '/question_text',
+    name: 'question_text',
+    component: QuestionText
+  },
+  {
+    path: '/question_audio',
+    name: 'question_audio',
+    component: QuestionAudio
+  },
+  {
+    path: '/question_image_classify',
+    name: 'question_image_classify',
+    component: QuestionImageClassify
+  },
+  {
+    path: '/question_image_identify',
+    name: 'question_image_identify',
+    component: QuestionImageIdentify
   },
   {
     path: '/senderhome',
