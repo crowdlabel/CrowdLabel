@@ -1,3 +1,3 @@
-from backend.services import user
+from backend.services import users
 
-user.get_user_info('test')
+users.get_user('test')

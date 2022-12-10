@@ -1,9 +1,12 @@
-from models.task import Task
+import datetime
 from sqlalchemy.orm import sessionmaker, scoped_session, selectinload
 from sqlalchemy.ext.asyncio import AsyncSession
-from sqlalchemy import select ,update
+from sqlalchemy import select, update
+
+from models.task import Task
 from .database import *
-import datetime
+from .fakedata import fake_tasks
+
 Connection = sessionmaker(bind=engine,expire_on_commit=False,class_=AsyncSession)
 con = scoped_session(Connection)
 def __verify_task_format():
@@ -36,14 +39,18 @@ async def create_task(
         'error': 'ok',
     }
 
-async def get_task(id):
+async def get_task(task_id: int) -> dict | None:
+
+    for task in fake_tasks:
+        if task.task_id == task_id:
+            return task
+    return None
+
     async with con.begin():
-        result = await con.execute(select(Task).where(Task.id==id).options(selectinload(Task.questions),selectinload(Task.results)))
+        result = await con.execute(select(Task).where(Task.id == task_id).options(selectinload(Task.questions),selectinload(Task.results)))
         target = result.scalars().first()
         if target is None:
-            return{
-                "status":"not found",
-            },400
+            return None
         s= ''
         for q in target.questions:
             s = s+q.prompt+'\n'
@@ -58,7 +65,7 @@ async def get_task(id):
         "details": target.details,
         "questions": s,
         "results": result    
-    }, 200
+    }
 
 
 async def get_tasks(
@@ -99,42 +106,36 @@ async def get_tasks(
     total = 10
     return [], total
 
-async def edit_task(id):
+async def edit_task(task_id: int) -> bool | None:
     async with con.begin():
-        result = await con.execute(select(Task).where(Task.id==id))
+        result = await con.execute(select(Task).where(Task.id == task_id))
         target = result.scalars().first()
         if target is None:
-            return{
-                "status":"not found",
-            },400
-        target.date_download = datetime.datetime.now
+            return None
+        target.date_download = datetime.datetime.now()
         await con.flush()
         con.expunge(target)
+
     return {
-        "status":"ok",
         "id" :target.id,
         "task_name":target.task_name,
         "task_id":target.task_id,
         "date_create":target.date_created,
         "date_download":target.date_download
-    },200
+    }
     
 
-async def delete_task(id):
+async def delete_task(task_id: int) -> bool:
     async with con.begin():
-        result = await con.execute(select(Task).where(Task.id==id))
+        result = await con.execute(select(Task).where(Task.id==task_id))
         target = result.scalars().first()
         if target == None:
-            return {
-                "status": 'not found'
-            },400
+            return False
         await con.delete(target)
         # for item in result:
         #     await con.delete(item)
     await con.commit()
-    return {
-        'status':'ok'
-    },200
+    return True
 
 
 async def create_task_results_file(id):

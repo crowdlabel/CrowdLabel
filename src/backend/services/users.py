@@ -5,7 +5,11 @@ from models.user import User
 from models.email import Email
 from utils.hasher import *
 from utils.emailsender import EmailSender
-from sqlalchemy import select ,update
+from sqlalchemy import select, update
+from .fakedata import fake_users
+
+
+
 email_sender = EmailSender()
 
 from .database import *
@@ -121,8 +125,20 @@ async def create_user(
         'error': 'ok',
     }
 
-async def check_credentials(username: str, password: str) -> bool:
-    return username == 'username' and password == 'password'
+
+
+
+async def authenticate(username: str, password: str) -> bool:
+
+
+    for user in fake_users:
+        if (user.username == username and 
+            verify(user.password_hashed, password)):
+
+            return True
+
+    return False
+
     con = scoped_session(Connection)
     res = con.query(User).filter(User.username == username).all()
 
@@ -133,7 +149,7 @@ async def check_credentials(username: str, password: str) -> bool:
 
     return verify(user.password, password)
 
-async def get_user_info(username: str) -> dict:
+async def get_user(username: str) -> dict | None:
     """
     Gets the information about a user
     
@@ -142,6 +158,12 @@ async def get_user_info(username: str) -> dict:
 
     Returns:
     """
+
+    for user in fake_users:
+        if user.username == username:
+            return user
+    return None
+
     info = {
         'username': '',
         'email': '',
@@ -174,10 +196,15 @@ async def set_user_info(new_info: dict) -> bool:
     If the field doesn't exist, or the value fails checks, return False
     """
 
+async def username_exists(username: str) -> bool:
 
+    for user in fake_users:
+        if user.username == username:
+            return True
+    return False
 
-
-async def username_exists(username):
+    if not check_username_format(username):
+        return False
     async with con.begin():
         res= await con.execute(select(User).where(User.username==username))
         target = res.scalars().first()
@@ -185,7 +212,15 @@ async def username_exists(username):
         return False
     return True
 
-async def email_exists(email):
+async def email_exists(email: str) -> bool:
+
+    for user in fake_users:
+        if user.email == email:
+            return True
+    return False
+
+    if not check_email_format(email):
+        return False
     async with con.begin():
         res= await con.execute(select(User).where(User.email==email))
         target = res.scalars().first()
