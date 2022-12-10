@@ -18,7 +18,7 @@ verify_email_error = JSONError(status.HTTP_400_BAD_REQUEST, 'Email not sent, che
     },
 )
 async def verify_email(email: str) -> bool:
-    if await us.send_verification_email:
+    if await services.users.send_verification_email:
         code = status.HTTP_200_OK
     else:
         code = status.HTTP_400_BAD_REQUEST
@@ -38,7 +38,7 @@ register_error = JSONError(status.HTTP_400_BAD_REQUEST, '[field] already exists'
 )
 async def register(details: RegistrationRequest):
     print(details)
-    response = await us.create_user(
+    response = await services.users.create_user(
         details.username,
         details.email,
         details.password,
@@ -67,9 +67,9 @@ async def register(details: RegistrationRequest):
 async def availability(fields: AvailabilityRequest):
     print(fields)
     if fields.username:
-        fields.username = not await us.username_exists(fields.username)
+        fields.username = not await services.users.username_exists(fields.username)
     if fields.email:
-        fields.email = not await us.email_exists(fields.email)
+        fields.email = not await services.users.email_exists(fields.email)
     
     return fields
 
