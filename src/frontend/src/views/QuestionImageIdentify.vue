@@ -6,90 +6,56 @@
         <h2 class="logo">CrowdLabel</h2>
       </div>
       <div class="page_title">
-        <h3 class="title">我的积分</h3>
-          <a class="notifications" data-external="true" href="/notifications">
-            <img src="../assets/notifications.svg" alt="label" height="24"/>
-          </a>
+        <h3 class="title">任务名称</h3>
       </div>
-        <a class="my_account" data-external="true" href="/myaccount">
-            <img src="../assets/my_account.svg" alt="label" height="24"/>
-        </a>
     </div>
     <div class="body">
-        <div class="left_nav">
-            <ul class="left_nav_list_top">
-                <li>
-                    <a aria-current="page" class="left_nav_list_item" data-external="true" href="/projects">
-                        <img src="../assets/folder.png" height="21" width="20">
-                        <p class="list_item_title">任务大厅</p>
-                    </a>
-                </li>
-                <li>
-                    <a aria-current="page" class="left_nav_list_item" data-external="true" href="/history">
-                        <img src="../assets/history.png" height="19" width="20">
-                        <p class="list_item_title">历史记录</p>
-                    </a>
-                </li>
-                <li>
-                    <a aria-current="page" class="left_nav_list_item left_nav_list_item_active" data-external="true" href="/credits">
-                        <img src="../assets/credits_active.png" height="19" width="20">
-                        <p class="list_item_title">我的积分</p>
-                    </a>
-                </li>
-                <li tag="li" class="left_nav_spacer">
-                </li>
-            </ul>
-            <ul class="left_nav_list_bottom">
-                <li>
-                    <a aria-current="page" class="left_nav_list_item" data-external="true" href="/settings">
-                        <img src="../assets/settings.png" height="20" width="20">
-                        <p class="list_item_title">设置</p>
-                    </a>
-                </li>
-                <li>
-                    <a aria-current="page" class="left_nav_list_item" data-external="true" href="/about_us">
-                        <img src="../assets/about.png" height="20" width="20">
-                        <p class="list_item_title">关于我们</p>
-                    </a>
-                </li>
-            </ul>
+      <div class="left_nav">
+        <ul class="left_nav_list_top">
+          <li>
+            <a aria-current="page" class="left_nav_list_item left_nav_list_item_active" data-external="true" href="/projects">
+              <p class="list_item_title">任务信息</p>
+              <img class="down_arrow" src="../assets/down_arrow_active.png" height="20" width="20">
+            </a>
+          </li>
+        </ul>
+        <div class="project_description">
+          <p class="text_bold">任务简介：</p>
+           <p class="text_normal">
+            软件工程是一门研究用工程化方法构建和维护有效、实用和高质量的软件的学科。它涉及程序设计语言、数据库、软件开发工具、系统平台、标准、设计件有电子邮件、嵌入式系统、人机界面、办公套件、操作系统、编译器、数据库、游戏等。同时，各个行业几乎都有计算机软件的应用，如工业、农业、银行、航空、政府部门等。这些应用促进了经济和社会的发展，也提高了工作效率和生活效率 。
+            <br />软件工程的目标是：在给定成本、进度的前提下，开发出具有适用性、有效性、可修改性、可靠性、可理解性、可维护性、可重用性、可移植性、可追踪性、可互操作性和满足用户需求的软件产品。追求这些目标有助于提高软件产品的质量和开发效率，减少维护的困难。
+           </p>
+           <div class="placeholder_text"></div>
+            <p class="text_bold">任务类型：</p><p class="text_normal">文字任务</p>
+            <p class="text_bold"><br />问题数量：</p><p class="text_normal">10</p>
+            <p class="text_bold"><br />积分奖励：</p><p class="text_normal">15</p>
+            <div class="placeholder_border"></div>
         </div>
-        <div class="main_body">
-          <h3 class="sub_title">数据概览</h3>
-          <div class="row">
-            <div class="box_overview">
-              <p class="box_title">近7日收入</p>
-              <div class="box_credits">
-                <p class="box_number">27.5</p>
-                <p class="box_unit">积分</p>
-              </div> 
-            </div>
-            <div class="box_overview">
-              <p class="box_title">累计总收入</p>
-              <div class="box_credits">
-                <p class="box_number">126.3</p>
-                <p class="box_unit">积分</p>
-              </div>
-            </div>
-          </div>
-          <h3 class="sub_title">积分提现</h3>
-          <div class="row">
-            <div class="box_pay">
-              <p class="box_title">微信 ></p>
-              <img src="../assets/wechat.png" height="100px">
-            </div>
-            <div class="box_pay">
-              <p class="box_title">支付宝 ></p>
-              <img class="img_alipay" src="../assets/alipay.png" height="85px">
-            </div>
-            <div class="box_pay">
-              <p class="box_title">银行卡 ></p>
-              <img class="img_credit_card" src="../assets/credit_card.png" height="70px">
-            </div>
-          </div>
+      </div>
+      <div class="main_body">
+        <div class="instruction">
+          <p class="text_bold">问题3：</p>
+          <p class="text_normal">查看下方图片，用鼠标框出所有</p>
+          <p class="text_bold">行人</p>
+          <p class="text_normal">。（还没做）</p>
+        </div>
+        <img class="image" src="../assets/image_placeholder.png" height="400px" width="600px"/>
+        <div class="answers">
           
-            
         </div>
+        <div class="row row_center">
+          <a href="/projects">
+            <el-button type="primary" plain>退出答题</el-button>
+          </a>
+          <a href="/question_image_classify">
+            <el-button type="primary">&lt 上一题</el-button>
+          </a>
+          <a href="/question_audio">
+            <el-button type="primary">下一题 ></el-button>
+          </a>
+        </div>
+        <el-progress :percentage="percentage" :color="customColor"></el-progress>
+      </div>
     </div>
   </div>
 </template>
@@ -102,6 +68,8 @@ import axios from 'axios'
 export default {
   data() {
     return {
+      percentage: 60,
+      customColor: '#5D3BE6',
       dialogVisible: false
     };
   },
@@ -142,6 +110,15 @@ export default {
   min-width: 1150px;
 }
 
+.row {
+  display: flex;
+  flex-direction: row;
+}
+.row_center {
+  text-align: center;
+  margin: 0 auto;
+}
+
 .top_nav {
     background-color: #fff;
     border-bottom: 1.2px solid rgba(0,0,0,.1);
@@ -157,8 +134,8 @@ export default {
     box-shadow: 1.2px 0 0 0 rgb(0 0 0 / 10%);
     box-sizing: border-box;
     display: flex;
-    min-width: 230px;
-    max-width: 230px;
+    min-width: 300px;
+    max-width: 300px;
     padding-left: 20px;
 }
 .page_title {
@@ -170,24 +147,7 @@ export default {
     min-width: 120px;
     flex: 1;
 }
-.notifications {
-    align-items: center;
-    align-self: center;
-    cursor: pointer;
-    display: flex;
-    justify-content: center;
-    position: relative;
-}
-.my_account {
-    align-items: center;
-    align-self: center;
-    cursor: pointer;
-    display: flex;
-    justify-content: center;
-    margin-left: 10px;
-    margin-right: 20px;
-    position: relative;
-}
+
 .logo{
   vertical-align: middle;
   text-align: left;
@@ -212,12 +172,13 @@ export default {
 }
 
 .left_nav {
-    max-width: 230px;
-    min-width: 230px;
+    max-width: 300px;
+    min-width: 300px;
     box-shadow: 1.2px 0 0 0 rgb(0 0 0 / 10%);
     box-sizing: border-box;
     flex-direction: column;
-    position: relative;
+    height: calc(100vh - 50px);
+    min-height: 600px;
 }
 .left_nav_list_top {
     box-sizing: border-box;
@@ -226,23 +187,15 @@ export default {
     flex-direction: column;
     margin: 0;
     padding: 12px;
-    height: calc(100vh - 50px - 132.2px);
-    min-height: 180px;
 }
-.left_nav_list_bottom {
-    box-sizing: border-box;
-    list-style-type: none;
-    border-top: 1.2px solid rgba(0,0,0,.1);
-    flex: 1;
-    flex-direction: column;
-    position: relative;
-    bottom: 0;
-    margin: 0;
-    padding: 12px;
+.down_arrow {
+  margin-left: 140px;
 }
-.left_nav_spacer {
-    height: calc(100vh - 329.2px);
-    flex: 1;
+.placeholder_text {
+  height: 5px;
+}
+.placeholder_border {
+  height: 20px;
 }
 .left_nav_list_item {
     box-sizing: border-box;
@@ -267,8 +220,25 @@ export default {
     pointer-events: none;
 }
 .list_item_title {
-    padding: 15px;
+    padding: 10px;
     font-size: 15px;
+}
+.project_description {
+  text-align: left;
+  font-size: 14px;
+  padding: 0px 20px;
+  border-bottom: 1.2px solid rgba(0,0,0,.1);
+}
+.text_bold {
+  font-weight: bold;
+  margin: 0px;
+  display:inline;
+}
+.text_normal {
+  font-weight: normal;
+  margin: 0px;
+  line-height: 1.5;
+  display:inline;
 }
 
 .main_body {
@@ -278,85 +248,60 @@ export default {
     display: flex;
     flex:1;
 }
-.search_bar {
-    box-sizing: border-box;
-    flex-direction: row;
-}
 
-.sub_title{
-  vertical-align: middle;
+.instruction {
+  text-align:left;
+  padding: 30px 40px 0px 40px;
+}
+.image {
+  align-self:center;
+  margin:20px 0px 30px 0px;
+}
+.question {
   text-align: left;
   font-size: 18px;
   font-weight: bold;
-  color:black;
-  margin-left: 50px;
-  margin-top: 30px;
-}
-.row {
-  box-sizing: border-box;
-  flex-direction: row;
-  position: relative;
-  display: flex;
-  margin-left: 70px;
-  margin-bottom: 20px;
-}
-.box_overview{
-  background: rgba(84,47,238,.05);
-  margin: 10px 0px 0px 30px;
-	padding: 10px;
-	width: 355px;
-	height: 220px;
-	border-radius: 8px;
-	font-size: 14px;
-}
-.box_title {
-  text-align: left;
-  margin-left: 15px;
-  font-size: 15px;
-  color: rgba(0,0,0,0.7);
-}
-.box_credits {
-  box-sizing: border-box;
-  flex-direction: row;
-  position: relative;
-  display: flex;
-  margin-left: 60px;
-  line-height: 50px;
-  vertical-align: middle;
-}
-.box_number {
-  text-align: left;
-  vertical-align: text-bottom;
-  font-size: 45px;
-  margin: 0px 0px 0px 0px;
-  color: rgba(84,47,238,1);
-  font-weight: bold;
-}
-.box_unit {
-  text-align: left;
-  vertical-align: sub;
-  font-size: 16px;
-  margin: 0px 0px 0px 6px;
-  color: rgba(0,0,0,1);
-  padding-top: 7px;
+  padding-left: 40px;
+
 }
 
-.box_pay{
-  background: rgba(0,0,0,.03);
-  margin: 10px 0px 0px 20px;
-	padding: 10px;
-	width: 230px;
-	height: 190px;
-	border-radius: 8px;
-	font-size: 14px;
-  cursor: pointer;
+::v-deep .el-button--primary {
+  border-color: #5D3BE6;
+  background-color: #5D3BE6;
+  border-radius: 8px;
+  margin-right: 10px;
+}
+::v-deep .el-button--primary:hover{
+  background-color: rgba(84,47,238,.7);
+  border-color: rgba(84,47,238,.1);
+}
+::v-deep .el-button--primary:focus {
+  background-color: #5D3BE6;
+  border-color: #5D3BE6;
 }
 
-.img_alipay {
-  margin-top: 5px;
+::v-deep .el-button--primary.is-plain {
+  border-color: #5D3BE6;
+  color: #5D3BE6;
+  background-color: #fff;
 }
-.img_credit_card {
-  margin-top: 10px;
+::v-deep .el-button--primary.is-plain:hover{
+  background-color: #5D3BE6;
+  border-color: #5D3BE6;
 }
+::v-deep .el-button--primary.is-plain:focus {
+  border-color: #5D3BE6;
+  color: #5D3BE6;
+  background-color: #fff;
+}
+
+::v-deep .el-progress {
+  margin: 25px 0px 10px 0px;
+  width: 50% !important;
+  align-self:center;
+}
+
+
+
 
 </style>

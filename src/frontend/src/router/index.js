@@ -14,6 +14,7 @@ import QuestionAudio from '../views/QuestionAudio.vue'
 import QuestionText from '../views/QuestionText.vue'
 import QuestionImageClassify from '../views/QuestionImageClassify.vue'
 import QuestionImageIdentify from '../views/QuestionImageIdentify.vue'
+import MissionComplete from '../views/MissionComplete.vue'
 import axios from 'axios'
 import VueAxios from 'vue-axios'
 import SenderHome from '../views/SenderHome.vue'
@@ -93,6 +94,11 @@ const routes = [
     path: '/question_image_identify',
     name: 'question_image_identify',
     component: QuestionImageIdentify
+  },
+  {
+    path: '/mission_complete',
+    name: 'mission_complete',
+    component: MissionComplete
   },
   {
     path: '/senderhome',

@@ -33,44 +33,18 @@
         </div>
       </div>
       <div class="main_body">
-        <div class="instruction">
-          <p class="text_bold">问题4：</p>
-          <p class="text_normal">仔细聆听以下两段音频，注意对比两段音频的情感表达。</p>
-        </div>
-        <div class="scroll_view">
-          <el-scrollbar style="height: 100%">
-            <div class="row row_center">
-              <p class="text_bold">音频1：</p>
-              <audio class="audio" src="../assets/audio_placeholder.mp3" controls="controls"></audio>
-            </div>
-            <div class="row row_center">
-              <p class="text_bold">音频2：</p>
-              <audio class="audio" src="../assets/audio_placeholder.mp3" controls="controls"></audio>
-            </div>
-          </el-scrollbar>
-        </div>
-        <div class="question">
-          哪段音频表达了更加愤怒的情感？
-        </div>
-        <div class="answers">
-          <el-checkbox-group 
-          v-model="checkedCities"
-          :min="1"
-          :max="1">
-          <el-checkbox v-for="city in cities" :label="city" :key="city">{{city}}</el-checkbox>
-        </el-checkbox-group>
-        </div>
-        <div class="row row_center">
-          <a href="/projects">
-            <el-button type="primary" plain>退出答题</el-button>
-          </a>
-          <a href="/question_image_identify">
-            <el-button type="primary">&lt 上一题</el-button>
-          </a>
-          <a href="/mission_complete">
-            <el-button type="primary">完成答题</el-button>
-          </a>
-        </div>
+        <h3 class="mission_complete">
+          任务完成！
+        </h3>
+        <p class="message">
+          恭喜，您已完成了该任务的所有题目！
+          <br />您的答题数据已提交，请耐心等待审核，我们会在第一时间将审核结果通过平台消息发送给您。
+          <br />您也可以前往 “首页->历史记录” 页面查看自己所有已提交任务的状态。
+        </p>
+        <img class="trophy" src="../assets/trophy.svg" height="180px" width="180px"/>
+        <a href="projects">
+          <el-button type="primary">返回任务大厅</el-button>
+        </a>
         <el-progress :percentage="percentage" :color="customColor"></el-progress>
       </div>
     </div>
@@ -82,17 +56,12 @@
 // @ is an alias to /src
 // import HelloWorld from '@/components/HelloWorld.vue'
 import axios from 'axios'
-const cityOptions = ['上海', '北京', '广州', '深圳'];
 export default {
   data() {
     return {
-      percentage: 80,
+      percentage: 100,
       customColor: '#5D3BE6',
       dialogVisible: false
-    };
-    return {
-      checkedCities: ['上海', '北京'],
-      cities: cityOptions
     };
   },
   methods: {
@@ -129,7 +98,7 @@ export default {
 @import '@/assets/font/font.css';
 
 .all {
-  min-width: 1150px;
+  min-width: 800px;
 }
 
 .row {
@@ -271,38 +240,33 @@ export default {
     display: flex;
     flex:1;
 }
-
-.instruction {
+.mission_complete {
   text-align:left;
-  padding: 30px 40px 0px 40px;
-}
-.image {
-  align-self:center;
-  border-radius:8px;
-  margin:20px 0px 30px 0px;
-}
-.question {
-  text-align: left;
-  font-size: 18px;
+  font-size: 30px;
   font-weight: bold;
-  padding-left: 40px;
-
+  margin: 0px;
+  padding: 50px 50px 30px 50px;
 }
-.scroll_view {
-  text-align: center;
-  margin: 0 auto;
-  padding: 15px 0px 20px 0px;
-  max-height: 350px;
+.message {
+  font-size:17px;
+  text-align:left;
+  padding: 0px 50px 0px 50px;
+  line-height:1.6;
 }
-.audio {
-  margin: 10px 10px 10px 10px;
+.trophy {
+  align-self:center;
+  margin: 30px 0px 40px 0px;
 }
 
 ::v-deep .el-button--primary {
   border-color: #5D3BE6;
   background-color: #5D3BE6;
+  width: 150px;
+  height: 50px;
+  font-weight:bold;
+  font-size:16px;
   border-radius: 8px;
-  margin-right: 10px;
+  align-self:center;
 }
 ::v-deep .el-button--primary:hover{
   background-color: rgba(84,47,238,.7);
@@ -312,22 +276,6 @@ export default {
   background-color: #5D3BE6;
   border-color: #5D3BE6;
 }
-
-::v-deep .el-button--primary.is-plain {
-  border-color: #5D3BE6;
-  color: #5D3BE6;
-  background-color: #fff;
-}
-::v-deep .el-button--primary.is-plain:hover{
-  background-color: #5D3BE6;
-  border-color: #5D3BE6;
-}
-::v-deep .el-button--primary.is-plain:focus {
-  border-color: #5D3BE6;
-  color: #5D3BE6;
-  background-color: #fff;
-}
-
 ::v-deep .el-progress {
   margin: 25px 0px 10px 0px;
   width: 50% !important;
