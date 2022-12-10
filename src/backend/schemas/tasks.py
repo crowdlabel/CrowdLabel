@@ -1,6 +1,6 @@
+from datetime import datetime
 from pydantic import BaseModel
-
-
+from .questions import Question
 
 class ID(BaseModel):
     id :int 
@@ -10,10 +10,13 @@ class ID(BaseModel):
 class TaskDetails(ID):
     details:str
 
-
-
 class Task(BaseModel):
-    id: str
+    task_id: int
+    creator: str
+    date_created: datetime
+    tokens: float
+    questions: list[Question]
+
 
 class TasksRequest(BaseModel):
     name: str | None
@@ -22,11 +25,6 @@ class TasksRequest(BaseModel):
     page: int | None
     page_size: int | None
 
-class TasksRequest(TasksRequest):
+class TasksResponse(TasksRequest):
     tasks: list[Task]
     total: int
-
-class TaskInfo(BaseModel):
-    name : str
-    creator : str
-    details : str

@@ -47,7 +47,7 @@ unauthorized = JSONError(
 
 forbidden = JSONError(
     status.HTTP_403_FORBIDDEN,
-    {'description': 'You have insufficient permissions to access the content.'}
+    {'description': 'You have insufficient permissions to access this content.'}
 )
 
 rate_limit_error = JSONError(

@@ -9,9 +9,15 @@ def __verify_question_format():
     return True
 
 
-    
+import schemas.tasks
+import schemas.questions
+async def get_question(task: schemas.tasks.Task, question_id: int) -> schemas.questions.Question | None:
+    for question in task.questions:
+        if question.question_id == question_id:
+            return question
+    return None
 
-async def create_question(
+""" async def create_question(
     type: str,
     prompt:str,
     resource:str,
@@ -34,7 +40,17 @@ async def create_question(
         'error': 'ok',
     }
 
-async def get_question(id):
+async def get_question(task_id: int, question_id: int) -> Question | None:
+
+    for task in fake_tasks:
+        if task.task_id == task_id:
+            for question in task.questions:
+                if question.question_id == question_id:
+                    return question
+
+    return None
+    
+
     async with con.begin():
         result = await con.execute(select(Question).where(Question.id==id))
         target = result.scalars().first()
@@ -50,6 +66,19 @@ async def get_question(id):
         "options":target.options,
         "task_id":target.task_id
     },200
+
+async def answer(username: str, task_id: int, question_id: int, answer: Answer) -> bool:
+    for i in range(len(fake_tasks)):
+        if fake_tasks[i].task_id == task_id:
+            for j in range(len(fake_tasks[i].questions)):
+                if fake_tasks[i].questions[j].question_id == question_id:
+                    for k in range(len(fake_tasks[i].questions[j].answers)):
+                        if fake_tasks[i].questions[j].answers[k].respondent == username:
+                            fake_tasks[i].questions[j].answers[k] = answer
+                            return True
+                    fake_tasks[i].questions[j].answers.append(answer)
+                    return True
+    return False
 
 async def edit_question(id,type,prompt,resource,options,task_id):
     async with con.begin():
@@ -76,7 +105,7 @@ async def edit_question(id,type,prompt,resource,options,task_id):
     },200
     
 
-async def delete_question(id):
+async def delete_question(task_id, questionid):
     async with con.begin():
         result = await con.execute(select(Question).where(Question.id==id))
         target = result.scalars().first()
@@ -90,4 +119,4 @@ async def delete_question(id):
     await con.commit()
     return {
         'status':'ok'
-    },200
+    },200 """

@@ -3,99 +3,88 @@ from fastapi import Depends, HTTPException, status
 from fastapi.routing import APIRouter
 from fastapi.security import OAuth2PasswordBearer, OAuth2PasswordRequestForm
 from jose import JWTError, jwt
-from pydantic import BaseModel
 
-from utils.hasher import hash, verify
 from utils.config import get_config
 
-from .jsonerror import JSONError
+from .jsonerror import JSONError, forbidden
+
+import services.users as us
+
+from schemas.auth import *
 
 
 router = APIRouter()
 
 
 SECRET_KEY = get_config('auth.key')
-ALGORITHM = 'HS256'
-ACCESS_TOKEN_EXPIRE_MINUTES = 1
+ALGORITHM = get_config('auth.algorithm')
+ACCESS_TOKEN_EXPIRE_MINUTES = timedelta(minutes=get_config('auth.access_token_expire_minutes'))
 
 
-fake_users_db = {
-    'johndoe': {
-        'username': 'johndoe',
-        'full_name': 'John Doe',
-        'email': 'johndoe@example.com',
-        'password_hashed': hash('secret'),
-    }
-}
 
 
-class Token(BaseModel):
-    access_token: str
-    token_type: str
-
-
-class TokenData(BaseModel):
-    username: str | None = None
-
-
-class User(BaseModel):
-    username: str
-    email: str | None = None
-    full_name: str | None = None
-    disabled: bool | None = None
-
-
-class UserInDB(User):
-    password_hashed: str
-
-oauth2_scheme = OAuth2PasswordBearer(tokenUrl='token')
-
-
-def get_user(db, username: str):
-    if username in db:
-        user_dict = db[username]
-        return UserInDB(**user_dict)
-
-
-def authenticate_user(fake_db, username: str, password: str):
-    user = get_user(fake_db, username)
-    if not user:
-        return False
-    if not verify(user.password_hashed, password):
-        return False
-    return user
-
-
-def create_access_token(data: dict, expires_delta: timedelta | None = None):
+def create_access_token(data: dict):
     to_encode = data.copy()
-    if expires_delta:
-        expire = datetime.utcnow() + expires_delta
-    else:
-        expire = datetime.utcnow() + timedelta(minutes=15)
+    expire = datetime.utcnow() + ACCESS_TOKEN_EXPIRE_MINUTES
     to_encode.update({'exp': expire})
     encoded_jwt = jwt.encode(to_encode, SECRET_KEY, algorithm=ALGORITHM)
     return encoded_jwt
 
 
-async def get_current_user(token: str = Depends(oauth2_scheme)):
-    credentials_exception = HTTPException(
-        status_code=status.HTTP_401_UNAUTHORIZED,
-        detail='Could not validate credentials',
-        headers={'WWW-Authenticate': 'Bearer'},
-    )
-    try:
-        payload = jwt.decode(token, SECRET_KEY, algorithms=[ALGORITHM])
-        username: str = payload.get('sub')
-        if username is None:
-            raise credentials_exception
-        token_data = TokenData(username=username)
-    except JWTError:
-        raise credentials_exception
-    user = get_user(fake_users_db, username=token_data.username)
-    if user is None:
-        raise credentials_exception
-    return user
 
+oauth2_scheme = OAuth2PasswordBearer(tokenUrl='token')
+
+
+def create_access_token(data: dict):
+    to_encode = data.copy()
+    expire = datetime.utcnow() + ACCESS_TOKEN_EXPIRE_MINUTES
+    to_encode.update({'exp': expire})
+    encoded_jwt = jwt.encode(to_encode, SECRET_KEY, algorithm=ALGORITHM)
+    return encoded_jwt
+
+
+def get_current_user(user_types=[]):
+    """
+    Returns a function to be used by API endpoints
+    """
+    async def get_current_user_types(token: str = Depends(oauth2_scheme)):
+        """
+        Performs two tasks:
+        1. verifies the token, proving the request is from a logged-in user
+        2. raises exception if the logged-in user's type isn't in `user_types`
+        Returns the user
+        """
+        print('getting current user types', user_types)
+        credentials_exception = HTTPException(
+            status_code=status.HTTP_401_UNAUTHORIZED,
+            detail='Could not validate credentials',
+            headers={'WWW-Authenticate': 'Bearer'},
+        )
+        forbidden_exception = HTTPException(
+            status_code=status.HTTP_403_FORBIDDEN,
+            detail='Forbidden',
+            headers={'WWW-Authenticate': 'Bearer'},
+        )
+        try:
+            payload = jwt.decode(token, SECRET_KEY, algorithms=[ALGORITHM])
+            username: str = payload.get('sub')
+            if username is None:
+                raise credentials_exception
+        except JWTError:
+            raise credentials_exception
+
+        user = await us.get_user(username)
+
+        if not user:
+            raise credentials_exception
+
+        if user_types:
+            print('users type', user.user_type)
+            if not user.user_type in user_types:
+                raise forbidden_exception
+        print('returning user')
+        return user
+    return get_current_user_types
 
 
 invalid_credentials = JSONError(
@@ -110,13 +99,20 @@ invalid_credentials = JSONError(
     response_model=Token,
 )
 async def login(form_data: OAuth2PasswordRequestForm = Depends()):
-    user = authenticate_user(fake_users_db, form_data.username, form_data.password)
-    if not user:
+    print('logging in')
+    if not await us.authenticate(form_data.username, form_data.password):
         return invalid_credentials.response()
-
-    access_token_expires = timedelta(minutes=ACCESS_TOKEN_EXPIRE_MINUTES)
     access_token = create_access_token(
-        data={'sub': user.username},
-        expires_delta=access_token_expires
+        data={'sub': form_data.username},
     )
     return {'access_token': access_token, 'token_type': 'bearer'}
+
+
+@router.post('/token',
+    responses={
+        invalid_credentials.status_code: invalid_credentials.response_doc(),
+    },
+    response_model=Token,
+)
+async def token(form_data: OAuth2PasswordRequestForm = Depends()):
+    return await login(form_data)

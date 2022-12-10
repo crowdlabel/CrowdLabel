@@ -1,23 +1,29 @@
 from .base import app
-import services.question
-from fastapi import APIRouter
-from schemas.schemas import *
+import services.questions as qs
+import services.tasks as ts
+from fastapi import APIRouter, Path
+from schemas.tasks import *
+from .jsonerror import JSONError, status
+from . import tasks as tc
 
-question_router = APIRouter(prefix='/question')
+from auth import Depends, get_current_user
 
-@app.get('/questions')
+router = APIRouter()
+
+""" @router.get('/questions')
 async def questions():
     return 'api: questions'
 
-@app.post('/create_question')
-async def create_question(details:QuestionInfo):
+
+@router.POST('/questions')
+async def create_question(details: QuestionInfo):
     response = await services.question.create_question(
         details.type,
         details.prompt,
         details.resource,
         details.options,
         details.task_id
-        )
+    )
     if response != 'ok':
         return {
             'error': f'{response} already exists'
@@ -30,7 +36,7 @@ async def create_question(details:QuestionInfo):
         "options":details.options,
         "task_id":details.task_id
         }, 200
-@app.post('/delete_question')
+@router.delete('/questions')
 async def delete_question(details:ID):
     response = await services.question.delete_question(details.id)
     if response[0]['status'] != 'ok':
@@ -41,7 +47,7 @@ async def delete_question(details:ID):
         return {
             'id':details.id
         },200
-@app.post('/edit_question')
+@router.post('/edit_question')
 async def edit_question(details:IDWithQuestionInfo):
     response = await services.question.edit_question(
         details.id,
@@ -63,21 +69,15 @@ async def edit_question(details:IDWithQuestionInfo):
             "options":response[0]["options"],
             "task_id":response[0]["task_id"]
             
-        }
-@app.post('/get_question')
-async def get_question(details:ID):
-    response = await services.question.get_question(details.id)
-    if response[0]["status"] != "ok":
-        return {
-            'error' : f'not found id {details.id}'
-        },400
-    else :
-        return {
-            "type":response[0]["type"],
-            "prompt":response[0]["prompt"],
-            "resource":response[0]["resource"],
-            "options":response[0]["options"],
-            "task_id":response[0]["task_id"]
-        
-        },200
+        } """
 
+
+question_not_found_error = JSONError(status.HTTP_404_NOT_FOUND, 'Question not found')
+@router.get('/questions/{question_id}')
+async def get_question(question_id: int, task=Depends(tc.get_task), current_user=Depends(get_current_user)):
+
+    question = await qs.get_question(task, question_id)
+    if not question:
+        return question_not_found_error.response()
+    
+    return question
