@@ -37,19 +37,18 @@
           <p class="text_bold">问题2：</p>
           <p class="text_normal">查看下方图片，并对图片分类。</p>
         </div>
-        <img class="image" src="../assets/image_placeholder.png" height="330px" width="500px"/>
+        <img class="image" src="../assets/image_placeholder.png"/>
         <div class="question">
           这是一张什么图片？
         </div>
         <div class="answers">
-          <el-checkbox-group 
-          v-model="checkedCities"
-          :min="1"
-          :max="1">
-          <el-checkbox v-for="city in cities" :label="city" :key="city">{{city}}</el-checkbox>
-        </el-checkbox-group>
+          <el-radio-group v-model="radio">
+            <el-radio :label="1">哺乳动物</el-radio>
+            <el-radio :label="2">昆虫</el-radio>
+            <el-radio :label="3">鱼类</el-radio>
+          </el-radio-group>
         </div>
-        <div class="row row_center">
+        <div class="footer">
           <a href="/projects">
             <el-button type="primary" plain>退出答题</el-button>
           </a>
@@ -71,17 +70,13 @@
 // @ is an alias to /src
 // import HelloWorld from '@/components/HelloWorld.vue'
 import axios from 'axios'
-const cityOptions = ['上海', '北京', '广州', '深圳'];
 export default {
   data() {
     return {
       percentage: 40,
       customColor: '#5D3BE6',
-      dialogVisible: false
-    };
-    return {
-      checkedCities: ['上海', '北京'],
-      cities: cityOptions
+      dialogVisible: false,
+      radio: -1
     };
   },
   methods: {
@@ -118,7 +113,7 @@ export default {
 @import '@/assets/font/font.css';
 
 .all {
-  min-width: 1150px;
+  min-width: 1050px;
 }
 
 .row {
@@ -189,7 +184,7 @@ export default {
     box-sizing: border-box;
     flex-direction: column;
     height: calc(100vh - 50px);
-    min-height: 600px;
+    min-height: 590px;
 }
 .left_nav_list_top {
     box-sizing: border-box;
@@ -268,13 +263,16 @@ export default {
   align-self:center;
   border-radius:8px;
   margin:20px 0px 30px 0px;
+  height:calc(100vh - 380px);
+  width: calc(1.5 * (100vh - 380px));
+  min-height: 280px;
+  min-width: 420px;
 }
 .question {
   text-align: left;
   font-size: 18px;
   font-weight: bold;
-  padding-left: 40px;
-
+  padding-left: 45px;
 }
 
 ::v-deep .el-button--primary {
@@ -313,6 +311,44 @@ export default {
   align-self:center;
 }
 
+
+.answers {
+  margin: 10px 0px 20px 0px;
+}
+::v-deep .el-radio-group {
+  transform:scale(1.2);
+  font-size:30px !important;
+}
+::v-deep .el-radio__label {
+  color: black;
+}
+::v-deep .el-radio__input .el-radio__inner {
+  border-color: rgba(0, 0, 0, 0.2);
+}
+/* 选中后radio文本的颜色 */
+::v-deep .el-radio__input.is-checked + .el-radio__label {
+  color: #5D3BE6;
+}
+/* radio选中后小圆点的颜色 */
+::v-deep .el-radio__input.is-checked .el-radio__inner {
+  background: #5D3BE6 !important;
+  border-color: #5D3BE6 !important;
+}
+/* hover时颜色 */
+::v-deep .el-radio__inner:hover {
+  border-color: #5D3BE6;
+}
+
+::v-deep .el-progress {
+  margin: 25px 0px;
+  width: 80% !important;
+  align-self:center;
+}
+
+.footer {
+  text-align:center;
+  margin-top:auto;
+}
 
 
 

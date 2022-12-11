@@ -53,14 +53,12 @@
           哪段音频表达了更加愤怒的情感？
         </div>
         <div class="answers">
-          <el-checkbox-group 
-          v-model="checkedCities"
-          :min="1"
-          :max="1">
-          <el-checkbox v-for="city in cities" :label="city" :key="city">{{city}}</el-checkbox>
-        </el-checkbox-group>
+          <el-radio-group v-model="radio">
+            <el-radio :label="1">音频1</el-radio>
+            <el-radio :label="2">音频2</el-radio>
+          </el-radio-group>
         </div>
-        <div class="row row_center">
+        <div class="footer">
           <a href="/projects">
             <el-button type="primary" plain>退出答题</el-button>
           </a>
@@ -82,17 +80,13 @@
 // @ is an alias to /src
 // import HelloWorld from '@/components/HelloWorld.vue'
 import axios from 'axios'
-const cityOptions = ['上海', '北京', '广州', '深圳'];
 export default {
   data() {
     return {
       percentage: 80,
       customColor: '#5D3BE6',
-      dialogVisible: false
-    };
-    return {
-      checkedCities: ['上海', '北京'],
-      cities: cityOptions
+      dialogVisible: false,
+      radio: -1
     };
   },
   methods: {
@@ -129,7 +123,7 @@ export default {
 @import '@/assets/font/font.css';
 
 .all {
-  min-width: 1150px;
+  min-width: 1050px;
 }
 
 .row {
@@ -285,14 +279,15 @@ export default {
   text-align: left;
   font-size: 18px;
   font-weight: bold;
-  padding-left: 40px;
+  padding-left: 45px;
 
 }
 .scroll_view {
   text-align: center;
   margin: 0 auto;
   padding: 15px 0px 20px 0px;
-  max-height: 350px;
+  height: calc(100vh - 350px);
+  min-height: 180px;
 }
 .audio {
   margin: 10px 10px 10px 10px;
@@ -328,13 +323,43 @@ export default {
   background-color: #fff;
 }
 
+.answers {
+  margin: 10px 0px 20px 0px;
+}
+::v-deep .el-radio-group {
+  transform:scale(1.2);
+  font-size:30px !important;
+}
+::v-deep .el-radio__label {
+  color: black;
+}
+::v-deep .el-radio__input .el-radio__inner {
+  border-color: rgba(0, 0, 0, 0.2);
+}
+/* 选中后radio文本的颜色 */
+::v-deep .el-radio__input.is-checked + .el-radio__label {
+  color: #5D3BE6;
+}
+/* radio选中后小圆点的颜色 */
+::v-deep .el-radio__input.is-checked .el-radio__inner {
+  background: #5D3BE6 !important;
+  border-color: #5D3BE6 !important;
+}
+/* hover时颜色 */
+::v-deep .el-radio__inner:hover {
+  border-color: #5D3BE6;
+}
+
 ::v-deep .el-progress {
-  margin: 25px 0px 10px 0px;
-  width: 50% !important;
+  margin: 25px 0px;
+  width: 80% !important;
   align-self:center;
 }
 
-
+.footer {
+  text-align:center;
+  margin-top:auto;
+}
 
 
 </style>

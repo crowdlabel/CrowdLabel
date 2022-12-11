@@ -80,14 +80,12 @@
           这是否是一封广告邮件？
         </div>
         <div class="answers">
-          <el-checkbox-group 
-          v-model="checkedCities"
-          :min="1"
-          :max="1">
-          <el-checkbox v-for="city in cities" :label="city" :key="city">{{city}}</el-checkbox>
-        </el-checkbox-group>
+          <el-radio-group v-model="radio">
+            <el-radio :label="1">是</el-radio>
+            <el-radio :label="2">否</el-radio>
+          </el-radio-group>
         </div>
-        <div class="row row_center">
+        <div class="footer">
           <a href="/projects">
             <el-button type="primary" plain>退出答题</el-button>
           </a>
@@ -109,17 +107,13 @@
 // @ is an alias to /src
 // import HelloWorld from '@/components/HelloWorld.vue'
 import axios from 'axios'
-const cityOptions = ['上海', '北京', '广州', '深圳'];
 export default {
   data() {
     return {
       percentage: 20,
       customColor: '#5D3BE6',
-      dialogVisible: false
-    };
-    return {
-      checkedCities: ['上海', '北京'],
-      cities: cityOptions
+      dialogVisible: false,
+      radio: -1
     };
   },
   methods: {
@@ -218,7 +212,7 @@ export default {
     box-sizing: border-box;
     flex-direction: column;
     height: calc(100vh - 50px);
-    min-height: 600px;
+    min-height: 630px;
 }
 .left_nav_list_top {
     box-sizing: border-box;
@@ -297,7 +291,7 @@ export default {
   border: 1.2px solid rgba(0,0,0,.1);
   margin: 20px 80px 30px 70px;
   padding: 15px 15px;
-  height: 300px;
+  height: calc(100vh - 390px);
   min-height: 300px;
   text-align: left;
   background-color: rgba(84,47,238,.08);
@@ -307,8 +301,7 @@ export default {
   text-align: left;
   font-size: 18px;
   font-weight: bold;
-  padding-left: 40px;
-
+  padding-left: 45px;
 }
 
 ::v-deep .el-button--primary {
@@ -352,11 +345,41 @@ export default {
   border-radius: 8px;
   margin-right: 10px;
 }
+.answers {
+  margin: 10px 0px 20px 0px;
+}
+::v-deep .el-radio-group {
+  transform:scale(1.2);
+  font-size:30px !important;
+}
+::v-deep .el-radio__label {
+  color: black;
+}
+::v-deep .el-radio__input .el-radio__inner {
+  border-color: rgba(0, 0, 0, 0.2);
+}
+/* 选中后radio文本的颜色 */
+::v-deep .el-radio__input.is-checked + .el-radio__label {
+  color: #5D3BE6;
+}
+/* radio选中后小圆点的颜色 */
+::v-deep .el-radio__input.is-checked .el-radio__inner {
+  background: #5D3BE6 !important;
+  border-color: #5D3BE6 !important;
+}
+/* hover时颜色 */
+::v-deep .el-radio__inner:hover {
+  border-color: #5D3BE6;
+}
 
 ::v-deep .el-progress {
-  margin: 25px 0px 10px 0px;
-  width: 50% !important;
+  margin: 25px 0px;
+  width: 80% !important;
   align-self:center;
+}
+.footer {
+  text-align:center;
+  margin-top:auto;
 }
 
 

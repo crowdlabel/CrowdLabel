@@ -43,7 +43,7 @@
         <div class="answers">
           
         </div>
-        <div class="row row_center">
+        <div class="footer">
           <a href="/projects">
             <el-button type="primary" plain>退出答题</el-button>
           </a>
@@ -296,12 +296,14 @@ export default {
 }
 
 ::v-deep .el-progress {
-  margin: 25px 0px 10px 0px;
-  width: 50% !important;
+  margin: 25px 0px;
+  width: 80% !important;
   align-self:center;
 }
 
-
-
+.footer {
+  text-align:center;
+  margin-top:auto;
+}
 
 </style>

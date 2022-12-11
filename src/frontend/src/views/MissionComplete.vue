@@ -41,10 +41,12 @@
           <br />您的答题数据已提交，请耐心等待审核，我们会在第一时间将审核结果通过平台消息发送给您。
           <br />您也可以前往 “首页->历史记录” 页面查看自己所有已提交任务的状态。
         </p>
-        <img class="trophy" src="../assets/trophy.svg" height="180px" width="180px"/>
-        <a href="projects">
-          <el-button type="primary">返回任务大厅</el-button>
-        </a>
+        <img class="trophy" src="../assets/trophy.svg"/>
+        <div class="footer">
+          <a href="projects">
+            <el-button type="primary">返回任务大厅</el-button>
+          </a>
+        </div>
         <el-progress :percentage="percentage" :color="customColor"></el-progress>
       </div>
     </div>
@@ -98,7 +100,7 @@ export default {
 @import '@/assets/font/font.css';
 
 .all {
-  min-width: 800px;
+  min-width: 1130px;
 }
 
 .row {
@@ -256,6 +258,10 @@ export default {
 .trophy {
   align-self:center;
   margin: 30px 0px 40px 0px;
+  height: calc(100vh - 500px);
+  width: calc(100vh - 500px);
+  min-height:150px;
+  min-width:150px;
 }
 
 ::v-deep .el-button--primary {
@@ -277,11 +283,16 @@ export default {
   border-color: #5D3BE6;
 }
 ::v-deep .el-progress {
-  margin: 25px 0px 10px 0px;
-  width: 50% !important;
+  margin: 25px 0px;
+  width: 80% !important;
   align-self:center;
 }
 
+.footer {
+  text-align:center;
+  margin-top:auto;
+  margin-bottom: 20px;
+}
 
 
 
