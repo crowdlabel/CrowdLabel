@@ -60,7 +60,6 @@
               <el-button type="success" round>全部</el-button>
               <el-button round>文字任务</el-button>
               <el-button round>图像任务</el-button>
-              <el-button round>视频任务</el-button>
               <el-button round>音频任务</el-button>
             </div>
             <div class="order_by">

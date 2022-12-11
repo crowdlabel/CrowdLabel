@@ -31,11 +31,6 @@
                 </el-input>
               </div>
               <div class="row input_box">
-                <p class="field">手机号：</p>
-                <el-input placeholder="手机号" v-model="input" clearable>
-                </el-input>
-              </div>
-              <div class="row input_box">
                 <p class="field">密码：</p>
                 <el-input placeholder="密码" v-model="input" clearable show-password>
                 </el-input>

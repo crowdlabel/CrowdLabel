@@ -64,7 +64,6 @@
               <el-button type="success" round>全部</el-button>
               <el-button round>文字任务</el-button>
               <el-button round>图像任务</el-button>
-              <el-button round>视频任务</el-button>
               <el-button round>音频任务</el-button>
             </div>
             <div class="order_by">
@@ -75,66 +74,78 @@
             <div class="display_projects">
               <div class="display_projects_row">
                 <div class="project">
-                  <el-card :body-style="{ padding: '0px' }">
-                    <img src="../assets/image_placeholder.png" class="project_image">
-                    <div style="padding: 0px;">
-                      <p class="project_title">任务标题</p>
-                      <div class="bottom clearfix">
+                  <a data-external="true" href="/project_detail">
+                    <el-card :body-style="{ padding: '0px' }">
+                      <img src="../assets/image_placeholder.png" class="project_image">
+                      <div style="padding: 0px;">
+                        <p class="project_title">任务标题</p>
+                        <div class="bottom clearfix">
+                        </div>
                       </div>
-                    </div>
-                  </el-card>
+                    </el-card>
+                  </a>
                 </div>
                 <div class="project">
-                  <el-card :body-style="{ padding: '0px' }">
-                    <img src="../assets/image_placeholder.png" class="project_image">
-                    <div style="padding: 0px;">
-                      <p class="project_title">任务标题</p>
-                      <div class="bottom clearfix">
+                  <a data-external="true" href="/project_detail">
+                    <el-card :body-style="{ padding: '0px' }">
+                      <img src="../assets/image_placeholder.png" class="project_image">
+                      <div style="padding: 0px;">
+                        <p class="project_title">任务标题</p>
+                        <div class="bottom clearfix">
+                        </div>
                       </div>
-                    </div>
-                  </el-card>
+                    </el-card>
+                  </a>
                 </div>
                 <div class="project">
-                  <el-card :body-style="{ padding: '0px' }">
-                    <img src="../assets/image_placeholder.png" class="project_image">
-                    <div style="padding: 0px;">
-                      <p class="project_title">任务标题</p>
-                      <div class="bottom clearfix">
+                  <a data-external="true" href="/project_detail">
+                    <el-card :body-style="{ padding: '0px' }">
+                      <img src="../assets/image_placeholder.png" class="project_image">
+                      <div style="padding: 0px;">
+                        <p class="project_title">任务标题</p>
+                        <div class="bottom clearfix">
+                        </div>
                       </div>
-                    </div>
-                  </el-card>
+                    </el-card>
+                  </a>
                 </div>
               </div>
               <div class="display_projects_row">
                 <div class="project">
-                  <el-card :body-style="{ padding: '0px' }">
-                    <img src="../assets/image_placeholder.png" class="project_image">
-                    <div style="padding: 0px;">
-                      <p class="project_title">任务标题</p>
-                      <div class="bottom clearfix">
+                  <a data-external="true" href="/project_detail">
+                    <el-card :body-style="{ padding: '0px' }">
+                      <img src="../assets/image_placeholder.png" class="project_image">
+                      <div style="padding: 0px;">
+                        <p class="project_title">任务标题</p>
+                        <div class="bottom clearfix">
+                        </div>
                       </div>
-                    </div>
-                  </el-card>
+                    </el-card>
+                  </a>
                 </div>
                 <div class="project">
-                  <el-card :body-style="{ padding: '0px' }">
-                    <img src="../assets/image_placeholder.png" class="project_image">
-                    <div style="padding: 0px;">
-                      <p class="project_title">任务标题</p>
-                      <div class="bottom clearfix">
+                  <a data-external="true" href="/project_detail">
+                    <el-card :body-style="{ padding: '0px' }">
+                      <img src="../assets/image_placeholder.png" class="project_image">
+                      <div style="padding: 0px;">
+                        <p class="project_title">任务标题</p>
+                        <div class="bottom clearfix">
+                        </div>
                       </div>
-                    </div>
-                  </el-card>
+                    </el-card>
+                  </a>
                 </div>
                 <div class="project">
-                  <el-card :body-style="{ padding: '0px' }">
-                    <img src="../assets/image_placeholder.png" class="project_image">
-                    <div style="padding: 0px;">
-                      <p class="project_title">任务标题</p>
-                      <div class="bottom clearfix">
+                  <a data-external="true" href="/project_detail">
+                    <el-card :body-style="{ padding: '0px' }">
+                      <img src="../assets/image_placeholder.png" class="project_image">
+                      <div style="padding: 0px;">
+                        <p class="project_title">任务标题</p>
+                        <div class="bottom clearfix">
+                        </div>
                       </div>
-                    </div>
-                  </el-card>
+                    </el-card>
+                  </a>
                 </div>
               </div>
             </div>
@@ -195,6 +206,9 @@ export default {
 <style scoped>
 @import '@/assets/font/font.css';
 
+a {
+  text-decoration:none;
+}
 .all {
   min-width: 1250px;
 }

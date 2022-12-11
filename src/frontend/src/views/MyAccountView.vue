@@ -50,7 +50,6 @@
               <div class="user_info_column">
                 <p class="username">用户名</p>
                 <p class="user_info_line">邮箱：example@123.com</p>
-                <p class="user_info_line">手机号：18912345678</p>
                 <p class="user_info_line">密码：********</p>
                 <p class="user_info_line">积分：256</p>
               </div>
