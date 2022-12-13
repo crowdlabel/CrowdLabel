@@ -23,22 +23,29 @@ async def upload_task(in_file: UploadFile, current_user=Depends(get_current_user
     upload_file(in_file, filename)
     result = await ts.process_task_archive(filename)
 
-""" @router.post('/create')
-async def create_task(details: str, current_user=Depends(get_current_user(['requester'])):
-    response = await ts.create_task(
+""" @app.post('/create_task')
+async def create_task(details:TaskInfo):
+    response = await services.task.create_task(
         details.name,
         details.creator,
-        details.details)
-    print(response)
-    if response != 'ok':
+        details.type,
+        details.details,
+        details.introduction,
+        details.path)
+    if response['status'] != 'ok':
         return {
-            'error': f'{response} already exists'
+            'error': f'already exists'
         }, 400
+
+    
     else:
         return {
             'name': details.name,
             'creator': details.creator,
             'details': details.details,
+            'introduction':details.introduction,
+            'type':details.type,
+            'path':details.path
         }, 200 """
 
 @router.delete('/{task_id}')
@@ -56,7 +63,9 @@ async def delete_task(task_id: int, current_user=Depends(get_current_user(['requ
 async def edit_task(details: TaskDetails):
     response = await ts.edit_task(
         details.id,
-        details.details
+        details.details,
+        details.introduction
+
     )
     if response[0]['status'] != 'ok':
         return {
@@ -67,8 +76,8 @@ async def edit_task(details: TaskDetails):
             'id':response[0]['id'],
             'name':response[0]['name'],
             'creator':response[0]['creator'],
-            'details':response[0]['details']
-            
+            'details':response[0]['details'],
+            'introduction':response[0]['introduction']
         } """
 
 @router.get('/{task_id}')
@@ -87,14 +96,27 @@ async def get_task(task_id: int, current_user=Depends(get_current_user())):
 
     return task
 
-    """ return {
-        'id':response[0]['id'],
-        'name':response[0]['name'],
-        'creator':response[0]['creator'],
-        'details':response[0]['details'],
-        'questions':response[0]['questions'],
-        'results':response[0]['results']
-    }, 200 """
+    """ 
+    
+    response = await services.task.get_task(details.id)
+    if response[0]["status"] != "ok":
+        return {
+            'error' : f'not found id {details.id}'
+        },400
+    else :
+        return {
+            'id':response[0]['id'],
+            'name':response[0]['name'],
+            'creator':response[0]['creator'],
+            'details':response[0]['details'],
+            'questions':response[0]['questions'],
+            'results':response[0]['results'],
+            'type':response[0]['type'],
+            'introduction':response[0]['introduction'],
+            'path':response[0]['path']
+        },200
+
+    """
 
 
 

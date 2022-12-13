@@ -1,0 +1,73 @@
+{% extends 'base.html' %}
+
+child_result
+
+{% block content %}
+<script>
+
+    var file;
+
+    async function submit() {
+        result_id = document.getElementById('result_id').value
+        response = document.getElementById('response').value;
+        fetch_json('create_child_result','POST',{ 'response':response,
+                                            'result_id':result_id        
+                                            })
+    }
+    async function delete_result() {
+        id = document.getElementById('id').value;
+        fetch_json('delete_child_result','POST',{'id':id})
+
+    }
+    async function edit_result(){
+        id = document.getElementById('id').value;
+        response = document.getElementById('edit_response')
+        fetch_json('edit_child_result',"POST",{
+                            "id":id,    
+                            "response":response
+                            })
+    }
+    async function get_info(){
+        id = document.getElementById('id').value;
+        response=fetch_json('get_child_result',"POST",{
+            "id":id,
+        })
+        
+        let response1 = await response
+
+
+        document.getElementById('info_Id').innerHTML=response1[0].id;
+        document.getElementById('info_Result_id').innerHTML=response1[0].result_id
+        document.getElementById('info_Response').innerHTML=response1[0].response
+
+    }
+
+</script>
+<h1>Create Childresult</h1>
+
+<table>
+  <tr><td>result_id</td><td><input type="text" id="result_id"></td></tr>
+  <tr><td>response</td><td><input type="text" id="response"></td></tr>
+</table>
+
+
+<br>
+
+<button id="submit" onclick="submit()">create result</button>
+<label for="id"><b>id</b></label>
+<input  id='id' type="text" placeholder="id" name="id">
+<button id="delete" onclick="delete_result()">delete result</button>
+<label for="edit_details"><b>details</b></label>
+<input  id='edit_response' type="text" placeholder="edit_details" name="edit_details">
+<button id="edit" onclick="edit_result()">edit result</button>
+<button id="get_info" onclick="get_info()">get_info</button>
+<h1>Info</h1>
+<table> 
+    <tr><td>Id</td><td id ='info_Id'></td></tr>
+    <tr><td>Result_id</td><td id = 'info_Result_id'></td></tr>
+    <tr><td>Response</td><td id = 'info_Response'></td></tr>
+</table>
+
+
+<div id="response"></div>
+ {% endblock %}

@@ -1,4 +1,4 @@
-from models.results import Results
+from models.child_results import ChildResults
 from sqlalchemy.orm import sessionmaker, scoped_session, selectinload
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy import select ,update
@@ -10,10 +10,8 @@ def __verify_result_format():
     return True
 
 
-    
-
 async def create_result(
-    name: str,
+    response: str,
     id:int 
 ):
 
@@ -24,8 +22,8 @@ async def create_result(
         },400
 
 
-    result = Results(
-        id,name
+    result = ChildResults(
+        response,id
     )
     con.add(result)
     await con.commit()
@@ -37,13 +35,9 @@ async def create_result(
 
 async def get_result(id):
     async with con.begin():
-        result = await con.execute(select(Results).where(Results.id==id).options(selectinload(Results.child_result)))
+        result = await con.execute(select(ChildResults).where(ChildResults.id==id)) #.options(selectinload(Task.questions)))
         target = result.scalars().first()
-        info = ""
-        for child in target.child_result:
-            info = info + str(child.id) + '\n'
-            info = info + child.response + '\n'
-        print(info)
+        print(target.result_id)
         if target is None:
             return{
                 "status":"not found",
@@ -51,46 +45,39 @@ async def get_result(id):
     return {
         "status":"ok",
         "id" :target.id,
-        "name":target.name,
-        "task_id":target.task_id,
-        "date_created":target.date_created,
-        "date_download":target.date_download,
-        "info":info
+        "result_id":target.result_id,
+        "response":target.response,
     },200
 
-async def edit_result(id):
+async def edit_result(id,response):
     async with con.begin():
-        result = await con.execute(select(Results).where(Results.id==id))
+        result = await con.execute(select(ChildResults).where(ChildResults.id==id))
         target = result.scalars().first()
         if target is None:
             return{
                 "status":"not found",
             },400
-        print('type is',type(datetime.datetime.now()))
-        target.date_download=datetime.datetime.now()
+        target.response = response
         await con.flush()
         con.expunge(target)
     return {
         "status":"ok",
-        "id" :id,
-        "name":target.name,
-        "task_id":target.task_id,
-        "date_created":target.date_created,
-        "date_download":target.date_download
+        "id" :target.id,
+        "result_id":target.result_id,
+        "response":target.response,
     },200
     
 
 async def delete_result(id):
     async with con.begin():
-        result = await con.execute(select(Results).where(Results.id==id))
+        result = await con.execute(select(ChildResults).where(ChildResults.id==id))
         target = result.scalars().first()
         if target == None:
             return {
                 "status": 'not found'
             },400
         await con.delete(target)
-        # for item in result:
-        #     await con.delete(item)
+
     await con.commit()
     return {
         'status':'ok'
