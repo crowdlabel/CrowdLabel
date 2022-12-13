@@ -14,30 +14,24 @@ verify_email_error = JSONError(status.HTTP_400_BAD_REQUEST, 'Email not sent, che
     response_model=Email,
     description='Attempts to send a verification email to the provided address',
     responses={
-        verify_email_error.status_code: verify_email_error.response_doc(),
+        status.HTTP_400_BAD_REQUEST: verify_email_error.response_doc(),
     },
 )
-async def verify_email(email: str) -> bool:
-    if await services.users.send_verification_email:
-        code = status.HTTP_200_OK
-    else:
-        code = status.HTTP_400_BAD_REQUEST
+async def verify_email(email: Email):
+    if not await services.users.send_verification_email(email.email):
+        return verify_email_error.response()
+    return email
 
-    return email, code
-
-
-
-register_error = JSONError(status.HTTP_400_BAD_REQUEST, '[field] already exists')
+register_error = JSONError(status.HTTP_400_BAD_REQUEST, 'Error in one or more fields')
 @router.post('/register',
-    status_code=201,
-    description='Successful registration. Returns the username, email, and user_type of the newly-created account.',
+    status_code=status.HTTP_201_CREATED,
+    description='NOT FINALIZED Successful registration.',
     response_model=RegistrationResponse,
     responses={
         register_error.status_code: register_error.response_doc(),
     }
 )
 async def register(details: RegistrationRequest):
-    print(details)
     response = await services.users.create_user(
         details.username,
         details.email,
@@ -45,21 +39,16 @@ async def register(details: RegistrationRequest):
         details.user_type,
         details.verification_code
     )
-    if response != 'ok':
-        return {
-            'description': f'{response} already exists'
-        }, status.HTTP_400_BAD_REQUEST
+    if not response:
+        response = RegistrationResponse()
+        response.username = details.username
+        response.email = details.email
+        response.user_type = details.user_type
 
-    return RegistrationResponse(
-        details.username,
-        details.email,
-        details.user_type,
-    )
+    return response
 
 
-
-
-@router.post(
+@router.put(
     '/availability',
     response_model=AvailabilityResponse,
     description='Checks the availability of a username or email. Returns `True` for a field if that field is available, `False` otherwise',    
@@ -80,19 +69,21 @@ username_not_found = JSONError(
     'Username not found',
 )
 
-
 @router.get('/me',
-    responses = {
-        unauthorized.status_code: unauthorized.response_doc(),
-        forbidden.status_code: forbidden.response_doc(),
-        username_not_found.status_code: username_not_found.response_doc(),
-    }
-
+    description='Gets information for user who sent the request'
 )
 async def get_me(current_user: User = Depends(get_current_user())):
     #return 'requested info for ' + username + ' as ' + str(current_user)
-
     return current_user
+
+@router.patch('/me',
+    description='Updates user info'
+)
+async def edit_me(current_user: User = Depends(get_current_user())):
+    # edit user's own details
+    # TODO
+    pass
+
 
 @router.get('/{username}',
     responses = {
@@ -108,3 +99,4 @@ async def get_user(username: str, current_user: User = Depends(get_current_user(
     if not user:
         return json_response(status.HTTP_404_NOT_FOUND, 'Username not found')
     return user
+

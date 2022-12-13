@@ -13,7 +13,12 @@ def __verify_task_format():
     return True
 
 from typing import Iterable
-    
+
+
+async def process_task_archive(filename: str):
+
+
+    pass
 
 async def create_task(
     name: str,
@@ -144,6 +149,6 @@ async def create_task_results_file(id):
     Create the ZIP file containing the results of the task with ID `id
     """
 
-
+    return 'main.py'
     
     pass
