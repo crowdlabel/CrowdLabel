@@ -1,22 +1,23 @@
-from checkers.user import *
+import checkers.users
 from sqlalchemy.orm import sessionmaker, scoped_session
 from sqlalchemy.ext.asyncio import AsyncSession
-from models.user import User
-from models.email import Email
-from utils.hasher import *
+import models.user
+from utils import hasher
 from utils.emailsender import EmailSender
 from sqlalchemy import select, update
-from .fakedata import fake_users
-
-
+from .fakedata import fake_users, fake_emails
+import random
+from .database import *
+import schemas.users
+from datetime import datetime
 
 email_sender = EmailSender()
 
-from .database import *
 Connection = sessionmaker(bind=engine,expire_on_commit=False,class_=AsyncSession)
 con = scoped_session(Connection)
 
-import random
+NO_DB = True
+
 
 async def send_verification_email(email) -> bool:
     """
@@ -26,25 +27,30 @@ async def send_verification_email(email) -> bool:
     `False` otherwise
     """
 
-    if not check_email_format(email):
+    if not checkers.users.check_email_format(email):
         return False
 
     verification_code = str(random.randint(0, 999999)).rjust(6, '0')
 
     # TODO: add email and verification code to db,
     # or update the verification code of an existing email
-    async with con.begin():
-        res= await con.execute(select(Email).where(Email.email==email))
-        target = res.scalars().first()
-        if target is None:
-            email_create = Email(email=email,code = verification_code)
-            con.add(email_create)
-            await con.commit()
-        else:
-            print(f'update code from {target.verification_code} to {verification_code}')
-            target.verification_code = verification_code
-            await con.flush()
-            con.expunge(target)
+
+    if NO_DB:
+        fake_emails[email] = verification_code
+    else:
+        async with con.begin():
+            res= await con.execute(select(Email).where(Email.email==email))
+            target = res.scalars().first()
+            if target is None:
+                email_create = Email(email=email,code = verification_code)
+                con.add(email_create)
+                await con.commit()
+            else:
+                print(f'update code from {target.verification_code} to {verification_code}')
+                target.verification_code = verification_code
+                await con.flush()
+                con.expunge(target)
+                
     email_sender.send_email(
         'CrowdLabel 邮箱验证码',
         verification_code,
@@ -59,73 +65,62 @@ async def create_user(
     username: str,
     email: str,
     password: str,
-    user_type: int,
+    user_type: str,
     verification_code: str,
-):
+) -> tuple[list[str]] | None:
 
     # get the arguments as a dictionary
     args = locals()
 
+
+    # no need to check format as pydantic validator has already done so
+    """ format_incorrect = []
+
     # check arguments' formats
     for arg in args:
-        if not format_checkers[arg](args[arg]):
-            return {
-                'arg': arg,
-                'error': 'format',
-            }
-
-
+        if not checkers.users.format_checkers[arg](args[arg]):
+            format_incorrect.append(arg) """
 
     # check existance
+    errors = {}
     if await username_exists(username):
-        return {
-            'arg': 'username',
-            'error': 'exists',
-        }
+        errors['username'] = 'exists'
+        exists.append('username')
     if await email_exists(email):
-        return {
-            'arg': 'email',
-            'error': 'exists'
-        }
-    async with con.begin():
-        res= await con.execute(select(Email).where(Email.email==email))
-        target = res.scalars().first()
-        if target is None:
-            return {
-                'arg': 'email',
-                'error': 'notfound'
-            }
-        if target.verification_code != verification_code:
-            return {
-                'arg': 'verification_code',
-                'error': 'mismatch'
-            }
-    # check verification code
-    # TODO: check if `email` and `verification_code` match in the db
-
-
-    password_hashed = hash(password)
+        errors['email'] = 'exists'
     
+    if email not in fake_emails or fake_emails[email] != verification_code:
+        errors['verification_code'] = 'wrong'
 
-    
+    if errors:
+        return errors
 
-    user = User(
-        username,
-        password_hashed,
-        email,
-        user_type,
-        status=0,
-    )
-
-    con.add(user)
-    await con.commit()
-
-    return {
-        'arg': 'ok',
-        'error': 'ok',
-    }
-
-
+    if NO_DB:
+        if user_type in ['0', 'respondent']:
+            new_user = schemas.users.Respondent()
+        elif user_type in ['1', 'requester']:
+            new_user = schemas.users.Requester()
+        new_user.username = username
+        new_user.email = email
+        new_user.password_hashed = hasher.hash(password)
+        new_user.date_created = datetime.utcnow()
+        fake_users.append(new_user)
+    else:
+        async with con.begin():
+            res= await con.execute(select(Email).where(Email.email==email))
+            target = res.scalars().first()
+            if target is None:
+                return {
+                    'arg': 'email',
+                    'error': 'notfound'
+                }
+            if target.verification_code != verification_code:
+                return {
+                    'arg': 'verification_code',
+                    'error': 'mismatch'
+                }
+        con.add(user)
+        await con.commit()
 
 
 async def authenticate(username: str, password: str) -> bool:
@@ -133,8 +128,7 @@ async def authenticate(username: str, password: str) -> bool:
 
     for user in fake_users:
         if (user.username == username and 
-            verify(user.password_hashed, password)):
-
+            hasher.verify(user.password_hashed, password)):
             return True
 
     return False

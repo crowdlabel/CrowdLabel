@@ -5,15 +5,22 @@ from fastapi.security import OAuth2PasswordBearer, OAuth2PasswordRequestForm
 from jose import JWTError, jwt
 
 from utils.config import get_config
-
 from .jsonerror import JSONError, forbidden
-
 import services.users as us
+from schemas.auth import Token
+from schemas.users import User
 
-from schemas.auth import *
+
 
 
 router = APIRouter()
+
+
+
+# https://fastapi.tiangolo.com/tutorial/security/oauth2-jwt/
+
+
+
 
 
 SECRET_KEY = get_config('auth.key')
@@ -22,20 +29,10 @@ ACCESS_TOKEN_EXPIRE_MINUTES = timedelta(minutes=get_config('auth.access_token_ex
 
 
 
-
-def create_access_token(data: dict):
-    to_encode = data.copy()
-    expire = datetime.utcnow() + ACCESS_TOKEN_EXPIRE_MINUTES
-    to_encode.update({'exp': expire})
-    encoded_jwt = jwt.encode(to_encode, SECRET_KEY, algorithm=ALGORITHM)
-    return encoded_jwt
-
-
-
 oauth2_scheme = OAuth2PasswordBearer(tokenUrl='token')
 
 
-def create_access_token(data: dict):
+def create_access_token(data: dict) -> str:
     to_encode = data.copy()
     expire = datetime.utcnow() + ACCESS_TOKEN_EXPIRE_MINUTES
     to_encode.update({'exp': expire})
@@ -43,7 +40,7 @@ def create_access_token(data: dict):
     return encoded_jwt
 
 
-def get_current_user(user_types=[]):
+def get_current_user(user_types: list=[]) -> User:
     """
     Returns a function to be used by API endpoints
     """
@@ -54,7 +51,6 @@ def get_current_user(user_types=[]):
         2. raises exception if the logged-in user's type isn't in `user_types`
         Returns the user
         """
-        print('getting current user types', user_types)
         credentials_exception = HTTPException(
             status_code=status.HTTP_401_UNAUTHORIZED,
             detail='Could not validate credentials',
@@ -79,19 +75,18 @@ def get_current_user(user_types=[]):
             raise credentials_exception
 
         if user_types:
-            print('users type', user.user_type)
-            if not user.user_type in user_types:
+            if not (user.user_type == 'admin' or user.user_type in user_types):
                 raise forbidden_exception
-        print('returning user')
         return user
+        
     return get_current_user_types
+
 
 
 invalid_credentials = JSONError(
     status.HTTP_401_UNAUTHORIZED,
     {'description': 'Username or password incorrect.'}
 )
-
 @router.post('/login',
     responses={
         invalid_credentials.status_code: invalid_credentials.response_doc(),
@@ -115,4 +110,5 @@ async def login(form_data: OAuth2PasswordRequestForm = Depends()):
     response_model=Token,
 )
 async def token(form_data: OAuth2PasswordRequestForm = Depends()):
+    """ same function as the `login` endpoint """
     return await login(form_data)

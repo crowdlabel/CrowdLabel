@@ -37,16 +37,12 @@ def check_email_format(email: str) -> bool:
     except:
         return False
 
-user_types = {
-    0: 'sender',
-    1: 'receiver',
-    2: 'admin',
-}
+user_types = {'requester','respondent', 'admin'}
 
-def check_user_type_format(user_type: int) -> bool:
-    if type(user_type) != int:
-        return False
+
+def check_user_type_format(user_type: str) -> bool:
     return user_type in user_types
+
 def check_verification_code_format(verification_code:str )->bool:
     return re.fullmatch(r'\d{6}',verification_code)
 
