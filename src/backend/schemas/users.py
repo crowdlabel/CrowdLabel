@@ -1,68 +1,94 @@
 from datetime import datetime
-from pydantic import BaseModel, validator
-from .tasks import Task
+from pydantic import BaseModel
+from typing import Optional
 
-import checkers.users
 
 class Email(BaseModel):
     email: str
+    class Config:
+        schema_extra = {
+            'example': {
+                'email': 'johndoe@example.com',
+            }
+        }
 
 class AvailabilityRequest(BaseModel):
-    username: str | None
-    email: str | None
+    username: Optional[str | None]
+    email: Optional[str | None]
+    class Config:
+        schema_extra = {
+            'example': {
+                'username': 'johndoe',
+                'email': 'taken@example.com',
+            }
+        }
 class AvailabilityResponse(BaseModel): 
-    username: bool
-    email: bool
-
+    username: Optional[bool]
+    email: Optional[bool]
+    class Config:
+        schema_extra = {
+            'example': {
+                'username': True,
+                'email': False,
+            }
+        }
 
 class RegistrationRequest(BaseModel):
     username: str
     email: str
-    user_type: str
     password: str
+    user_type: str
     verification_code: str
-    @validator('username')
-    def __username(cls, username):
-        if not checkers.users.check_username_format(username):
-            raise ValueError('Username format incorrect')
-        return username
-    @validator('email')
-    def __email(cls, email):
-        if not checkers.users.check_email_format(email):
-            raise ValueError('Email format incorrect')
-        return email
-    @validator('user_type')
-    def __user_type(cls, user_type):
-        if not checkers.users.check_user_type_format(user_type):
-            raise ValueError('User type format incorrect')
-        return user_type
-    @validator('password')
-    def __password(cls, password):
-        if not checkers.users.check_password_format(password):
-            raise ValueError('Password format incorrect')
-        return password
-    @validator('verification_code')
-    def __verification_code(cls, verification_code):
-        if not checkers.users.check_verification_code_format(verification_code):
-            raise ValueError('Verification code format incorrect')
-        return verification_code
+
+    class Config:
+        schema_extra = {
+            'example': {
+                'username': 'johndoe',
+                'email': 'johndoe@example.com',
+                'password': 'secret123',
+                'user_type': 'respondent',
+                'verification_code': '123456',
+            }
+        }
 
 
-class RegistrationResponse(BaseModel):
-    username: str=''
-    email: str=''
-    user_type: str=''
-    date_created: datetime=datetime.utcnow()
+class GoodRegistrationResponse(BaseModel):
+    username: str
+    email: str
+    user_type: str
+    class Config:
+        schema_extra = {
+            'example': {
+                'username': 'johndoe',
+                'email': 'johndoe@example.com',
+                'user_type': 'respondent',
+            }
+        }
 
-
+class BadRegistrationResponse(BaseModel):
+    username: Optional[str]
+    email: Optional[str]
+    password: Optional[str]
+    user_type: Optional[str]
+    verification_code: Optional[str]
+    class Config:
+        schema_extra = {
+            'example': {
+                'username': 'exists',
+                'email': 'exists',
+                'user_type': 'format',
+                'password': 'format',
+                'verification_code': 'wrong',
+            }
+        }
 
 class User(BaseModel):
     username: str=''
     email: str=''
     date_created: datetime=datetime.utcnow()
+    password_hashed: str=''
     user_type: str=''
     tokens: float=0
-    password_hashed: str=''
 
 class Requester(User):
     user_type='requester'

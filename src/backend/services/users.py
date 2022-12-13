@@ -61,50 +61,9 @@ async def send_verification_email(email) -> bool:
     return True
 
 
-async def create_user(
-    username: str,
-    email: str,
-    password: str,
-    user_type: str,
-    verification_code: str,
-) -> tuple[list[str]] | None:
-
-    # get the arguments as a dictionary
-    args = locals()
-
-
-    # no need to check format as pydantic validator has already done so
-    """ format_incorrect = []
-
-    # check arguments' formats
-    for arg in args:
-        if not checkers.users.format_checkers[arg](args[arg]):
-            format_incorrect.append(arg) """
-
-    # check existance
-    errors = {}
-    if await username_exists(username):
-        errors['username'] = 'exists'
-        exists.append('username')
-    if await email_exists(email):
-        errors['email'] = 'exists'
-    
-    if email not in fake_emails or fake_emails[email] != verification_code:
-        errors['verification_code'] = 'wrong'
-
-    if errors:
-        return errors
-
+async def check_verification_code(email: str, verification_code: str):
     if NO_DB:
-        if user_type in ['0', 'respondent']:
-            new_user = schemas.users.Respondent()
-        elif user_type in ['1', 'requester']:
-            new_user = schemas.users.Requester()
-        new_user.username = username
-        new_user.email = email
-        new_user.password_hashed = hasher.hash(password)
-        new_user.date_created = datetime.utcnow()
-        fake_users.append(new_user)
+        return email in fake_emails and fake_emails[email] == verification_code
     else:
         async with con.begin():
             res= await con.execute(select(Email).where(Email.email==email))
@@ -119,8 +78,51 @@ async def create_user(
                     'arg': 'verification_code',
                     'error': 'mismatch'
                 }
-        con.add(user)
-        await con.commit()
+            con.add(user)
+            await con.commit()
+
+async def create_user(
+    username: str,
+    email: str,
+    password: str,
+    user_type: str,
+    verification_code: str,
+) -> tuple[list[str]] | None:
+    # get the arguments as a dictionary
+    args = locals()
+
+
+    errors = {}
+
+    # check arguments' formats
+    for arg in args:
+        if not checkers.users.format_checkers[arg](args[arg]):
+            errors[arg] = 'format'
+
+    # check existance
+    if 'username' not in errors and await username_exists(username):
+        errors['username'] = 'exists'
+    if 'email' not in errors and await email_exists(email):
+        errors['email'] = 'exists'
+    
+    if errors:
+        return errors
+
+    if not check_verification_code(email, verification_code):
+        errors['verification_code'] = 'wrong'
+        return errors
+
+    if user_type in ['0', 'respondent']:
+        new_user = schemas.users.Respondent()
+    elif user_type in ['1', 'requester']:
+        new_user = schemas.users.Requester()
+    new_user.username = username
+    new_user.email = email
+    new_user.password_hashed = hasher.hash(password)
+    new_user.date_created = datetime.utcnow()
+    fake_users.append(new_user)
+
+    
 
 
 async def authenticate(username: str, password: str) -> bool:

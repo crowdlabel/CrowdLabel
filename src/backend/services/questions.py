@@ -11,7 +11,6 @@ def __verify_question_format():
     return True
 
 
-<<<<<<< HEAD:src/backend/services/questions.py
 import schemas.tasks
 import schemas.questions
 async def get_question(task: schemas.tasks.Task, question_id: int) -> schemas.questions.Question | None:
@@ -19,7 +18,7 @@ async def get_question(task: schemas.tasks.Task, question_id: int) -> schemas.qu
         if question.question_id == question_id:
             return question
     return None
-=======
+    
 async def create_question_from_file(
     task_id:int,
     file_path:str
@@ -36,7 +35,6 @@ async def create_question_from_file(
     return {
         'status':'ok'
     }
->>>>>>> 384aa8d16f1ef91f353f30410d08dd13e6085dcb:src/backend/services/question.py
 
 """ async def create_question(
     type: str,
