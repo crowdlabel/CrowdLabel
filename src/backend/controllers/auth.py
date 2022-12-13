@@ -5,7 +5,7 @@ from fastapi.security import OAuth2PasswordBearer, OAuth2PasswordRequestForm
 from jose import JWTError, jwt
 
 from utils.config import get_config
-from .jsonerror import JSONError, forbidden
+from .jsondocumentedresponse import JSONDocumentedResponse, create_documentation
 import services.users as us
 from schemas.auth import Token
 from schemas.users import User
@@ -83,20 +83,22 @@ def get_current_user(user_types: list=[]) -> User:
 
 
 
-invalid_credentials = JSONError(
+login_success_jdr = JSONDocumentedResponse(
+    status.HTTP_200_OK,
+    'Login successful.',
+    Token
+)
+invalid_failed_jdr = JSONDocumentedResponse(
     status.HTTP_401_UNAUTHORIZED,
-    {'description': 'Username or password incorrect.'}
+    'Username or password incorrect.'
 )
 @router.post('/login',
-    responses={
-        invalid_credentials.status_code: invalid_credentials.response_doc(),
-    },
-    response_model=Token,
+    **create_documentation([login_success_jdr, invalid_failed_jdr])
 )
 async def login(form_data: OAuth2PasswordRequestForm = Depends()):
     print('logging in')
     if not await us.authenticate(form_data.username, form_data.password):
-        return invalid_credentials.response()
+        return invalid_failed_jdr.response()
     access_token = create_access_token(
         data={'sub': form_data.username},
     )
@@ -104,10 +106,7 @@ async def login(form_data: OAuth2PasswordRequestForm = Depends()):
 
 
 @router.post('/token',
-    responses={
-        invalid_credentials.status_code: invalid_credentials.response_doc(),
-    },
-    response_model=Token,
+    **create_documentation([login_success_jdr, invalid_failed_jdr])
 )
 async def token(form_data: OAuth2PasswordRequestForm = Depends()):
     """ same function as the `login` endpoint """

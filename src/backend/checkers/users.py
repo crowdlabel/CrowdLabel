@@ -32,6 +32,7 @@ def check_email_format(email: str) -> bool:
     try:
         is_valid = validate_email(
             email=email,
+            check_deliverability=False,
         )
         return bool(is_valid)
     except:

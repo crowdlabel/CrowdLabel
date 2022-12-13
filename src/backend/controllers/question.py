@@ -1,12 +1,13 @@
+from fastapi import status
 from .base import app
 import services.questions as qs
 import services.tasks as ts
 from fastapi import APIRouter, Path
 from schemas.tasks import *
-from .jsonerror import JSONError, status
+from .jsondocumentedresponse import JSONDocumentedResponse, create_documentation
 from . import tasks as tc
 
-from auth import Depends, get_current_user
+from .auth import Depends, get_current_user
 
 router = APIRouter()
 
@@ -86,8 +87,13 @@ async def edit_question(details:IDWithQuestionInfo):
         } """
 
 
-question_not_found_error = JSONError(status.HTTP_404_NOT_FOUND, 'Question not found')
-@router.get('/questions/{question_id}')
+question_not_found_error = JSONDocumentedResponse(
+    status.HTTP_404_NOT_FOUND,
+    'Question not found'
+)
+@router.get('/questions/{question_id}',
+    **create_documentation([question_not_found_error])
+)
 async def get_question(question_id: int, task=Depends(tc.get_task), current_user=Depends(get_current_user)):
 
     question = await qs.get_question(task, question_id)

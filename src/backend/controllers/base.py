@@ -1,5 +1,7 @@
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
+from .jsondocumentedresponse import JSONDocumentedResponse
+
 
 origins = [
     "http://localhost",
@@ -13,6 +15,8 @@ app = FastAPI(
     version='0.1.0',
     
 )
+app = FastAPI()#default_response_class=JSONDocumentedResponse)
+
 
 app.add_middleware(
     CORSMiddleware,
