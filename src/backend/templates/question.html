@@ -20,6 +20,13 @@ Question
                                              'task_id':task_id            
                                             })
     }
+    async function create_from_file() {
+        task_id = document.getElementById('task_id').value;
+        path = document.getElementById('path').value
+        fetch_json('create_question_from_file','POST',{'id':task_id,
+                                                        'path':path        
+                                            })
+    }
     async function delete_question() {
         id = document.getElementById('id').value;
         fetch_json('delete_question','POST',{'id':id})
@@ -80,6 +87,9 @@ Question
 <input  id='edit_details' type="text" placeholder="edit_details" name="edit_details">
 <button id="edit" onclick="edit_question()">edit question</button>
 <button id="get_info" onclick="get_info()">get_info</button>
+<label for="path"><b>Path</b></label>
+<input  id='path' type="text" placeholder="File Path" name="File Path">
+<button id="from_file" onclick="create_from_file()">create from file</button>
 <h1>Info</h1>
 <table> 
     <tr><td>Type</td><td id ='info_type'></td></tr>

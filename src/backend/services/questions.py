@@ -1,14 +1,17 @@
 from models.question import Question
+from models.task import Task
 from sqlalchemy.orm import sessionmaker, scoped_session
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy import select ,update
 from .database import *
+import json
 Connection = sessionmaker(bind=engine,expire_on_commit=False,class_=AsyncSession)
 con = scoped_session(Connection)
 def __verify_question_format():
     return True
 
 
+<<<<<<< HEAD:src/backend/services/questions.py
 import schemas.tasks
 import schemas.questions
 async def get_question(task: schemas.tasks.Task, question_id: int) -> schemas.questions.Question | None:
@@ -16,6 +19,24 @@ async def get_question(task: schemas.tasks.Task, question_id: int) -> schemas.qu
         if question.question_id == question_id:
             return question
     return None
+=======
+async def create_question_from_file(
+    task_id:int,
+    file_path:str
+):
+    if not __verify_question_format():
+        return False
+    file = json.load(open(file_path,'r'))
+    async with con.begin():
+        result = await con.execute(select(Task).where(Task.id==task_id))
+        target = result.scalars().first()
+        type = target.type
+    for question in file:
+        await create_question(type,file[question]['prompt'],file_path,file[question]['options'],task_id)
+    return {
+        'status':'ok'
+    }
+>>>>>>> 384aa8d16f1ef91f353f30410d08dd13e6085dcb:src/backend/services/question.py
 
 """ async def create_question(
     type: str,
@@ -29,15 +50,13 @@ async def get_question(task: schemas.tasks.Task, question_id: int) -> schemas.qu
     if not __verify_question_format():
         return False
 
-
     question = Question(
         type,prompt,resource,options,task_id
     )
     con.add(question)
     await con.commit()
     return {
-        'arg': 'ok',
-        'error': 'ok',
+        'status':'ok'
     }
 
 async def get_question(task_id: int, question_id: int) -> Question | None:

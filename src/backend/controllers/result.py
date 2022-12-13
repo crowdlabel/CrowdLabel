@@ -66,8 +66,10 @@ async def get_result(details:ID):
         return {
             'id':response[0]['id'],
             'name':response[0]['name'],
-            'details':response[0]['details'],
-            'questions':response[0]['questions']
+            'task_id':response[0]['task_id'],
+            'date_created':response[0]['date_created'],
+            'date_download':response[0]['date_download'],
+            'info':response[0]['info']
         },200
 @result_router.get('/')
 def result(id):

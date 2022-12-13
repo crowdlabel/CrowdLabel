@@ -14,9 +14,23 @@ router = APIRouter()
 async def questions():
     return 'api: questions'
 
+@app.post('/create_question_from_file')
+async def create_question_from_file(details:FilePath):
+    response = await services.question.create_question_from_file(
+        details.id,
+        details.path,
+        )
+    if response['status'] != 'ok':
+        return {
+            'error': f'{response} already exists'
+        }, 400
+    else:
+        return {
+            'status':'ok'
+        }, 200
 
-@router.POST('/questions')
-async def create_question(details: QuestionInfo):
+@app.post('/create_question')
+async def create_question(details:QuestionInfo):
     response = await services.question.create_question(
         details.type,
         details.prompt,
