@@ -7,7 +7,7 @@ import schemas.users
 
 
 router = APIRouter()
-
+user_service = services.users.Users()
 ###############################################################################
 availability_jdr = JSONDocumentedResponse(
     status.HTTP_200_OK,
@@ -22,9 +22,9 @@ async def availability(fields: schemas.users.AvailabilityRequest):
     print(fields)
     response = schemas.users.AvailabilityResponse()
     if fields.username:
-        response.username = not await services.users.username_exists(fields.username)
+        response.username = not await user_service.username_exists(fields.username)
     if fields.email:
-        response.email = not await services.users.email_exists(fields.email)
+        response.email = not await user_service.email_exists(fields.email)
     print(response)
     return availability_jdr.response(response)
 ###############################################################################
