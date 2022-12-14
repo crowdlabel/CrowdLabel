@@ -10,10 +10,14 @@ con = scoped_session(Connection)
 def __verify_question_format():
     return True
 
-
+import schemas.answers
 import schemas.tasks
 import schemas.questions
-async def get_question(task: schemas.tasks.Task, question_id: int) -> schemas.questions.Question | None:
+import schemas.users
+
+import services.tasks
+
+async def get_question(task: services.tasks.Task, question_id: int) -> schemas.questions.Question | None:
     for question in task.questions:
         if question.question_id == question_id:
             return question
@@ -137,3 +141,14 @@ async def delete_question(task_id, questionid):
     return {
         'status':'ok'
     },200 """
+
+
+
+async def create_answer(
+    current_user: schemas.users.User,
+    task_id: int,
+    question_id: int,
+    answer: schemas.answers.Answer,
+) -> str:
+    # TODO
+    pass

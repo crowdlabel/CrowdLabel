@@ -3,9 +3,11 @@ from .base import app
 import services.questions as qs
 import services.tasks as ts
 from fastapi import APIRouter, Path
-from schemas.tasks import *
+import schemas.tasks
+import schemas.questions
 from .jsondocumentedresponse import JSONDocumentedResponse, create_documentation
 from . import tasks as tc
+import services.questions
 
 from .auth import Depends, get_current_user
 
@@ -101,3 +103,23 @@ async def get_question(question_id: int, task=Depends(tc.get_task), current_user
         return question_not_found_error.response()
     
     return question
+
+
+create_answer_success = JSONDocumentedResponse(
+    status.HTTP_200_OK,
+    'Answer created successfully. Answer is returned',
+    schemas.questions.Answer,
+)
+create_answer_failed = JSONDocumentedResponse(
+    status.HTTP_400_BAD_REQUEST,
+    'Answer not created. Error message is returned',
+    schemas.tasks.ErrorResponse,
+)
+@router.post('',
+    **create_documentation([create_answer_success, create_answer_failed])
+)
+async def create_answer(answer: schemas.questions.Answer, task_id: int=Path(), question_id: int=Path(), current_user=Depends(get_current_user)):
+    response = services.questions.create_answer(current_user, task_id, question_id, answer)
+    if response:
+        return create_answer_failed.response(schemas.tasks.ErrorResponse(response))    
+    return create_answer_success.response(answer)

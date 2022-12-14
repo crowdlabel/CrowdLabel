@@ -1,21 +1,23 @@
-from datetime import datetime
 from pydantic import BaseModel
-from .questions import Question
-
-class Task(BaseModel):
-    task_id: int
-    creator: str
-    date_created: datetime
-    tokens: float
-    questions: list[Question] # list of Question IDs
+from typing import Optional
 
 
-class TasksRequest(BaseModel):
-    name: str | None
-    reward: float | None
-    requester: str | None
-    page: int | None
-    page_size: int | None
 
-class TasksResponse(TasksRequest):
+
+class TaskSearchRequest(BaseModel):
+    name: Optional[str]
+    credits: Optional[float]
+    tags: Optional[set[str]]
+    requesters: Optional[set[str]]
+    page: Optional[int]
+    credits_min: Optional[float]
+    credits_max: Optional[float]
+    sort_criteria: Optional[str]
+    sort_ascending: Optional[bool]
+
+class TaskSearchResponse(TaskSearchRequest):
     tasks: list[int] # list of Task IDs
+    total: int # total number of tasks
+
+class ErrorResponse(BaseModel):
+    error: str

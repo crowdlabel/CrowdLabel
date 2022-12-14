@@ -1,5 +1,7 @@
-from fastapi.responses import JSONResponse
-from pydantic import BaseModel, parse_obj_as
+from fastapi import status
+from fastapi.responses import Response
+from pydantic import BaseModel
+
 
 
 class JSONDocumentedResponse:
@@ -11,19 +13,20 @@ class JSONDocumentedResponse:
         return {
             'description': self.description,
         }
-    def response(self, data: BaseModel | dict):
+    def response(self, data: BaseModel | dict={}, exclude: set={}):
         print('returning response')
-        return JSONResponse(
-            content=data if not self.model else data.dict(exclude_none=True),
-            status_code=self.status_code
+        return Response(
+            content=data if not self.model else data.json(exclude=exclude),
+            status_code=self.status_code,
+            media_type='application/json',
         )
 
 def create_documentation(responses: list[JSONDocumentedResponse]):
     documentation = {}
     documentation['status_code'] = responses[0].status_code
     documentation['response_description'] = responses[0].description
-    """  if responses[0].model:
-        documentation['response_model'] = responses[0].model """
+    if responses[0].model:
+        documentation['response_model'] = responses[0].model
     documentation['responses'] = {}
     for response in responses[1:]:
         doc = response.documentation()
@@ -32,3 +35,13 @@ def create_documentation(responses: list[JSONDocumentedResponse]):
         documentation['responses'][response.status_code] = doc
 
     return documentation
+
+forbidden_jdr = JSONDocumentedResponse(
+    status.HTTP_403_FORBIDDEN,
+    'You do not have permission to perform this action.',
+)
+
+not_found_jdr = JSONDocumentedResponse(
+    status.HTTP_404_NOT_FOUND,
+    'Resource not found.',
+)

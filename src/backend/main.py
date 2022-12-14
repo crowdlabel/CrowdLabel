@@ -1,8 +1,10 @@
 import argparse
 import json
+from datetime import datetime
 import uvicorn
 from fastapi.openapi.utils import get_openapi
 from controllers.routers import app
+import schemas.tasks
 
 def generate_docs():
     with open('openapi.json', 'w') as f:
@@ -33,4 +35,31 @@ def main():
 
 if __name__ == '__main__':
     main()
-    
+    """ task1 = schemas.tasks.Task(
+        task_id = 1,
+        creator = 'test',
+        credits = 10,
+        date_created=datetime.utcnow(),
+        name = 'test name',
+        responses_required = 1,
+        questions=[]
+    )
+    print(task1)
+    from time import sleep
+    sleep(1)
+    task2 = schemas.tasks.Task(
+        task_id = 2,
+        creator = 'test',
+        credits = 10,
+        date_created=datetime.utcnow(),
+
+        name = 'test name',
+        responses_required = 1,
+        questions=[]
+    )
+    print(task2)
+    task1.set_id(3)
+    task2.set_id(4)
+    print(task1)
+    print(task2) """
+
