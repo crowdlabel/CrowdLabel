@@ -13,11 +13,11 @@ class Task(BaseModel):
     introduction: str=''
     description: str=''
     cover: pathlib.Path=None
-    tags: set[str]={}
+    tags: list[str]=[]
     responses_required: int
-    respondents_claimed: set[str]={} # usernames of respondents who have claimed the task but have not completed it
-    respondents_completed: set[str]={} # usernames of respondents who have claimed and completed the task
-    questions: list[Question] # list of Questions
+    respondents_claimed: set[str]=set() # usernames of respondents who have claimed the task but have not completed it
+    respondents_completed: set[str]=set() # usernames of respondents who have claimed and completed the task
+    questions: list[Question]=[] # list of Questions
 
     def set_id(self, new_id):
         self.task_id = new_id

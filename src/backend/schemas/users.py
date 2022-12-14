@@ -85,7 +85,7 @@ class BadRegistrationResponse(BaseModel):
 class User(BaseModel):
     username: str=''
     email: str=''
-    date_created: datetime=datetime.utcnow()
+    date_created: datetime
     password_hashed: str=''
     user_type: str=''
     credits: float=0
