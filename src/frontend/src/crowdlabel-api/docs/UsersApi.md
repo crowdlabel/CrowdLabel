@@ -1,0 +1,288 @@
+# CrowdLabelApi.UsersApi
+
+All URIs are relative to *http://localhost*
+
+Method | HTTP request | Description
+------------- | ------------- | -------------
+[**availabilityUsersAvailabilityPut**](UsersApi.md#availabilityUsersAvailabilityPut) | **PUT** /users/availability | Availability
+[**editMeUsersMePatch**](UsersApi.md#editMeUsersMePatch) | **PATCH** /users/me | Edit Me
+[**getMeUsersMeGet**](UsersApi.md#getMeUsersMeGet) | **GET** /users/me | Get Me
+[**getUserUsersUsernameGet**](UsersApi.md#getUserUsersUsernameGet) | **GET** /users/{username} | Get User
+[**registerUsersRegisterPost**](UsersApi.md#registerUsersRegisterPost) | **POST** /users/register | Register
+[**verifyEmailUsersVerifyEmailPost**](UsersApi.md#verifyEmailUsersVerifyEmailPost) | **POST** /users/verify-email | Verify Email
+
+
+
+## availabilityUsersAvailabilityPut
+
+> AvailabilityResponse availabilityUsersAvailabilityPut(availabilityRequest)
+
+Availability
+
+Checks the availability of a username or email. Returns &#x60;true&#x60; for a field if that field is available, &#x60;false&#x60; otherwise.
+
+### Example
+
+```javascript
+import CrowdLabelApi from 'crowd_label_api';
+
+let apiInstance = new CrowdLabelApi.UsersApi();
+let availabilityRequest = new CrowdLabelApi.AvailabilityRequest(); // AvailabilityRequest | 
+apiInstance.availabilityUsersAvailabilityPut(availabilityRequest, (error, data, response) => {
+  if (error) {
+    console.error(error);
+  } else {
+    console.log('API called successfully. Returned data: ' + data);
+  }
+});
+```
+
+### Parameters
+
+
+Name | Type | Description  | Notes
+------------- | ------------- | ------------- | -------------
+ **availabilityRequest** | [**AvailabilityRequest**](AvailabilityRequest.md)|  | 
+
+### Return type
+
+[**AvailabilityResponse**](AvailabilityResponse.md)
+
+### Authorization
+
+No authorization required
+
+### HTTP request headers
+
+- **Content-Type**: application/json
+- **Accept**: application/json
+
+
+## editMeUsersMePatch
+
+> Object editMeUsersMePatch()
+
+Edit Me
+
+Updates user info
+
+### Example
+
+```javascript
+import CrowdLabelApi from 'crowd_label_api';
+let defaultClient = CrowdLabelApi.ApiClient.instance;
+// Configure OAuth2 access token for authorization: OAuth2PasswordBearer
+let OAuth2PasswordBearer = defaultClient.authentications['OAuth2PasswordBearer'];
+OAuth2PasswordBearer.accessToken = 'YOUR ACCESS TOKEN';
+
+let apiInstance = new CrowdLabelApi.UsersApi();
+apiInstance.editMeUsersMePatch((error, data, response) => {
+  if (error) {
+    console.error(error);
+  } else {
+    console.log('API called successfully. Returned data: ' + data);
+  }
+});
+```
+
+### Parameters
+
+This endpoint does not need any parameter.
+
+### Return type
+
+**Object**
+
+### Authorization
+
+[OAuth2PasswordBearer](../README.md#OAuth2PasswordBearer)
+
+### HTTP request headers
+
+- **Content-Type**: Not defined
+- **Accept**: application/json
+
+
+## getMeUsersMeGet
+
+> User getMeUsersMeGet()
+
+Get Me
+
+Gets information for user who sent the request
+
+### Example
+
+```javascript
+import CrowdLabelApi from 'crowd_label_api';
+let defaultClient = CrowdLabelApi.ApiClient.instance;
+// Configure OAuth2 access token for authorization: OAuth2PasswordBearer
+let OAuth2PasswordBearer = defaultClient.authentications['OAuth2PasswordBearer'];
+OAuth2PasswordBearer.accessToken = 'YOUR ACCESS TOKEN';
+
+let apiInstance = new CrowdLabelApi.UsersApi();
+apiInstance.getMeUsersMeGet((error, data, response) => {
+  if (error) {
+    console.error(error);
+  } else {
+    console.log('API called successfully. Returned data: ' + data);
+  }
+});
+```
+
+### Parameters
+
+This endpoint does not need any parameter.
+
+### Return type
+
+[**User**](User.md)
+
+### Authorization
+
+[OAuth2PasswordBearer](../README.md#OAuth2PasswordBearer)
+
+### HTTP request headers
+
+- **Content-Type**: Not defined
+- **Accept**: application/json
+
+
+## getUserUsersUsernameGet
+
+> User getUserUsersUsernameGet(username)
+
+Get User
+
+Gets information for the specified username.
+
+### Example
+
+```javascript
+import CrowdLabelApi from 'crowd_label_api';
+let defaultClient = CrowdLabelApi.ApiClient.instance;
+// Configure OAuth2 access token for authorization: OAuth2PasswordBearer
+let OAuth2PasswordBearer = defaultClient.authentications['OAuth2PasswordBearer'];
+OAuth2PasswordBearer.accessToken = 'YOUR ACCESS TOKEN';
+
+let apiInstance = new CrowdLabelApi.UsersApi();
+let username = "username_example"; // String | 
+apiInstance.getUserUsersUsernameGet(username, (error, data, response) => {
+  if (error) {
+    console.error(error);
+  } else {
+    console.log('API called successfully. Returned data: ' + data);
+  }
+});
+```
+
+### Parameters
+
+
+Name | Type | Description  | Notes
+------------- | ------------- | ------------- | -------------
+ **username** | **String**|  | 
+
+### Return type
+
+[**User**](User.md)
+
+### Authorization
+
+[OAuth2PasswordBearer](../README.md#OAuth2PasswordBearer)
+
+### HTTP request headers
+
+- **Content-Type**: Not defined
+- **Accept**: application/json
+
+
+## registerUsersRegisterPost
+
+> User registerUsersRegisterPost(registrationRequest)
+
+Register
+
+Register for an account. To be called after obtaining a verification code by calling &#x60;/verify-email&#x60;.
+
+### Example
+
+```javascript
+import CrowdLabelApi from 'crowd_label_api';
+
+let apiInstance = new CrowdLabelApi.UsersApi();
+let registrationRequest = new CrowdLabelApi.RegistrationRequest(); // RegistrationRequest | 
+apiInstance.registerUsersRegisterPost(registrationRequest, (error, data, response) => {
+  if (error) {
+    console.error(error);
+  } else {
+    console.log('API called successfully. Returned data: ' + data);
+  }
+});
+```
+
+### Parameters
+
+
+Name | Type | Description  | Notes
+------------- | ------------- | ------------- | -------------
+ **registrationRequest** | [**RegistrationRequest**](RegistrationRequest.md)|  | 
+
+### Return type
+
+[**User**](User.md)
+
+### Authorization
+
+No authorization required
+
+### HTTP request headers
+
+- **Content-Type**: application/json
+- **Accept**: application/json
+
+
+## verifyEmailUsersVerifyEmailPost
+
+> Email verifyEmailUsersVerifyEmailPost(email)
+
+Verify Email
+
+Attempts to send an email containing a verification code to the provided address.
+
+### Example
+
+```javascript
+import CrowdLabelApi from 'crowd_label_api';
+
+let apiInstance = new CrowdLabelApi.UsersApi();
+let email = new CrowdLabelApi.Email(); // Email | 
+apiInstance.verifyEmailUsersVerifyEmailPost(email, (error, data, response) => {
+  if (error) {
+    console.error(error);
+  } else {
+    console.log('API called successfully. Returned data: ' + data);
+  }
+});
+```
+
+### Parameters
+
+
+Name | Type | Description  | Notes
+------------- | ------------- | ------------- | -------------
+ **email** | [**Email**](Email.md)|  | 
+
+### Return type
+
+[**Email**](Email.md)
+
+### Authorization
+
+No authorization required
+
+### HTTP request headers
+
+- **Content-Type**: application/json
+- **Accept**: application/json
+

@@ -58,8 +58,16 @@
 </template>
 
 <script>
+
+import { ApiClient } from '@/crowdlabel-api/src';
+import { UsersApi } from '@/crowdlabel-api/src';
+
 export default {
+    
     data () {
+        var apiClient = new ApiClient('http://localhost:8000');
+        var usersApi = new UsersApi(apiClient);
+
         var validatePass = (rule, value, callback) => {
             if (value === '') {
                 callback(new Error('请输入密码'));
@@ -87,7 +95,8 @@ export default {
                     callback(new Error('用户名格式错误:请输入3-64位用户名'));
                 } else {
                     let self = this
-                    let checkname = self.fetch_json('http://localhost:8000/availability', 'POST', {'username':value, 'email':''});
+                    let checkname = usersApi.availabilityUsersAvailabilityPut({'username': value, 'email': ''});
+                    // let checkname = self.fetch_json('http://localhost:8000/availability', 'POST', {'username':value, 'email':''});
                     if (checkname.username){
                         callback(new Error('用户名已被占用'));
                     } else {
