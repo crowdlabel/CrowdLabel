@@ -11,7 +11,7 @@ fake_users = [
         email='johndoe@example.com',
         password_hashed=hash('secret'),
         date_created=datetime(2022, 10, 9, 10, 10),
-        tokens=0,
+        credits=0,
         tested=True,
         tasks_claimed=[],
         tasks_completed=[]
@@ -21,7 +21,7 @@ fake_users = [
         email='requester1@example.com',
         password_hashed=hash('secret'),
         date_created=datetime(2022, 10, 9, 10, 10),
-        tokens=0,
+        credits=0,
         tasks_requested=[1],
     ),
     Admin(
@@ -29,7 +29,7 @@ fake_users = [
         email='admin@example.com',
         password_hashed=hash('secret'),
         date_created=datetime(2022, 10, 10, 10, 10, 10),
-        tokens=0,
+        credits=0,
         tasks_requested=[],
     )
 ]
@@ -41,9 +41,11 @@ fake_emails = {
 fake_tasks = [
     Task(
         task_id=1,
+        name='faketask',
         creator='requester1',
-        date_created=datetime(2022, 10, 10, 10, 10),
-        tokens=10,
+        responses_required=10,
+        date_created=datetime.utcnow(),
+        credits=10,
         questions=[
             SingleChoiceQuestion(
                 task_id=1,

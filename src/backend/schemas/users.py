@@ -88,7 +88,7 @@ class User(BaseModel):
     date_created: datetime=datetime.utcnow()
     password_hashed: str=''
     user_type: str=''
-    tokens: float=0
+    credits: float=0
 
 class Requester(User):
     user_type='requester'
