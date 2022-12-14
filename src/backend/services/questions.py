@@ -15,7 +15,9 @@ import schemas.tasks
 import schemas.questions
 import schemas.users
 
-async def get_question(task: schemas.tasks.Task, question_id: int) -> schemas.questions.Question | None:
+import services.tasks
+
+async def get_question(task: services.tasks.Task, question_id: int) -> schemas.questions.Question | None:
     for question in task.questions:
         if question.question_id == question_id:
             return question

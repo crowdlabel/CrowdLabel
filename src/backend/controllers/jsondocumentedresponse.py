@@ -1,5 +1,7 @@
-from fastapi.responses import JSONResponse, Response
+from fastapi import status
+from fastapi.responses import Response
 from pydantic import BaseModel
+
 
 
 class JSONDocumentedResponse:
@@ -33,3 +35,13 @@ def create_documentation(responses: list[JSONDocumentedResponse]):
         documentation['responses'][response.status_code] = doc
 
     return documentation
+
+forbidden_jdr = JSONDocumentedResponse(
+    status.HTTP_403_FORBIDDEN,
+    'You do not have permission to perform this action.',
+)
+
+not_found_jdr = JSONDocumentedResponse(
+    status.HTTP_404_NOT_FOUND,
+    'Resource not found.',
+)

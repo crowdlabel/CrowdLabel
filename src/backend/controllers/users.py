@@ -71,8 +71,6 @@ async def register(details: schemas.users.RegistrationRequest):
 
 
     return response# register_success_jdr.response(response)
-
-
 ###############################################################################
 me_jdr = JSONDocumentedResponse(
     status.HTTP_200_OK,
@@ -93,9 +91,7 @@ async def edit_me(current_user: User = Depends(get_current_user())):
     # edit user's own details
     # TODO
     pass
-
-
-
+###############################################################################
 username_success_jdr = JSONDocumentedResponse(
     status.HTTP_200_OK,
     'Successfully found user.',

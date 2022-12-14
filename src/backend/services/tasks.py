@@ -1,65 +1,115 @@
 from datetime import datetime
-from sqlalchemy.orm import sessionmaker, scoped_session, selectinload
-from sqlalchemy.ext.asyncio import AsyncSession
-from sqlalchemy import select, update
-
-from models.task import Task
-from .database import *
-from .fakedata import fake_tasks
-
+from typing import Optional, Iterable
 from pydantic import BaseModel
-import pathlib
-
 import schemas.questions
-
+from .users import User
 from utils.datetime_str import datetime_now_str
 
 
+from .database import *
+import models.task
+from sqlalchemy.orm import sessionmaker, scoped_session, selectinload
+from sqlalchemy.ext.asyncio import AsyncSession
+from sqlalchemy import select, update
 Connection = sessionmaker(bind=engine,expire_on_commit=False,class_=AsyncSession)
 con = scoped_session(Connection)
 def __verify_task_format():
     return True
 
-from typing import Iterable
 
+
+class Task(BaseModel):
+    task_id: int
+    creator: str
+    date_created: datetime
+    credits: float
+    name: str
+    introduction: str=''
+    description: str=''
+    cover: str=''
+    tags: list[str]=[]
+    responses_required: int
+    respondents_claimed: set[str]=set() # usernames of respondents who have claimed the task but have not completed it
+    respondents_completed: set[str]=set() # usernames of respondents who have claimed and completed the task
+    questions: list[schemas.questions.Question]=[] # list of Questions
+
+
+    async def edit_task(task_id: int) -> bool | None:
+        async with con.begin():
+            result = await con.execute(select(Task).where(Task.id == task_id))
+            target = result.scalars().first()
+            if target is None:
+                return None
+            target.date_download = datetime.datetime.now()
+            await con.flush()
+            con.expunge(target)
+
+        return {
+            "id" :target.id,
+            "task_name":target.task_name,
+            "task_id":target.task_id,
+            "date_create":target.date_created,
+            "date_download":target.date_download
+        }
+        
+
+    async def delete(self) -> bool:
+        async with con.begin():
+            result = await con.execute(select(Task).where(Task.id==self.task_id))
+            target = result.scalars().first()
+            if target == None:
+                return False
+            await con.delete(target)
+            # for item in result:
+            #     await con.delete(item)
+        await con.commit()
+        return True
+
+
+    async def create_task_results_file(id: int) -> str:
+        '''
+        id: ID of the task
+        Create the ZIP file containing the results of the task with ID `id`
+        Returns the filename of the zip file
+        '''
+
+        filename = 'results_' + id + '_' + datetime_now_str() + '.zip'
+
+
+
+
+
+
+        return filename
+        
+
+
+fake_tasks = [
+    Task(
+        task_id=1,
+        name='faketask',
+        creator='requester1',
+        responses_required=10,
+        date_created=datetime.utcnow(),
+        credits=10,
+        questions=[
+            schemas.questions.SingleChoiceQuestion(
+                task_id=1,
+                question_id=1,
+                prompt='Which number is a prime number?',
+                options=['9', '10', '11', '12'],
+                answers=[],
+            ),
+        ]
+    ),
+]
 
 class Tasks:
 
     def __init__(self):
         pass
 
-    async def process_task_archive(self, filename: str) -> str:
-        '''
-        Filename: filename of the file that was uploaded
-        Creates the task, or returns an error
-        '''
-        pass
-
-    async def create_task(self, 
-        name: str,
-        creator: str,
-        details: str
-    ) -> Task:
-
-        # get the arguments as a dictionary
-        if not __verify_task_format():
-            return False
-
-
-        task = Task(
-            name,
-            creator,
-            details
-        )
-        con.add(task)
-        await con.commit()
-        print(123)
-        return {
-            'arg': 'ok',
-            'error': 'ok',
-        }
-
-    async def get_task(task_id: int) -> dict | None:
+    async def get_task(task_id: int) -> Task | None:
 
         for task in fake_tasks:
             if task.task_id == task_id:
@@ -87,9 +137,42 @@ class Tasks:
             "results": result    
         }
 
+    async def process_task_archive(self, filename: str) -> Task | str:
+        '''
+        Filename: filename of the file that was uploaded
+        Creates and returns the task, or returns an error message
+        '''
+        pass
 
-    async def get_tasks(
-        username: str,
+    async def create_task(self, 
+        name: str,
+        creator: str,
+        details: str
+    ) -> Task | None:
+
+        # get the arguments as a dictionary
+        if not __verify_task_format():
+            return False
+
+
+        task = Task(
+            name,
+            creator,
+            details
+        )
+        con.add(task)
+        await con.commit()
+        print(123)
+        return {
+            'arg': 'ok',
+            'error': 'ok',
+        }
+
+
+
+
+    async def search(
+        user: User,
         name: str=None,
         tags: Iterable=None,
         credits: float=None,
@@ -101,6 +184,8 @@ class Tasks:
         sort_criteria: str=None,
         sort_ascending: bool=True,
     ):
+
+        tasks = {}
         """
         Gets the tasks matching the search criteria
 
@@ -124,71 +209,4 @@ class Tasks:
 
         """
         total = 10
-        return [], total
-
-
-class Task:
-    task_id: int
-    creator: str
-    date_created: datetime
-    credits: float
-    name: str
-    introduction: str=''
-    description: str=''
-    cover: pathlib.Path=None
-    tags: set[str]={}
-    responses_required: int
-    respondents_claimed: set[str]={} # usernames of respondents who have claimed the task but have not completed it
-    respondents_completed: set[str]={} # usernames of respondents who have claimed and completed the task
-    questions: list[schemas.questions.Question] # list of Questions
-
-
-    async def edit_task(task_id: int) -> bool | None:
-        async with con.begin():
-            result = await con.execute(select(Task).where(Task.id == task_id))
-            target = result.scalars().first()
-            if target is None:
-                return None
-            target.date_download = datetime.datetime.now()
-            await con.flush()
-            con.expunge(target)
-
-        return {
-            "id" :target.id,
-            "task_name":target.task_name,
-            "task_id":target.task_id,
-            "date_create":target.date_created,
-            "date_download":target.date_download
-        }
-        
-
-    async def delete(self) -> bool:
-        async with con.begin():
-            result = await con.execute(select(Task).where(Task.id==task_id))
-            target = result.scalars().first()
-            if target == None:
-                return False
-            await con.delete(target)
-            # for item in result:
-            #     await con.delete(item)
-        await con.commit()
-        return True
-
-
-    async def create_task_results_file(id: int) -> str:
-        '''
-        id: ID of the task
-        Create the ZIP file containing the results of the task with ID `id`
-        Returns the filename of the zip file
-        '''
-
-        filename = 'results_' + id + '_' + datetime_now_str() + '.zip'
-
-
-
-
-
-
-
-        return filename
-        
+        return tasks, total

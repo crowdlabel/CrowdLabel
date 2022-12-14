@@ -86,19 +86,19 @@ class User(BaseModel):
                 'credits': 0,
                 'date_created': datetime(1970, 1, 1, 0, 0 , 0),
                 'tested': False,
-                'tasks_claimed': [1, 4],
-                'tasks_completed': [2, 3],
+                'tasks_claimed': {1, 4},
+                'tasks_completed': {2, 3},
             }
         }
 
 class Requester(User):
     user_type='requester'
-    tasks_requested: list[int]=[] # list Task IDs
+    tasks_requested: set[int]={} # list Task IDs
 class Respondent(User):
     user_type='respondent'
     tested: bool=False
-    tasks_claimed: list[int]=[] # list Task IDs
-    tasks_completed: list[int]=[] # list Task IDs
+    tasks_claimed: set[int]={} # list Task IDs
+    tasks_completed: set[int]={} # list Task IDs
 
 class Admin(Requester, Respondent):
     pass
