@@ -67,8 +67,6 @@ class Users:
 
         verification_code = str(random.randint(0, 999999)).rjust(6, '0')
 
-        # TODO: add email and verification code to db,
-        # or update the verification code of an existing email
 
         if NO_DB:
             fake_emails[email] = verification_code

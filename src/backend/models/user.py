@@ -20,7 +20,7 @@ class User(Base):
     date_created = Column(DateTime,default = datetime.datetime.now)
     tokens = Column(FLOAT)
     __mapper_args__ = {
-        'polymorphic_on':type,
+        'polymorphic_on':user_type,
         'polymorphic_identity':'user'
     }
     def __init__(self, username, password_hashed, email, user_type, status):
@@ -35,7 +35,6 @@ class Requester(User):
     id = Column(Integer,ForeignKey('user.id'),primary_key = True)
     task_requested = relationship('Requester2Task',secondary=Requester2Task)
     __mapper_args__ = {
-        'polymorphic_on':type,
         'polymorphic_identity':'requester'
     }
 class Respondent(User):
@@ -44,13 +43,11 @@ class Respondent(User):
     task_claimed = relationship('Respondent2Claim',secondary=Respondent2Claim)
     task_complete = relationship('Respondent2Complete',secondary=Respondent2Complete)
     __mapper_args__ = {
-        'polymorphic_on':type,
         'polymorphic_identity':'respondent'
     }
 class Admin(User):
     __tablename__ = 'Admin'
     id = Column(Integer,ForeignKey('user.id'),primary_key = True)
     __mapper_args__ = {
-        'polymorphic_on':type,
         'polymorphic_identity':'admin'
     }

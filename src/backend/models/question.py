@@ -37,23 +37,30 @@ class Question(Base):
 
 class MultipleChoice(Question):
     __tablename__ = 'multiplechoice'
+    id = Column(Integer,ForeignKey('question.id'),primary_key = True)
     __mapper_args__ = {
         'polymorphic_identity': 'multi_choice'
     }
 
 class SingeChoiceQuestion(Question):
     __tablename__ = 'singlechoicequestion'
+    id = Column(Integer,ForeignKey('question.id'),primary_key = True)
+
     __mapper_args__ = {
         'polymorphic_identity': 'single_choice'
     }
 
 class RankingQuestion(Question):
     __tablename__ = 'rankingquestion'
+    id = Column(Integer,ForeignKey('question.id'),primary_key = True)
+
     __mapper_args__ = {
         'polymorphic_identity': 'ranking'
     }
 class OpenQuestion(Question):
     __tablename__ = 'openquestion'
+    id = Column(Integer,ForeignKey('question.id'),primary_key = True)
+
     __mapper_args__ = {
         'polymorphic_identity': 'open'
     }

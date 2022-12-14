@@ -16,7 +16,7 @@ class Answer(Base):
     respondent_id = Column(Integer,ForeignKey('user.id')) 
     question_type = Column(String(MAX_TYPE_LENGTH))
     answer_type = Column(String(MAX_TYPE_LENGTH))
-    respondent_name = Column(String,MAX_NAME_LENGTH)
+    respondent_name = Column(String(MAX_NAME_LENGTH))
     __mapper_args__ = {
         'polymorphic_on':answer_type,
         'polymorphic_identity':'answer'
@@ -61,3 +61,6 @@ class BoundingBoxAnswer(Answer):
     top_left_y = Column(Integer)
     bottom_right_x = Column(Integer)
     bottom_right_y = Column(Integer)
+    __mapper_args__ = {
+        'polymorphic_identity':'boundingboxanswer'
+    }

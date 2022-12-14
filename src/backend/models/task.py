@@ -21,18 +21,14 @@ class Task(Base):
     credits = Column(Float)
     tags = Column(String(MAX_TAGS_LENGTH))
     response_required = Column(Integer)
-    
-    results = relationship('Results')
-    questions = relationship('Question',secondary=Task2Question)
-    requester = relationship('Requester',secondary=Requester2Task)
-    respondent_claimed = relationship('Respondent',secondary=Respondent2Claim)
-    respondent_complete = relationship('Respondent',secondary = Respondent2Complete)
+    file_path = Column(String(MAX_PATH_LENGTH))
+
+
+    results = relationship('Results',cascade = 'all,delete-orphan')
+    questions = relationship('Question',secondary=Task2Question,cascade="delete, delete-orphan")    
+    requester = relationship('Requester',secondary=Requester2Task,cascade="delete, delete-orphan")
+    respondent_claimed = relationship('Respondent',secondary=Respondent2Claim,cascade="delete, delete-orphan")
+    respondent_complete = relationship('Respondent',secondary = Respondent2Complete,cascade="delete, delete-orphan")
    
-    def __init__(self,name,creator,detail,introduction,type,path) -> None:
-        self.name=name
-        self.creator = creator
-        self.introduction = introduction
-        self.details = detail
-        self.type = type
-        self.path = path
+
 
