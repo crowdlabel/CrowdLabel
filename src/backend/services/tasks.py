@@ -1,4 +1,4 @@
-import datetime
+from datetime import datetime
 from sqlalchemy.orm import sessionmaker, scoped_session, selectinload
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy import select, update
@@ -9,6 +9,8 @@ from .fakedata import fake_tasks
 
 from pydantic import BaseModel
 import pathlib
+
+import schemas.questions
 
 Connection = sessionmaker(bind=engine,expire_on_commit=False,class_=AsyncSession)
 con = scoped_session(Connection)
@@ -118,7 +120,7 @@ class Tasks:
         return [], total
 
 
-class Task(BaseModel):
+class Task:
     task_id: int
     creator: str
     date_created: datetime
@@ -131,12 +133,9 @@ class Task(BaseModel):
     responses_required: int
     respondents_claimed: set[str]={} # usernames of respondents who have claimed the task but have not completed it
     respondents_completed: set[str]={} # usernames of respondents who have claimed and completed the task
-    questions: list[Question] # list of Questions
+    questions: list[schemas.questions.Question] # list of Questions
 
-    def set_id(self, new_id):
-        self.task_id = new_id
-    def __init__(self):
-        pass
+
     async def edit_task(task_id: int) -> bool | None:
         async with con.begin():
             result = await con.execute(select(Task).where(Task.id == task_id))
@@ -156,7 +155,7 @@ class Task(BaseModel):
         }
         
 
-    async def delete(self, task_id: int) -> bool:
+    async def delete(self) -> bool:
         async with con.begin():
             result = await con.execute(select(Task).where(Task.id==task_id))
             target = result.scalars().first()
