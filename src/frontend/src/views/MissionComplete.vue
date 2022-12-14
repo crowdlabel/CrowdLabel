@@ -67,31 +67,7 @@ export default {
     };
   },
   methods: {
-    chooseType: function () {
-      this.dialogVisible = true
-    },
-    senderType: function (){
-      this.$router.push('/senderlogin')
-      // axios.get('http://localhost:8002/senderlogin', {params:{
-      //           username: this.username
-      //           }
-      //       }).then((res) => {
-      //           console.log(res)
-      //           this.$router.push({
-      //               name: 'connected',
-      //               params: {
-      //               username: this.username,
-      //               usage: res.data
-      //               }
-      //           })
-      //           })
-      //       .catch((error) => {
-      //           console.log(error)
-      //       })
-    },
-    receiverType: function () {
-      this.$router.push('/receiverlogin')
-    }
+    
   }
 }
 </script>
