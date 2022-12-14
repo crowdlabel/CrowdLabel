@@ -87,7 +87,12 @@ async def create_user(
     password: str,
     user_type: str,
     verification_code: str,
-) -> tuple[list[str]] | None:
+) -> dict | None:
+    '''
+    Creates a new user
+    If successful, returns User object
+    If unsuccessful, returns a dict with the fields along with their error message
+    '''
     # get the arguments as a dictionary
     args = locals()
 
@@ -145,7 +150,7 @@ async def authenticate(username: str, password: str) -> bool:
 
     return verify(user.password, password)
 
-async def get_user(username: str) -> dict | None:
+async def get_user(username: str) -> schemas.users.User | None:
     """
     Gets the information about a user
     

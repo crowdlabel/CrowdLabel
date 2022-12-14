@@ -52,20 +52,7 @@ class RegistrationRequest(BaseModel):
         }
 
 
-class GoodRegistrationResponse(BaseModel):
-    username: str
-    email: str
-    user_type: str
-    class Config:
-        schema_extra = {
-            'example': {
-                'username': 'johndoe',
-                'email': 'johndoe@example.com',
-                'user_type': 'respondent',
-            }
-        }
-
-class BadRegistrationResponse(BaseModel):
+class RegistrationError(BaseModel):
     username: Optional[str]
     email: Optional[str]
     password: Optional[str]
@@ -85,10 +72,24 @@ class BadRegistrationResponse(BaseModel):
 class User(BaseModel):
     username: str=''
     email: str=''
-    date_created: datetime
-    password_hashed: str=''
     user_type: str=''
     credits: float=0
+    date_created: datetime
+    password_hashed: str=''
+
+    class Config:
+        schema_extra = {
+            'example': {
+                'username': 'johndoe',
+                'email': 'johndoe@example.com',
+                'user_type': 'respondent',
+                'credits': 0,
+                'date_created': datetime(1970, 1, 1, 0, 0 , 0),
+                'tested': False,
+                'tasks_claimed': [1, 4],
+                'tasks_completed': [2, 3],
+            }
+        }
 
 class Requester(User):
     user_type='requester'
