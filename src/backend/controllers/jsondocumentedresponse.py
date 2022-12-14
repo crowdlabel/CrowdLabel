@@ -1,5 +1,5 @@
 from fastapi.responses import JSONResponse
-from pydantic import BaseModel, parse_obj_as
+from pydantic import BaseModel
 
 
 class JSONDocumentedResponse:
@@ -11,7 +11,7 @@ class JSONDocumentedResponse:
         return {
             'description': self.description,
         }
-    def response(self, data: BaseModel | dict):
+    def response(self, data: BaseModel | dict={}):
         print('returning response')
         return JSONResponse(
             content=data if not self.model else data.dict(exclude_none=True),
@@ -22,8 +22,8 @@ def create_documentation(responses: list[JSONDocumentedResponse]):
     documentation = {}
     documentation['status_code'] = responses[0].status_code
     documentation['response_description'] = responses[0].description
-    """  if responses[0].model:
-        documentation['response_model'] = responses[0].model """
+    if responses[0].model:
+        documentation['response_model'] = responses[0].model
     documentation['responses'] = {}
     for response in responses[1:]:
         doc = response.documentation()

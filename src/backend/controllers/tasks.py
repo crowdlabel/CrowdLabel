@@ -2,26 +2,43 @@ from fastapi import Depends, UploadFile, status
 from fastapi.routing import APIRouter
 from utils.filetransfer import download_file, upload_file
 from .auth import get_current_user
-import services.tasks as ts
-import services.users as us
+import services.tasks
+import services.users
 from datetime import datetime
+from .jsondocumentedresponse import JSONDocumentedResponse, create_documentation
+import schemas.tasks
 
 router = APIRouter()
 
-@router.get('/')
-async def get_tasks(current_user=Depends(get_current_user(['admin', 'respondent']))):
+
+get_task_success_jdr = JSONDocumentedResponse(
+    status.HTTP_200_OK,
+    'Successfully queried tasks.',
+    schemas.tasks.TasksResponse
+)
+get_task_failed_hdr = JSONDocumentedResponse(
+    status.HTTP_400_BAD_REQUEST,
+    'Task query failed.',
+    schemas.tasks.ErrorResponse
+)
+@router.get('/',
+    **create_documentation([get_task_success_jdr, get_task_failed_hdr])
+)
+async def get_tasks(query: schemas.tasks.TasksRequest, current_user=Depends(get_current_user(['admin', 'respondent']))):
     """
     Task search
     """
-    tasks = await ts.get_tasks()
-    print(tasks)
-    return tasks
+    tasks = await services.tasks.get_tasks(current_user, **query)
+    if isinstance(tasks, str):
+        return get_task_failed_hdr.response(tasks)
+    return get_task_success_jdr.response(tasks)
 
 @router.post('/upload')
 async def upload_task(in_file: UploadFile, current_user=Depends(get_current_user(['requester']))):
     filename = 'upload_' + current_user.username + '_' + datetime.utcnow().strftime('%Y-%m-%d_%H.%M.%S.%f')[:-3] + '.zip'
     upload_file(in_file, filename)
-    result = await ts.process_task_archive(filename)
+    result = await services.tasks.process_task_archive(filename)
+
 
 """ @app.post('/create_task')
 async def create_task(details:TaskInfo):
@@ -50,13 +67,13 @@ async def create_task(details:TaskInfo):
 
 @router.delete('/{task_id}')
 async def delete_task(task_id: int, current_user=Depends(get_current_user(['requester']))):
-    task = ts.get_task(task_id)
+    task = await services.tasks.get_task(task_id)
     if not task:
         return 400
     if current_user.username != task.creator:
         return 400
 
-    response = await ts.delete_task(task_id)
+    response = await services.tasks.delete_task(task_id)
     return {'task_id': task_id}, status.HTTP_200_OK if response else status.HTTP_400_BAD_REQUEST
 
 """ @router.patch('/{task_id}')
@@ -119,10 +136,36 @@ async def get_task(task_id: int, current_user=Depends(get_current_user())):
     """
 
 
+claim_success_jdr = JSONDocumentedResponse(
+    status.HTTP_200_OK,
+    'Task claimed successfully.',
+    schemas.tasks.Task,
+)
+claim_failed_jdr = JSONDocumentedResponse(
+    status.HTTP_400_BAD_REQUEST,
+    'Task claim failed.',
+    schemas.tasks.ErrorResponse,
+)
+@router.post('/{task_id}/claim',
+    **create_documentation([claim_success_jdr, claim_failed_jdr])
+)
+async def claim_task(task_id: int, current_user=Depends(get_current_user(['respondent']))):
+    task = await services.tasks.get_task(task_id)
+    if len(task.respondents_claimed) + len(task.respondents_completed) >= task.responses_required:
+        return claim_failed_jdr(schemas.tasks.ErrorResponse('No claims left'))
+    
+    if task_id in current_user.tasks_claimed or task_id in current_user.tasks_completed:
+        return claim_failed_jdr(schemas.tasks.ErrorResponse('Already claimed'))
+
+    current_user.tasks_claimed.append(task_id)
+
+    task.answers = None
+
+    return claim_success_jdr.response(task)
 
 @router.get('/{task_id}/download',)
 async def download_task_results(task_id: int, current_user=Depends(get_current_user(['requester']))):
-    filename = await ts.create_task_results_file(task_id)
+    filename = await services.tasks.create_task_results_file(task_id)
     return await download_file(filename)
 
 @router.patch('/{task_id}')

@@ -44,8 +44,8 @@ verify_email_failed_jdr = JSONDocumentedResponse(
 )
 async def verify_email(email: Email):
     if not await services.users.send_verification_email(email.email):
-        return verify_email_failed_jdr.response()
-    return verify_email_success_jdr.response()
+        return verify_email_failed_jdr.response(email)
+    return verify_email_success_jdr.response(email)
 ###############################################################################
 register_success_jdr = JSONDocumentedResponse(
     status.HTTP_201_CREATED,
@@ -62,7 +62,6 @@ register_failed_jdr = JSONDocumentedResponse(
     **create_documentation([register_success_jdr, register_failed_jdr])
 )
 async def register(details: RegistrationRequest):
-    print('1111111111111111111111111111111')
     response = await services.users.create_user(
         details.username,
         details.email,
@@ -70,13 +69,10 @@ async def register(details: RegistrationRequest):
         details.user_type,
         details.verification_code,
     )
-    print('2222222222222222222222222222')
 
     if response:
-        print('33333333333333333333333')
         response = BadRegistrationResponse(**response)
         return register_failed_jdr.response(response)
-
 
     response = GoodRegistrationResponse(
         username=details.username,

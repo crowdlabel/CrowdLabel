@@ -96,7 +96,6 @@ invalid_failed_jdr = JSONDocumentedResponse(
     **create_documentation([login_success_jdr, invalid_failed_jdr])
 )
 async def login(form_data: OAuth2PasswordRequestForm = Depends()):
-    print('logging in')
     if not await us.authenticate(form_data.username, form_data.password):
         return invalid_failed_jdr.response()
     access_token = create_access_token(

@@ -108,7 +108,7 @@ async def create_user(
     if errors:
         return errors
 
-    if not check_verification_code(email, verification_code):
+    if not await check_verification_code(email, verification_code):
         errors['verification_code'] = 'wrong'
         return errors
 
