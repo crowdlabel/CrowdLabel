@@ -58,17 +58,9 @@
               <h2 id="create_title">创建您新任务</h2>
             </div>
             <div class="create_main">
-              <el-form label-width="80px" ref="form" :model="form">
-                <el-form-item prop="name" required>
+              <el-form label-width="80px" ref="form" :model="form" :rules="rules">
+                <el-form-item prop="name" class="name_item" required>
                   <el-input placeholder="请输入任务名称"  class="mission_name" v-model="form.name"></el-input>
-                </el-form-item>
-                <el-form-item label="任务类型:" class="mission_type" prop="type" required>
-                  <el-radio-group v-model="form.type">
-                    <el-radio label="图像标注"></el-radio>
-                    <el-radio label="图像分类"></el-radio>
-                    <el-radio label="音频标注"></el-radio>
-                    <el-radio label="文本标注"></el-radio>
-                  </el-radio-group>
                 </el-form-item>
                 <el-form-item label="任务简介:" class="mission_brief" prop="brief" required>
                   <el-input type="textarea" v-model="form.brief" class="brief_input"></el-input>
@@ -76,14 +68,37 @@
                 <el-form-item label="任务详情:" class="mission_details" prop="details" required>
                   <el-input type="textarea" v-model="form.details" class="details_input"></el-input>
                 </el-form-item>
-                <el-form-item label="上传文件:" class="mission_file" required>
-                  <el-upload class="upload_file" action="https://jsonplaceholder.typicode.com/posts/"
-                    :multiple=false
-                    accept=".zip,.rar"
+                <el-form-item label="上传封面:" class="mission_file" required>
+                  <el-upload class="upload_file" action="none"
+                    :headers="{ 'Content-Type': 'multipart/form-data'}"
+                    accept=".jpg, .png"
+                    :auto-upload="false"
+                    :on-change="handleChange"
+                    :limit="1"
+                    :file-list="form.cover"
                     >
                     <el-button type="primary" size="small" class="click_upload_btn">点击上传</el-button>
-                    <div slot="tip" class="el-upload__tip">只能上传zip/rar文件</div>
+                    <div slot="tip" class="el-upload__tip">只能上传JPG和PNG文件</div>
                   </el-upload>
+                </el-form-item>
+                <el-form-item label="上传文件:" class="mission_file" required>
+                  <el-upload class="upload_file" action="none"
+                    :headers="{ 'Content-Type': 'multipart/form-data'}"
+                    accept=".zip, .rar"
+                    :auto-upload="false"
+                    :on-change="handleZip"
+                    :limit="1"
+                    :file-list="form.zipfile"
+                    >
+                    <el-button type="primary" size="small" class="click_upload_btn">点击上传</el-button>
+                    <div slot="tip" class="el-upload__tip">只能上传zip或rar文件</div>
+                  </el-upload>
+                </el-form-item>
+                <el-form-item prop="amount" label="任务份额:" required class="mission_credits">
+                  <el-input placeholder="请输入任务总份数"  class="credits_input" v-model="form.amount"></el-input>
+                </el-form-item>
+                <el-form-item prop="credits_each" label="积分奖励:" required class="mission_credits">
+                  <el-input placeholder="请输入每份任务报酬积分"  class="credits_input" v-model="form.credits_each"></el-input>
                 </el-form-item>
                 <el-form-item>
                   <el-button type="primary" class="create_now" @click="create_new_project">立即创建</el-button>
@@ -181,45 +196,160 @@
 </template>
   
   
-  <script>
-  import axios from 'axios'
-  export default {
-    data() {
-      // page_num = 5;
-      return {
-        dialogVisible: false,
-        // fileList: [],
-        form: {
-          name: '',
-          type: '',
-          brief: '',
-          details: '',
-        },
+<script>
+import axios from 'axios'
+export default {
+  data() {
+    // page_num = 5;
+    var validateName = (rule, value, callback) => {
+      if (value === ''){
+          callback(new Error('请输入任务名称'))
+      } else {
+        callback();
+      }
+    };
+    var validateBrief = (rule, value, callback) => {
+      if (value === ''){
+          callback(new Error('请输入任务简介'))
+      } else {
+        callback();
+      }
+    };
+    var validateDetails = (rule, value, callback) => {
+      if (value === ''){
+          callback(new Error('请输入任务详情'))
+      } else {
+        callback();
+      }
+    };
+    var validateCreditsEach = (rule, value, callback) => {
+      if (value === ''){
+          callback(new Error('请输入每份任务积分奖励'))
+      } else {
+        callback();
+      }
+    };
+    var validateAmount = (rule, value, callback) => {
+      if (value === ''){
+          callback(new Error('请输入任务总份数'))
+      } else {
+        callback();
+      }
+    };
+    return {
+      dialogVisible: false,
+      // 
+      userid: "kennyl",
+      usercredits: 50,
+      // 
+      multipartFile: [],
+      form: {
+        name: '',
+        brief: '',
+        details: '',
+        credits_each: '',
+        amount: '',
+        cover: [],
+        zipfile: []
+      },
+      rules: {
+        name: [
+          { validator: validateName, trigger: 'blur'}
+        ],
+        brief: [
+          { validator: validateBrief, trigger: 'blur'}
+        ],
+        details: [
+          { validator: validateDetails, trigger: 'blur'}
+        ],
+        credits_each: [
+          { validator: validateCreditsEach, trigger: 'blur'}
+        ],
+        amount: [
+          { validator: validateAmount, trigger: 'blur'}
+        ],
+      },
+    }
+  },
+  methods: {
+    handleChange(file, fileList) {
+      let self = this;
+      if (file.size / (1024*1024)>1) {
+        self.$message.warning("当前限制文件大小不能大于1M");
+        self.file = '';
+        self.form.cover= [];
+        return false;
+      }
+      let suffix = self.getFileType(file.name);
+      let suffixArray = ["jpg", "jpeg", "png"];
+      if (suffixArray.indexOf(suffix) === -1) {
+        self.$message({
+          message: "文件格式错误",
+          type: "error",
+          duration: 2000
+        });
+        self.file = "";
+        self.form.cover=[];
+      }else{
+        self.multipartFile.append("cover", file.raw)
+        self.file = file.raw;
+        self.form.cover = fileList;
       }
     },
-    methods: {
-      backToMission() {
-        this.dialogVisible = false;
-      },
-      createProject () {
-        this.dialogVisible = true;
-      },
-      // handleRemove(file, fileList){
-      //   console.log(file, fileList)
-      // },
-      // handlePreview(file) {
-      //   console.log(file);
-      // },
-      // beforeRemove(file, fileList){
-      //   return this.$confirm('确定移除 ${ file.name }?');
-      // },
-      create_new_project () {
-
-      },
+    handleZip(file, fileList) {
+      let self = this;
+      if (file.size / (1024*1024)>20) {
+        self.$message.warning("当前限制文件大小不能大于20M");
+        self.file = '';
+        self.form.zipfile= [];
+        return false;
+      }
+      let suffix = self.getFileType(file.name);
+      let suffixArray = ["zip", "rar"];
+      if (suffixArray.indexOf(suffix) === -1) {
+        self.$message({
+          message: "文件格式错误",
+          type: "error",
+          duration: 2000
+        });
+        self.file = "";
+        self.form.zipfile=[];
+      }else{
+        self.multipartFile.append("file", file.raw)
+        self.file = file.raw;
+        self.form.zipfile = fileList;
+      }
     },
-
+    getFileType(name){
+      let startIndex = name.lastIndexOf(".");
+      if (startIndex !== -1) {
+        return name.slice(startIndex+1).toLowerCase();
+      } else {
+        return ""; 
+      }
+    },
+    backToMission() {
+      this.dialogVisible = false;
+    },
+    createProject () {
+      this.dialogVisible = true;
+    },
+    create_new_project () {
+      this.multipartFile.append('username', this.userid);
+      this.multipartFile.append('missionname', this.form.name);
+      this.multipartFile.append('missionamount', this.form.amount);
+      this.multipartFile.append('missioncredits', this.form.credits_each)
+      this.multipartFile.append('missionbrief', this.form.brief);
+      this.multipartFile.append('missiondetails', this.form.details);
+      // axios post to create mission
+    },
+  },
+  create() {
+    this.multipartFile = new FormData();
   }
-  </script>
+
+}
+</script>
   
 <style scoped>
 @import '@/assets/font/font.css';
@@ -544,9 +674,9 @@
 
 .mission_name{
   float: left;
-  margin-left:8% !important;
+  margin-left:0px !important;
   margin-top: 0px !important;
-  width: 60%;
+  width: 90% !important;
 }
 ::v-deep .el-form-item__content{
   margin-left: 20px !important;
@@ -609,7 +739,7 @@
 ::v-deep .el-upload__tip{
   float:left;
   position: relative;
-  width: 120px;
+  width: 140px;
   line-height: 25px;
 }
 
@@ -655,6 +785,29 @@
   top: 7px;
   float: left !important;
   width: 80px;
+}
+
+.mission_credits{
+  margin-left: 30px;
+  margin-right: 30px;
+}
+
+.credits_input{
+  position: relative;
+  float: left;
+  margin-left:0px !important;
+  height: 40px !important;
+}
+
+::v-deep .credits_input .el-input__inner{
+  margin-top: 0px;
+  height:40px;
+  font-size: 12px;
+}
+
+.name_item{
+  margin-left:30px;
+  margin-right:30px;
 }
 
 </style>

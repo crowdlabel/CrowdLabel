@@ -46,24 +46,64 @@
               </li>
           </ul>
       </div>
+      <div class="main_body">
+          <h3 class="sub_title">数据概览</h3>
+          <div class="row">
+            <div class="box_overview">
+              <p class="box_title">剩余积分</p>
+              <div class="box_credits">
+                <p class="box_number">27.5 k</p>
+                <p class="box_unit">积分</p>
+              </div> 
+              <div class="top_up_slot">
+                <el-button type="primary" @click="topUp" id="top_up">点击充值</el-button>
+              </div>
+            </div>
+            <div class="box_overview">
+              <p class="box_title">已使用总积分</p>
+              <div class="box_credits">
+                <p class="box_number">126.3 k</p>
+                <p class="box_unit">积分</p>
+              </div>
+            </div>
+          </div>
+      </div>
     </div>
   </div>
 </template>
   
   
 <script>
-// @ is an alias to /src
-// import HelloWorld from '@/components/HelloWorld.vue'
 import axios from 'axios'
 export default {
     data() {
     //   page_num = 100;
-        
+        return{
+            added_credits: 0
+        };
     },
     methods: {
-        
+        topUp() {
+            this.$prompt('请输入充值金额', '提示', {
+            confirmButtonText: '确定',
+            cancelButtonText: '取消',
+            inputPattern: /([0-9]*)/,
+            inputErrorMessage: '输入金额格式不正确'
+            }).then(({ value }) => {
+            this.$message({
+                type: 'success',
+                message: '已成功充值: ' + value + ' 积分'
+            });
+            this.added_credits = value;
+            }).catch(() => {
+            this.$message({
+                type: 'info',
+                message: '取消充值'
+            });       
+            });
+      }
     }
-    }
+}
 </script>
 
 <style scoped>
@@ -189,4 +229,101 @@ color:black;
     font-size: 15px;
 }
 
+.main_body {
+    box-sizing: border-box;
+    flex-direction: column;
+    position: relative;
+    display: flex;
+    flex:1;
+}
+.search_bar {
+    box-sizing: border-box;
+    flex-direction: row;
+}
+
+.sub_title{
+  vertical-align: middle;
+  text-align: left;
+  font-size: 18px;
+  font-weight: bold;
+  color:black;
+  margin-left: 50px;
+  margin-top: 30px;
+}
+.row {
+  box-sizing: border-box;
+  flex-direction: row;
+  position: relative;
+  display: flex;
+  margin-left: 70px;
+  margin-bottom: 20px;
+}
+.box_overview{
+  background: rgba(84,47,238,.05);
+  margin: 10px 0px 0px 30px;
+	padding: 10px;
+	width: 355px;
+	height: 220px;
+	border-radius: 8px;
+	font-size: 14px;
+}
+.box_title {
+  text-align: left;
+  margin-left: 15px;
+  font-size: 15px;
+  color: rgba(0,0,0,0.7);
+}
+.box_credits {
+  box-sizing: border-box;
+  flex-direction: row;
+  position: relative;
+  display: flex;
+  margin-left: 60px;
+  line-height: 50px;
+  vertical-align: middle;
+}
+.box_number {
+  text-align: left;
+  vertical-align: text-bottom;
+  font-size: 45px;
+  margin: 0px 0px 0px 0px;
+  color: rgba(84,47,238,1);
+  font-weight: bold;
+}
+.box_unit {
+  text-align: left;
+  vertical-align: sub;
+  font-size: 16px;
+  margin: 0px 0px 0px 6px;
+  color: rgba(0,0,0,1);
+  padding-top: 7px;
+}
+::v-deep .el-button--primary:hover{
+  background-color: rgba(84,47,238,.8);
+  border-color: #5D3BE6;
+}
+
+::v-deep .el-button--primary:focus {
+  background-color: #5D3BE6;
+  border-color: #5D3BE6;
+}
+
+::v-deep .el-button--primary{
+    width:80%;
+    background-color: #5D3BE6;
+    border-color: #5D3BE6;
+    margin-top: 0px;
+    margin-bottom: 20px !important;
+
+}
+
+.top_up_slot{
+    position:relative;
+    float:right;
+    margin-top:60px;
+    width: 180px;
+}
+::v-deep .top_up_slot .el-button--primary{
+    border-radius: 12px !important;
+}
 </style>
