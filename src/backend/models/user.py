@@ -33,15 +33,15 @@ class User(Base):
 class Requester(User):
     __tablename__ = 'requester'
     id = Column(Integer,ForeignKey('user.id'),primary_key = True)
-    task_requested = relationship('Requester2Task',secondary=Requester2Task)
+    task_requested = relationship('Requester2Task',secondary=Requester2Task,cascade="delete, delete-orphan")
     __mapper_args__ = {
         'polymorphic_identity':'requester'
     }
 class Respondent(User):
     __tablename__ = 'respondent'
     id = Column(Integer,ForeignKey('user.id'),primary_key = True)
-    task_claimed = relationship('Respondent2Claim',secondary=Respondent2Claim)
-    task_complete = relationship('Respondent2Complete',secondary=Respondent2Complete)
+    task_claimed = relationship('Respondent2Claim',secondary=Respondent2Claim,cascade="delete, delete-orphan")
+    task_complete = relationship('Respondent2Complete',secondary=Respondent2Complete,cascade="delete, delete-orphan")
     __mapper_args__ = {
         'polymorphic_identity':'respondent'
     }
