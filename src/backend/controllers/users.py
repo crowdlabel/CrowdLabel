@@ -3,7 +3,7 @@ from fastapi.routing import APIRouter
 from .auth import User, Depends, get_current_user
 from .jsondocumentedresponse import JSONDocumentedResponse, create_documentation
 import services.users
-from schemas.users import *
+import schemas.users
 
 
 router = APIRouter()
@@ -12,15 +12,15 @@ router = APIRouter()
 availability_jdr = JSONDocumentedResponse(
     status.HTTP_200_OK,
     'The availability of the requested fields.',
-    AvailabilityResponse,
+    schemas.users.AvailabilityResponse,
 )
 @router.put('/availability',
     description='Checks the availability of a username or email. Returns `true` for a field if that field is available, `false` otherwise.',
     **create_documentation([availability_jdr])
 )
-async def availability(fields: AvailabilityRequest):
+async def availability(fields: schemas.users.AvailabilityRequest):
     print(fields)
-    response = AvailabilityResponse()
+    response = schemas.users.AvailabilityResponse()
     if fields.username:
         response.username = not await services.users.username_exists(fields.username)
     if fields.email:
@@ -31,18 +31,18 @@ async def availability(fields: AvailabilityRequest):
 verify_email_success_jdr = JSONDocumentedResponse(
     status.HTTP_200_OK,
     'Email sent successfully.',
-    Email,
+    schemas.users.Email,
 )
 verify_email_failed_jdr = JSONDocumentedResponse(
     status.HTTP_400_BAD_REQUEST,
     'Email not sent successfully.',
-    Email,
+    schemas.users.Email,
 )
 @router.post('/verify-email',
     description='Attempts to send an email containing a verification code to the provided address.',
     **create_documentation([verify_email_success_jdr, verify_email_failed_jdr])
 )
-async def verify_email(email: Email):
+async def verify_email(email: schemas.users.Email):
     if not await services.users.send_verification_email(email.email):
         return verify_email_failed_jdr.response(email)
     return verify_email_success_jdr.response(email)
@@ -50,47 +50,42 @@ async def verify_email(email: Email):
 register_success_jdr = JSONDocumentedResponse(
     status.HTTP_201_CREATED,
     'Account successfully created. Returns all the following fields:',
-    GoodRegistrationResponse
+    schemas.users.User
 )
 register_failed_jdr = JSONDocumentedResponse(
     status.HTTP_400_BAD_REQUEST,
     'Account creation failed. The field(s) that caused the failure and its corresponding error (`exists` for existing field (`username` or `email`), `format` (any field), or `wrong` (`verification_code`) is returned. Not all fields will necessarily be present.',
-    BadRegistrationResponse
+    schemas.users.RegistrationError
 )
 @router.post('/register', 
     description='Register for an account. To be called after obtaining a verification code by calling `/verify-email`.',
     **create_documentation([register_success_jdr, register_failed_jdr])
 )
-async def register(details: RegistrationRequest):
-    response = await services.users.create_user(
-        details.username,
-        details.email,
-        details.password,
-        details.user_type,
-        details.verification_code,
-    )
+async def register(details: schemas.users.RegistrationRequest):
+    response = await services.users.create_user(**details)
 
     if response:
-        response = BadRegistrationResponse(**response)
+        response = schemas.users.RegistrationError(**response)
         return register_failed_jdr.response(response)
 
-    response = GoodRegistrationResponse(
-        username=details.username,
-        email=details.email,
-        user_type=details.user_type,
-    )
+
+
     return response# register_success_jdr.response(response)
 
 
 ###############################################################################
-
+me_jdr = JSONDocumentedResponse(
+    status.HTTP_200_OK,
+    'Successfully got me',
+    schemas.users.User
+)
 @router.get('/me',
-    description='Gets information for user who sent the request'
+    description='Gets information for user who sent the request',
+    **create_documentation([me_jdr])
 )
 async def get_me(current_user: User = Depends(get_current_user())):
-    #return 'requested info for ' + username + ' as ' + str(current_user)
-    return current_user
-
+    return me_jdr.response(current_user, {'password_hashed'})
+###############################################################################
 @router.patch('/me',
     description='Updates user info'
 )

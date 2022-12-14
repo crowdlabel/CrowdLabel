@@ -1,4 +1,4 @@
-from fastapi.responses import JSONResponse
+from fastapi.responses import JSONResponse, Response
 from pydantic import BaseModel
 
 
@@ -11,11 +11,12 @@ class JSONDocumentedResponse:
         return {
             'description': self.description,
         }
-    def response(self, data: BaseModel | dict={}):
+    def response(self, data: BaseModel | dict={}, exclude: set={}):
         print('returning response')
-        return JSONResponse(
-            content=data if not self.model else data.dict(exclude_none=True),
-            status_code=self.status_code
+        return Response(
+            content=data if not self.model else data.json(exclude=exclude),
+            status_code=self.status_code,
+            media_type='application/json',
         )
 
 def create_documentation(responses: list[JSONDocumentedResponse]):
