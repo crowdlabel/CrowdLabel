@@ -12,6 +12,9 @@ import pathlib
 
 import schemas.questions
 
+from utils.datetime_str import datetime_now_str
+
+
 Connection = sessionmaker(bind=engine,expire_on_commit=False,class_=AsyncSession)
 con = scoped_session(Connection)
 def __verify_task_format():
@@ -25,7 +28,11 @@ class Tasks:
     def __init__(self):
         pass
 
-    async def process_task_archive(self, filename: str):
+    async def process_task_archive(self, filename: str) -> str:
+        '''
+        Filename: filename of the file that was uploaded
+        Creates the task, or returns an error
+        '''
         pass
 
     async def create_task(self, 
@@ -168,12 +175,20 @@ class Task:
         return True
 
 
-    async def create_task_results_file(id):
+    async def create_task_results_file(id: int) -> str:
+        '''
+        id: ID of the task
+        Create the ZIP file containing the results of the task with ID `id`
+        Returns the filename of the zip file
+        '''
 
-        """
-        Create the ZIP file containing the results of the task with ID `id
-        """
+        filename = 'results_' + id + '_' + datetime_now_str() + '.zip'
 
-        return 'main.py'
+
+
+
+
+
+
+        return filename
         
-        pass

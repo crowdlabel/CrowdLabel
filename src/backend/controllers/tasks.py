@@ -4,9 +4,9 @@ from utils.filetransfer import download_file, upload_file
 from .auth import get_current_user
 import services.tasks
 import services.users
-from datetime import datetime
 from .jsondocumentedresponse import JSONDocumentedResponse, create_documentation
 import schemas.tasks
+from utils.datetime_str import datetime_now_str
 
 router = APIRouter()
 
@@ -35,7 +35,7 @@ async def get_tasks(query: schemas.tasks.TasksRequest, current_user=Depends(get_
 
 @router.post('/upload')
 async def upload_task(in_file: UploadFile, current_user=Depends(get_current_user(['requester']))):
-    filename = 'upload_' + current_user.username + '_' + datetime.utcnow().strftime('%Y-%m-%d_%H.%M.%S.%f')[:-3] + '.zip'
+    filename = 'upload_' + current_user.username + '_' + datetime_now_str() + '.zip'
     upload_file(in_file, filename)
     result = await services.tasks.process_task_archive(filename)
 
