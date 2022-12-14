@@ -6,16 +6,15 @@ from jose import JWTError, jwt
 
 from utils.config import get_config
 from .jsondocumentedresponse import JSONDocumentedResponse, create_documentation
-import services.users as us
 from schemas.auth import Token
 from schemas.users import User
-
+import services.users
 
 
 
 router = APIRouter()
 
-
+user_service = services.users.Users()
 
 # https://fastapi.tiangolo.com/tutorial/security/oauth2-jwt/
 
@@ -69,7 +68,7 @@ def get_current_user(user_types: list=[]) -> User:
         except JWTError:
             raise credentials_exception
 
-        user = await us.get_user(username)
+        user = await user_service.get_user(username)
 
         if not user:
             raise credentials_exception
@@ -96,7 +95,7 @@ invalid_failed_jdr = JSONDocumentedResponse(
     **create_documentation([login_success_jdr, invalid_failed_jdr])
 )
 async def login(form_data: OAuth2PasswordRequestForm = Depends()):
-    if not await us.authenticate(form_data.username, form_data.password):
+    if not await user_service.authenticate(form_data.username, form_data.password):
         return invalid_failed_jdr.response()
     access_token = create_access_token(
         data={'sub': form_data.username},

@@ -43,7 +43,7 @@ verify_email_failed_jdr = JSONDocumentedResponse(
     **create_documentation([verify_email_success_jdr, verify_email_failed_jdr])
 )
 async def verify_email(email: schemas.users.Email):
-    if not await services.users.send_verification_email(email.email):
+    if not await user_service.send_verification_email(email.email):
         return verify_email_failed_jdr.response(email)
     return verify_email_success_jdr.response(email)
 ###############################################################################
@@ -62,7 +62,7 @@ register_failed_jdr = JSONDocumentedResponse(
     **create_documentation([register_success_jdr, register_failed_jdr])
 )
 async def register(details: schemas.users.RegistrationRequest):
-    response = await services.users.create_user(**details)
+    response = await user_service.create_user(**details)
 
     if response:
         response = schemas.users.RegistrationError(**response)
@@ -108,7 +108,7 @@ username_failed_jdr = JSONDocumentedResponse(
 )
 async def get_user(username: str, current_user: User = Depends(get_current_user(['admin']))):
     #return 'requested info for ' + username + ' as ' + str(current_user)
-    user = services.users.get_user(username)
+    user = user_service.get_user(username)
     if not user:
         return username_failed_jdr.response()
     return user

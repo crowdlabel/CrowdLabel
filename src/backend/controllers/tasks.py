@@ -51,7 +51,7 @@ upload_failed_jdr = JSONDocumentedResponse(
 async def upload_task(in_file: UploadFile, current_user=Depends(get_current_user(['requester']))):
     filename = 'upload_' + current_user.username + '_' + datetime_now_str() + '.zip'
     await upload_file(in_file, filename)
-    response = await services.tasks.process_task_archive(filename)
+    response = await task_service.process_task_archive(filename)
     if isinstance(response, str):
         return upload_failed_jdr(schemas.tasks.ErrorResponse('Error'))
     return upload_success_jdr.response(response)
@@ -177,7 +177,7 @@ claim_failed_jdr = JSONDocumentedResponse(
     **create_documentation([claim_success_jdr, claim_failed_jdr])
 )
 async def claim_task(task_id: int, current_user=Depends(get_current_user(['respondent']))):
-    task = await services.tasks.get_task(task_id)
+    task = await task_service.get_task(task_id)
     if len(task.respondents_claimed) + len(task.respondents_completed) >= task.responses_required:
         return claim_failed_jdr(schemas.tasks.ErrorResponse('No claims left'))
     
@@ -193,7 +193,7 @@ async def claim_task(task_id: int, current_user=Depends(get_current_user(['respo
 
 @router.get('/{task_id}/download',)
 async def download_task_results(task_id: int, current_user=Depends(get_current_user(['requester']))):
-    filename = await services.tasks.create_task_results_file(task_id)
+    filename = await task_service.create_task_results_file(task_id)
     return await download_file(filename)
 ###############################################################################
 
