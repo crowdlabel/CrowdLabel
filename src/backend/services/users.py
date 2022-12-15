@@ -159,7 +159,7 @@ class Users:
         return utils.hasher.verify(target.password_hashed, password)
 
 
-    async def get_user(self, username: str) -> User | None:
+    async def get_user(self, username: str) -> schemas.users.User | None:
         """
         Returns User object, or None if user not found
         """
@@ -173,11 +173,13 @@ class Users:
             'tasks_completed': []
         }
 
-        res = con.query(models.user.User).filter(models.user.User.username == username).all()
-        res = con.query(models.user.User).filter(models.user.User.username == username).all()
-        if len(res) == 0:
-            return {}
-        pass
+        async with con.begin():
+            res= await con.execute(select(models.user.User).where(models.user.User.username==username))
+            target = res.scalars().first()
+            if target == None:
+                return None
+        response_user = schemas.users.User(target)
+        return response_user
 
 
     async def username_exists(self, username: str) -> bool:
