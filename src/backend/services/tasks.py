@@ -1,24 +1,23 @@
-from typing import Optional, Iterable
+from typing import Iterable
 from pydantic import BaseModel
 import schemas.questions
-from services.users import User
 from utils.datetime_str import datetime_now_str
 from datetime import datetime
 
-from services.database import *
+from services.database import engine
 from models.task import Task
 from sqlalchemy.orm import sessionmaker, scoped_session, selectinload
 from sqlalchemy.ext.asyncio import AsyncSession
-from sqlalchemy import select, update ,and_ ,or_
-Connection = sessionmaker(bind=engine,expire_on_commit=False,class_=AsyncSession)
+from sqlalchemy import select, and_ ,or_
+Connection = sessionmaker(bind=engine, expire_on_commit=False, class_=AsyncSession)
 con = scoped_session(Connection)
-def __verify_task_format():
-    return True
 
 
+import asyncio
 
 
 from datetime import datetime
+import services.users
 
 class Task(BaseModel):
     task_id: int
@@ -36,7 +35,6 @@ class Task(BaseModel):
     questions: list[schemas.questions.Question]=[] # list of Questions
 
 
-
     async def create_task_results_file(id: int) -> str:
         '''
         id: ID of the task
@@ -50,29 +48,6 @@ class Task(BaseModel):
 
         return filename
         
-
-
-fake_tasks = [
-    Task(
-        task_id=1,
-        name='faketask',
-        creator='requester1',
-        responses_required=10,
-        date_created=datetime.utcnow(),
-        credits=10,
-        questions=[
-            schemas.questions.SingleChoiceQuestion(
-                task_id=1,
-                question_id=1,
-                prompt='Which number is a prime number?',
-                options=['9', '10', '11', '12'],
-                answers=[],
-            ),
-        ]
-    ),
-]
-
-NO_DB = True
 
 
 class Tasks:
@@ -95,23 +70,20 @@ class Tasks:
 
 
     async def get_task(self, task_id: int) -> Task | None:
-
-        for task in fake_tasks:
-            if task.task_id == task_id:
-                return task
-
-        return None
-
         async with con.begin():
-            result = await con.execute(select(Task).where(Task.id == task_id).options(selectinload(Task.questions),
-                                                                                      selectinload(Task.results),
-                                                                                      selectinload(Task.requester),
-                                                                                      selectinload(Task.respondent_claimed),
-                                                                                      selectinload(Task.respondent_complete)))
+            result = await con.execute(select(Task).where(Task.id == task_id).options(
+                selectinload(Task.questions),
+                selectinload(Task.results),
+                selectinload(Task.requester),
+                selectinload(Task.respondent_claimed),
+                selectinload(Task.respondent_complete)
+            ))
             target = result.scalars().first()
             if target is None:
                 return None
             return target
+
+    
     async def delete_task(task_id:int) -> bool:
         async with con.begin():
             result = await con.execute(select(Task).where(Task.id==task_id))
@@ -134,7 +106,7 @@ class Tasks:
 
 
     async def search(
-        user: User,
+        user, #services.users.User, removing circular dependency
         name: str=None,
         tags: Iterable=None,
         credits_min: float=None,
@@ -148,11 +120,6 @@ class Tasks:
         sort_criteria: str=None,
         sort_ascending: bool=True,
     ) -> tuple[list[Task], int]:
-
-        tasks = []
-        total = 0
-
-        return fake_tasks, len(fake_tasks)
 
         """
         Gets the tasks matching the search criteria
@@ -176,24 +143,29 @@ class Tasks:
         Returns: list of Tasks queried, and total number of tasks
 
         """
+
+        # TODO: creator -> requesters, multiple usernames
+
         async with con.begin():
             if sort_ascending is True:
                 result = await con.execute(select(Task).where(and_(or_(Task.creator == creator,creator == None),
-                                                                or_(Task.name == name, name ==None),
-                                                                or_(Task.credits == credits,credits = None),
-                                                                len(Task.questions)>questions_min,
-                                                                len(Task.questions)<questions_max,),
-                                                                or_(Task.response_required == result_count , result_count == -1))
-                                                                .order_by(Task.id.asc()).options(selectinload(Task.questions),selectinload(Task.results)))
+                            or_(Task.name == name, name ==None),
+                            or_(Task.credits == credits,credits = None),
+                            len(Task.questions)>questions_min,
+                            len(Task.questions)<questions_max,),
+                            or_(Task.response_required == result_count , result_count == -1))
+                            .order_by(Task.id.asc()).options(selectinload(Task.questions),selectinload(Task.results)))
             else:
  
                 result = await con.execute(select(Task).where(and_(or_(Task.creator == creator,creator == None),
-                                                                or_(Task.name == name, name ==None),
-                                                                or_(Task.credits == credits,credits = None),
-                                                                len(Task.questions)>questions_min,
-                                                                len(Task.questions)<questions_max,),
-                                                                or_(Task.response_required == result_count , result_count == -1))
-                                                                .order_by(Task.id.desc()).options(selectinload(Task.questions),selectinload(Task.results)))
+                                or_(Task.name == name, name ==None),
+                                or_(Task.credits == credits,credits = None),
+                                len(Task.questions)>questions_min,
+                                len(Task.questions)<questions_max,),
+                                or_(Task.response_required == result_count , result_count == -1))
+                                .order_by(Task.id.desc()).options(selectinload(Task.questions),selectinload(Task.results)))
+
+
             tasks = result.scalar().all()
             if page_size == -1:
                 return tasks , len(tasks)
@@ -206,6 +178,8 @@ class Tasks:
                 else :
                     target = tasks[(page-1)*page_size:-1]
                     return target ,len(target)
+
+
 if __name__ == '__main__':
     t = Tasks()
     asyncio.run(asyncio.wait([t.create_task('chenjz20','tsk1','des','intro','./1.png',10,10)]))

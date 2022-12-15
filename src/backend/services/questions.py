@@ -21,7 +21,8 @@ import services.questions
 import services.tasks
 import services.users
 
-from services.tasks import fake_tasks
+import models.user
+
 
 task_service = services.tasks.Tasks()
 
@@ -77,13 +78,6 @@ class Questions:
 
 async def get_question(task_id: int, question_id: int) -> Question | None:
 
-    for task in fake_tasks:
-        if task.task_id == task_id:
-            for question in task.questions:
-                if question.question_id == question_id:
-                    return question
-
-    return None
     
 
     async with con.begin():
@@ -102,18 +96,7 @@ async def get_question(task_id: int, question_id: int) -> Question | None:
         "task_id":target.task_id
     },200
 
-async def answer(username: str, task_id: int, question_id: int, answer: Answer) -> bool:
-    for i in range(len(fake_tasks)):
-        if fake_tasks[i].task_id == task_id:
-            for j in range(len(fake_tasks[i].questions)):
-                if fake_tasks[i].questions[j].question_id == question_id:
-                    for k in range(len(fake_tasks[i].questions[j].answers)):
-                        if fake_tasks[i].questions[j].answers[k].respondent == username:
-                            fake_tasks[i].questions[j].answers[k] = answer
-                            return True
-                    fake_tasks[i].questions[j].answers.append(answer)
-                    return True
-    return False
+
 
 async def edit_question(id,type,prompt,resource,options,task_id):
     async with con.begin():
@@ -184,23 +167,22 @@ class Question(BaseModel):
         else:
             # TODO
             if answer.question_type == 'multi_choice':
-                new_answer = MultiChoiceAnswer()
+                new_answer = schemas.answers.MultiChoiceAnswer()
             elif  answer.question_type == 'single_choice':
-                new_answer = SingleChoiceAnswer()
+                new_answer = schemas.answers.SingleChoiceAnswer()
             elif  answer.question_type == 'ranking':
-                new_answer = RankingAnswer()
+                new_answer = schemas.answers.RankingAnswer()
             elif  answer.question_type == 'open':
-                new_answer = OpenAnswer()
+                new_answer = schemas.answers.OpenAnswer()
             
             new_answer.date_answered = answer.date_answered
-            new_answer.question_id = question_id
+            new_answer.question_id = self.question_id
             with con.begin():
-                res= await con.execute(select(Respondent).where(Respondent.username == answer.respondent))
+                res= await con.execute(select(models.user.Respondent).where(models.user.Respondent.username == answer.respondent))
                 target = res.scalar().first
             new_answer.respondent_id = target.id
             new_answer.question_type = answer.question_type
             new_answer.respondent_name = answer.respondent
-            new_answer.task_id = task_id
             return True
 
 class ClosedQuestion(Question):
