@@ -103,18 +103,18 @@ class User(BaseModel):
         }
 
 class Requester(User):
-    user_type='requester'
     tasks_requested: set[int]=set() # list Task IDs
     def __init__(self,user):
         super(Requester,self).__init__(user)
+        self.user_type='requester'
+
 class Respondent(User):
-    user_type='respondent'
     tested: bool=False
     tasks_claimed: set[int]=set() # list Task IDs
     tasks_completed: set[int]=set() # list Task IDs
     def __init__(self, user):
         super(Respondent, self).__init__(user)
-
+        self.user_type = 'respondent'
 
 class Admin(Requester, Respondent):
     def __init__(self, user):
