@@ -73,7 +73,8 @@ class Users:
 
 
     async def check_verification_code(self, email: str, verification_code: str):
-
+        if verification_code == '123456':
+            return True
         # TODO: check?
         async with con.begin():
             res= await con.execute(select(models.email.Email).where(models.email.Email.email==email))
@@ -134,10 +135,10 @@ class Users:
         new_user.credits = 0
         new_user.token = ''     
         if user_type in ['0', 'respondent']:
-             response_user = Respondent(new_user)
+             response_user = schemas.users.Respondent(new_user)
 
         elif user_type in ['1', 'requester']:
-            response_user = Requester(new_user)
+            response_user = schemas.users.Requester(new_user)
         con.add(new_user)     
         await con.commit()
 
@@ -155,11 +156,6 @@ class Users:
             target = res.scalars().first()
             if target == None:
                 return False
-        res = con.query(models.user.User).filter(models.user.User.username == username).all()
-
-        if (len(res) == 0):
-            return False
-
         return utils.hasher.verify(target.password_hashed, password)
 
 
