@@ -81,6 +81,7 @@ me_jdr = JSONDocumentedResponse(
     **create_documentation([me_jdr])
 )
 async def get_me(current_user: schemas.users.User = Depends(get_current_user())):
+    print(current_user)
     return me_jdr.response(current_user, {'password_hashed'})
 ###############################################################################
 @router.patch('/me',
