@@ -163,12 +163,18 @@ class Users:
         """
 
         async with con.begin():
-            res= await con.execute(select(models.user.User).where(models.user.User.username==username))
+            res= await con.execute(select(models.user.User).where(models.user.User.username == username))
             target = res.scalars().first()
             if target == None:
                 return None
-        response_user = schemas.users.User(target)
-        return response_user
+        if target.user_type == 'respondent':
+            return schemas.users.Respondent(target)
+        elif target.user_type == 'requester':
+            return schemas.users.Requester(target)
+        elif target.user_type == 'admin':
+            return schemas.users.Admin(target)
+        else:
+            raise ValueError('Invalid user type from database')
 
 
     async def username_exists(self, username: str) -> bool:
@@ -179,13 +185,18 @@ class Users:
         if not checkers.users.check_username_format(username):
             return False
 
-        if not checkers.users.check_username_format(username):
-            return False
         async with con.begin():
-            res= await con.execute(select(models.user.User).where(models.user.User.username == username))
+            res= await con.execute(select(models.user.User).where(models.user.User.username==username))
             target = res.scalars().first()
+
+        if target is None:
+
+
+            return False
+
+        return True
         
-        return not target
+
 
 
     async def email_exists(self, email: str) -> bool:
@@ -193,15 +204,22 @@ class Users:
         Returns `True` if the email already exists
         '''
 
+        # TODO: check
         if not checkers.users.check_email_format(email):
             return False
 
+
+        # TODO: check
         if not checkers.users.check_email_format(email):
             return False
         async with con.begin():
             res= await con.execute(select(models.user.User).where(models.user.User.email == email))
             target = res.scalars().first()
-        return not target
+        if target is None:
+
+            return False
+
+        return True
 
     async def delete(self, username: str) -> bool:
         '''
@@ -210,7 +228,7 @@ class Users:
         # TODO: implement
         async with con.begin():
 
-            res = await con.execute(select(models.user.User).where(models.user.User.username == username))
+            res= await con.execute(select(models.user.User).where(models.user.User.username==username))
             target = res.scalars().first()
             if target == None:
                 return False
