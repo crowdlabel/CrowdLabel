@@ -10,6 +10,9 @@ from datetime import datetime
 from pydantic import BaseModel
 import services.tasks
 import models.email
+import models.user
+
+
 
 Connection = sessionmaker(bind=engine, expire_on_commit=False, class_=AsyncSession)
 con = scoped_session(Connection)
@@ -226,7 +229,7 @@ class Users:
         if not checkers.users.check_username_format(username):
             return False
         async with con.begin():
-            res= await con.execute(select(User).where(User.username==username))
+            res= await con.execute(select(models.user.User).where(models.user.User.username==username))
             target = res.scalars().first()
         if target is None:
             return False
@@ -241,7 +244,7 @@ class Users:
         if not checkers.users.check_email_format(email):
             return False
         async with con.begin():
-            res= await con.execute(select(User).where(User.email==email))
+            res= await con.execute(select(models.user.User).where(models.user.User.email==email))
             target = res.scalars().first()
         if target is None:
             return False
