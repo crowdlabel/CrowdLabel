@@ -76,7 +76,6 @@ class User(BaseModel):
     user_type: str=''
     credits: float=0
     date_created: datetime=datetime.utcnow()
-    password_hashed: str=''
 
     async def edit_user_info(new_info: dict) -> bool:
         """
