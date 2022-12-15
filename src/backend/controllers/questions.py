@@ -102,7 +102,7 @@ question_not_found_error = JSONDocumentedResponse(
     **create_documentation([question_not_found_error])
 )
 async def get_question(question_id: int, task=Depends(controllers.tasks.get_task), current_user=Depends(get_current_user)):
-    question = await services.questions.get_question(task, question_id)
+    question = await question_service.get_question(task, question_id)
     if not question:
         return question_not_found_error.response()
     

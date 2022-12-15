@@ -23,50 +23,7 @@ con = scoped_session(Connection)
 
 task_service = services.tasks.Tasks()
 
-class User(BaseModel):
-    username: str=''
-    email: str=''
-    user_type: str=''
-    credits: float=0
-    date_created: datetime=datetime.utcnow()
-    password_hashed: str=''
 
-    def __init__(self,user):
-        super(User,self).__init__(username = user.username,email = user.email ,credits = user.credits , date_created = user.date_created ,password_hashed = user.password_hashed)
-
-    async def edit_user_info(new_info: dict) -> bool:
-        """
-        Edits self using the new user
-        """
-
-    class Config:
-        schema_extra = {
-            'example': {
-                'username': 'johndoe',
-                'email': 'johndoe@example.com',
-                'user_type': 'respondent',
-                'credits': 0,
-                'date_created': datetime(1970, 1, 1, 0, 0 , 0),
-                'tested': False,
-                'tasks_claimed': {1, 4},
-                'tasks_completed': {2, 3},
-            }
-        }
-
-class Requester(User):
-    user_type='requester'
-    tasks_requested: set[int]=set() # list Task IDs
-    def __init__(self,user):
-        super(Requester,self).__init__(user)
-
-
-class Respondent(User):
-    user_type='respondent'
-    tested: bool=False
-    tasks_claimed: set[int]=set() # list Task IDs
-    tasks_completed: set[int]=set() # list Task IDs
-    def __init__(self,user):
-        super(Respondent,self).__init__(user)
 
 
 
@@ -311,7 +268,7 @@ class Users:
                 return True
 
 
-    async def claim_task(self, task: services.tasks.Task | int) -> str | None:
+    async def claim_task(self, task: schemas.tasks.Task | int) -> str | None:
         if isinstance(task, int):
             task = await task_service.get_task(task)
         self.tasks_claimed.add(task.task_id)
