@@ -250,7 +250,13 @@ class Users:
                 res= await con.execute(select(User).where(User.username==username))
                 target = res.scalars().first()
             if target is None:
+                print('##################################')
+                print('False')
+                print('##################################')
                 return False
+            print('##################################')
+            print('True')
+            print('##################################')
             return True
 
     async def email_exists(self, email: str) -> bool:
@@ -273,7 +279,15 @@ class Users:
                 res= await con.execute(select(User).where(User.email==email))
                 target = res.scalars().first()
             if target is None:
+                print('##################################')
+                print('False')
+                print('##################################')
+
                 return False
+            print('##################################')
+            print('True')
+            print('##################################')
+        
             return True
 
     async def delete(self, username: str) -> bool:
@@ -308,5 +322,6 @@ class Users:
 if __name__ == '__main__':
     u = Users()
 
-    asyncio.run(asyncio.wait([u.create_user('chenjz20','843273746@qq.com','cxq1974328','requester',891206)]))
+    #asyncio.run(asyncio.wait([u.create_user('chenjz20','843273746@qq.com','cxq1974328','requester',891206)]))
+    asyncio.run(asyncio.wait([u.email_exists('843273746@qq.com')]))
     
