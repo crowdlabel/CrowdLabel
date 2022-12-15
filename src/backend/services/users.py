@@ -67,8 +67,6 @@ class Users:
 
         verification_code = str(random.randint(0, 999999)).rjust(6, '0')
 
-        # TODO: add email and verification code to db,
-        # or update the verification code of an existing email
 
         if NO_DB:
             fake_emails[email] = verification_code
@@ -169,9 +167,20 @@ class Users:
             new_user.date_created = datetime.utcnow()
             fake_users.append(new_user)
         else:
-            pass
-            # TODO: add new user to database
-        
+            if user_type in ['0', 'respondent']:
+                new_user = Respondent()
+                new_user.user_type = 'respondent'
+
+            elif user_type in ['1', 'requester']:
+                new_user = Requester()
+                new_user.user_type = 'requester'
+            new_user.username = username
+            new_user.email = email
+            new_user.password_hashed = utils.hasher.hash(password)
+            new_user.date_created = datetime.utcnow()       
+            con.add(new_user)     
+            await con.commit()
+            return new_user
 
 
     async def authenticate(self, username: str, password: str) -> bool:
@@ -270,13 +279,34 @@ class Users:
         Returns `True` if the username was successfully deleted
         '''
         # TODO: implement
-
-
-class User(BaseModel):
-
-    async def edit_user_info(new_info: dict) -> bool:
+        async with con.begin():
+            res= await con.execute(select(User).where(User.username==username))
+            target = res.scalars().first()
+            if target == None:
+                return False
+            await con.delete(target)
+            con.commit()
+        return True
+    async def edit_user_info(userid:int,new_info: dict) -> bool:
         """
         Edits self using the new user
         """
+        async with con.begin():
+            res = await con.execute(select(User).where(User.id == userid))
+            target = res.scalar().first()
+            if target == None:
+                return False
+            else :
+                target.password_hashed = utils.hasher.hash(new_info['password'])
+                return True
+
+
+
+# class User(BaseModel):
+
+#     async def edit_user_info(new_info: dict) -> bool:
+#         """
+#         Edits self using the new user
+#         """
 
 
