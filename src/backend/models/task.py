@@ -25,10 +25,10 @@ class Task(Base):
 
 
     results = relationship('Results',cascade = 'all,delete-orphan')
-    questions = relationship('Question',secondary=Task2Question,cascade="delete, delete-orphan")    
-    requester = relationship('Requester',secondary=Requester2Task,cascade="delete, delete-orphan")
-    respondent_claimed = relationship('Respondent',secondary=Respondent2Claim,cascade="delete, delete-orphan")
-    respondent_complete = relationship('Respondent',secondary = Respondent2Complete,cascade="delete, delete-orphan")
+    questions = relationship('Question',secondary='task2question',cascade="delete, delete-orphan",single_parent = True)    
+    requester = relationship('Requester',secondary='requester2task',cascade="delete, delete-orphan",single_parent = True)
+    respondent_claimed = relationship('Respondent',secondary='respondent2claim',cascade="delete, delete-orphan",single_parent = True)
+    respondent_complete = relationship('Respondent',secondary = 'respondent2complete',cascade="delete, delete-orphan",single_parent = True)
    
 
 

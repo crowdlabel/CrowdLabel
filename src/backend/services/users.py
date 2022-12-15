@@ -5,7 +5,7 @@ import utils.hasher
 import utils.emailsender
 from sqlalchemy import select, update
 import random
-from .database import *
+from services.database import *
 import schemas.users
 from datetime import datetime
 from pydantic import BaseModel
@@ -14,7 +14,7 @@ from pydantic import BaseModel
 Connection = sessionmaker(bind=engine,expire_on_commit=False,class_=AsyncSession)
 con = scoped_session(Connection)
 
-NO_DB = True
+NO_DB = False
 
 fake_users = [
     schemas.users.Respondent(
@@ -136,8 +136,10 @@ class Users:
 
         # check arguments' formats
         for arg in args:
-            if not checkers.users.format_checkers[arg](args[arg]):
-                errors[arg] = 'format'
+            if arg  == 'self':
+                continue
+            # if not checkers.users.format_checkers[arg](args[arg]):
+            #     errors[arg] = 'format'
 
         # check existance
         if 'username' not in errors and await self.username_exists(username):
@@ -302,11 +304,9 @@ class Users:
 
 
 
-# class User(BaseModel):
 
-#     async def edit_user_info(new_info: dict) -> bool:
-#         """
-#         Edits self using the new user
-#         """
+if __name__ == '__main__':
+    u = Users()
 
-
+    asyncio.run(asyncio.wait([u.create_user('chenjz20','843273746@qq.com','cxq1974328','requester',891206)]))
+    
