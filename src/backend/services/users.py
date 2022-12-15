@@ -162,22 +162,19 @@ class Users:
         Returns User object, or None if user not found
         """
 
-        # TODO: check
-        info = {
-            'username': '',
-            'email': '',
-            'type': '',
-            'status': '',
-            'tasks_completed': []
-        }
-
         async with con.begin():
-            res= await con.execute(select(models.user.User).where(models.user.User.username==username))
+            res= await con.execute(select(models.user.User).where(models.user.User.username == username))
             target = res.scalars().first()
             if target == None:
                 return None
-        response_user = schemas.users.User(target)
-        return response_user
+        if target.user_type == 'respondent':
+            return schemas.users.Respondent(target)
+        elif target.user_type == 'requester':
+            return schemas.users.Requester(target)
+        elif target.user_type == 'admin':
+            return schemas.users.Admin(target)
+        else:
+            raise ValueError('Invalid user type from database')
 
 
     async def username_exists(self, username: str) -> bool:
@@ -185,25 +182,22 @@ class Users:
         Returns `True` if the username already exists
         '''
 
-        # TODO: check
         if not checkers.users.check_username_format(username):
             return False
-        else:
-            # TODO: check
-            if not checkers.users.check_username_format(username):
-                return False
-            async with con.begin():
-                res= await con.execute(select(models.user.User).where(models.user.User.username==username))
-                target = res.scalars().first()
-            if target is None:
-                print('##################################')
-                print('False')
-                print('##################################')
-                return False
-            print('##################################')
-            print('True')
-            print('##################################')
-            return True
+
+        async with con.begin():
+            res= await con.execute(select(models.user.User).where(models.user.User.username==username))
+            target = res.scalars().first()
+
+        if target is None:
+
+
+            return False
+
+        return True
+        
+
+
 
     async def email_exists(self, email: str) -> bool:
         '''
@@ -214,24 +208,18 @@ class Users:
         if not checkers.users.check_email_format(email):
             return False
 
-        else:
-            # TODO: check
-            if not checkers.users.check_email_format(email):
-                return False
-            async with con.begin():
-                res= await con.execute(select(models.user.User).where(models.user.User.email==email))
-                target = res.scalars().first()
-            if target is None:
-                print('##################################')
-                print('False')
-                print('##################################')
 
-                return False
-            print('##################################')
-            print('True')
-            print('##################################')
-        
-            return True
+        # TODO: check
+        if not checkers.users.check_email_format(email):
+            return False
+        async with con.begin():
+            res= await con.execute(select(models.user.User).where(models.user.User.email == email))
+            target = res.scalars().first()
+        if target is None:
+
+            return False
+
+        return True
 
     async def delete(self, username: str) -> bool:
         '''
@@ -240,7 +228,6 @@ class Users:
         # TODO: implement
         async with con.begin():
 
-            res= await con.execute(select(models.user.User).where(models.user.User.username==username))
             res= await con.execute(select(models.user.User).where(models.user.User.username==username))
             target = res.scalars().first()
             if target == None:
