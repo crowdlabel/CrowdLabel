@@ -10,6 +10,7 @@ HASH_LENGTH = 97 # len(hash('test'))
 MAX_EMAIL_LENGTH = 320 # RFC
 VERIFICATION_CODE_LENGTH = 6
 MAX_USERTYPE_LENGTH = 20
+MAX_TOKEN_LENGTH = 512
 class User(Base):
     __tablename__ = 'user'
     id = Column(Integer,primary_key = True,autoincrement=True)
@@ -18,11 +19,13 @@ class User(Base):
     email = Column(String(MAX_EMAIL_LENGTH))
     user_type = Column(String(MAX_USERTYPE_LENGTH))
     date_created = Column(DateTime,default = datetime.datetime.now)
-    tokens = Column(FLOAT)
+    credits = Column(FLOAT)
+    token = Column(String(MAX_TOKEN_LENGTH))
     __mapper_args__ = {
         'polymorphic_on':user_type,
         'polymorphic_identity':'user'
     }
+
     # def __init__(self, username, password_hashed, email, user_type, status):
     #     self.username = username
     #     self.password_hashed = password_hashed
@@ -37,9 +40,11 @@ class Requester(User):
     __mapper_args__ = {
         'polymorphic_identity':'requester'
     }
+
 class Respondent(User):
     __tablename__ = 'respondent'
     id = Column(Integer,ForeignKey('user.id'),primary_key = True)
+    tested = Column(Integer)
     task_claimed = relationship('Task',secondary='respondent2claim',cascade="delete, delete-orphan",single_parent = True)
     task_complete = relationship('Task',secondary='respondent2complete',cascade="delete, delete-orphan",single_parent = True)
     __mapper_args__ = {
