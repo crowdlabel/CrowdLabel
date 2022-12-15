@@ -12,42 +12,10 @@ from sqlalchemy import select, and_ ,or_
 Connection = sessionmaker(bind=engine, expire_on_commit=False, class_=AsyncSession)
 con = scoped_session(Connection)
 
+import schemas.tasks
+import schemas.users
 
 import asyncio
-
-
-from datetime import datetime
-import services.users
-
-class Task(BaseModel):
-    task_id: int
-    creator: str
-    date_created: datetime
-    credits: float
-    name: str
-    introduction: str=''
-    description: str=''
-    cover: str=''
-    tags: list[str]=[]
-    responses_required: int
-    respondents_claimed: set[str]=set() # usernames of respondents who have claimed the task but have not completed it
-    respondents_completed: set[str]=set() # usernames of respondents who have claimed and completed the task
-    questions: list[schemas.questions.Question]=[] # list of Questions
-
-
-    async def create_task_results_file(id: int) -> str:
-        '''
-        id: ID of the task
-        Create the ZIP file containing the results of the task with ID `id`
-        Returns the filename of the zip file
-        '''
-
-        filename = 'results_' + id + '_' + datetime_now_str() + '.zip'
-
-
-
-        return filename
-        
 
 
 class Tasks:
@@ -69,7 +37,7 @@ class Tasks:
         return task
 
 
-    async def get_task(self, task_id: int) -> Task | None:
+    async def get_task(self, task_id: int) -> schemas.tasks.Task | None:
         async with con.begin():
             result = await con.execute(select(Task).where(Task.id == task_id).options(
                 selectinload(Task.questions),
@@ -106,7 +74,7 @@ class Tasks:
 
 
     async def search(
-        user, #services.users.User, removing circular dependency
+        user: schemas.users.User,
         name: str=None,
         tags: Iterable=None,
         credits_min: float=None,
@@ -178,6 +146,22 @@ class Tasks:
                 else :
                     target = tasks[(page-1)*page_size:-1]
                     return target ,len(target)
+
+    async def create_task_results_file(self, id: int) -> str:
+        '''
+        id: ID of the task
+        Create the ZIP file containing the results of the task with ID `id`
+        Returns the filename of the zip file
+        '''
+
+        filename = 'results_' + id + '_' + datetime_now_str() + '.zip'
+
+
+
+        return filename
+
+
+task_service = Tasks()
 
 
 if __name__ == '__main__':

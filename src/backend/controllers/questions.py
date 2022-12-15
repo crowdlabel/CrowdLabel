@@ -9,13 +9,14 @@ from .jsondocumentedresponse import JSONDocumentedResponse, create_documentation
 import controllers.tasks
 import services.questions
 
+from services.questions import question_service
+
 import schemas.answers
 
 from .auth import Depends, get_current_user
 
 router = APIRouter(prefix='/tasks/{task_id}/questions')
 
-question_service = services.questions.Questions()
 
 """ @router.get('/questions')
 async def questions():
@@ -110,7 +111,7 @@ async def get_question(question_id: int, task=Depends(controllers.tasks.get_task
 create_answer_success = JSONDocumentedResponse(
     status.HTTP_200_OK,
     'Answer created successfully. Answer is returned',
-    schemas.questions.Answer,
+    schemas.answers.Answer,
 )
 create_answer_failed = JSONDocumentedResponse(
     status.HTTP_400_BAD_REQUEST,

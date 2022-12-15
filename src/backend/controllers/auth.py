@@ -8,9 +8,8 @@ from utils.config import get_config
 from .jsondocumentedresponse import JSONDocumentedResponse, create_documentation
 from schemas.auth import Token
 
+import schemas.users
 import services.users
-
-
 
 router = APIRouter()
 
@@ -39,7 +38,7 @@ def create_access_token(data: dict) -> str:
     return encoded_jwt
 
 
-def get_current_user(user_types: list=[]) -> services.users.User:
+def get_current_user(user_types: list=[]) -> schemas.users.User:
     """
     Returns a function to be used by API endpoints
     """

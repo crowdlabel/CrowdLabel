@@ -68,3 +68,45 @@ class RegistrationError(BaseModel):
                 'verification_code': 'wrong',
             }
         }
+
+
+class User(BaseModel):
+    username: str=''
+    email: str=''
+    user_type: str=''
+    credits: float=0
+    date_created: datetime=datetime.utcnow()
+    password_hashed: str=''
+
+    async def edit_user_info(new_info: dict) -> bool:
+        """
+        Edits self using the new user
+        """
+
+    class Config:
+        schema_extra = {
+            'example': {
+                'username': 'johndoe',
+                'email': 'johndoe@example.com',
+                'user_type': 'respondent',
+                'credits': 0,
+                'date_created': datetime(1970, 1, 1, 0, 0 , 0),
+                'tested': False,
+                'tasks_claimed': {1, 4},
+                'tasks_completed': {2, 3},
+            }
+        }
+
+class Requester(User):
+    user_type='requester'
+    tasks_requested: set[int]=set() # list Task IDs
+class Respondent(User):
+    user_type='respondent'
+    tested: bool=False
+    tasks_claimed: set[int]=set() # list Task IDs
+    tasks_completed: set[int]=set() # list Task IDs
+
+
+
+class Admin(Requester, Respondent):
+    pass

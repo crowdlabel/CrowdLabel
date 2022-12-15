@@ -12,6 +12,10 @@ import services.tasks
 import models.email
 import models.user
 
+import schemas.tasks
+import schemas.users
+
+
 
 
 Connection = sessionmaker(bind=engine, expire_on_commit=False, class_=AsyncSession)
@@ -19,53 +23,8 @@ con = scoped_session(Connection)
 
 task_service = services.tasks.Tasks()
 
-class User(BaseModel):
-    username: str=''
-    email: str=''
-    user_type: str=''
-    credits: float=0
-    date_created: datetime=datetime.utcnow()
-    password_hashed: str=''
 
-    async def edit_user_info(new_info: dict) -> bool:
-        """
-        Edits self using the new user
-        """
 
-    class Config:
-        schema_extra = {
-            'example': {
-                'username': 'johndoe',
-                'email': 'johndoe@example.com',
-                'user_type': 'respondent',
-                'credits': 0,
-                'date_created': datetime(1970, 1, 1, 0, 0 , 0),
-                'tested': False,
-                'tasks_claimed': {1, 4},
-                'tasks_completed': {2, 3},
-            }
-        }
-
-class Requester(User):
-    user_type='requester'
-    tasks_requested: set[int]=set() # list Task IDs
-class Respondent(User):
-    user_type='respondent'
-    tested: bool=False
-    tasks_claimed: set[int]=set() # list Task IDs
-    tasks_completed: set[int]=set() # list Task IDs
-
-    async def claim_task(self, task: services.tasks.Task | int) -> str | None:
-        if isinstance(task, int):
-            task = await task_service.get_task(task)
-        self.tasks_claimed.add(task.task_id)
-        task.respondents_claimed.add(self.username)
-        return task
-        # TODO: claim task
-        # returns error message, or none if successful
-
-class Admin(Requester, Respondent):
-    pass
 
 class Users:
 
@@ -137,7 +96,7 @@ class Users:
         password: str,
         user_type: str,
         verification_code: str,
-    ) -> User | dict:
+    ) -> schemas.users.User | dict:
         '''
         Creates a new user
         If successful, returns User object
@@ -171,11 +130,11 @@ class Users:
             return errors
 
         if user_type in ['0', 'respondent']:
-            new_user = Respondent()
+            new_user = schemas.users.Respondent()
             new_user.user_type = 'respondent'
 
         elif user_type in ['1', 'requester']:
-            new_user = Requester()
+            new_user = schemas.users.Requester()
             new_user.user_type = 'requester'
         new_user.username = username
         new_user.email = email
@@ -191,7 +150,7 @@ class Users:
 
         # TODO: check?
         con = scoped_session(Connection)
-        res = con.query(User).filter(User.username == username).all()
+        res = con.query(models.user.User).filter(models.user.User.username == username).all()
 
         if (len(res) == 0):
             return False
@@ -200,7 +159,7 @@ class Users:
 
         return utils.hasher.verify(user.password, password)
 
-    async def get_user(self, username: str) -> User | None:
+    async def get_user(self, username: str) -> schemas.users.User | None:
         """
         Returns User object, or None if user not found
         """
@@ -214,7 +173,7 @@ class Users:
             'tasks_completed': []
         }
 
-        res = con.query(User).filter(User.username == username).all()
+        res = con.query(models.user.User).filter(models.user.User.username == username).all()
         if len(res) == 0:
             return {}
         pass
@@ -257,7 +216,7 @@ class Users:
         # TODO: implement
         async with con.begin():
 
-            res= await con.execute(select(User).where(User.username==username))
+            res= await con.execute(select(models.user.User).where(models.user.User.username==username))
             target = res.scalars().first()
             if target == None:
                 return False
@@ -271,7 +230,7 @@ class Users:
         returns error message, or none if successful
         """
         async with con.begin():
-            res = await con.execute(select(User).where(User.id == userid))
+            res = await con.execute(select(models.user.User).where(models.user.User.id == userid))
             target = res.scalar().first()
             if target == None:
                 return False
@@ -279,3 +238,14 @@ class Users:
                 target.password_hashed = utils.hasher.hash(new_info['password'])
                 return True
 
+
+    async def claim_task(self, task: services.tasks.Task | int) -> str | None:
+        if isinstance(task, int):
+            task = await task_service.get_task(task)
+        self.tasks_claimed.add(task.task_id)
+        task.respondents_claimed.add(self.username)
+        return task
+        # TODO: claim task
+        # returns error message, or none if successful
+
+user_service = Users()
