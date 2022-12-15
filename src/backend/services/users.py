@@ -12,67 +12,20 @@ import services.tasks
 import models.email
 import models.user
 
+import schemas.tasks
+import schemas.users
+
+
+
+
 Connection = sessionmaker(bind=engine, expire_on_commit=False, class_=AsyncSession)
 con = scoped_session(Connection)
 
 task_service = services.tasks.Tasks()
 
-class User(BaseModel):
-    username: str=''
-    email: str=''
-    user_type: str=''
-    credits: float=0
-    date_created: datetime=datetime.utcnow()
-    password_hashed: str=''
-
-    def __init__(self,user):
-        super(User,self).__init__(username = user.username,email = user.email ,credits = user.credits , date_created = user.date_created ,password_hashed = user.password_hashed)
-
-    async def edit_user_info(new_info: dict) -> bool:
-        """
-        Edits self using the new user
-        """
-
-    class Config:
-        schema_extra = {
-            'example': {
-                'username': 'johndoe',
-                'email': 'johndoe@example.com',
-                'user_type': 'respondent',
-                'credits': 0,
-                'date_created': datetime(1970, 1, 1, 0, 0 , 0),
-                'tested': False,
-                'tasks_claimed': {1, 4},
-                'tasks_completed': {2, 3},
-            }
-        }
-
-class Requester(User):
-    user_type='requester'
-    tasks_requested: set[int]=set() # list Task IDs
-    def __init__(self,user):
-        super(Requester,self).__init__(user)
 
 
-class Respondent(User):
-    user_type='respondent'
-    tested: bool=False
-    tasks_claimed: set[int]=set() # list Task IDs
-    tasks_completed: set[int]=set() # list Task IDs
-    def __init__(self,user):
-        super(Respondent,self).__init__(user)
 
-    async def claim_task(self, task: services.tasks.Task | int) -> str | None:
-        if isinstance(task, int):
-            task = await task_service.get_task(task)
-        self.tasks_claimed.add(task.task_id)
-        task.respondents_claimed.add(self.username)
-        return task
-        # TODO: claim task
-        # returns error message, or none if successful
-
-class Admin(Requester, Respondent):
-    pass
 
 class Users:
 
@@ -138,7 +91,7 @@ class Users:
         password: str,
         user_type: str,
         verification_code: str,
-    ) -> User | dict:
+    ) -> schemas.users.User | dict:
         '''
         Creates a new user
         If successful, returns User object
@@ -202,8 +155,13 @@ class Users:
             target = res.scalars().first()
             if target == None:
                 return False
+        res = con.query(models.user.User).filter(models.user.User.username == username).all()
+
+        if (len(res) == 0):
+            return False
 
         return utils.hasher.verify(target.password_hashed, password)
+
 
     async def get_user(self, username: str) -> User | None:
         """
@@ -219,6 +177,7 @@ class Users:
             'tasks_completed': []
         }
 
+        res = con.query(models.user.User).filter(models.user.User.username == username).all()
         res = con.query(models.user.User).filter(models.user.User.username == username).all()
         if len(res) == 0:
             return {}
@@ -286,6 +245,7 @@ class Users:
         async with con.begin():
 
             res= await con.execute(select(models.user.User).where(models.user.User.username==username))
+            res= await con.execute(select(models.user.User).where(models.user.User.username==username))
             target = res.scalars().first()
             if target == None:
                 return False
@@ -307,6 +267,27 @@ class Users:
                 target.password_hashed = utils.hasher.hash(new_info['password'])
                 return True
 
+
+    async def claim_task(self, task: schemas.tasks.Task | int) -> str | None:
+        if isinstance(task, int):
+            task = await task_service.get_task(task)
+        self.tasks_claimed.add(task.task_id)
+        task.respondents_claimed.add(self.username)
+        return task
+        # TODO: claim task
+        # returns error message, or none if successful
+
+user_service = Users()
+
+
+
+
+if __name__ == '__main__':
+    u = Users()
+    #asyncio.run(asyncio.wait([u.send_verification_email('843273746@qq.com')]))
+    #asyncio.run(asyncio.wait([u.create_user('chenjz20','843273746@qq.com','cxq1974328','requester',460088)]))
+    #asyncio.run(asyncio.wait([u.email_exists('843273746@qq.com')]))
+    
 
 
 

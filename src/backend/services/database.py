@@ -1,6 +1,5 @@
 from sqlalchemy.ext.asyncio import create_async_engine
 from models.basicbase import Base
-import pathlib
 import asyncio
 import utils.config
 from models.email import Email

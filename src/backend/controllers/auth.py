@@ -6,19 +6,15 @@ from jose import JWTError, jwt
 
 from utils.config import get_config
 from .jsondocumentedresponse import JSONDocumentedResponse, create_documentation
-from schemas.auth import Token
 
-import services.users
-
-
+import schemas.auth
+import schemas.users
+from services.users import user_service
 
 router = APIRouter()
 
-user_service = services.users.Users()
 
 # https://fastapi.tiangolo.com/tutorial/security/oauth2-jwt/
-
-
 
 
 
@@ -39,7 +35,7 @@ def create_access_token(data: dict) -> str:
     return encoded_jwt
 
 
-def get_current_user(user_types: list=[]) -> services.users.User:
+def get_current_user(user_types: list=[]) -> schemas.users.User:
     """
     Returns a function to be used by API endpoints
     """
@@ -85,6 +81,7 @@ def get_current_user(user_types: list=[]) -> services.users.User:
 login_success_jdr = JSONDocumentedResponse(
     status.HTTP_200_OK,
     'Login successful.',
+    schemas.auth.Token
 )
 invalid_failed_jdr = JSONDocumentedResponse(
     status.HTTP_401_UNAUTHORIZED,
@@ -95,18 +92,19 @@ invalid_failed_jdr = JSONDocumentedResponse(
 )
 async def login(form_data: OAuth2PasswordRequestForm = Depends()):
     if not await user_service.authenticate(form_data.username, form_data.password):
-        print('Login failed')
         return invalid_failed_jdr.response()
     access_token = create_access_token(
         data={'sub': form_data.username},
     )
-    print('Login successful')
-    return {'access_token': access_token, 'token_type': 'bearer'}
+    return schemas.auth.Token(
+        access_token=access_token,
+        token_type='bearer',
+    )
 
 
 @router.post('/token',
     **create_documentation([login_success_jdr, invalid_failed_jdr])
 )
 async def token(form_data: OAuth2PasswordRequestForm = Depends()):
-    """ same function as the `login` endpoint """
+    # same function as the `login` endpoint
     return await login(form_data)
