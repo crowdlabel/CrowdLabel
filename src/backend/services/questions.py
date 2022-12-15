@@ -151,4 +151,22 @@ async def create_answer(
     answer: schemas.answers.Answer,
 ) -> str:
     # TODO
-    pass
+    if answer.question_type == 'multi_choice':
+        new_answer = MultiChoiceAnswer()
+    elif  answer.question_type == 'single_choice':
+        new_answer = SingleChoiceAnswer()
+    elif  answer.question_type == 'ranking':
+        new_answer = RankingAnswer()
+    elif  answer.question_type == 'open':
+        new_answer = OpenAnswer()
+    
+    new_answer.date_answered = answer.date_answered
+    new_answer.question_id = question_id
+    with con.begin():
+        res= await con.execute(select(Respondent).where(Respondent.username == answer.respondent))
+        target = res.scalar().first
+    new_answer.respondent_id = target.id
+    new_answer.question_type = answer.question_type
+    new_answer.respondent_name = answer.respondent
+    new_answer.task_id = task_id
+    return True

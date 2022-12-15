@@ -29,7 +29,5 @@ class MultiChoiceQuestion(ClosedQuestion):
 class RankingQuestion(ClosedQuestion):
     question_type='ranking'
 
-
-
 class OpenQuestion(Question):
     question_type='open'
