@@ -2,11 +2,11 @@ from datetime import datetime
 from typing import Optional, Iterable
 from pydantic import BaseModel
 import schemas.questions
-from .users import User
+from services.users import User
 from utils.datetime_str import datetime_now_str
 
 
-from .database import *
+from services.database import *
 from models.task import Task
 from sqlalchemy.orm import sessionmaker, scoped_session, selectinload
 from sqlalchemy.ext.asyncio import AsyncSession
@@ -51,37 +51,37 @@ def __verify_task_format():
         
 
 
-fake_tasks = [
-    Task(
-        task_id=1,
-        name='faketask',
-        creator='requester1',
-        responses_required=10,
-        date_created=datetime.utcnow(),
-        credits=10,
-        questions=[
-            schemas.questions.SingleChoiceQuestion(
-                task_id=1,
-                question_id=1,
-                prompt='Which number is a prime number?',
-                options=['9', '10', '11', '12'],
-                answers=[],
-            ),
-        ]
-    ),
-]
+# fake_tasks = [
+#     Task(
+#         task_id=1,
+#         name='faketask',
+#         creator='requester1',
+#         responses_required=10,
+#         date_created=datetime.datetime.utcnow(),
+#         credits=10,
+#         questions=[
+#             schemas.questions.SingleChoiceQuestion(
+#                 task_id=1,
+#                 question_id=1,
+#                 prompt='Which number is a prime number?',
+#                 options=['9', '10', '11', '12'],
+#                 answers=[],
+#             ),
+#         ]
+#     ),
+# ]
 
 class Tasks:
 
     def __init__(self):
         pass
 
-    async def create_task(creator: int ,name:str ,description:str,
+    async def create_task(self,creator: str ,name:str ,description:str,
                           introduction:str,cover_path:str,response_required:int,
                           credits:int) -> Task | None:
-        date_created = datetime.utcnow()
-        if not __verify_task_format():
-            return None
+        date_created = datetime.datetime.utcnow()
+        # if not __verify_task_format():
+        #     return None
         task = Task(creator = creator , name = name ,description = description ,
                     introduction = introduction ,cover_path = cover_path ,
                     response_required = response_required,credits = credits,date_created = date_created)
@@ -191,3 +191,6 @@ class Tasks:
                 else :
                     target = tasks[(page-1)*page_size:-1]
                     return target ,len(target)
+if __name__ == '__main__':
+    t = Tasks()
+    asyncio.run(asyncio.wait([t.create_task('chenjz20','tsk1','des','intro','./1.png',10,10)]))
