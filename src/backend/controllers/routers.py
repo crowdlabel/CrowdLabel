@@ -6,16 +6,11 @@ from . import auth, tasks, users, questions
 app_router = APIRouter(prefix='')
 
 app_router.include_router(auth.router, prefix='', tags=['auth'])
-app_router.include_router(tasks.router, prefix='/tasks', tags=['tasks'])
 app_router.include_router(users.router, prefix='/users', tags=['users'])
-app_router.include_router(questions.router, prefix='/questions', tags=['questions'])
+app_router.include_router(tasks.router, prefix='/tasks', tags=['tasks'])
+app_router.include_router(questions.router, prefix='', tags=['questions'])
 
 
-'''
-from .misc import *
-from .result import *
-from .child_results import *
-'''
 
 app.include_router(app_router)
 

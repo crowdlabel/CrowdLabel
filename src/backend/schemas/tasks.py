@@ -6,7 +6,6 @@ from typing import Optional
 
 class TaskSearchRequest(BaseModel):
     name: Optional[str]
-    credits: Optional[float]
     tags: Optional[set[str]]
     requesters: Optional[set[str]]
     page: Optional[int]
@@ -16,8 +15,8 @@ class TaskSearchRequest(BaseModel):
     sort_ascending: Optional[bool]
 
 class TaskSearchResponse(TaskSearchRequest):
-    tasks: list[int] # list of Task IDs
-    total: int # total number of tasks
+    tasks: list[int]=[] # list of Task IDs
+    total: int=0 # total number of tasks
 
 class ErrorResponse(BaseModel):
     error: str

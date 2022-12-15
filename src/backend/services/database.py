@@ -1,12 +1,12 @@
 from sqlalchemy.ext.asyncio import create_async_engine
 from sqlalchemy.ext.declarative import declarative_base
 from models.basicbase import Base
-from models.child_results import ChildResults
 from models.email import Email
 from models.question import Question
 from models.results import Results
 from models.task import Task
-from models.user import User
+from models.user import *
+from models.answer import *
 import os
 import asyncio
 #from utils.config import get_config

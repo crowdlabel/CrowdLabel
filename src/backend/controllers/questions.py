@@ -1,17 +1,21 @@
 from fastapi import status
-from .base import app
-import services.questions as qs
-import services.tasks as ts
 from fastapi import APIRouter, Path
+from .base import app
+import services.questions
+import services.tasks
 import schemas.tasks
 import schemas.questions
 from .jsondocumentedresponse import JSONDocumentedResponse, create_documentation
-from . import tasks as tc
+import controllers.tasks
 import services.questions
+
+import schemas.answers
 
 from .auth import Depends, get_current_user
 
-router = APIRouter()
+router = APIRouter(prefix='/tasks/{task_id}/questions')
+
+question_service = services.questions.Questions()
 
 """ @router.get('/questions')
 async def questions():
@@ -88,23 +92,21 @@ async def edit_question(details:IDWithQuestionInfo):
             
         } """
 
-
+###############################################################################
 question_not_found_error = JSONDocumentedResponse(
     status.HTTP_404_NOT_FOUND,
     'Question not found'
 )
-@router.get('/questions/{question_id}',
+@router.get('/{question_id}',
     **create_documentation([question_not_found_error])
 )
-async def get_question(question_id: int, task=Depends(tc.get_task), current_user=Depends(get_current_user)):
-
-    question = await qs.get_question(task, question_id)
+async def get_question(question_id: int, task=Depends(controllers.tasks.get_task), current_user=Depends(get_current_user)):
+    question = await services.questions.get_question(task, question_id)
     if not question:
         return question_not_found_error.response()
     
     return question
-
-
+###############################################################################
 create_answer_success = JSONDocumentedResponse(
     status.HTTP_200_OK,
     'Answer created successfully. Answer is returned',
@@ -115,11 +117,17 @@ create_answer_failed = JSONDocumentedResponse(
     'Answer not created. Error message is returned',
     schemas.tasks.ErrorResponse,
 )
-@router.post('',
+@router.put('/{question_id}/answer',
     **create_documentation([create_answer_success, create_answer_failed])
 )
-async def create_answer(answer: schemas.questions.Answer, task_id: int=Path(), question_id: int=Path(), current_user=Depends(get_current_user)):
-    response = services.questions.create_answer(current_user, task_id, question_id, answer)
+async def create_answer(
+    answer: schemas.answers.AnswerRequest,
+    task_id: int=Path(), question_id: int=Path(),
+    current_user=Depends(get_current_user(['respondent']))
+):
+    question = await question_service.get_question(task_id, question_id)
+    response = question.create_answer(current_user, answer)
     if response:
         return create_answer_failed.response(schemas.tasks.ErrorResponse(response))    
     return create_answer_success.response(answer)
+###############################################################################
