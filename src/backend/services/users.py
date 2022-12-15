@@ -25,6 +25,9 @@ class User(BaseModel):
     date_created: datetime=datetime.utcnow()
     password_hashed: str=''
 
+    def __init__(self,user):
+        super(User,self).__init__(username = user.username,email = user.email ,credits = user.credits , date_created = user.date_created ,password_hashed = user.password_hashed)
+
     async def edit_user_info(new_info: dict) -> bool:
         """
         Edits self using the new user
@@ -47,11 +50,17 @@ class User(BaseModel):
 class Requester(User):
     user_type='requester'
     tasks_requested: set[int]=set() # list Task IDs
+    def __init__(self,user):
+        super(Requester,self).__init__(user)
+
+
 class Respondent(User):
     user_type='respondent'
     tested: bool=False
     tasks_claimed: set[int]=set() # list Task IDs
     tasks_completed: set[int]=set() # list Task IDs
+    def __init__(self,user):
+        super(Respondent,self).__init__(user)
 
     async def claim_task(self, task: services.tasks.Task | int) -> str | None:
         if isinstance(task, int):
@@ -117,18 +126,12 @@ class Users:
             res= await con.execute(select(models.email.Email).where(models.email.Email.email==email))
             target = res.scalars().first()
             if target is None:
-                return {
-                    'arg': 'email',
-                    'error': 'notfound'
-                }
+                return False
             if target.verification_code != verification_code:
-                return {
-                    'arg': 'verification_code',
-                    'error': 'mismatch'
-                }
+                return False
             #con.add(user)
             await con.commit()
-
+            return True
     async def create_user(self, 
         username: str,
         email: str,
@@ -160,28 +163,33 @@ class Users:
             errors['username'] = 'exists'
         if 'email' not in errors and await self.email_exists(email):
             errors['email'] = 'exists'
-        
         if errors:
             return errors
 
         if not await self.check_verification_code(email, verification_code):
             errors['verification_code'] = 'wrong'
             return errors
-
         if user_type in ['0', 'respondent']:
-            new_user = Respondent()
-            new_user.user_type = 'respondent'
+            new_user = models.user.Respondent()
 
         elif user_type in ['1', 'requester']:
-            new_user = Requester()
-            new_user.user_type = 'requester'
+            new_user = models.user.Requester()
         new_user.username = username
         new_user.email = email
         new_user.password_hashed = utils.hasher.hash(password)
-        new_user.date_created = datetime.utcnow()       
+        new_user.date_created = datetime.utcnow()  
+        new_user.credits = 0
+        new_user.token = ''     
+        if user_type in ['0', 'respondent']:
+             response_user = Respondent(new_user)
+
+        elif user_type in ['1', 'requester']:
+            response_user = Requester(new_user)
         con.add(new_user)     
         await con.commit()
-        return new_user
+
+
+        return response_user
 
 
     async def authenticate(self, username: str, password: str) -> bool:
@@ -189,14 +197,13 @@ class Users:
 
         # TODO: check?
         con = scoped_session(Connection)
-        res = con.query(models.user.User).filter(models.user.User.username == username).all()
+        async with con.begin():
+            res= await con.execute(select(models.user.User).where(models.user.User.username==username))
+            target = res.scalars().first()
+            if target == None:
+                return False
 
-        if (len(res) == 0):
-            return False
-
-        user = res[0]
-
-        return utils.hasher.verify(user.password, password)
+        return utils.hasher.verify(target.password_hashed, password)
 
     async def get_user(self, username: str) -> User | None:
         """
@@ -305,7 +312,7 @@ class Users:
 
 if __name__ == '__main__':
     u = Users()
-
-    #asyncio.run(asyncio.wait([u.create_user('chenjz20','843273746@qq.com','cxq1974328','requester',891206)]))
-    asyncio.run(asyncio.wait([u.email_exists('843273746@qq.com')]))
+    #asyncio.run(asyncio.wait([u.send_verification_email('843273746@qq.com')]))
+    #asyncio.run(asyncio.wait([u.create_user('chenjz20','843273746@qq.com','cxq1974328','requester',460088)]))
+    #asyncio.run(asyncio.wait([u.email_exists('843273746@qq.com')]))
     
