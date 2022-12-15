@@ -3,7 +3,7 @@ from pydantic import BaseModel
 import schemas.questions
 from services.users import User
 from utils.datetime_str import datetime_now_str
-
+from datetime import datetime
 
 from services.database import *
 from models.task import Task
@@ -52,25 +52,25 @@ class Task(BaseModel):
         
 
 
-# fake_tasks = [
-#     Task(
-#         task_id=1,
-#         name='faketask',
-#         creator='requester1',
-#         responses_required=10,
-#         date_created=datetime.datetime.utcnow(),
-#         credits=10,
-#         questions=[
-#             schemas.questions.SingleChoiceQuestion(
-#                 task_id=1,
-#                 question_id=1,
-#                 prompt='Which number is a prime number?',
-#                 options=['9', '10', '11', '12'],
-#                 answers=[],
-#             ),
-#         ]
-#     ),
-# ]
+fake_tasks = [
+    Task(
+        task_id=1,
+        name='faketask',
+        creator='requester1',
+        responses_required=10,
+        date_created=datetime.utcnow(),
+        credits=10,
+        questions=[
+            schemas.questions.SingleChoiceQuestion(
+                task_id=1,
+                question_id=1,
+                prompt='Which number is a prime number?',
+                options=['9', '10', '11', '12'],
+                answers=[],
+            ),
+        ]
+    ),
+]
 
 NO_DB = True
 
@@ -83,7 +83,7 @@ class Tasks:
     async def create_task(self,creator: str ,name:str ,description:str,
                           introduction:str,cover_path:str,response_required:int,
                           credits:int) -> Task | None:
-        date_created = datetime.datetime.utcnow()
+        date_created = datetime.utcnow()
         # if not __verify_task_format():
         #     return None
         task = Task(creator = creator , name = name ,description = description ,

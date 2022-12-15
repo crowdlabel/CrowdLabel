@@ -5,12 +5,7 @@ import utils.hasher
 import utils.emailsender
 from sqlalchemy import select, update
 import random
-<<<<<<< HEAD
-from .database import *
-=======
 from services.database import *
-import schemas.users
->>>>>>> 59488c46bcc34bfba15eecb9a6fb65625520a4af
 from datetime import datetime
 from pydantic import BaseModel
 import services.tasks
@@ -281,24 +276,6 @@ class Users:
 
 task_service = services.tasks.Tasks()
 
-
-<<<<<<< HEAD
-class User(BaseModel):
-
-    async def edit_user_info(new_info: dict) -> bool:
-        """
-        Edits self using the new user
-        """
-
-    
-=======
->>>>>>> 59488c46bcc34bfba15eecb9a6fb65625520a4af
-
-if __name__ == '__main__':
-    u = Users()
-
-<<<<<<< HEAD
-
 class User(BaseModel):
     username: str=''
     email: str=''
@@ -306,6 +283,11 @@ class User(BaseModel):
     credits: float=0
     date_created: datetime=datetime.utcnow()
     password_hashed: str=''
+
+    async def edit_user_info(new_info: dict) -> bool:
+        """
+        Edits self using the new user
+        """
 
     class Config:
         schema_extra = {
@@ -375,7 +357,3 @@ fake_users = [
 fake_emails = {
     'me@georgetian.com': '000000'
 }
-=======
-    asyncio.run(asyncio.wait([u.create_user('chenjz20','843273746@qq.com','cxq1974328','requester',891206)]))
-    
->>>>>>> 59488c46bcc34bfba15eecb9a6fb65625520a4af
