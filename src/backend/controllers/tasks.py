@@ -23,17 +23,21 @@ get_task_failed_hdr = JSONDocumentedResponse(
     'Task query failed.',
     schemas.tasks.ErrorResponse
 )
-@router.get('/',
+@router.put('/',
     **create_documentation([get_task_success_jdr, get_task_failed_hdr])
 )
 async def search_tasks(query: schemas.tasks.TaskSearchRequest, current_user=Depends(get_current_user(['admin', 'respondent']))):
     """
     Task search
     """
-    tasks = await task_service.search(current_user, **query)
+    tasks = await task_service.search(current_user, **query.dict())
     if isinstance(tasks, str):
         return get_task_failed_hdr.response(schemas.tasks.ErrorResponse(tasks))
-    return get_task_success_jdr.response(schemas.tasks.TaskSearchResponse(tasks))
+
+    response = schemas.tasks.TaskSearchResponse(**query.dict())
+    response.tasks, response.total = tasks
+    # TODO: exclude tasks.questions
+    return get_task_success_jdr.response(response)
 ###############################################################################
 upload_success_jdr = JSONDocumentedResponse(
     status.HTTP_200_OK,
@@ -51,7 +55,7 @@ upload_failed_jdr = JSONDocumentedResponse(
 async def upload_task(in_file: UploadFile, current_user=Depends(get_current_user(['requester']))):
     filename = 'upload_' + current_user.username + '_' + datetime_now_str() + '.zip'
     await upload_file(in_file, filename)
-    response = await services.tasks.process_task_archive(filename)
+    response = await task_service.process_task_archive(filename)
     if isinstance(response, str):
         return upload_failed_jdr(schemas.tasks.ErrorResponse('Error'))
     return upload_success_jdr.response(response)
@@ -59,16 +63,10 @@ async def upload_task(in_file: UploadFile, current_user=Depends(get_current_user
 
 @router.get('/{task_id}')
 async def get_task(task_id: int, current_user=Depends(get_current_user())):
-    task = await task_service.get_task(task_id)
+    print('get tasks', task_id)
+    task = await task_service.get_task(task_id=task_id)
     if not task:
         return {'description': 'Task not found'}, status.HTTP_404_NOT_FOUND
-    if task.creator == current_user:
-        # allow the owner to see the full details of the task
-        return task
-
-    # do not show the answers to anyone else
-    for i in range(len(task.questions)):
-        task.questions[i].answers = None
 
     return task
 
@@ -177,23 +175,14 @@ claim_failed_jdr = JSONDocumentedResponse(
     **create_documentation([claim_success_jdr, claim_failed_jdr])
 )
 async def claim_task(task_id: int, current_user=Depends(get_current_user(['respondent']))):
-    task = await services.tasks.get_task(task_id)
-    if len(task.respondents_claimed) + len(task.respondents_completed) >= task.responses_required:
-        return claim_failed_jdr(schemas.tasks.ErrorResponse('No claims left'))
-    
-    if task_id in current_user.tasks_claimed or task_id in current_user.tasks_completed:
-        return claim_failed_jdr(schemas.tasks.ErrorResponse('Already claimed'))
-
-    current_user.tasks_claimed.append(task_id)
-
-    task.answers = None
+    task = await current_user.claim_task(task_id)
 
     return claim_success_jdr.response(task)
 ###############################################################################
 
 @router.get('/{task_id}/download',)
 async def download_task_results(task_id: int, current_user=Depends(get_current_user(['requester']))):
-    filename = await services.tasks.create_task_results_file(task_id)
+    filename = await task_service.create_task_results_file(task_id)
     return await download_file(filename)
 ###############################################################################
 

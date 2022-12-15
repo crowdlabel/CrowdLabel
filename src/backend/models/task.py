@@ -29,6 +29,3 @@ class Task(Base):
     requester = relationship('Requester',secondary=Requester2Task,cascade="delete, delete-orphan")
     respondent_claimed = relationship('Respondent',secondary=Respondent2Claim,cascade="delete, delete-orphan")
     respondent_complete = relationship('Respondent',secondary = Respondent2Complete,cascade="delete, delete-orphan")
-   
-
-

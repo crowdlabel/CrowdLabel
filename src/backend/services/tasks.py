@@ -1,4 +1,3 @@
-from datetime import datetime
 from typing import Optional, Iterable
 from pydantic import BaseModel
 import schemas.questions
@@ -18,36 +17,38 @@ def __verify_task_format():
 
 
 
-# class Task(BaseModel):
-#     task_id: int
-#     creator: str
-#     date_created: datetime
-#     credits: float
-#     name: str
-#     introduction: str=''
-#     description: str=''
-#     cover: str=''
-#     tags: list[str]=[]
-#     responses_required: int
-#     respondents_claimed: set[str]=set() # usernames of respondents who have claimed the task but have not completed it
-#     respondents_completed: set[str]=set() # usernames of respondents who have claimed and completed the task
-#     questions: list[schemas.questions.Question]=[] # list of Questions
+
+from datetime import datetime
+
+class Task(BaseModel):
+    task_id: int
+    creator: str
+    date_created: datetime
+    credits: float
+    name: str
+    introduction: str=''
+    description: str=''
+    cover: str=''
+    tags: list[str]=[]
+    responses_required: int
+    respondents_claimed: set[str]=set() # usernames of respondents who have claimed the task but have not completed it
+    respondents_completed: set[str]=set() # usernames of respondents who have claimed and completed the task
+    questions: list[schemas.questions.Question]=[] # list of Questions
 
 
 
+    async def create_task_results_file(id: int) -> str:
+        '''
+        id: ID of the task
+        Create the ZIP file containing the results of the task with ID `id`
+        Returns the filename of the zip file
+        '''
 
-#     async def create_task_results_file(id: int) -> str:
-#         '''
-#         id: ID of the task
-#         Create the ZIP file containing the results of the task with ID `id`
-#         Returns the filename of the zip file
-#         '''
-
-#         filename = 'results_' + id + '_' + datetime_now_str() + '.zip'
-
+        filename = 'results_' + id + '_' + datetime_now_str() + '.zip'
 
 
-#         return filename
+
+        return filename
         
 
 
@@ -71,6 +72,9 @@ fake_tasks = [
     ),
 ]
 
+NO_DB = True
+
+
 class Tasks:
 
     def __init__(self):
@@ -88,7 +92,15 @@ class Tasks:
         con.add(task)
         await con.commit()
         return task
-    async def get_task(task_id: int) -> Task | None:
+
+
+    async def get_task(self, task_id: int) -> Task | None:
+
+        for task in fake_tasks:
+            if task.task_id == task_id:
+                return task
+
+        return None
 
         async with con.begin():
             result = await con.execute(select(Task).where(Task.id == task_id).options(selectinload(Task.questions),
@@ -121,24 +133,27 @@ class Tasks:
 
 
 
-
     async def search(
         user: User,
         name: str=None,
         tags: Iterable=None,
-        credits: float=None,
+        credits_min: float=None,
+        credits_max: float=None,
         questions_min: int=-1,
         questions_max: int=10e9,
-        creator: str=None,
+        requesters: set[str]=None,
         result_count: int=-1,
         page: int=1,
         page_size: int = -1,
         sort_criteria: str=None,
         sort_ascending: bool=True,
-    ):
+    ) -> tuple[list[Task], int]:
 
         tasks = []
         total = 0
+
+        return fake_tasks, len(fake_tasks)
+
         """
         Gets the tasks matching the search criteria
 
