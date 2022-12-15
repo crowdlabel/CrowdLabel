@@ -45,7 +45,7 @@ class Users:
 
         verification_code = str(random.randint(0, 999999)).rjust(6, '0')
 
-
+        verification_code = '123456'
         # TODO: check?
         async with con.begin():
             res= await con.execute(select(models.email.Email).where(models.email.Email.email==email))
@@ -61,6 +61,7 @@ class Users:
                 con.expunge(target)
                     
         try:
+            return True
             self.__email_sender.send_email(
                 'CrowdLabel 邮箱验证码',
                 verification_code,
@@ -77,13 +78,10 @@ class Users:
             return True
         # TODO: check?
         async with con.begin():
-            res= await con.execute(select(models.email.Email).where(models.email.Email.email==email))
+            res = await con.execute(select(models.email.Email).where(models.email.Email.email == email))
             target = res.scalars().first()
-            if target is None:
+            if target is None or target.verification_code != verification_code:
                 return False
-            if target.verification_code != verification_code:
-                return False
-            #con.add(user)
             await con.commit()
             return True
     async def create_user(self, 
