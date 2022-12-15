@@ -170,7 +170,6 @@ class Users:
             'status': '',
             'tasks_completed': []
         }
-
         async with con.begin():
             res= await con.execute(select(models.user.User).where(models.user.User.username==username))
             target = res.scalars().first()
