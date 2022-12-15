@@ -9,6 +9,7 @@ from .database import *
 import schemas.users
 from datetime import datetime
 from pydantic import BaseModel
+import services.tasks
 
 
 Connection = sessionmaker(bind=engine,expire_on_commit=False,class_=AsyncSession)
@@ -272,11 +273,20 @@ class Users:
         # TODO: implement
 
 
+task_service = services.tasks.Tasks()
+
 class User(BaseModel):
 
-    async def edit_user_info(new_info: dict) -> bool:
+    async def edit_user_info(new_info: dict) -> str | None:
         """
-        Edits self using the new user
+        TODO:
+        Edits self using the new info
+        returns error message, or none if successful
         """
 
+    async def claim_task(task: services.tasks.Task | int) -> str | None:
+        if isinstance(task, int):
+            task = await task_service.get_task(task)
 
+        # TODO: claim task
+        # returns error message, or none if successful

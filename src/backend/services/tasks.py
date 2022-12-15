@@ -109,7 +109,7 @@ class Tasks:
     def __init__(self):
         pass
 
-    async def get_task(task_id: int) -> Task | None:
+    async def get_task(self, task_id: int) -> Task | None:
 
         for task in fake_tasks:
             if task.task_id == task_id:

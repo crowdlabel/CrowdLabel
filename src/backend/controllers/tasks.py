@@ -177,6 +177,7 @@ claim_failed_jdr = JSONDocumentedResponse(
     **create_documentation([claim_success_jdr, claim_failed_jdr])
 )
 async def claim_task(task_id: int, current_user=Depends(get_current_user(['respondent']))):
+    result = current_user.claim_task(task_id)
     task = await task_service.get_task(task_id)
     if len(task.respondents_claimed) + len(task.respondents_completed) >= task.responses_required:
         return claim_failed_jdr(schemas.tasks.ErrorResponse('No claims left'))
