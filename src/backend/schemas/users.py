@@ -78,7 +78,9 @@ class User(BaseModel):
     date_created: datetime=datetime.utcnow()
 
     def __init__(self,user):
-        super(User,self).__init__(username = user.username,email = user.email ,credits = user.credits , date_created = user.date_created ,password_hashed = user.password_hashed)
+        super(User,self).__init__(username = user.username,email = user.email ,credits = user.credits ,
+                                 date_created = user.date_created ,password_hashed = user.password_hashed,
+                                 usertype = user.user_type)
 
 
     async def edit_user_info(new_info: dict) -> bool:
