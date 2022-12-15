@@ -23,6 +23,8 @@ async def availability(fields: schemas.users.AvailabilityRequest):
     response = schemas.users.AvailabilityResponse()
     if fields.username:
         response.username = not await user_service.username_exists(fields.username)
+        print('###########')
+        print(response.username)
     if fields.email:
         response.email = not await user_service.email_exists(fields.email)
     print(response)

@@ -5,7 +5,8 @@ from utils.datetime_str import datetime_now_str
 from datetime import datetime
 
 from services.database import engine
-from models.task import Task
+import models.task
+import models.user
 from sqlalchemy.orm import sessionmaker, scoped_session, selectinload
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy import select, and_ ,or_
@@ -29,9 +30,15 @@ class Tasks:
         date_created = datetime.utcnow()
         # if not __verify_task_format():
         #     return None
-        task = Task(creator = creator , name = name ,description = description ,
+        task = models.task.Task(creator = creator , name = name ,description = description ,
                     introduction = introduction ,cover_path = cover_path ,
                     response_required = response_required,credits = credits,date_created = date_created)
+        async with con.begin():
+            target = await con.execute(select(models.user.Requester).where(models.user.Requester.username==creator).options(selectinload(models.user.Requester.task_requested)))
+            res = target.scalars().first()
+            if res == None:
+                return None
+        res.task_requested.append(task)
         con.add(task)
         await con.commit()
         return task
@@ -167,3 +174,4 @@ task_service = Tasks()
 if __name__ == '__main__':
     t = Tasks()
     asyncio.run(asyncio.wait([t.create_task('chenjz20','tsk1','des','intro','./1.png',10,10)]))
+

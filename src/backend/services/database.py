@@ -2,7 +2,12 @@ from sqlalchemy.ext.asyncio import create_async_engine
 from models.basicbase import Base
 import asyncio
 import utils.config
-
+from models.email import Email
+from models.question import Question
+from models.results import Results
+from models.task import Task
+from models.user import *
+from models.answer import *
 
 database_filename = utils.config.get_config('database.filename')
 
