@@ -23,25 +23,25 @@ class User(Base):
         'polymorphic_on':user_type,
         'polymorphic_identity':'user'
     }
-    def __init__(self, username, password_hashed, email, user_type, status):
-        self.username = username
-        self.password_hashed = password_hashed
-        self.email = email
-        self.user_type = user_type
-        self.status = status
+    # def __init__(self, username, password_hashed, email, user_type, status):
+    #     self.username = username
+    #     self.password_hashed = password_hashed
+    #     self.email = email
+    #     self.user_type = user_type
+    #     self.status = status
 
 class Requester(User):
     __tablename__ = 'requester'
     id = Column(Integer,ForeignKey('user.id'),primary_key = True)
-    task_requested = relationship('Requester2Task',secondary=Requester2Task,cascade="delete, delete-orphan")
+    task_requested = relationship('Task',secondary='requester2task',cascade="delete, delete-orphan",single_parent = True)
     __mapper_args__ = {
         'polymorphic_identity':'requester'
     }
 class Respondent(User):
     __tablename__ = 'respondent'
     id = Column(Integer,ForeignKey('user.id'),primary_key = True)
-    task_claimed = relationship('Respondent2Claim',secondary=Respondent2Claim,cascade="delete, delete-orphan")
-    task_complete = relationship('Respondent2Complete',secondary=Respondent2Complete,cascade="delete, delete-orphan")
+    task_claimed = relationship('Task',secondary='respondent2claim',cascade="delete, delete-orphan",single_parent = True)
+    task_complete = relationship('Task',secondary='respondent2complete',cascade="delete, delete-orphan",single_parent = True)
     __mapper_args__ = {
         'polymorphic_identity':'respondent'
     }
