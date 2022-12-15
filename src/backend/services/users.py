@@ -12,8 +12,6 @@ import services.tasks
 import models.email
 import models.user
 
-
-
 Connection = sessionmaker(bind=engine, expire_on_commit=False, class_=AsyncSession)
 con = scoped_session(Connection)
 
@@ -191,7 +189,7 @@ class Users:
 
         # TODO: check?
         con = scoped_session(Connection)
-        res = con.query(User).filter(User.username == username).all()
+        res = con.query(models.user.User).filter(models.user.User.username == username).all()
 
         if (len(res) == 0):
             return False
@@ -214,7 +212,7 @@ class Users:
             'tasks_completed': []
         }
 
-        res = con.query(User).filter(User.username == username).all()
+        res = con.query(models.user.User).filter(models.user.User.username == username).all()
         if len(res) == 0:
             return {}
         pass
@@ -228,12 +226,22 @@ class Users:
         # TODO: check
         if not checkers.users.check_username_format(username):
             return False
-        async with con.begin():
-            res= await con.execute(select(models.user.User).where(models.user.User.username==username))
-            target = res.scalars().first()
-        if target is None:
-            return False
-        return True
+        else:
+            # TODO: check
+            if not checkers.users.check_username_format(username):
+                return False
+            async with con.begin():
+                res= await con.execute(select(models.user.User).where(models.user.User.username==username))
+                target = res.scalars().first()
+            if target is None:
+                print('##################################')
+                print('False')
+                print('##################################')
+                return False
+            print('##################################')
+            print('True')
+            print('##################################')
+            return True
 
     async def email_exists(self, email: str) -> bool:
         '''
@@ -243,12 +251,25 @@ class Users:
         # TODO: check
         if not checkers.users.check_email_format(email):
             return False
-        async with con.begin():
-            res= await con.execute(select(models.user.User).where(models.user.User.email==email))
-            target = res.scalars().first()
-        if target is None:
-            return False
-        return True
+
+        else:
+            # TODO: check
+            if not checkers.users.check_email_format(email):
+                return False
+            async with con.begin():
+                res= await con.execute(select(models.user.User).where(models.user.User.email==email))
+                target = res.scalars().first()
+            if target is None:
+                print('##################################')
+                print('False')
+                print('##################################')
+
+                return False
+            print('##################################')
+            print('True')
+            print('##################################')
+        
+            return True
 
     async def delete(self, username: str) -> bool:
         '''
@@ -257,7 +278,7 @@ class Users:
         # TODO: implement
         async with con.begin():
 
-            res= await con.execute(select(User).where(User.username==username))
+            res= await con.execute(select(models.user.User).where(models.user.User.username==username))
             target = res.scalars().first()
             if target == None:
                 return False
@@ -271,7 +292,7 @@ class Users:
         returns error message, or none if successful
         """
         async with con.begin():
-            res = await con.execute(select(User).where(User.id == userid))
+            res = await con.execute(select(models.user.User).where(models.user.User.id == userid))
             target = res.scalar().first()
             if target == None:
                 return False
@@ -279,3 +300,12 @@ class Users:
                 target.password_hashed = utils.hasher.hash(new_info['password'])
                 return True
 
+
+
+
+if __name__ == '__main__':
+    u = Users()
+
+    #asyncio.run(asyncio.wait([u.create_user('chenjz20','843273746@qq.com','cxq1974328','requester',891206)]))
+    asyncio.run(asyncio.wait([u.email_exists('843273746@qq.com')]))
+    
