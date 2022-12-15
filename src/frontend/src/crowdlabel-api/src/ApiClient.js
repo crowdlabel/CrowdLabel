@@ -13,7 +13,7 @@
 
 
 import superagent from "superagent";
-import querystring from "querystring";
+import qs from "qs";
 
 /**
 * @module ApiClient
