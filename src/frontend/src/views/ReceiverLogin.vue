@@ -87,7 +87,9 @@ export default {
                     callback(new Error('用户名格式错误:请输入3-64位用户名'));
                 } else {
                     let self = this
-                    let checkname = self.fetch_json('http://localhost:8000/availability', 'POST', {'username':value, 'email':''});
+                    
+                    // let checkname = userclient.availabilityUsersAvailabilityPut({'username':value, 'email':''});
+                    let checkname = self.fetch_json('http://localhost:8000/users/availability', 'PUT', {'username':value, 'email':''});
                     if (checkname.username){
                         callback(new Error('用户名已被占用'));
                     } else {
@@ -106,7 +108,7 @@ export default {
                 } else {
                     this.disable = false;
                     let self = this
-                    let checkmail = self.fetch_json('http://localhost:8000/availability', 'POST', {'username':'', 'email':value});
+                    let checkmail = self.fetch_json('http://localhost:8000/users/availability', 'PUT', {'username':'', 'email':value});
                     if (checkmail.email) {
                         callback(new Error('邮箱已被占用'));
                     } else {
@@ -190,6 +192,8 @@ export default {
         };
     },
     created () {
+        // 调用后端api
+        // userclient = this.UserClient(this.ApiClient('http://localhost:8082'));
         const time = localStorage.getItem('time');
         if (time && time>0) {
             this.text = time + "s后重新发送"

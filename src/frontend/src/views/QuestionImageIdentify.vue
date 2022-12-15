@@ -39,7 +39,10 @@
           <p class="text_bold">行人</p>
           <p class="text_normal">。（还没做）</p>
         </div>
-        <img class="image" src="../assets/image_placeholder.png" height="400px" width="600px"/>
+        <div class="content">
+          <img src="../assets/image_placeholder.png" />
+          <canvas ref="markCanvas" tabindex='0'></canvas>
+        </div>
         <div class="answers">
           
         </div>
@@ -65,46 +68,96 @@
 // @ is an alias to /src
 // import HelloWorld from '@/components/HelloWorld.vue'
 import axios from 'axios'
+import {draw} from "../utils/draw"; // 矩形绘制方法
 export default {
   data() {
     return {
       percentage: 60,
       customColor: '#5D3BE6',
-      dialogVisible: false
+      markList: []
     };
   },
+  mounted() {
+        this.initCanvas(); // 画布初始化
+  },
   methods: {
-    chooseType: function () {
-      this.dialogVisible = true
+    /* 图片初始化 */
+    initImage() {
+      let img = this.$refs.img;
+      img.width = document.getElementsByTagName("img").naturalWidth;
+      h = document.getElementsByTagName("img").naturalHeight;
     },
-    senderType: function (){
-      this.$router.push('/senderlogin')
-      // axios.get('http://localhost:8002/senderlogin', {params:{
-      //           username: this.username
-      //           }
-      //       }).then((res) => {
-      //           console.log(res)
-      //           this.$router.push({
-      //               name: 'connected',
-      //               params: {
-      //               username: this.username,
-      //               usage: res.data
-      //               }
-      //           })
-      //           })
-      //       .catch((error) => {
-      //           console.log(error)
-      //       })
-    },
-    receiverType: function () {
-      this.$router.push('/receiverlogin')
-    }
+    /* 画布初始化 */
+    initCanvas() {
+            let that = this
+            this.$nextTick(() => {
+                // 初始化canvas宽高
+                let cav = this.$refs.markCanvas;
+                cav.width = '550';
+                cav.height = '400';
+                let ctx = cav.getContext('2d');
+                ctx.strokeStyle = 'blue'
+                cav.style.cursor = 'crosshair'
+                
+                // 计算使用变量
+                let list = this.markList; // 画框数据集合, 用于服务端返回的数据显示和绘制的矩形保存
+                // 若服务端保存的为百分比则此处需计算实际座标, 直接使用实际座标可省略
+                list.forEach(function (value, index, array) {
+                    let newValue = {
+                        x: value.x * cav.width,
+                        y: value.y * cav.height,
+                        w: value.w * cav.width,
+                        h: value.h * cav.height,
+                    }
+                    list.splice(index, 1, newValue)
+                })
+                
+                // 若list长度不为0, 则显示已标记框
+                if (list.length !== 0) {
+                    list.forEach(function (value, index, array) {
+                        // 遍历绘制所有标记框
+                        ctx.rect(value.x, value.y, value.w, value.h);
+                        ctx.stroke();
+                    });
+                }
+                
+                // 调用封装的绘制方法
+                draw(cav,list);
+ 
+                // 备注: js中对象操作指向的是对象的物理地址, 获取绘制完矩形的结果数组直接取用或处理this.markList即可
+            })
+        },
   }
 }
 </script>
 
-<style scoped>
+<style lang='scss' scoped>
 @import '@/assets/font/font.css';
+
+.content {
+    position: relative;
+    align-self: center;
+    // transform: translateX(-50%) translateX(-50%);
+    top: 20px;
+    width: 550px;
+    height: 400px;
+    
+    img {
+        position: absolute;
+        // top: 20px;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        z-index: 9;
+    }
+ 
+    canvas {
+        position: absolute;
+        // top: 20px;
+        left: 0;
+        z-index: 10;
+    }
+}
 
 .all {
   min-width: 1150px;
@@ -131,7 +184,7 @@ export default {
 }
 .top_nav_trigger {
     align-items: center;
-    box-shadow: 1.2px 0 0 0 rgb(0 0 0 / 10%);
+    box-shadow: 1.2px 0px 0px 0px rgb(0,0,0 / 10%);
     box-sizing: border-box;
     display: flex;
     min-width: 300px;
@@ -174,7 +227,7 @@ export default {
 .left_nav {
     max-width: 300px;
     min-width: 300px;
-    box-shadow: 1.2px 0 0 0 rgb(0 0 0 / 10%);
+    box-shadow: 1.2px 0px 0px 0px rgb(0, 0, 0 / 10%);
     box-sizing: border-box;
     flex-direction: column;
     height: calc(100vh - 50px);

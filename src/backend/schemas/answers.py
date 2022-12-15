@@ -1,33 +1,29 @@
 from pydantic import BaseModel
 from datetime import datetime
 
-class AnswerType(BaseModel):
-    pass
-
-class SingleChoiceAnswer(AnswerType):
+class SingleChoiceAnswer(BaseModel):
     choice: int
 
-class MultiChoiceAnswer(AnswerType):
+class MultiChoiceAnswer(BaseModel):
     choices: list[int]
 
-class RankingAnswer(AnswerType):
+class RankingAnswer(BaseModel):
     ranking: list[int]
 
-class OpenAnswer(AnswerType):
+class OpenAnswer(BaseModel):
     text: str
 
 class Point(BaseModel):
     x: int
     y: int
 
-class BoundingBoxAnswer(AnswerType):
+class BoundingBoxAnswer(BaseModel):
     top_left: Point
     bottom_right: Point
 
-class Answer(BaseModel):
+class AnswerRequest(BaseModel):
+    answer: SingleChoiceAnswer | MultiChoiceAnswer | RankingAnswer | BoundingBoxAnswer | OpenAnswer
+
+class Answer(AnswerRequest):
     respondent: str # username of respondent
     date_answered: datetime
-    task_id: int
-    question_id: int
-    question_type: int
-    answer: AnswerType | None

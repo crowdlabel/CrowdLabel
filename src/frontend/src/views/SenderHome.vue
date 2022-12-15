@@ -56,7 +56,7 @@
   export default {
     data() {
       return {
-
+        userid: this.$route.query.userid
       }
     },
     methods: {

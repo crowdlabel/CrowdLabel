@@ -1,75 +1,54 @@
-from datetime import datetime
-from typing import Optional, Iterable
+from typing import Iterable
 from pydantic import BaseModel
 import schemas.questions
-from services.users import User
 from utils.datetime_str import datetime_now_str
+from datetime import datetime
 
-
-from services.database import *
+from services.database import engine
 from models.task import Task
 from sqlalchemy.orm import sessionmaker, scoped_session, selectinload
 from sqlalchemy.ext.asyncio import AsyncSession
-from sqlalchemy import select, update ,and_ ,or_
-Connection = sessionmaker(bind=engine,expire_on_commit=False,class_=AsyncSession)
+from sqlalchemy import select, and_ ,or_
+Connection = sessionmaker(bind=engine, expire_on_commit=False, class_=AsyncSession)
 con = scoped_session(Connection)
-def __verify_task_format():
-    return True
+
+
+import asyncio
+
+
+from datetime import datetime
+import services.users
+
+class Task(BaseModel):
+    task_id: int
+    creator: str
+    date_created: datetime
+    credits: float
+    name: str
+    introduction: str=''
+    description: str=''
+    cover: str=''
+    tags: list[str]=[]
+    responses_required: int
+    respondents_claimed: set[str]=set() # usernames of respondents who have claimed the task but have not completed it
+    respondents_completed: set[str]=set() # usernames of respondents who have claimed and completed the task
+    questions: list[schemas.questions.Question]=[] # list of Questions
+
+
+    async def create_task_results_file(id: int) -> str:
+        '''
+        id: ID of the task
+        Create the ZIP file containing the results of the task with ID `id`
+        Returns the filename of the zip file
+        '''
+
+        filename = 'results_' + id + '_' + datetime_now_str() + '.zip'
 
 
 
-# class Task(BaseModel):
-#     task_id: int
-#     creator: str
-#     date_created: datetime
-#     credits: float
-#     name: str
-#     introduction: str=''
-#     description: str=''
-#     cover: str=''
-#     tags: list[str]=[]
-#     responses_required: int
-#     respondents_claimed: set[str]=set() # usernames of respondents who have claimed the task but have not completed it
-#     respondents_completed: set[str]=set() # usernames of respondents who have claimed and completed the task
-#     questions: list[schemas.questions.Question]=[] # list of Questions
-
-
-
-
-#     async def create_task_results_file(id: int) -> str:
-#         '''
-#         id: ID of the task
-#         Create the ZIP file containing the results of the task with ID `id`
-#         Returns the filename of the zip file
-#         '''
-
-#         filename = 'results_' + id + '_' + datetime_now_str() + '.zip'
-
-
-
-#         return filename
+        return filename
         
 
-
-# fake_tasks = [
-#     Task(
-#         task_id=1,
-#         name='faketask',
-#         creator='requester1',
-#         responses_required=10,
-#         date_created=datetime.datetime.utcnow(),
-#         credits=10,
-#         questions=[
-#             schemas.questions.SingleChoiceQuestion(
-#                 task_id=1,
-#                 question_id=1,
-#                 prompt='Which number is a prime number?',
-#                 options=['9', '10', '11', '12'],
-#                 answers=[],
-#             ),
-#         ]
-#     ),
-# ]
 
 class Tasks:
 
@@ -79,7 +58,7 @@ class Tasks:
     async def create_task(self,creator: str ,name:str ,description:str,
                           introduction:str,cover_path:str,response_required:int,
                           credits:int) -> Task | None:
-        date_created = datetime.datetime.utcnow()
+        date_created = datetime.utcnow()
         # if not __verify_task_format():
         #     return None
         task = Task(creator = creator , name = name ,description = description ,
@@ -88,18 +67,23 @@ class Tasks:
         con.add(task)
         await con.commit()
         return task
-    async def get_task(task_id: int) -> Task | None:
 
+
+    async def get_task(self, task_id: int) -> Task | None:
         async with con.begin():
-            result = await con.execute(select(Task).where(Task.id == task_id).options(selectinload(Task.questions),
-                                                                                      selectinload(Task.results),
-                                                                                      selectinload(Task.requester),
-                                                                                      selectinload(Task.respondent_claimed),
-                                                                                      selectinload(Task.respondent_complete)))
+            result = await con.execute(select(Task).where(Task.id == task_id).options(
+                selectinload(Task.questions),
+                selectinload(Task.results),
+                selectinload(Task.requester),
+                selectinload(Task.respondent_claimed),
+                selectinload(Task.respondent_complete)
+            ))
             target = result.scalars().first()
             if target is None:
                 return None
             return target
+
+    
     async def delete_task(task_id:int) -> bool:
         async with con.begin():
             result = await con.execute(select(Task).where(Task.id==task_id))
@@ -121,24 +105,22 @@ class Tasks:
 
 
 
-
     async def search(
-        user: User,
+        user, #services.users.User, removing circular dependency
         name: str=None,
         tags: Iterable=None,
-        credits: float=None,
+        credits_min: float=None,
+        credits_max: float=None,
         questions_min: int=-1,
         questions_max: int=10e9,
-        creator: str=None,
+        requesters: set[str]=None,
         result_count: int=-1,
         page: int=1,
         page_size: int = -1,
         sort_criteria: str=None,
         sort_ascending: bool=True,
-    ):
+    ) -> tuple[list[Task], int]:
 
-        tasks = []
-        total = 0
         """
         Gets the tasks matching the search criteria
 
@@ -161,24 +143,29 @@ class Tasks:
         Returns: list of Tasks queried, and total number of tasks
 
         """
+
+        # TODO: creator -> requesters, multiple usernames
+
         async with con.begin():
             if sort_ascending is True:
                 result = await con.execute(select(Task).where(and_(or_(Task.creator == creator,creator == None),
-                                                                or_(Task.name == name, name ==None),
-                                                                or_(Task.credits == credits,credits = None),
-                                                                len(Task.questions)>questions_min,
-                                                                len(Task.questions)<questions_max,),
-                                                                or_(Task.response_required == result_count , result_count == -1))
-                                                                .order_by(Task.id.asc()).options(selectinload(Task.questions),selectinload(Task.results)))
+                            or_(Task.name == name, name ==None),
+                            or_(Task.credits == credits,credits = None),
+                            len(Task.questions)>questions_min,
+                            len(Task.questions)<questions_max,),
+                            or_(Task.response_required == result_count , result_count == -1))
+                            .order_by(Task.id.asc()).options(selectinload(Task.questions),selectinload(Task.results)))
             else:
  
                 result = await con.execute(select(Task).where(and_(or_(Task.creator == creator,creator == None),
-                                                                or_(Task.name == name, name ==None),
-                                                                or_(Task.credits == credits,credits = None),
-                                                                len(Task.questions)>questions_min,
-                                                                len(Task.questions)<questions_max,),
-                                                                or_(Task.response_required == result_count , result_count == -1))
-                                                                .order_by(Task.id.desc()).options(selectinload(Task.questions),selectinload(Task.results)))
+                                or_(Task.name == name, name ==None),
+                                or_(Task.credits == credits,credits = None),
+                                len(Task.questions)>questions_min,
+                                len(Task.questions)<questions_max,),
+                                or_(Task.response_required == result_count , result_count == -1))
+                                .order_by(Task.id.desc()).options(selectinload(Task.questions),selectinload(Task.results)))
+
+
             tasks = result.scalar().all()
             if page_size == -1:
                 return tasks , len(tasks)
@@ -191,6 +178,8 @@ class Tasks:
                 else :
                     target = tasks[(page-1)*page_size:-1]
                     return target ,len(target)
+
+
 if __name__ == '__main__':
     t = Tasks()
     asyncio.run(asyncio.wait([t.create_task('chenjz20','tsk1','des','intro','./1.png',10,10)]))

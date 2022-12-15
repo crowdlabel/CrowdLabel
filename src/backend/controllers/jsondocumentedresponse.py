@@ -13,8 +13,7 @@ class JSONDocumentedResponse:
         return {
             'description': self.description,
         }
-    def response(self, data: BaseModel | dict={}, exclude: set={}):
-        print('returning response')
+    def response(self, data: BaseModel | dict=None, exclude: set=set()):
         return Response(
             content=data if not self.model else data.json(exclude=exclude),
             status_code=self.status_code,

@@ -1,10 +1,12 @@
+from datetime import datetime
+import json
 from models.question import Question
 from models.task import Task
 from sqlalchemy.orm import sessionmaker, scoped_session
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy import select ,update
 from .database import *
-import json
+from pydantic import BaseModel
 Connection = sessionmaker(bind=engine,expire_on_commit=False,class_=AsyncSession)
 con = scoped_session(Connection)
 def __verify_question_format():
@@ -15,30 +17,43 @@ import schemas.tasks
 import schemas.questions
 import schemas.users
 
+import services.questions
 import services.tasks
+import services.users
 
-async def get_question(task: services.tasks.Task, question_id: int) -> schemas.questions.Question | None:
-    for question in task.questions:
-        if question.question_id == question_id:
-            return question
-    return None
-    
-async def create_question_from_file(
-    task_id:int,
-    file_path:str
-):
-    if not __verify_question_format():
-        return False
-    file = json.load(open(file_path,'r'))
-    async with con.begin():
-        result = await con.execute(select(Task).where(Task.id==task_id))
-        target = result.scalars().first()
-        type = target.type
-    for question in file:
-        await create_question(type,file[question]['prompt'],file_path,file[question]['options'],task_id)
-    return {
-        'status':'ok'
-    }
+import models.user
+
+
+task_service = services.tasks.Tasks()
+
+NO_DB = True
+
+class Questions:
+    async def get_question(self, task: services.tasks.Task | int, question_id: int) -> Question | None:
+
+        if isinstance(task, int):
+            task = await task_service.get_task(task)
+        for question in task.questions:
+            if question.question_id == question_id:
+                return question
+        return None
+        
+    async def create_question_from_file(
+        task_id:int,
+        file_path:str
+    ):
+        if not __verify_question_format():
+            return False
+        file = json.load(open(file_path,'r'))
+        async with con.begin():
+            result = await con.execute(select(Task).where(Task.id==task_id))
+            target = result.scalars().first()
+            type = target.type
+        for question in file:
+            await create_question(type,file[question]['prompt'],file_path,file[question]['options'],task_id)
+        return {
+            'status':'ok'
+        }
 
 """ async def create_question(
     type: str,
@@ -63,13 +78,6 @@ async def create_question_from_file(
 
 async def get_question(task_id: int, question_id: int) -> Question | None:
 
-    for task in fake_tasks:
-        if task.task_id == task_id:
-            for question in task.questions:
-                if question.question_id == question_id:
-                    return question
-
-    return None
     
 
     async with con.begin():
@@ -88,18 +96,7 @@ async def get_question(task_id: int, question_id: int) -> Question | None:
         "task_id":target.task_id
     },200
 
-async def answer(username: str, task_id: int, question_id: int, answer: Answer) -> bool:
-    for i in range(len(fake_tasks)):
-        if fake_tasks[i].task_id == task_id:
-            for j in range(len(fake_tasks[i].questions)):
-                if fake_tasks[i].questions[j].question_id == question_id:
-                    for k in range(len(fake_tasks[i].questions[j].answers)):
-                        if fake_tasks[i].questions[j].answers[k].respondent == username:
-                            fake_tasks[i].questions[j].answers[k] = answer
-                            return True
-                    fake_tasks[i].questions[j].answers.append(answer)
-                    return True
-    return False
+
 
 async def edit_question(id,type,prompt,resource,options,task_id):
     async with con.begin():
@@ -144,29 +141,49 @@ async def delete_question(task_id, questionid):
 
 
 
-async def create_answer(
-    current_user: schemas.users.User,
-    task_id: int,
-    question_id: int,
-    answer: schemas.answers.Answer,
-) -> str:
-    # TODO
-    if answer.question_type == 'multi_choice':
-        new_answer = MultiChoiceAnswer()
-    elif  answer.question_type == 'single_choice':
-        new_answer = SingleChoiceAnswer()
-    elif  answer.question_type == 'ranking':
-        new_answer = RankingAnswer()
-    elif  answer.question_type == 'open':
-        new_answer = OpenAnswer()
-    
-    new_answer.date_answered = answer.date_answered
-    new_answer.question_id = question_id
-    with con.begin():
-        res= await con.execute(select(Respondent).where(Respondent.username == answer.respondent))
-        target = res.scalar().first
-    new_answer.respondent_id = target.id
-    new_answer.question_type = answer.question_type
-    new_answer.respondent_name = answer.respondent
-    new_answer.task_id = task_id
-    return True
+
+class Question(BaseModel):
+    question_id: int
+    question_type: str
+    prompt: str
+    resource: str | None
+    task_id: int
+    answers: list[schemas.answers.Answer]
+
+    async def create_answer(self, 
+        current_user: services.users.User,
+        answer: schemas.answers.AnswerRequest,
+    ) -> str | None:
+
+        if NO_DB:
+            # TODO:
+            self.answers.append(schemas.answers.SingleChoiceAnswer(
+                    respondent=current_user.username,
+                    date_answered=datetime.utcnow(),
+                    choice=1
+                )
+            )
+            return
+        else:
+            # TODO
+            if answer.question_type == 'multi_choice':
+                new_answer = schemas.answers.MultiChoiceAnswer()
+            elif  answer.question_type == 'single_choice':
+                new_answer = schemas.answers.SingleChoiceAnswer()
+            elif  answer.question_type == 'ranking':
+                new_answer = schemas.answers.RankingAnswer()
+            elif  answer.question_type == 'open':
+                new_answer = schemas.answers.OpenAnswer()
+            
+            new_answer.date_answered = answer.date_answered
+            new_answer.question_id = self.question_id
+            with con.begin():
+                res= await con.execute(select(models.user.Respondent).where(models.user.Respondent.username == answer.respondent))
+                target = res.scalar().first
+            new_answer.respondent_id = target.id
+            new_answer.question_type = answer.question_type
+            new_answer.respondent_name = answer.respondent
+            return True
+
+class ClosedQuestion(Question):
+    options: list[str]
