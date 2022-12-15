@@ -239,7 +239,7 @@ export default {
     return {
       dialogVisible: false,
       // 
-      userid: "kennyl",
+      userid: this.$route.query.userid,
       usercredits: 50,
       // 
       multipartFile: [],
