@@ -810,4 +810,8 @@ export default {
   margin-right:30px;
 }
 
+.display_projects{
+  width: 100%;
+  height: 360px !important;
+}
 </style>
