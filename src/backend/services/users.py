@@ -162,14 +162,7 @@ class Users:
         Returns User object, or None if user not found
         """
 
-        # TODO: check
-        info = {
-            'username': '',
-            'email': '',
-            'type': '',
-            'status': '',
-            'tasks_completed': []
-        }
+
 
         res = con.query(models.user.User).filter(models.user.User.username == username).all()
         res = con.query(models.user.User).filter(models.user.User.username == username).all()

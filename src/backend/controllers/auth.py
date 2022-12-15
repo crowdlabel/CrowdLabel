@@ -69,6 +69,7 @@ def get_current_user(user_types: list=[]) -> schemas.users.User:
         if not user:
             raise credentials_exception
 
+        # if user_types is empty, then anyone can see, otherwise only admin or the specified user types can see
         if user_types:
             if not (user.user_type == 'admin' or user.user_type in user_types):
                 raise forbidden_exception
