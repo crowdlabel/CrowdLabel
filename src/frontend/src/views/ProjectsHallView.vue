@@ -36,6 +36,12 @@
                         <p class="list_item_title">我的积分</p>
                     </a>
                 </li>
+                <li>
+                    <a aria-current="page" class="left_nav_list_item" data-external="true" href="/draftbox">
+                        <img src="../assets/draftbox.png" height="21" width="21">
+                        <p class="list_item_title">草稿箱</p>
+                    </a>
+                </li>
                 <li tag="li" class="left_nav_spacer">
                 </li>
             </ul>
@@ -61,15 +67,15 @@
             </div>
             <div class="filter">
               <p class="title_filter">筛选：</p>
-              <el-button type="success" round>全部</el-button>
-              <el-button round>文字任务</el-button>
-              <el-button round>图像任务</el-button>
-              <el-button round>音频任务</el-button>
+              <el-button round id="all_button" autofocus="true">全部</el-button>
+              <el-button round id="text_button">文字任务</el-button>
+              <el-button round id="img_button">图像任务</el-button>
+              <el-button round id="audio_button">音频任务</el-button>
             </div>
             <div class="order_by">
               <p class="title_order_by">排序：</p>
-              <el-button type="success" round>发布时间</el-button>
-              <el-button round>热度</el-button>
+              <el-button round id="order_by_time" autofocus="true">发布时间</el-button>
+              <el-button round id="order_by_popularity">热度</el-button>
             </div>
             <div class="display_projects">
               <div class="display_projects_row">
@@ -168,14 +174,22 @@
 import axios from 'axios'
 export default {
   data() {
-    page_num = 100;
+    
     return {
-      
+      page_num: 100,
+      input: ''
     };
   },
   methods: {
     
-  }
+  },
+  directives: {
+      focus: {
+        inserted: function(el) {
+          el.focus();
+        }
+      }
+    },
 }
 </script>
 
@@ -274,7 +288,7 @@ a {
     margin: 0;
     padding: 12px;
     height: calc(100vh - 50px - 132.2px);
-    min-height: 180px;
+    min-height: 230px;
 }
 .left_nav_list_bottom {
     box-sizing: border-box;
