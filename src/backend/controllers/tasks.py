@@ -42,7 +42,7 @@ async def search_tasks(query: schemas.tasks.TaskSearchRequest, current_user=Depe
 upload_success_jdr = JSONDocumentedResponse(
     status.HTTP_200_OK,
     'Task uploaded and created successfully',
-    services.tasks.Task
+    schemas.tasks.Task
 )
 upload_failed_jdr = JSONDocumentedResponse(
     status.HTTP_400_BAD_REQUEST,
@@ -164,7 +164,7 @@ async def edit_task(details: TaskDetails):
 claim_success_jdr = JSONDocumentedResponse(
     status.HTTP_200_OK,
     'Task claimed successfully.',
-    services.tasks.Task,
+    schemas.tasks.Task,
 )
 claim_failed_jdr = JSONDocumentedResponse(
     status.HTTP_400_BAD_REQUEST,

@@ -1,5 +1,5 @@
 from pydantic import BaseModel
-from .answers import Answer
+import schemas.answers
 
 
 question_types = [
@@ -17,7 +17,7 @@ class Question(BaseModel):
     prompt: str
     resource: str | None
     task_id: int
-    answers: list[Answer]
+    answers: list[schemas.answers.Answer]
 
 class ClosedQuestion(Question):
     options: list[str]
@@ -31,3 +31,8 @@ class RankingQuestion(ClosedQuestion):
 
 class OpenQuestion(Question):
     question_type='open'
+
+   
+
+class ClosedQuestion(Question):
+    options: list[str]
