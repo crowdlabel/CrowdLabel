@@ -1,7 +1,7 @@
 from pydantic import BaseModel
 from typing import Optional
-
-
+from datetime import datetime
+import schemas.questions
 
 
 class TaskSearchRequest(BaseModel):
@@ -20,3 +20,19 @@ class TaskSearchResponse(TaskSearchRequest):
 
 class ErrorResponse(BaseModel):
     error: str
+
+
+class Task(BaseModel):
+    task_id: int
+    creator: str
+    date_created: datetime
+    credits: float
+    name: str
+    introduction: str=''
+    description: str=''
+    cover: str=''
+    tags: list[str]=[]
+    responses_required: int
+    respondents_claimed: set[str]=set() # usernames of respondents who have claimed the task but have not completed it
+    respondents_completed: set[str]=set() # usernames of respondents who have claimed and completed the task
+    questions: list[schemas.questions.Question]=[] # list of Questions
