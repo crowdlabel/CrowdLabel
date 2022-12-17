@@ -124,10 +124,10 @@
                 <el-button round>音频任务</el-button>
               </el-button-group>
             </div>
+            <el-button type="primary" round @click="createProject" id="create">创建任务</el-button>
             <div class="display_projects">
-              <div class="display_projects_row">
-                <div class="project">
-                  <el-card :body-style="{ padding: '0px' }">
+              <div class="display_items">
+                <el-card :body-style="{ padding: '0px' }">
                     <img src="../assets/image_placeholder.png" class="project_image">
                     <div style="padding: 0px;">
                       <p class="project_title">任务标题</p>
@@ -135,31 +135,9 @@
                       </div>
                     </div>
                   </el-card>
-                </div>
-                <div class="project">
-                  <el-card :body-style="{ padding: '0px' }">
-                    <img src="../assets/image_placeholder.png" class="project_image">
-                    <div style="padding: 0px;">
-                      <p class="project_title">任务标题</p>
-                      <div class="bottom clearfix">
-                      </div>
-                    </div>
-                  </el-card>
-                </div>
-                <div class="project">
-                  <el-card :body-style="{ padding: '0px' }">
-                    <img src="../assets/image_placeholder.png" class="project_image">
-                    <div style="padding: 0px;">
-                      <p class="project_title">任务标题</p>
-                      <div class="bottom clearfix">
-                      </div>
-                    </div>
-                  </el-card>
-                </div>
               </div>
-              <div class="display_projects_row_second" id="second_row">
-                <div class="project">
-                  <el-card :body-style="{ padding: '0px' }">
+              <div class="display_items">
+                <el-card :body-style="{ padding: '0px' }">
                     <img src="../assets/image_placeholder.png" class="project_image">
                     <div style="padding: 0px;">
                       <p class="project_title">任务标题</p>
@@ -167,20 +145,69 @@
                       </div>
                     </div>
                   </el-card>
-                </div>
-                <div class="project">
-                  <el-card :body-style="{ padding: '0px' }">
-                    <img src="../assets/image_placeholder.png" class="project_image">
-                    <div style="padding: 0px;">
-                      <p class="project_title">任务标题</p>
-                      <div class="bottom clearfix">
-                      </div>
-                    </div>
-                  </el-card>
-                </div>
               </div>
-
-              <el-button type="primary" round @click="createProject" id="create">创建任务</el-button>
+              <div class="display_items">
+                <el-card :body-style="{ padding: '0px' }">
+                    <img src="../assets/image_placeholder.png" class="project_image">
+                    <div style="padding: 0px;">
+                      <p class="project_title">任务标题</p>
+                      <div class="bottom clearfix">
+                      </div>
+                    </div>
+                  </el-card>
+              </div>
+              <div class="display_items">
+                <el-card :body-style="{ padding: '0px' }">
+                    <img src="../assets/image_placeholder.png" class="project_image">
+                    <div style="padding: 0px;">
+                      <p class="project_title">任务标题</p>
+                      <div class="bottom clearfix">
+                      </div>
+                    </div>
+                  </el-card>
+              </div>
+              <div class="display_items">
+                <el-card :body-style="{ padding: '0px' }">
+                    <img src="../assets/image_placeholder.png" class="project_image">
+                    <div style="padding: 0px;">
+                      <p class="project_title">任务标题</p>
+                      <div class="bottom clearfix">
+                      </div>
+                    </div>
+                  </el-card>
+              </div>
+              <!-- <div class="display_projects_row">
+                <div class="project">
+                  <el-card :body-style="{ padding: '0px' }">
+                    <img src="../assets/image_placeholder.png" class="project_image">
+                    <div style="padding: 0px;">
+                      <p class="project_title">任务标题</p>
+                      <div class="bottom clearfix">
+                      </div>
+                    </div>
+                  </el-card>
+                </div>
+                <div class="project">
+                  <el-card :body-style="{ padding: '0px' }">
+                    <img src="../assets/image_placeholder.png" class="project_image">
+                    <div style="padding: 0px;">
+                      <p class="project_title">任务标题</p>
+                      <div class="bottom clearfix">
+                      </div>
+                    </div>
+                  </el-card>
+                </div>
+                <div class="project">
+                  <el-card :body-style="{ padding: '0px' }">
+                    <img src="../assets/image_placeholder.png" class="project_image">
+                    <div style="padding: 0px;">
+                      <p class="project_title">任务标题</p>
+                      <div class="bottom clearfix">
+                      </div>
+                    </div>
+                  </el-card>
+                </div>
+              </div> -->
             </div>
 
             <div class="pagination">
@@ -615,15 +642,18 @@ export default {
   margin: 20px 100px;
   margin-bottom:40px;
   cursor: pointer;
+  flex-wrap: wrap;
+  width: 100%;
+  height: 360px !important;
 }
 
-
-.display_projects_row_second{
-  width: 100%;
-  flex-direction: row;
+.display_items{
+  width: 33.3333%;
+  height:180px;
   display: flex;
-  align-items:left;
-  margin: 15px 0px;
+  flex-direction: center;
+  align-items: center;
+  box-sizing: border-box;
 }
 
 .display_projects_row {
@@ -666,10 +696,10 @@ export default {
 #create{
   position: absolute;
   float: left; 
-  top: 500px;
+  top: 120px;
   left: 800px;
   font-size: 16px;
-  padding: 15px 30px;
+  padding: 12px 24px;
 }
 
 .mission_name{
@@ -810,8 +840,7 @@ export default {
   margin-right:30px;
 }
 
-.display_projects{
-  width: 100%;
-  height: 360px !important;
-}
+
+
+
 </style>
