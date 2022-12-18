@@ -70,12 +70,15 @@ class Questions:
         async with con.begin():
             result = await con.execute(select(models.task.Task).where(models.task.Task.id==task_id))
             target = result.scalars().first()
+            if target == None:
+                return False
             type = target.type
-        for question in file:
-            await self.create_question(type,file[question]['prompt'],file_path,file[question]['options'],task_id)
-        return {
-            'status':'ok'
-        }
+        try:
+            for question in file['question']:
+                await self.create_question(type,file['question'][question]['prompt'],file_path,file['question']['options'],task_id)
+        except:
+            return False
+        return True
 
     async def get_question(self, task_id: int, question_id: int) -> schemas.questions.Question | None:
 

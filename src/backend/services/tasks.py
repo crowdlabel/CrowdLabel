@@ -17,8 +17,9 @@ import schemas.tasks
 import schemas.users
 
 import asyncio
-
-
+import zipfile
+import rarfile
+import json
 class Tasks:
 
     def __init__(self):
@@ -76,8 +77,15 @@ class Tasks:
         Filename: filename of the file that was uploaded
         Creates and returns the task, or returns an error message
         '''
-        pass
-
+        suffix = filename.split('.')[-1]
+        if suffix == 'zip':
+            file = zipfile.ZipFile(filename)
+        elif suffix == 'rar':
+            file = rarfile.RarFile(filename)
+        extract = file.extractall()
+        extract.close()
+        task_info = json.load(open('task.json','r'))
+        
 
 
     async def search(
@@ -171,7 +179,5 @@ class Tasks:
 task_service = Tasks()
 
 
-if __name__ == '__main__':
-    t = Tasks()
-    asyncio.run(asyncio.wait([t.create_task('chenjz20','tsk1','des','intro','./1.png',10,10)]))
+
 
