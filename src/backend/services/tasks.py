@@ -5,6 +5,7 @@ from utils.datetime_str import datetime_now_str
 from datetime import datetime
 
 from services.database import engine
+from services.questions import question_service
 import models.task
 import models.user
 from sqlalchemy.orm import sessionmaker, scoped_session, selectinload
@@ -27,13 +28,13 @@ class Tasks:
 
     async def create_task(self,creator: str ,name:str ,description:str,
                           introduction:str,cover_path:str,response_required:int,
-                          credits:int) -> schemas.tasks.Task | None:
+                          credits:int,filepath:str) -> schemas.tasks.Task | None:
         date_created = datetime.utcnow()
         # if not __verify_task_format():
         #     return None
         task = models.task.Task(creator = creator , name = name ,description = description ,
                     introduction = introduction ,cover_path = cover_path ,
-                    response_required = response_required,credits = credits,date_created = date_created)
+                    response_required = response_required,credits = credits,date_created = date_created,filepath = filepath)
         async with con.begin():
             target = await con.execute(select(models.user.Requester).where(models.user.Requester.username==creator).options(selectinload(models.user.Requester.task_requested)))
             res = target.scalars().first()
@@ -42,6 +43,18 @@ class Tasks:
         res.task_requested.append(task)
         con.add(task)
         await con.commit()
+        response_task = schemas.tasks.Task()
+        response_task.cover = cover_path
+        response_task.creator=creator
+        response_task.credits=credits
+        response_task.date_created=date_created
+        response_task.description=description
+        response_task.introduction=introduction
+        response_task.name=name
+        response_task.tags = []
+        response_task.task_id = task.id
+        response_task.responses_required = response_required
+        self.process_task_archive(task.id,filepath)
         return task
 
 
@@ -49,7 +62,6 @@ class Tasks:
         async with con.begin():
             result = await con.execute(select(models.task.Task).where(models.task.Task.id == task_id).options(
                 selectinload(models.task.Task.questions),
-                selectinload(models.task.Task.results),
                 selectinload(models.task.Task.requester),
                 selectinload(models.task.Task.respondent_claimed),
                 selectinload(models.task.Task.respondent_complete)
@@ -57,7 +69,25 @@ class Tasks:
             target = result.scalars().first()
             if target is None:
                 return None
-            return target
+            response_task = schemas.tasks.Task(target)
+            for question in target.questions:
+                qtype = question.question_type
+                if qtype == 'single_choice':
+                    q = schemas.questions.SingleChoiceQuestion(question)
+                elif qtype == 'multi_choice':
+                    q = schemas.questions.MultiChoiceQuestion(question)
+                elif qtype == 'ranking':
+                    q = schemas.questions.RankingQuestion(question)
+                elif qtype == 'open':
+                    q = schemas.questions.OpenQuestion(question)
+                else : 
+                    continue
+                response_task.questions.append(q)
+            claim_names = list(map(lambda A:A.username,target.respondent_claimed))
+            response_task.respondents_claimed = set(claim_names)
+            complete_names = list(map(lambda A:A.username,target.respondent_complete))
+            response_task.respondents_claimed = set(complete_names)
+            return response_task
 
     
     async def delete_task(task_id:int) -> bool:
@@ -72,7 +102,7 @@ class Tasks:
         await con.commit()
         return True
             
-    async def process_task_archive(self, filename: str) -> schemas.tasks.Task | str:
+    async def process_task_archive(self, id,filename: str) -> list[schemas.questions.Question] | str:
         '''
         Filename: filename of the file that was uploaded
         Creates and returns the task, or returns an error message
@@ -84,9 +114,8 @@ class Tasks:
             file = rarfile.RarFile(filename)
         extract = file.extractall()
         extract.close()
-        task_info = json.load(open('task.json','r'))
-        
-
+        questions = question_service.create_question_from_file(id,filename)
+        return questions
 
     async def search(
         user: schemas.users.User,

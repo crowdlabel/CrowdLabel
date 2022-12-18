@@ -36,3 +36,8 @@ class Task(BaseModel):
     respondents_claimed: set[str]=set() # usernames of respondents who have claimed the task but have not completed it
     respondents_completed: set[str]=set() # usernames of respondents who have claimed and completed the task
     questions: list[schemas.questions.Question]=[] # list of Questions
+    def __init__(self,task):
+        super(Task,self).__init__(task_id = task.id,creator = task.creator ,date_created = task.date_created,
+        credits = task.credits , name = task.name , introduction = task.introduction ,
+        description = task.description ,cover = task.cover_path,response_required = task.response_required,
+        tags = task.tags)

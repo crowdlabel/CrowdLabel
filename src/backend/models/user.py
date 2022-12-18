@@ -36,7 +36,7 @@ class User(Base):
 class Requester(User):
     __tablename__ = 'requester'
     id = Column(Integer,ForeignKey('user.id'),primary_key = True)
-    task_requested = relationship('Task',secondary='requester2task',cascade="delete, delete-orphan",single_parent = True)
+    task_requested = relationship('Task')
     __mapper_args__ = {
         'polymorphic_identity':'requester'
     }

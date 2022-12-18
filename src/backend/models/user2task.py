@@ -1,11 +1,11 @@
 from sqlalchemy import Column, Integer,ForeignKey,UniqueConstraint
 from .basicbase import Base
-class Requester2Task(Base):
-    __tablename__ = 'requester2task'
-    id = Column(Integer,primary_key=True)
-    requester = Column(Integer,ForeignKey('requester.id',ondelete='CASCADE'))
-    task = Column(Integer,ForeignKey('task.id',ondelete='CASCADE'))
-    UniqueConstraint('requester','task',name='requester2task_relation')
+# class Requester2Task(Base):
+#     __tablename__ = 'requester2task'
+#     id = Column(Integer,primary_key=True)
+#     requester = Column(Integer,ForeignKey('requester.id',ondelete='CASCADE'))
+#     task = Column(Integer,ForeignKey('task.id',ondelete='CASCADE'))
+#     UniqueConstraint('requester','task',name='requester2task_relation')
 
 class Respondent2Claim(Base):
     __tablename__ = 'respondent2claim'

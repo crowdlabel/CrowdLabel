@@ -59,26 +59,58 @@ class Questions:
         new_answer.respondent_name = answer.respondent
         return True
         
+    async def create_question(self,type,prompt,file_path,options,task_id) ->schemas.questions.Question|None:
+        if not __verify_question_format():
+            return None
+        question = models.question.Question()
+        question.question_type = type
+        question.prompt = prompt
+        question.resource = file_path
+        question.options = '|'.join(options)
+        question.task_id = task_id
+        con.add(question)
+        await con.commit()
+        if type == 'single':
+            response_question = schemas.questions.SingleChoiceQuestion()
+            response_question.options = options
+        elif type == 'multi':
+            response_question = schemas.questions.MultiChoiceQuestion()
+            response_question.options = options
+        elif type == 'ranking':
+            response_question = schemas.questions.RankingQuestion()
+            response_question.options = options
+        elif type == 'open':
+            response_question = schemas.questions.OpenQuestion()
+        else:
+            return None
+        response_question.task_id = task_id
+        response_question.question_id
+        response_question.prompt = prompt
+        response_question.resource = file_path
+        response_question.answers = []
+        return response_question
     async def create_question_from_file(
         self,
         task_id:int,
         file_path:str
-    ):
+    )->list[schemas.questions.Question]:
         if not __verify_question_format():
             return False
         file = json.load(open(file_path,'r'))
+        response_questions = []
         async with con.begin():
             result = await con.execute(select(models.task.Task).where(models.task.Task.id==task_id))
             target = result.scalars().first()
             if target == None:
-                return False
+                return None
             type = target.type
         try:
             for question in file['question']:
-                await self.create_question(type,file['question'][question]['prompt'],file_path,file['question']['options'],task_id)
+                question = await self.create_question(type,file['question'][question]['prompt'],file_path,file['question'][question]['options'],task_id)
+                response_questions.append(question)
         except:
-            return False
-        return True
+            return None
+        return response_questions
 
     async def get_question(self, task_id: int, question_id: int) -> schemas.questions.Question | None:
 
