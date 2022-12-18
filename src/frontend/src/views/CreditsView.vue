@@ -36,6 +36,12 @@
                         <p class="list_item_title">我的积分</p>
                     </a>
                 </li>
+                <li>
+                    <a aria-current="page" class="left_nav_list_item" data-external="true" href="/draftbox">
+                        <img src="../assets/draftbox.png" height="21" width="21">
+                        <p class="list_item_title">草稿箱</p>
+                    </a>
+                </li>
                 <li tag="li" class="left_nav_spacer">
                 </li>
             </ul>
@@ -227,7 +233,7 @@ export default {
     margin: 0;
     padding: 12px;
     height: calc(100vh - 50px - 132.2px);
-    min-height: 180px;
+    min-height: 230px;
 }
 .left_nav_list_bottom {
     box-sizing: border-box;
