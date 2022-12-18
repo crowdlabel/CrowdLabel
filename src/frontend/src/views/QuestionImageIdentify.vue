@@ -36,26 +36,24 @@
         <div class="instruction">
           <p class="text_bold">问题3：</p>
           <p class="text_normal">查看下方图片，用鼠标框出所有</p>
-          <p class="text_bold">行人</p>
-          <p class="text_normal">。（还没做）</p>
+          <p class="text_bold">行人。</p>
+        </div>
+        <div class="info">
+          <p class="text_normal">（将鼠标置于图片之上，长按并拖动鼠标即可画框。可以通过点击已画出的方框对其进行调整。）</p>
         </div>
         <div class="content">
-          <img src="../assets/image_placeholder.png" />
+          <img class="img_content" src="../assets/people.png" />
           <canvas ref="markCanvas" tabindex='0'></canvas>
         </div>
         <div class="answers">
-          
+          <el-button round @click="resetCanvas();">清除画布</el-button>
         </div>
         <div class="footer">
-          <a href="/projects">
-            <el-button type="primary" plain>退出答题</el-button>
-          </a>
+          <el-button id="quit_button" type="primary" v-on:click="quit()" plain>退出答题</el-button>
           <a href="/question_image_classify">
             <el-button type="primary">&lt 上一题</el-button>
           </a>
-          <a href="/question_audio">
-            <el-button type="primary">下一题 ></el-button>
-          </a>
+          <el-button id="next_button" type="primary" v-on:click="nextQuestion()">下一题 ></el-button>
         </div>
         <el-progress :percentage="percentage" :color="customColor"></el-progress>
       </div>
@@ -74,34 +72,33 @@ export default {
     return {
       percentage: 60,
       customColor: '#5D3BE6',
-      markList: []
+      markList: [],
+      choicesGiven: [
+        { label: "哺乳动物", value: 0 },
+        { label: "昆虫", value: 1 },
+        { label: "鱼类", value: 2}
+      ]
     };
   },
   mounted() {
-        this.initCanvas(); // 画布初始化
+    this.initCanvas(); // 画布初始化
   },
   methods: {
-    /* 图片初始化 */
-    initImage() {
-      let img = this.$refs.img;
-      img.width = document.getElementsByTagName("img").naturalWidth;
-      h = document.getElementsByTagName("img").naturalHeight;
-    },
     /* 画布初始化 */
     initCanvas() {
-            let that = this
+            // let that = this
             this.$nextTick(() => {
                 // 初始化canvas宽高
                 let cav = this.$refs.markCanvas;
-                cav.width = '550';
-                cav.height = '400';
+                cav.width = '520';
+                cav.height = '390';
                 let ctx = cav.getContext('2d');
                 ctx.strokeStyle = 'blue'
                 cav.style.cursor = 'crosshair'
                 
                 // 计算使用变量
                 let list = this.markList; // 画框数据集合, 用于服务端返回的数据显示和绘制的矩形保存
-                // 若服务端保存的为百分比则此处需计算实际座标, 直接使用实际座标可省略
+                // 若服务端保存的为百分比则 此处需计算实际座标, 直接使用实际座标可省略
                 list.forEach(function (value, index, array) {
                     let newValue = {
                         x: value.x * cav.width,
@@ -127,6 +124,59 @@ export default {
                 // 备注: js中对象操作指向的是对象的物理地址, 获取绘制完矩形的结果数组直接取用或处理this.markList即可
             })
         },
+      resetCanvas () {
+        // 标注的信息都放在这个数组中
+        let cav = this.$refs.markCanvas;
+        this.markList = [];
+        // history = [history[0]]
+        var ctx = cav.getContext('2d');
+        ctx.clearRect(0, 0, cav.width, cav.height);
+        this.initCanvas(); // 画布初始化
+        // addHistoy(history, ctx, mycanvas)
+      },
+    alertMessage() {
+        this.$message({
+          showClose: true,
+          message: '您尚未作答本题目，请先完成本题。',
+          type: 'warning'
+        });
+    },
+    nextQuestion() {
+      let list = this.markList;
+      if (list.length == 0) {
+        this.alertMessage();
+      } else {
+        document.location.href = '/question_audio';
+      }
+    },
+    handleChange(val) {
+      console.log(val);
+      this.radio = val;
+      console.log(this.radio);
+    },
+    quit() {
+        this.$confirm('是否要保存当前的答题进度?', '退出任务', {
+          confirmButtonText: '是',
+          cancelButtonText: '否',
+          type: 'warning'
+        }).then(() => {
+          /*
+          this.$message({
+            type: 'success',
+            message: '保存成功!'
+          });
+          */
+          document.location.href = '/projects';
+        }).catch(() => {
+          /*
+          this.$message({
+            type: 'info',
+            message: '已取消保存'
+          });  
+          */     
+          document.location.href = '/projects';   
+        });
+      }
   }
 }
 </script>
@@ -138,9 +188,8 @@ export default {
     position: relative;
     align-self: center;
     // transform: translateX(-50%) translateX(-50%);
-    top: 20px;
-    width: 550px;
-    height: 400px;
+    width: 520px;
+    height: 390px;
     
     img {
         position: absolute;
@@ -184,7 +233,7 @@ export default {
 }
 .top_nav_trigger {
     align-items: center;
-    box-shadow: 1.2px 0px 0px 0px rgb(0,0,0 / 10%);
+    box-shadow: 1.2px 0 0 0 rgba(0,0,0,.1);
     box-sizing: border-box;
     display: flex;
     min-width: 300px;
@@ -227,11 +276,11 @@ export default {
 .left_nav {
     max-width: 300px;
     min-width: 300px;
-    box-shadow: 1.2px 0px 0px 0px rgb(0, 0, 0 / 10%);
+    box-shadow: 1.2px 0 0 0 rgba(0,0,0,.1);
     box-sizing: border-box;
     flex-direction: column;
     height: calc(100vh - 50px);
-    min-height: 600px;
+    min-height: 652px;
 }
 .left_nav_list_top {
     box-sizing: border-box;
@@ -306,9 +355,19 @@ export default {
   text-align:left;
   padding: 30px 40px 0px 40px;
 }
+
+.info {
+  text-align:center;
+  font-size:14px;
+  color: rgba(0,0,0,1);
+  padding: 12px 0px 5px 0px;
+}
 .image {
   align-self:center;
   margin:20px 0px 30px 0px;
+}
+.answers {
+  margin: 15px 0px 15px 0px;
 }
 .question {
   text-align: left;
@@ -352,6 +411,28 @@ export default {
   margin: 25px 0px;
   width: 80% !important;
   align-self:center;
+}
+
+::v-deep .el-button--default.is-round {
+  margin: 0px 0px 0px 10px;
+  height: 33px;
+  border-width: 0.5px;
+  padding: 0px 0px !important;
+  border-color: #5D3BE6;
+  color:#5D3BE6;
+  font-size: 13px;
+  min-width: 80px;
+}
+::v-deep .el-button--default.is-round:hover{
+  background-color: #5D3BE6;
+  border-width: 0.5px;
+  color: #fff;
+}
+
+::v-deep .el-button--default.is-round:focus {
+  background-color: #fff;
+  border-width: 0.5px;
+  color: #5D3BE6;
 }
 
 .footer {

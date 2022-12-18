@@ -6,6 +6,7 @@ import SenderLogin from '../views/SenderLogin.vue'
 import ProjectsHallView from '../views/ProjectsHallView.vue'
 import HistoryView from '../views/HistoryView.vue'
 import CreditsView from '../views/CreditsView.vue'
+import DraftBoxView from '../views/DraftBoxView.vue'
 import MyAccountView from '../views/MyAccountView.vue'
 import EditMyAccountView from '../views/EditMyAccountView.vue'
 import NotificationsView from '../views/NotificationsView.vue'
@@ -54,6 +55,11 @@ const routes = [
     path: '/credits',
     name: 'credits',
     component: CreditsView
+  },
+  {
+    path: '/draftbox',
+    name: 'draftbox',
+    component: DraftBoxView
   },
   {
     path: '/myaccount',
