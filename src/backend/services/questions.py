@@ -15,12 +15,12 @@ import models.question
 import models.task
 import models.user
 
+import schemas.answers
 import schemas.questions
 import schemas.tasks
 import schemas.users
 
 import services.tasks
-
 
 
 class Questions:
@@ -45,6 +45,7 @@ class Questions:
             new_answer = schemas.answers.RankingAnswer()
         elif  answer.question_type == 'open':
             new_answer = schemas.answers.OpenAnswer()
+
         
         new_answer.date_answered = answer.date_answered
         new_answer.question_id = self.question_id
