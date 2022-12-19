@@ -60,12 +60,6 @@
       //expect(instance).to.be();
     });
 
-    it('should have the property credits (base name: "credits")', function() {
-      // uncomment below and update the code to test the property credits
-      //var instance = new CrowdLabelApi.TaskSearchRequest();
-      //expect(instance).to.be();
-    });
-
     it('should have the property tags (base name: "tags")', function() {
       // uncomment below and update the code to test the property tags
       //var instance = new CrowdLabelApi.TaskSearchRequest();
@@ -80,6 +74,12 @@
 
     it('should have the property page (base name: "page")', function() {
       // uncomment below and update the code to test the property page
+      //var instance = new CrowdLabelApi.TaskSearchRequest();
+      //expect(instance).to.be();
+    });
+
+    it('should have the property pageSize (base name: "page_size")', function() {
+      // uncomment below and update the code to test the property pageSize
       //var instance = new CrowdLabelApi.TaskSearchRequest();
       //expect(instance).to.be();
     });

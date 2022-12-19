@@ -28,7 +28,7 @@
   var instance;
 
   beforeEach(function() {
-    instance = new CrowdLabelApi.QuestionsApi();
+    instance = new CrowdLabelApi.RankingAnswer();
   });
 
   var getProperty = function(object, getter, property) {
@@ -47,27 +47,19 @@
       object[property] = value;
   }
 
-  describe('QuestionsApi', function() {
-    describe('createAnswerTasksTaskIdQuestionsQuestionIdAnswerPut', function() {
-      it('should call createAnswerTasksTaskIdQuestionsQuestionIdAnswerPut successfully', function(done) {
-        //uncomment below and update the code to test createAnswerTasksTaskIdQuestionsQuestionIdAnswerPut
-        //instance.createAnswerTasksTaskIdQuestionsQuestionIdAnswerPut(function(error) {
-        //  if (error) throw error;
-        //expect().to.be();
-        //});
-        done();
-      });
+  describe('RankingAnswer', function() {
+    it('should create an instance of RankingAnswer', function() {
+      // uncomment below and update the code to test RankingAnswer
+      //var instance = new CrowdLabelApi.RankingAnswer();
+      //expect(instance).to.be.a(CrowdLabelApi.RankingAnswer);
     });
-    describe('getQuestionTasksTaskIdQuestionsQuestionIdGet', function() {
-      it('should call getQuestionTasksTaskIdQuestionsQuestionIdGet successfully', function(done) {
-        //uncomment below and update the code to test getQuestionTasksTaskIdQuestionsQuestionIdGet
-        //instance.getQuestionTasksTaskIdQuestionsQuestionIdGet(function(error) {
-        //  if (error) throw error;
-        //expect().to.be();
-        //});
-        done();
-      });
+
+    it('should have the property ranking (base name: "ranking")', function() {
+      // uncomment below and update the code to test the property ranking
+      //var instance = new CrowdLabelApi.RankingAnswer();
+      //expect(instance).to.be();
     });
+
   });
 
 }));

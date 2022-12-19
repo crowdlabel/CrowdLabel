@@ -66,9 +66,6 @@ import { AuthApi } from '@/crowdlabel-api/src';
 export default {
     
     data () {
-        // var apiClient = new ApiClient('http://localhost:8000');
-        // var usersApi = new UsersApi(apiClient);
-        // var authApi = new AuthApi(apiClient);
         
         var validatePass = (rule, value, callback) => {
             if (value === '') {

@@ -54,6 +54,12 @@
       //expect(instance).to.be.a(CrowdLabelApi.Answer);
     });
 
+    it('should have the property answer (base name: "answer")', function() {
+      // uncomment below and update the code to test the property answer
+      //var instance = new CrowdLabelApi.Answer();
+      //expect(instance).to.be();
+    });
+
     it('should have the property respondent (base name: "respondent")', function() {
       // uncomment below and update the code to test the property respondent
       //var instance = new CrowdLabelApi.Answer();
@@ -62,30 +68,6 @@
 
     it('should have the property dateAnswered (base name: "date_answered")', function() {
       // uncomment below and update the code to test the property dateAnswered
-      //var instance = new CrowdLabelApi.Answer();
-      //expect(instance).to.be();
-    });
-
-    it('should have the property taskId (base name: "task_id")', function() {
-      // uncomment below and update the code to test the property taskId
-      //var instance = new CrowdLabelApi.Answer();
-      //expect(instance).to.be();
-    });
-
-    it('should have the property questionId (base name: "question_id")', function() {
-      // uncomment below and update the code to test the property questionId
-      //var instance = new CrowdLabelApi.Answer();
-      //expect(instance).to.be();
-    });
-
-    it('should have the property questionType (base name: "question_type")', function() {
-      // uncomment below and update the code to test the property questionType
-      //var instance = new CrowdLabelApi.Answer();
-      //expect(instance).to.be();
-    });
-
-    it('should have the property answer (base name: "answer")', function() {
-      // uncomment below and update the code to test the property answer
       //var instance = new CrowdLabelApi.Answer();
       //expect(instance).to.be();
     });

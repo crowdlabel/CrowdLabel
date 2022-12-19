@@ -28,7 +28,7 @@
   var instance;
 
   beforeEach(function() {
-    instance = new CrowdLabelApi.QuestionsApi();
+    instance = new CrowdLabelApi.Point();
   });
 
   var getProperty = function(object, getter, property) {
@@ -47,27 +47,25 @@
       object[property] = value;
   }
 
-  describe('QuestionsApi', function() {
-    describe('createAnswerTasksTaskIdQuestionsQuestionIdAnswerPut', function() {
-      it('should call createAnswerTasksTaskIdQuestionsQuestionIdAnswerPut successfully', function(done) {
-        //uncomment below and update the code to test createAnswerTasksTaskIdQuestionsQuestionIdAnswerPut
-        //instance.createAnswerTasksTaskIdQuestionsQuestionIdAnswerPut(function(error) {
-        //  if (error) throw error;
-        //expect().to.be();
-        //});
-        done();
-      });
+  describe('Point', function() {
+    it('should create an instance of Point', function() {
+      // uncomment below and update the code to test Point
+      //var instance = new CrowdLabelApi.Point();
+      //expect(instance).to.be.a(CrowdLabelApi.Point);
     });
-    describe('getQuestionTasksTaskIdQuestionsQuestionIdGet', function() {
-      it('should call getQuestionTasksTaskIdQuestionsQuestionIdGet successfully', function(done) {
-        //uncomment below and update the code to test getQuestionTasksTaskIdQuestionsQuestionIdGet
-        //instance.getQuestionTasksTaskIdQuestionsQuestionIdGet(function(error) {
-        //  if (error) throw error;
-        //expect().to.be();
-        //});
-        done();
-      });
+
+    it('should have the property x (base name: "x")', function() {
+      // uncomment below and update the code to test the property x
+      //var instance = new CrowdLabelApi.Point();
+      //expect(instance).to.be();
     });
+
+    it('should have the property y (base name: "y")', function() {
+      // uncomment below and update the code to test the property y
+      //var instance = new CrowdLabelApi.Point();
+      //expect(instance).to.be();
+    });
+
   });
 
 }));

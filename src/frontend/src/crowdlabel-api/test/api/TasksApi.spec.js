@@ -58,6 +58,16 @@
         done();
       });
     });
+    describe('createTaskTasksCreatePost', function() {
+      it('should call createTaskTasksCreatePost successfully', function(done) {
+        //uncomment below and update the code to test createTaskTasksCreatePost
+        //instance.createTaskTasksCreatePost(function(error) {
+        //  if (error) throw error;
+        //expect().to.be();
+        //});
+        done();
+      });
+    });
     describe('deleteTaskTasksTaskIdDelete', function() {
       it('should call deleteTaskTasksTaskIdDelete successfully', function(done) {
         //uncomment below and update the code to test deleteTaskTasksTaskIdDelete
@@ -98,10 +108,10 @@
         done();
       });
     });
-    describe('searchTasksTasksGet', function() {
-      it('should call searchTasksTasksGet successfully', function(done) {
-        //uncomment below and update the code to test searchTasksTasksGet
-        //instance.searchTasksTasksGet(function(error) {
+    describe('searchTasksTasksPut', function() {
+      it('should call searchTasksTasksPut successfully', function(done) {
+        //uncomment below and update the code to test searchTasksTasksPut
+        //instance.searchTasksTasksPut(function(error) {
         //  if (error) throw error;
         //expect().to.be();
         //});

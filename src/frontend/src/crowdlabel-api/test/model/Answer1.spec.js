@@ -28,7 +28,7 @@
   var instance;
 
   beforeEach(function() {
-    instance = new CrowdLabelApi.Question();
+    instance = new CrowdLabelApi.Answer1();
   });
 
   var getProperty = function(object, getter, property) {
@@ -47,40 +47,46 @@
       object[property] = value;
   }
 
-  describe('Question', function() {
-    it('should create an instance of Question', function() {
-      // uncomment below and update the code to test Question
-      //var instance = new CrowdLabelApi.Question();
-      //expect(instance).to.be.a(CrowdLabelApi.Question);
+  describe('Answer1', function() {
+    it('should create an instance of Answer1', function() {
+      // uncomment below and update the code to test Answer1
+      //var instance = new CrowdLabelApi.Answer1();
+      //expect(instance).to.be.a(CrowdLabelApi.Answer1);
     });
 
-    it('should have the property questionId (base name: "question_id")', function() {
-      // uncomment below and update the code to test the property questionId
-      //var instance = new CrowdLabelApi.Question();
+    it('should have the property choice (base name: "choice")', function() {
+      // uncomment below and update the code to test the property choice
+      //var instance = new CrowdLabelApi.Answer1();
       //expect(instance).to.be();
     });
 
-    it('should have the property questionType (base name: "question_type")', function() {
-      // uncomment below and update the code to test the property questionType
-      //var instance = new CrowdLabelApi.Question();
+    it('should have the property choices (base name: "choices")', function() {
+      // uncomment below and update the code to test the property choices
+      //var instance = new CrowdLabelApi.Answer1();
       //expect(instance).to.be();
     });
 
-    it('should have the property prompt (base name: "prompt")', function() {
-      // uncomment below and update the code to test the property prompt
-      //var instance = new CrowdLabelApi.Question();
+    it('should have the property ranking (base name: "ranking")', function() {
+      // uncomment below and update the code to test the property ranking
+      //var instance = new CrowdLabelApi.Answer1();
       //expect(instance).to.be();
     });
 
-    it('should have the property resource (base name: "resource")', function() {
-      // uncomment below and update the code to test the property resource
-      //var instance = new CrowdLabelApi.Question();
+    it('should have the property topLeft (base name: "top_left")', function() {
+      // uncomment below and update the code to test the property topLeft
+      //var instance = new CrowdLabelApi.Answer1();
       //expect(instance).to.be();
     });
 
-    it('should have the property answers (base name: "answers")', function() {
-      // uncomment below and update the code to test the property answers
-      //var instance = new CrowdLabelApi.Question();
+    it('should have the property bottomRight (base name: "bottom_right")', function() {
+      // uncomment below and update the code to test the property bottomRight
+      //var instance = new CrowdLabelApi.Answer1();
+      //expect(instance).to.be();
+    });
+
+    it('should have the property text (base name: "text")', function() {
+      // uncomment below and update the code to test the property text
+      //var instance = new CrowdLabelApi.Answer1();
       //expect(instance).to.be();
     });
 

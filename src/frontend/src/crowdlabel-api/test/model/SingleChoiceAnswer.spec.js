@@ -28,7 +28,7 @@
   var instance;
 
   beforeEach(function() {
-    instance = new CrowdLabelApi.BodyCreateAnswerQuestionsPost();
+    instance = new CrowdLabelApi.SingleChoiceAnswer();
   });
 
   var getProperty = function(object, getter, property) {
@@ -47,22 +47,16 @@
       object[property] = value;
   }
 
-  describe('BodyCreateAnswerQuestionsPost', function() {
-    it('should create an instance of BodyCreateAnswerQuestionsPost', function() {
-      // uncomment below and update the code to test BodyCreateAnswerQuestionsPost
-      //var instance = new CrowdLabelApi.BodyCreateAnswerQuestionsPost();
-      //expect(instance).to.be.a(CrowdLabelApi.BodyCreateAnswerQuestionsPost);
+  describe('SingleChoiceAnswer', function() {
+    it('should create an instance of SingleChoiceAnswer', function() {
+      // uncomment below and update the code to test SingleChoiceAnswer
+      //var instance = new CrowdLabelApi.SingleChoiceAnswer();
+      //expect(instance).to.be.a(CrowdLabelApi.SingleChoiceAnswer);
     });
 
-    it('should have the property answer (base name: "answer")', function() {
-      // uncomment below and update the code to test the property answer
-      //var instance = new CrowdLabelApi.BodyCreateAnswerQuestionsPost();
-      //expect(instance).to.be();
-    });
-
-    it('should have the property userTypes (base name: "user_types")', function() {
-      // uncomment below and update the code to test the property userTypes
-      //var instance = new CrowdLabelApi.BodyCreateAnswerQuestionsPost();
+    it('should have the property choice (base name: "choice")', function() {
+      // uncomment below and update the code to test the property choice
+      //var instance = new CrowdLabelApi.SingleChoiceAnswer();
       //expect(instance).to.be();
     });
 

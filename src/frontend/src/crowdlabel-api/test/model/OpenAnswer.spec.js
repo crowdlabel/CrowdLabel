@@ -28,7 +28,7 @@
   var instance;
 
   beforeEach(function() {
-    instance = new CrowdLabelApi.QuestionsApi();
+    instance = new CrowdLabelApi.OpenAnswer();
   });
 
   var getProperty = function(object, getter, property) {
@@ -47,27 +47,19 @@
       object[property] = value;
   }
 
-  describe('QuestionsApi', function() {
-    describe('createAnswerTasksTaskIdQuestionsQuestionIdAnswerPut', function() {
-      it('should call createAnswerTasksTaskIdQuestionsQuestionIdAnswerPut successfully', function(done) {
-        //uncomment below and update the code to test createAnswerTasksTaskIdQuestionsQuestionIdAnswerPut
-        //instance.createAnswerTasksTaskIdQuestionsQuestionIdAnswerPut(function(error) {
-        //  if (error) throw error;
-        //expect().to.be();
-        //});
-        done();
-      });
+  describe('OpenAnswer', function() {
+    it('should create an instance of OpenAnswer', function() {
+      // uncomment below and update the code to test OpenAnswer
+      //var instance = new CrowdLabelApi.OpenAnswer();
+      //expect(instance).to.be.a(CrowdLabelApi.OpenAnswer);
     });
-    describe('getQuestionTasksTaskIdQuestionsQuestionIdGet', function() {
-      it('should call getQuestionTasksTaskIdQuestionsQuestionIdGet successfully', function(done) {
-        //uncomment below and update the code to test getQuestionTasksTaskIdQuestionsQuestionIdGet
-        //instance.getQuestionTasksTaskIdQuestionsQuestionIdGet(function(error) {
-        //  if (error) throw error;
-        //expect().to.be();
-        //});
-        done();
-      });
+
+    it('should have the property text (base name: "text")', function() {
+      // uncomment below and update the code to test the property text
+      //var instance = new CrowdLabelApi.OpenAnswer();
+      //expect(instance).to.be();
     });
+
   });
 
 }));
