@@ -54,32 +54,14 @@
       //expect(instance).to.be.a(CrowdLabelApi.Task);
     });
 
-    it('should have the property taskId (base name: "task_id")', function() {
-      // uncomment below and update the code to test the property taskId
-      //var instance = new CrowdLabelApi.Task();
-      //expect(instance).to.be();
-    });
-
-    it('should have the property creator (base name: "creator")', function() {
-      // uncomment below and update the code to test the property creator
-      //var instance = new CrowdLabelApi.Task();
-      //expect(instance).to.be();
-    });
-
-    it('should have the property dateCreated (base name: "date_created")', function() {
-      // uncomment below and update the code to test the property dateCreated
+    it('should have the property name (base name: "name")', function() {
+      // uncomment below and update the code to test the property name
       //var instance = new CrowdLabelApi.Task();
       //expect(instance).to.be();
     });
 
     it('should have the property credits (base name: "credits")', function() {
       // uncomment below and update the code to test the property credits
-      //var instance = new CrowdLabelApi.Task();
-      //expect(instance).to.be();
-    });
-
-    it('should have the property name (base name: "name")', function() {
-      // uncomment below and update the code to test the property name
       //var instance = new CrowdLabelApi.Task();
       //expect(instance).to.be();
     });
@@ -96,12 +78,6 @@
       //expect(instance).to.be();
     });
 
-    it('should have the property cover (base name: "cover")', function() {
-      // uncomment below and update the code to test the property cover
-      //var instance = new CrowdLabelApi.Task();
-      //expect(instance).to.be();
-    });
-
     it('should have the property tags (base name: "tags")', function() {
       // uncomment below and update the code to test the property tags
       //var instance = new CrowdLabelApi.Task();
@@ -114,6 +90,36 @@
       //expect(instance).to.be();
     });
 
+    it('should have the property taskId (base name: "task_id")', function() {
+      // uncomment below and update the code to test the property taskId
+      //var instance = new CrowdLabelApi.Task();
+      //expect(instance).to.be();
+    });
+
+    it('should have the property creator (base name: "creator")', function() {
+      // uncomment below and update the code to test the property creator
+      //var instance = new CrowdLabelApi.Task();
+      //expect(instance).to.be();
+    });
+
+    it('should have the property cover (base name: "cover")', function() {
+      // uncomment below and update the code to test the property cover
+      //var instance = new CrowdLabelApi.Task();
+      //expect(instance).to.be();
+    });
+
+    it('should have the property dateCreated (base name: "date_created")', function() {
+      // uncomment below and update the code to test the property dateCreated
+      //var instance = new CrowdLabelApi.Task();
+      //expect(instance).to.be();
+    });
+
+    it('should have the property questions (base name: "questions")', function() {
+      // uncomment below and update the code to test the property questions
+      //var instance = new CrowdLabelApi.Task();
+      //expect(instance).to.be();
+    });
+
     it('should have the property respondentsClaimed (base name: "respondents_claimed")', function() {
       // uncomment below and update the code to test the property respondentsClaimed
       //var instance = new CrowdLabelApi.Task();
@@ -122,12 +128,6 @@
 
     it('should have the property respondentsCompleted (base name: "respondents_completed")', function() {
       // uncomment below and update the code to test the property respondentsCompleted
-      //var instance = new CrowdLabelApi.Task();
-      //expect(instance).to.be();
-    });
-
-    it('should have the property questions (base name: "questions")', function() {
-      // uncomment below and update the code to test the property questions
       //var instance = new CrowdLabelApi.Task();
       //expect(instance).to.be();
     });

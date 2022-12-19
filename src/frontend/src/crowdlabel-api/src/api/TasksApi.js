@@ -13,6 +13,7 @@
 
 
 import ApiClient from "../ApiClient";
+import CreateTaskRequest from '../model/CreateTaskRequest';
 import ErrorResponse from '../model/ErrorResponse';
 import HTTPValidationError from '../model/HTTPValidationError';
 import Task from '../model/Task';
@@ -75,6 +76,58 @@ export default class TasksApi {
       let returnType = Task;
       return this.apiClient.callApi(
         '/tasks/{task_id}/claim', 'POST',
+        pathParams, queryParams, headerParams, formParams, postBody,
+        authNames, contentTypes, accepts, returnType, null, callback
+      );
+    }
+
+    /**
+     * Callback function to receive the result of the createTaskTasksCreatePost operation.
+     * @callback module:api/TasksApi~createTaskTasksCreatePostCallback
+     * @param {String} error Error message, if any.
+     * @param {module:model/Task} data The data returned by the service call.
+     * @param {String} response The complete HTTP response.
+     */
+
+    /**
+     * Create Task
+     * @param {module:model/CreateTaskRequest} task 
+     * @param {File} questionsFile 
+     * @param {Object} opts Optional parameters
+     * @param {File} opts.cover 
+     * @param {module:api/TasksApi~createTaskTasksCreatePostCallback} callback The callback function, accepting three arguments: error, data, response
+     * data is of type: {@link module:model/Task}
+     */
+    createTaskTasksCreatePost(task, questionsFile, opts, callback) {
+      opts = opts || {};
+      let postBody = null;
+      // verify the required parameter 'task' is set
+      if (task === undefined || task === null) {
+        throw new Error("Missing the required parameter 'task' when calling createTaskTasksCreatePost");
+      }
+      // verify the required parameter 'questionsFile' is set
+      if (questionsFile === undefined || questionsFile === null) {
+        throw new Error("Missing the required parameter 'questionsFile' when calling createTaskTasksCreatePost");
+      }
+
+      let pathParams = {
+      };
+      let queryParams = {
+      };
+      let headerParams = {
+      };
+      let formParams = {
+        'task': task,
+        'questions_file': questionsFile,
+        'cover': opts['cover']
+      };
+
+      let authNames = ['OAuth2PasswordBearer'];
+      let contentTypes = ['multipart/form-data'];
+      let accepts = ['application/json'];
+      let returnType = Task;
+      return this.apiClient.callApi(
+        '/tasks/create', 'POST',
         pathParams, queryParams, headerParams, formParams, postBody,
         authNames, contentTypes, accepts, returnType, null, callback
       );
@@ -252,8 +305,8 @@ export default class TasksApi {
     }
 
     /**
-     * Callback function to receive the result of the searchTasksTasksGet operation.
-     * @callback module:api/TasksApi~searchTasksTasksGetCallback
+     * Callback function to receive the result of the searchTasksTasksPut operation.
+     * @callback module:api/TasksApi~searchTasksTasksPutCallback
      * @param {String} error Error message, if any.
      * @param {module:model/TaskSearchResponse} data The data returned by the service call.
      * @param {String} response The complete HTTP response.
@@ -263,14 +316,14 @@ export default class TasksApi {
      * Search Tasks
      * Task search
      * @param {module:model/TaskSearchRequest} taskSearchRequest 
-     * @param {module:api/TasksApi~searchTasksTasksGetCallback} callback The callback function, accepting three arguments: error, data, response
+     * @param {module:api/TasksApi~searchTasksTasksPutCallback} callback The callback function, accepting three arguments: error, data, response
      * data is of type: {@link module:model/TaskSearchResponse}
      */
-    searchTasksTasksGet(taskSearchRequest, callback) {
+    searchTasksTasksPut(taskSearchRequest, callback) {
       let postBody = taskSearchRequest;
       // verify the required parameter 'taskSearchRequest' is set
       if (taskSearchRequest === undefined || taskSearchRequest === null) {
-        throw new Error("Missing the required parameter 'taskSearchRequest' when calling searchTasksTasksGet");
+        throw new Error("Missing the required parameter 'taskSearchRequest' when calling searchTasksTasksPut");
       }
 
       let pathParams = {
@@ -287,7 +340,7 @@ export default class TasksApi {
       let accepts = ['application/json'];
       let returnType = TaskSearchResponse;
       return this.apiClient.callApi(
-        '/tasks/', 'GET',
+        '/tasks/', 'PUT',
         pathParams, queryParams, headerParams, formParams, postBody,
         authNames, contentTypes, accepts, returnType, null, callback
       );

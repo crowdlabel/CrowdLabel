@@ -33,11 +33,6 @@ class AvailabilityResponse(BaseModel):
             }
         }
 
-class UserEditRequest(BaseModel):
-    email: Optional[str]
-    new_password: Optional[str]
-    old_password: str
-
 class RegistrationRequest(BaseModel):
     username: str
     email: str
@@ -74,13 +69,38 @@ class RegistrationError(BaseModel):
             }
         }
 
+class EditEmailRequest(BaseModel):
+    new_email: str
+    verification_code: str
+    password: str
+
+    class Config:
+        schema_extra = {
+            'example': {
+                'new_email': 'newemail@example.com',
+                'verification_code': '123456',
+                'password': 'secret123',
+            }
+        }
+
+class EditPasswordRequest(BaseModel):
+    old_password: str
+    new_password: str
+    class Config:
+        schema_extra = {
+            'example': {
+                'old_password': 'secret123',
+                'new_password': 'newsecret123',
+            }
+        }
+
 
 class User(BaseModel):
     username: str=''
     email: str=''
     user_type: str=''
     credits: float=0
-    date_created: datetime=datetime.utcnow()
+    date_created: datetime
     password_hashed: str=''
 
     def __init__(self, user):

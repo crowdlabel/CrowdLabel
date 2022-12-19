@@ -139,7 +139,7 @@ class Tasks:
         await con.commit()
         return True
             
-    async def process_task_archive(self,task_id,filename: str) -> list[schemas.questions.Question] | str:
+    async def process_task_archive(self, filename: str) -> schemas.tasks.Task | str:
         '''
         Filename: filename of the file that was uploaded
         Creates and returns the task, or returns an error message

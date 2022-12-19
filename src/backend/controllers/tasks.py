@@ -9,7 +9,10 @@ import schemas.tasks
 import schemas.questions
 from utils.datetime_str import datetime_now_str
 from typing import Optional
+from utils.config import get_config
+import pathlib
 
+TASK_UPLOAD_DIR = pathlib.Path(get_config('file_locations.tasks'))
 router = APIRouter()
 task_service = services.tasks.Tasks()
 
@@ -59,9 +62,9 @@ upload_failed_jdr = JSONDocumentedResponse(
 @router.post('/upload',
     **create_documentation([upload_success_jdr, upload_failed_jdr])
 )
-async def upload_task(in_file: UploadFile, current_user=Depends(get_current_user(['requester']))):
+async def upload_task(task_file: UploadFile, current_user=Depends(get_current_user(['requester']))):
     filename = 'upload_' + current_user.username + '_' + datetime_now_str() + '.zip'
-    await upload_file(in_file, filename)
+    await upload_file(task_file, TASK_UPLOAD_DIR / filename)
     response = await task_service.process_task_archive(filename)
     if isinstance(response, str):
         return await upload_failed_jdr(schemas.tasks.ErrorResponse('Error'))
@@ -71,7 +74,7 @@ async def upload_task(in_file: UploadFile, current_user=Depends(get_current_user
 
 
 
-create_task_success_jdr = JSONDocumentedResponse(
+""" create_task_success_jdr = JSONDocumentedResponse(
     status.HTTP_201_CREATED,
     'Task created successfully',
     schemas.tasks.Task
@@ -85,7 +88,7 @@ create_task_failed_jdr = JSONDocumentedResponse(
     **create_documentation([create_task_success_jdr, create_task_failed_jdr])
 )
 async def create_task(task: schemas.tasks.CreateTaskRequest, questions_file: UploadFile,
-    cover: Optional[UploadFile]=None,
+
     current_user=Depends(get_current_user(['requester']))
 ):
 
@@ -110,7 +113,7 @@ async def create_task(task: schemas.tasks.CreateTaskRequest, questions_file: Upl
         return create_task_failed_jdr(schemas.tasks.ErrorResponse(result))
 
     if cover:
-        await upload_file(cover, 'cover_' + current_user.username + datetime_now_str() + '.png')
+        await upload_file(cover, 'cover_' + current_user.username + datetime_now_str() + '.png') """
 
 
 

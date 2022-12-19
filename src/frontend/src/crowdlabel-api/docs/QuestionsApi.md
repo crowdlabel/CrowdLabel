@@ -4,14 +4,14 @@ All URIs are relative to *http://localhost*
 
 Method | HTTP request | Description
 ------------- | ------------- | -------------
-[**createAnswerQuestionsPost**](QuestionsApi.md#createAnswerQuestionsPost) | **POST** /questions | Create Answer
-[**getQuestionQuestionsQuestionsQuestionIdGet**](QuestionsApi.md#getQuestionQuestionsQuestionsQuestionIdGet) | **GET** /questions/questions/{question_id} | Get Question
+[**createAnswerTasksTaskIdQuestionsQuestionIdAnswerPut**](QuestionsApi.md#createAnswerTasksTaskIdQuestionsQuestionIdAnswerPut) | **PUT** /tasks/{task_id}/questions/{question_id}/answer | Create Answer
+[**getQuestionTasksTaskIdQuestionsQuestionIdGet**](QuestionsApi.md#getQuestionTasksTaskIdQuestionsQuestionIdGet) | **GET** /tasks/{task_id}/questions/{question_id} | Get Question
 
 
 
-## createAnswerQuestionsPost
+## createAnswerTasksTaskIdQuestionsQuestionIdAnswerPut
 
-> Answer createAnswerQuestionsPost(taskId, questionId, bodyCreateAnswerQuestionsPost)
+> Answer createAnswerTasksTaskIdQuestionsQuestionIdAnswerPut(taskId, questionId, answer1)
 
 Create Answer
 
@@ -19,12 +19,16 @@ Create Answer
 
 ```javascript
 import CrowdLabelApi from 'crowd_label_api';
+let defaultClient = CrowdLabelApi.ApiClient.instance;
+// Configure OAuth2 access token for authorization: OAuth2PasswordBearer
+let OAuth2PasswordBearer = defaultClient.authentications['OAuth2PasswordBearer'];
+OAuth2PasswordBearer.accessToken = 'YOUR ACCESS TOKEN';
 
 let apiInstance = new CrowdLabelApi.QuestionsApi();
 let taskId = 56; // Number | 
 let questionId = 56; // Number | 
-let bodyCreateAnswerQuestionsPost = new CrowdLabelApi.BodyCreateAnswerQuestionsPost(); // BodyCreateAnswerQuestionsPost | 
-apiInstance.createAnswerQuestionsPost(taskId, questionId, bodyCreateAnswerQuestionsPost, (error, data, response) => {
+let answer1 = new CrowdLabelApi.Answer1(); // Answer1 | 
+apiInstance.createAnswerTasksTaskIdQuestionsQuestionIdAnswerPut(taskId, questionId, answer1, (error, data, response) => {
   if (error) {
     console.error(error);
   } else {
@@ -40,7 +44,7 @@ Name | Type | Description  | Notes
 ------------- | ------------- | ------------- | -------------
  **taskId** | **Number**|  | 
  **questionId** | **Number**|  | 
- **bodyCreateAnswerQuestionsPost** | [**BodyCreateAnswerQuestionsPost**](BodyCreateAnswerQuestionsPost.md)|  | 
+ **answer1** | [**Answer1**](Answer1.md)|  | 
 
 ### Return type
 
@@ -48,7 +52,7 @@ Name | Type | Description  | Notes
 
 ### Authorization
 
-No authorization required
+[OAuth2PasswordBearer](../README.md#OAuth2PasswordBearer)
 
 ### HTTP request headers
 
@@ -56,9 +60,9 @@ No authorization required
 - **Accept**: application/json
 
 
-## getQuestionQuestionsQuestionsQuestionIdGet
+## getQuestionTasksTaskIdQuestionsQuestionIdGet
 
-> getQuestionQuestionsQuestionsQuestionIdGet(questionId, taskId, opts)
+> getQuestionTasksTaskIdQuestionsQuestionIdGet(questionId, taskId, opts)
 
 Get Question
 
@@ -77,7 +81,7 @@ let taskId = 56; // Number |
 let opts = {
   'requestBody': [null] // [Object] | 
 };
-apiInstance.getQuestionQuestionsQuestionsQuestionIdGet(questionId, taskId, opts, (error, data, response) => {
+apiInstance.getQuestionTasksTaskIdQuestionsQuestionIdGet(questionId, taskId, opts, (error, data, response) => {
   if (error) {
     console.error(error);
   } else {

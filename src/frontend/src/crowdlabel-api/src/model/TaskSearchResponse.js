@@ -22,12 +22,10 @@ class TaskSearchResponse {
     /**
      * Constructs a new <code>TaskSearchResponse</code>.
      * @alias module:model/TaskSearchResponse
-     * @param tasks {Array.<Number>} 
-     * @param total {Number} 
      */
-    constructor(tasks, total) { 
+    constructor() { 
         
-        TaskSearchResponse.initialize(this, tasks, total);
+        TaskSearchResponse.initialize(this);
     }
 
     /**
@@ -35,9 +33,7 @@ class TaskSearchResponse {
      * This method is used by the constructors of any subclasses, in order to implement multiple inheritance (mix-ins).
      * Only for internal use.
      */
-    static initialize(obj, tasks, total) { 
-        obj['tasks'] = tasks;
-        obj['total'] = total;
+    static initialize(obj) { 
     }
 
     /**
@@ -54,9 +50,6 @@ class TaskSearchResponse {
             if (data.hasOwnProperty('name')) {
                 obj['name'] = ApiClient.convertToType(data['name'], 'String');
             }
-            if (data.hasOwnProperty('credits')) {
-                obj['credits'] = ApiClient.convertToType(data['credits'], 'Number');
-            }
             if (data.hasOwnProperty('tags')) {
                 obj['tags'] = ApiClient.convertToType(data['tags'], ['String']);
             }
@@ -65,6 +58,9 @@ class TaskSearchResponse {
             }
             if (data.hasOwnProperty('page')) {
                 obj['page'] = ApiClient.convertToType(data['page'], 'Number');
+            }
+            if (data.hasOwnProperty('page_size')) {
+                obj['page_size'] = ApiClient.convertToType(data['page_size'], 'Number');
             }
             if (data.hasOwnProperty('credits_min')) {
                 obj['credits_min'] = ApiClient.convertToType(data['credits_min'], 'Number');
@@ -94,12 +90,6 @@ class TaskSearchResponse {
      * @return {boolean} to indicate whether the JSON data is valid with respect to <code>TaskSearchResponse</code>.
      */
     static validateJSON(data) {
-        // check to make sure all required properties are present in the JSON string
-        for (const property of TaskSearchResponse.RequiredProperties) {
-            if (!data[property]) {
-                throw new Error("The required field `" + property + "` is not found in the JSON data: " + JSON.stringify(data));
-            }
-        }
         // ensure the json data is a string
         if (data['name'] && !(typeof data['name'] === 'string' || data['name'] instanceof String)) {
             throw new Error("Expected the field `name` to be a primitive type in the JSON string but got " + data['name']);
@@ -127,17 +117,13 @@ class TaskSearchResponse {
 
 }
 
-TaskSearchResponse.RequiredProperties = ["tasks", "total"];
+
 
 /**
  * @member {String} name
+ * @default ''
  */
-TaskSearchResponse.prototype['name'] = undefined;
-
-/**
- * @member {Number} credits
- */
-TaskSearchResponse.prototype['credits'] = undefined;
+TaskSearchResponse.prototype['name'] = '';
 
 /**
  * @member {Array.<String>} tags
@@ -151,28 +137,39 @@ TaskSearchResponse.prototype['requesters'] = undefined;
 
 /**
  * @member {Number} page
+ * @default 1
  */
-TaskSearchResponse.prototype['page'] = undefined;
+TaskSearchResponse.prototype['page'] = 1;
+
+/**
+ * @member {Number} page_size
+ * @default -1
+ */
+TaskSearchResponse.prototype['page_size'] = -1;
 
 /**
  * @member {Number} credits_min
+ * @default 0
  */
-TaskSearchResponse.prototype['credits_min'] = undefined;
+TaskSearchResponse.prototype['credits_min'] = 0;
 
 /**
  * @member {Number} credits_max
+ * @default -1
  */
-TaskSearchResponse.prototype['credits_max'] = undefined;
+TaskSearchResponse.prototype['credits_max'] = -1;
 
 /**
  * @member {String} sort_criteria
+ * @default 'name'
  */
-TaskSearchResponse.prototype['sort_criteria'] = undefined;
+TaskSearchResponse.prototype['sort_criteria'] = 'name';
 
 /**
  * @member {Boolean} sort_ascending
+ * @default true
  */
-TaskSearchResponse.prototype['sort_ascending'] = undefined;
+TaskSearchResponse.prototype['sort_ascending'] = true;
 
 /**
  * @member {Array.<Number>} tasks
@@ -181,8 +178,9 @@ TaskSearchResponse.prototype['tasks'] = undefined;
 
 /**
  * @member {Number} total
+ * @default 0
  */
-TaskSearchResponse.prototype['total'] = undefined;
+TaskSearchResponse.prototype['total'] = 0;
 
 
 

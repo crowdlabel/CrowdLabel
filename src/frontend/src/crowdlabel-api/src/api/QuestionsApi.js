@@ -14,7 +14,7 @@
 
 import ApiClient from "../ApiClient";
 import Answer from '../model/Answer';
-import BodyCreateAnswerQuestionsPost from '../model/BodyCreateAnswerQuestionsPost';
+import Answer1 from '../model/Answer1';
 import ErrorResponse from '../model/ErrorResponse';
 import HTTPValidationError from '../model/HTTPValidationError';
 
@@ -38,8 +38,8 @@ export default class QuestionsApi {
 
 
     /**
-     * Callback function to receive the result of the createAnswerQuestionsPost operation.
-     * @callback module:api/QuestionsApi~createAnswerQuestionsPostCallback
+     * Callback function to receive the result of the createAnswerTasksTaskIdQuestionsQuestionIdAnswerPut operation.
+     * @callback module:api/QuestionsApi~createAnswerTasksTaskIdQuestionsQuestionIdAnswerPutCallback
      * @param {String} error Error message, if any.
      * @param {module:model/Answer} data The data returned by the service call.
      * @param {String} response The complete HTTP response.
@@ -49,23 +49,23 @@ export default class QuestionsApi {
      * Create Answer
      * @param {Number} taskId 
      * @param {Number} questionId 
-     * @param {module:model/BodyCreateAnswerQuestionsPost} bodyCreateAnswerQuestionsPost 
-     * @param {module:api/QuestionsApi~createAnswerQuestionsPostCallback} callback The callback function, accepting three arguments: error, data, response
+     * @param {module:model/Answer1} answer1 
+     * @param {module:api/QuestionsApi~createAnswerTasksTaskIdQuestionsQuestionIdAnswerPutCallback} callback The callback function, accepting three arguments: error, data, response
      * data is of type: {@link module:model/Answer}
      */
-    createAnswerQuestionsPost(taskId, questionId, bodyCreateAnswerQuestionsPost, callback) {
-      let postBody = bodyCreateAnswerQuestionsPost;
+    createAnswerTasksTaskIdQuestionsQuestionIdAnswerPut(taskId, questionId, answer1, callback) {
+      let postBody = answer1;
       // verify the required parameter 'taskId' is set
       if (taskId === undefined || taskId === null) {
-        throw new Error("Missing the required parameter 'taskId' when calling createAnswerQuestionsPost");
+        throw new Error("Missing the required parameter 'taskId' when calling createAnswerTasksTaskIdQuestionsQuestionIdAnswerPut");
       }
       // verify the required parameter 'questionId' is set
       if (questionId === undefined || questionId === null) {
-        throw new Error("Missing the required parameter 'questionId' when calling createAnswerQuestionsPost");
+        throw new Error("Missing the required parameter 'questionId' when calling createAnswerTasksTaskIdQuestionsQuestionIdAnswerPut");
       }
-      // verify the required parameter 'bodyCreateAnswerQuestionsPost' is set
-      if (bodyCreateAnswerQuestionsPost === undefined || bodyCreateAnswerQuestionsPost === null) {
-        throw new Error("Missing the required parameter 'bodyCreateAnswerQuestionsPost' when calling createAnswerQuestionsPost");
+      // verify the required parameter 'answer1' is set
+      if (answer1 === undefined || answer1 === null) {
+        throw new Error("Missing the required parameter 'answer1' when calling createAnswerTasksTaskIdQuestionsQuestionIdAnswerPut");
       }
 
       let pathParams = {
@@ -79,20 +79,20 @@ export default class QuestionsApi {
       let formParams = {
       };
 
-      let authNames = [];
+      let authNames = ['OAuth2PasswordBearer'];
       let contentTypes = ['application/json'];
       let accepts = ['application/json'];
       let returnType = Answer;
       return this.apiClient.callApi(
-        '/questions', 'POST',
+        '/tasks/{task_id}/questions/{question_id}/answer', 'PUT',
         pathParams, queryParams, headerParams, formParams, postBody,
         authNames, contentTypes, accepts, returnType, null, callback
       );
     }
 
     /**
-     * Callback function to receive the result of the getQuestionQuestionsQuestionsQuestionIdGet operation.
-     * @callback module:api/QuestionsApi~getQuestionQuestionsQuestionsQuestionIdGetCallback
+     * Callback function to receive the result of the getQuestionTasksTaskIdQuestionsQuestionIdGet operation.
+     * @callback module:api/QuestionsApi~getQuestionTasksTaskIdQuestionsQuestionIdGetCallback
      * @param {String} error Error message, if any.
      * @param data This operation does not return a value.
      * @param {String} response The complete HTTP response.
@@ -104,25 +104,25 @@ export default class QuestionsApi {
      * @param {Number} taskId 
      * @param {Object} opts Optional parameters
      * @param {Array.<Object>} opts.requestBody 
-     * @param {module:api/QuestionsApi~getQuestionQuestionsQuestionsQuestionIdGetCallback} callback The callback function, accepting three arguments: error, data, response
+     * @param {module:api/QuestionsApi~getQuestionTasksTaskIdQuestionsQuestionIdGetCallback} callback The callback function, accepting three arguments: error, data, response
      */
-    getQuestionQuestionsQuestionsQuestionIdGet(questionId, taskId, opts, callback) {
+    getQuestionTasksTaskIdQuestionsQuestionIdGet(questionId, taskId, opts, callback) {
       opts = opts || {};
       let postBody = opts['requestBody'];
       // verify the required parameter 'questionId' is set
       if (questionId === undefined || questionId === null) {
-        throw new Error("Missing the required parameter 'questionId' when calling getQuestionQuestionsQuestionsQuestionIdGet");
+        throw new Error("Missing the required parameter 'questionId' when calling getQuestionTasksTaskIdQuestionsQuestionIdGet");
       }
       // verify the required parameter 'taskId' is set
       if (taskId === undefined || taskId === null) {
-        throw new Error("Missing the required parameter 'taskId' when calling getQuestionQuestionsQuestionsQuestionIdGet");
+        throw new Error("Missing the required parameter 'taskId' when calling getQuestionTasksTaskIdQuestionsQuestionIdGet");
       }
 
       let pathParams = {
-        'question_id': questionId
+        'question_id': questionId,
+        'task_id': taskId
       };
       let queryParams = {
-        'task_id': taskId
       };
       let headerParams = {
       };
@@ -134,7 +134,7 @@ export default class QuestionsApi {
       let accepts = ['application/json'];
       let returnType = null;
       return this.apiClient.callApi(
-        '/questions/questions/{question_id}', 'GET',
+        '/tasks/{task_id}/questions/{question_id}', 'GET',
         pathParams, queryParams, headerParams, formParams, postBody,
         authNames, contentTypes, accepts, returnType, null, callback
       );

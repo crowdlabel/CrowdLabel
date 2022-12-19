@@ -78,12 +78,6 @@
       //expect(instance).to.be();
     });
 
-    it('should have the property taskId (base name: "task_id")', function() {
-      // uncomment below and update the code to test the property taskId
-      //var instance = new CrowdLabelApi.Question();
-      //expect(instance).to.be();
-    });
-
     it('should have the property answers (base name: "answers")', function() {
       // uncomment below and update the code to test the property answers
       //var instance = new CrowdLabelApi.Question();

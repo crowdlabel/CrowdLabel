@@ -48,20 +48,20 @@
   }
 
   describe('QuestionsApi', function() {
-    describe('createAnswerQuestionsPost', function() {
-      it('should call createAnswerQuestionsPost successfully', function(done) {
-        //uncomment below and update the code to test createAnswerQuestionsPost
-        //instance.createAnswerQuestionsPost(function(error) {
+    describe('createAnswerTasksTaskIdQuestionsQuestionIdAnswerPut', function() {
+      it('should call createAnswerTasksTaskIdQuestionsQuestionIdAnswerPut successfully', function(done) {
+        //uncomment below and update the code to test createAnswerTasksTaskIdQuestionsQuestionIdAnswerPut
+        //instance.createAnswerTasksTaskIdQuestionsQuestionIdAnswerPut(function(error) {
         //  if (error) throw error;
         //expect().to.be();
         //});
         done();
       });
     });
-    describe('getQuestionQuestionsQuestionsQuestionIdGet', function() {
-      it('should call getQuestionQuestionsQuestionsQuestionIdGet successfully', function(done) {
-        //uncomment below and update the code to test getQuestionQuestionsQuestionsQuestionIdGet
-        //instance.getQuestionQuestionsQuestionsQuestionIdGet(function(error) {
+    describe('getQuestionTasksTaskIdQuestionsQuestionIdGet', function() {
+      it('should call getQuestionTasksTaskIdQuestionsQuestionIdGet successfully', function(done) {
+        //uncomment below and update the code to test getQuestionTasksTaskIdQuestionsQuestionIdGet
+        //instance.getQuestionTasksTaskIdQuestionsQuestionIdGet(function(error) {
         //  if (error) throw error;
         //expect().to.be();
         //});

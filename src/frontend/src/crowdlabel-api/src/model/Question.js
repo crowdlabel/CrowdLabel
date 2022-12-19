@@ -26,12 +26,10 @@ class Question {
      * @param questionId {Number} 
      * @param questionType {String} 
      * @param prompt {String} 
-     * @param taskId {Number} 
-     * @param answers {Array.<module:model/Answer>} 
      */
-    constructor(questionId, questionType, prompt, taskId, answers) { 
+    constructor(questionId, questionType, prompt) { 
         
-        Question.initialize(this, questionId, questionType, prompt, taskId, answers);
+        Question.initialize(this, questionId, questionType, prompt);
     }
 
     /**
@@ -39,12 +37,10 @@ class Question {
      * This method is used by the constructors of any subclasses, in order to implement multiple inheritance (mix-ins).
      * Only for internal use.
      */
-    static initialize(obj, questionId, questionType, prompt, taskId, answers) { 
+    static initialize(obj, questionId, questionType, prompt) { 
         obj['question_id'] = questionId;
         obj['question_type'] = questionType;
         obj['prompt'] = prompt;
-        obj['task_id'] = taskId;
-        obj['answers'] = answers;
     }
 
     /**
@@ -69,9 +65,6 @@ class Question {
             }
             if (data.hasOwnProperty('resource')) {
                 obj['resource'] = ApiClient.convertToType(data['resource'], 'String');
-            }
-            if (data.hasOwnProperty('task_id')) {
-                obj['task_id'] = ApiClient.convertToType(data['task_id'], 'Number');
             }
             if (data.hasOwnProperty('answers')) {
                 obj['answers'] = ApiClient.convertToType(data['answers'], [Answer]);
@@ -121,7 +114,7 @@ class Question {
 
 }
 
-Question.RequiredProperties = ["question_id", "question_type", "prompt", "task_id", "answers"];
+Question.RequiredProperties = ["question_id", "question_type", "prompt"];
 
 /**
  * @member {Number} question_id
@@ -142,11 +135,6 @@ Question.prototype['prompt'] = undefined;
  * @member {String} resource
  */
 Question.prototype['resource'] = undefined;
-
-/**
- * @member {Number} task_id
- */
-Question.prototype['task_id'] = undefined;
 
 /**
  * @member {Array.<module:model/Answer>} answers
