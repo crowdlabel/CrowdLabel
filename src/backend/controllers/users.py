@@ -2,12 +2,12 @@ from fastapi import status
 from fastapi.routing import APIRouter
 from .auth import Depends, get_current_user
 from .jsondocumentedresponse import JSONDocumentedResponse, create_documentation
-import services.users
 import schemas.users
+
+from services.users import user_service
 
 
 router = APIRouter()
-user_service = services.users.Users()
 ###############################################################################
 availability_jdr = JSONDocumentedResponse(
     status.HTTP_200_OK,
@@ -19,13 +19,11 @@ availability_jdr = JSONDocumentedResponse(
     **create_documentation([availability_jdr])
 )
 async def availability(fields: schemas.users.AvailabilityRequest):
-    print(fields)
     response = schemas.users.AvailabilityResponse()
     if fields.username:
         response.username = not await user_service.username_exists(fields.username)
     if fields.email:
         response.email = not await user_service.email_exists(fields.email)
-    print(response)
     return availability_jdr.response(response)
 ###############################################################################
 verify_email_success_jdr = JSONDocumentedResponse(
@@ -50,11 +48,11 @@ async def verify_email(email: schemas.users.Email):
 register_success_jdr = JSONDocumentedResponse(
     status.HTTP_201_CREATED,
     'Account successfully created. Returns all the following fields:',
-    services.users.User
+    schemas.users.User
 )
 register_failed_jdr = JSONDocumentedResponse(
     status.HTTP_400_BAD_REQUEST,
-    'Account creation failed. The field(s) that caused the failure and its corresponding error (`exists` for existing field (`username` or `email`), `format` (any field), or `wrong` (`verification_code`) is returned. Not all fields will necessarily be present.',
+    'Account creation failed. The field(s) that caused the failure and its corresponding error (`exists` for existing field (`username` or `email`), `format` (any field), or `wrong` (`verification_code`) is returned. Not all fields will necessarily be present. `user_type` must be one of `"requester"`, `"respondent"`, or `"admin"`',
     schemas.users.RegistrationError
 )
 @router.post('/register', 
@@ -63,7 +61,6 @@ register_failed_jdr = JSONDocumentedResponse(
 )
 async def register(details: schemas.users.RegistrationRequest):
     response = await user_service.create_user(**details.dict())
-
     if isinstance(response, dict):
         response = schemas.users.RegistrationError(**response)
         return register_failed_jdr.response(response)
@@ -72,41 +69,43 @@ async def register(details: schemas.users.RegistrationRequest):
 me_jdr = JSONDocumentedResponse(
     status.HTTP_200_OK,
     'Successfully got me',
-    services.users.User
+    schemas.users.User
 )
 @router.get('/me',
     description='Gets information for user who sent the request',
     **create_documentation([me_jdr])
 )
-async def get_me(current_user: services.users.services.users.User = Depends(get_current_user())):
+async def get_me(current_user: schemas.users.User = Depends(get_current_user())):
     return me_jdr.response(current_user, {'password_hashed'})
 ###############################################################################
 @router.patch('/me',
     description='Updates user info'
 )
-async def edit_me(current_user: services.users.User = Depends(get_current_user())):
+async def edit_me(new_info : schemas.users.EditEmailRequest | schemas.users.EditPasswordRequest,
+    current_user: schemas.users.User = Depends(get_current_user())
+):
     # edit user's own details
     # TODO
-    pass
+    if isinstance(new_info, schemas.users.EditEmailRequest):
+        await user_service.edit_user(email=new_info.new_email, password=new_info.password)
+    elif isinstance(new_info, schemas.users.EditPasswordRequest):
+        await user_service.edit_user(new_password=new_info.new_password, password=new_info.old_password)
 ###############################################################################
 username_success_jdr = JSONDocumentedResponse(
     status.HTTP_200_OK,
     'Successfully found user.',
-    services.users.User
+    schemas.users.User
 )
 username_failed_jdr = JSONDocumentedResponse(
-    status.HTTP_200_OK,
+    status.HTTP_404_NOT_FOUND,
     'User not found.',
-    services.users.User
 )
 @router.get('/{username}',
     description='Gets information for the specified username.',
-    **create_documentation([username_success_jdr])
+    **create_documentation([username_success_jdr, username_failed_jdr])
 )
-async def get_user(username: str, current_user: services.users.User = Depends(get_current_user(['admin']))):
-    #return 'requested info for ' + username + ' as ' + str(current_user)
-    user = user_service.get_user(username)
+async def get_user(username: str, current_user: schemas.users.User = Depends(get_current_user([]))):
+    user = await user_service.get_user(username)
     if not user:
         return username_failed_jdr.response()
-    return user
-
+    return username_success_jdr.response(user)

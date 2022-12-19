@@ -57,4 +57,3 @@ format_checkers = {
 
 if __name__ == '__main__':
     pass
-    #print(check_string('test', 1, 10))

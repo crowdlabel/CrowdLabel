@@ -66,9 +66,6 @@ import { AuthApi } from '@/crowdlabel-api/src';
 export default {
     
     data () {
-        // var apiClient = new ApiClient('http://localhost:8000');
-        // var usersApi = new UsersApi(apiClient);
-        // var authApi = new AuthApi(apiClient);
         
         var validatePass = (rule, value, callback) => {
             if (value === '') {
@@ -227,6 +224,7 @@ export default {
             console.log(tab, event)
         },
         submitRegister(formName) {
+            console.log('in submit register');
             this.$refs[formName].validate((valid) => {
             if (valid) {
                 let ready_username = document.getElementById('registername').value;
@@ -235,6 +233,7 @@ export default {
                 let ready_verification = document.getElementById('registerverification').value
                 var apiClient = new ApiClient('http://localhost:8000');
                 var usersApi = new UsersApi(apiClient);
+                console.log('going to post register');
                 this.user.registerUsersRegisterPost({
                     'username': ready_username,
                     "password": ready_password,

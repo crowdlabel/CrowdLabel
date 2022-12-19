@@ -1,0 +1,37 @@
+{
+    "name": "Example task",
+    "credits": 2,
+    "introduction": "This is an example",
+    "description": "This task is an example of a valid task",
+    "tags": ["sentiment-analysis", "object-detection", "object-bounding", "audio-transcription"],
+    "responses_required": 2,
+    "cover": "cover.jpg",
+    "questions": [
+        {
+            "question_id": 1,
+            "question_type": "single_choice",
+            "prompt": "What sentiment does this text convey",
+            "resource": "text.txt",
+            "options": ["Positive", "Negative", "Neutral", "N/A"]
+        },
+        {
+            "question_id": 2,
+            "question_type": "bounding_box",
+            "prompt": "Draw a box around the person in this image",
+            "resource": "camouflage.jpeg"
+        },
+        {
+            "question_id": 3,
+            "question_type": "open",
+            "prompt": "Transcribe the following audio recording",
+            "resource": "armstrong.mp3"
+        },
+        {
+            "question_id": 4,
+            "question_type": "multi_choice",
+            "prompt": "What objects are present in the following image",
+            "resource": "nature.jpg",
+            "options": ["lake", "mountain", "sky", "human"]
+        }
+    ]
+}

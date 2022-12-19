@@ -3,7 +3,7 @@ from sqlalchemy.orm import sessionmaker, scoped_session, selectinload
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy import select ,update
 from .database import *
-import datetime
+from datetime import datetime
 Connection = sessionmaker(bind=engine,expire_on_commit=False,class_=AsyncSession)
 con = scoped_session(Connection)
 def __verify_result_format():
@@ -43,7 +43,6 @@ async def get_result(id):
         for child in target.child_result:
             info = info + str(child.id) + '\n'
             info = info + child.response + '\n'
-        print(info)
         if target is None:
             return{
                 "status":"not found",
@@ -66,8 +65,7 @@ async def edit_result(id):
             return{
                 "status":"not found",
             },400
-        print('type is',type(datetime.datetime.now()))
-        target.date_download=datetime.datetime.now()
+        target.date_download=datetime.now()
         await con.flush()
         con.expunge(target)
     return {

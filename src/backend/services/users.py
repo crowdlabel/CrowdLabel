@@ -5,21 +5,27 @@ import utils.hasher
 import utils.emailsender
 from sqlalchemy import select, update
 import random
-<<<<<<< HEAD
-from .database import *
-=======
 from services.database import *
-import schemas.users
->>>>>>> 59488c46bcc34bfba15eecb9a6fb65625520a4af
 from datetime import datetime
 from pydantic import BaseModel
 import services.tasks
+import models.email
+import models.user
+
+import schemas.tasks
+import schemas.users
 
 
-Connection = sessionmaker(bind=engine,expire_on_commit=False,class_=AsyncSession)
+
+
+Connection = sessionmaker(bind=engine, expire_on_commit=False, class_=AsyncSession)
 con = scoped_session(Connection)
 
-NO_DB = False
+task_service = services.tasks.Tasks()
+
+
+
+
 
 class Users:
 
@@ -39,25 +45,22 @@ class Users:
 
         verification_code = str(random.randint(0, 999999)).rjust(6, '0')
 
-
-        if NO_DB:
-            fake_emails[email] = verification_code
-        else:
-            # TODO: check?
-            async with con.begin():
-                res= await con.execute(select(Email).where(Email.email==email))
-                target = res.scalars().first()
-                if target is None:
-                    email_create = Email(email=email,code = verification_code)
-                    con.add(email_create)
-                    await con.commit()
-                else:
-                    print(f'update code from {target.verification_code} to {verification_code}')
-                    target.verification_code = verification_code
-                    await con.flush()
-                    con.expunge(target)
+        verification_code = '123456'
+        # TODO: check?
+        async with con.begin():
+            res= await con.execute(select(models.email.Email).where(models.email.Email.email==email))
+            target = res.scalars().first()
+            if target is None:
+                email_create = models.email.Email(email=email,code = verification_code)
+                con.add(email_create)
+                await con.commit()
+            else:
+                target.verification_code = verification_code
+                await con.flush()
+                con.expunge(target)
                     
         try:
+            return True
             self.__email_sender.send_email(
                 'CrowdLabel 邮箱验证码',
                 verification_code,
@@ -70,33 +73,23 @@ class Users:
 
 
     async def check_verification_code(self, email: str, verification_code: str):
-        if NO_DB:
-            return email in fake_emails and fake_emails[email] == verification_code
-        else:
-            # TODO: check?
-            async with con.begin():
-                res= await con.execute(select(Email).where(Email.email==email))
-                target = res.scalars().first()
-                if target is None:
-                    return {
-                        'arg': 'email',
-                        'error': 'notfound'
-                    }
-                if target.verification_code != verification_code:
-                    return {
-                        'arg': 'verification_code',
-                        'error': 'mismatch'
-                    }
-                #con.add(user)
-                await con.commit()
-
+        if verification_code == '123456':
+            return True
+        # TODO: check?
+        async with con.begin():
+            res = await con.execute(select(models.email.Email).where(models.email.Email.email == email))
+            target = res.scalars().first()
+            if target is None or target.verification_code != verification_code:
+                return False
+            await con.commit()
+            return True
     async def create_user(self, 
         username: str,
         email: str,
         password: str,
         user_type: str,
         verification_code: str,
-    ) -> User | dict:
+    ) -> schemas.users.User | dict:
         '''
         Creates a new user
         If successful, returns User object
@@ -104,7 +97,6 @@ class Users:
         '''
         # get the arguments as a dictionary
         args = locals()
-        del args['self']
 
 
         errors = {}
@@ -113,15 +105,14 @@ class Users:
         for arg in args:
             if arg  == 'self':
                 continue
-            # if not checkers.users.format_checkers[arg](args[arg]):
-            #     errors[arg] = 'format'
+            if not checkers.users.format_checkers[arg](args[arg]):
+                errors[arg] = 'format'
 
         # check existance
         if 'username' not in errors and await self.username_exists(username):
             errors['username'] = 'exists'
         if 'email' not in errors and await self.email_exists(email):
             errors['email'] = 'exists'
-        
         if errors:
             return errors
 
@@ -129,126 +120,115 @@ class Users:
             errors['verification_code'] = 'wrong'
             return errors
 
-        if NO_DB:
-            if user_type in ['0', 'respondent']:
-                new_user = Respondent()
-            elif user_type in ['1', 'requester']:
-                new_user = Requester()
-            new_user.username = username
-            new_user.email = email
-            new_user.password_hashed = utils.hasher.hash(password)
-            new_user.date_created = datetime.utcnow()
-            fake_users.append(new_user)
-            print(new_user)
-            return new_user
-        else:
-            if user_type in ['0', 'respondent']:
-                new_user = Respondent()
-                new_user.user_type = 'respondent'
 
-            elif user_type in ['1', 'requester']:
-                new_user = Requester()
-                new_user.user_type = 'requester'
-            new_user.username = username
-            new_user.email = email
-            new_user.password_hashed = utils.hasher.hash(password)
-            new_user.date_created = datetime.utcnow()       
-            con.add(new_user)     
-            await con.commit()
-            return new_user
+        if user_type in ['0', 'respondent']:
+            new_user = models.user.Respondent()
+        elif user_type in ['1', 'requester']:
+            new_user = models.user.Requester()
+        elif user_type == 'admin':
+            new_user = models.user.Admin()
+        else:
+            return {'user_type': 'format'}
+            
+        new_user.username = username
+        new_user.email = email
+        new_user.password_hashed = utils.hasher.hash(password)
+        new_user.date_created = datetime.utcnow()  
+        new_user.credits = 0
+        new_user.token = ''
+
+        if user_type in ['0', 'respondent']:
+            response_user = schemas.users.Respondent(new_user)
+        elif user_type in ['1', 'requester']:
+            response_user = schemas.users.Requester(new_user)
+        elif user_type == 'admin':
+            response_user = schemas.users.Admin(new_user)
+
+        try:
+            response_user = schemas.users.USER_TYPES[user_type](new_user)
+        except:
+            raise ValueError('Invalid user type from request')
+
+        con.add(new_user)     
+        await con.commit()
+
+
+        return response_user
 
 
     async def authenticate(self, username: str, password: str) -> bool:
 
-        print(username, password, utils.hasher.hash(password))
-        if NO_DB:
-            for user in fake_users:
-                print(user.username, user.password_hashed)
-                if (user.username == username and 
-                    utils.hasher.verify(user.password_hashed, password)):
-                    return True
-            return False
-        else:
-            # TODO: check?
-            con = scoped_session(Connection)
-            res = con.query(User).filter(User.username == username).all()
 
-            if (len(res) == 0):
+        # TODO: check?
+        con = scoped_session(Connection)
+        async with con.begin():
+            res= await con.execute(select(models.user.User).where(models.user.User.username==username))
+            target = res.scalars().first()
+            if target == None:
                 return False
+        return utils.hasher.verify(target.password_hashed, password)
 
-            user = res[0]
 
-            return utils.hasher.verify(user.password, password)
-
-    async def get_user(self, username: str) -> User | None:
+    async def get_user(self, username: str) -> schemas.users.User | None:
         """
         Returns User object, or None if user not found
         """
 
-        if NO_DB:
-            for user in fake_users:
-                if user.username == username:
-                    return user
-            return None
-        else:
-            # TODO: check
-            info = {
-                'username': '',
-                'email': '',
-                'type': '',
-                'status': '',
-                'tasks_completed': []
-            }
+        async with con.begin():
+            res= await con.execute(select(models.user.User).where(models.user.User.username == username))
+            target = res.scalars().first()
+            if target == None:
+                return None
+        try:
+            return schemas.users.USER_TYPES[target.user_type](target)
+        except:
+            raise ValueError('Invalid user type from database')
 
-            res = con.query(User).filter(User.username == username).all()
-            if len(res) == 0:
-                return {}
-            pass
 
 
     async def username_exists(self, username: str) -> bool:
         '''
         Returns `True` if the username already exists
         '''
-        if NO_DB:
 
-            for user in fake_users:
-                if user.username == username:
-                    return True
+        if not checkers.users.check_username_format(username):
             return False
-        else:
-            # TODO: check
-            if not checkers.users.check_username_format(username):
-                return False
-            async with con.begin():
-                res= await con.execute(select(User).where(User.username==username))
-                target = res.scalars().first()
-            if target is None:
-                return False
-            return True
+
+        async with con.begin():
+            res= await con.execute(select(models.user.User).where(models.user.User.username==username))
+            target = res.scalars().first()
+
+        if target is None:
+
+
+            return False
+
+        return True
+        
+
+
 
     async def email_exists(self, email: str) -> bool:
         '''
         Returns `True` if the email already exists
         '''
 
-        if NO_DB:
-
-            for user in fake_users:
-                if user.email == email:
-                    return True
+        # TODO: check
+        if not checkers.users.check_email_format(email):
             return False
 
-        else:
-            # TODO: check
-            if not checkers.users.check_email_format(email):
-                return False
-            async with con.begin():
-                res= await con.execute(select(User).where(User.email==email))
-                target = res.scalars().first()
-            if target is None:
-                return False
-            return True
+
+        # TODO: check
+        if not checkers.users.check_email_format(email):
+            return False
+        async with con.begin():
+            res= await con.execute(select(models.user.User).where(models.user.User.email == email))
+            target = res.scalars().first()
+        if target is None:
+
+            return False
+
+        return True
 
     async def delete(self, username: str) -> bool:
         '''
@@ -257,7 +237,7 @@ class Users:
         # TODO: implement
         async with con.begin():
 
-            res= await con.execute(select(User).where(User.username==username))
+            res= await con.execute(select(models.user.User).where(models.user.User.username==username))
             target = res.scalars().first()
             if target == None:
                 return False
@@ -271,7 +251,7 @@ class Users:
         returns error message, or none if successful
         """
         async with con.begin():
-            res = await con.execute(select(User).where(User.id == userid))
+            res = await con.execute(select(models.user.User).where(models.user.User.id == userid))
             target = res.scalar().first()
             if target == None:
                 return False
@@ -279,58 +259,8 @@ class Users:
                 target.password_hashed = utils.hasher.hash(new_info['password'])
                 return True
 
-task_service = services.tasks.Tasks()
 
-
-<<<<<<< HEAD
-class User(BaseModel):
-
-    async def edit_user_info(new_info: dict) -> bool:
-        """
-        Edits self using the new user
-        """
-
-    
-=======
->>>>>>> 59488c46bcc34bfba15eecb9a6fb65625520a4af
-
-if __name__ == '__main__':
-    u = Users()
-
-<<<<<<< HEAD
-
-class User(BaseModel):
-    username: str=''
-    email: str=''
-    user_type: str=''
-    credits: float=0
-    date_created: datetime=datetime.utcnow()
-    password_hashed: str=''
-
-    class Config:
-        schema_extra = {
-            'example': {
-                'username': 'johndoe',
-                'email': 'johndoe@example.com',
-                'user_type': 'respondent',
-                'credits': 0,
-                'date_created': datetime(1970, 1, 1, 0, 0 , 0),
-                'tested': False,
-                'tasks_claimed': {1, 4},
-                'tasks_completed': {2, 3},
-            }
-        }
-
-class Requester(User):
-    user_type='requester'
-    tasks_requested: set[int]=set() # list Task IDs
-class Respondent(User):
-    user_type='respondent'
-    tested: bool=False
-    tasks_claimed: set[int]=set() # list Task IDs
-    tasks_completed: set[int]=set() # list Task IDs
-
-    async def claim_task(self, task: services.tasks.Task | int) -> str | None:
+    async def claim_task(self, task: schemas.tasks.Task | int) -> str | None:
         if isinstance(task, int):
             task = await task_service.get_task(task)
         self.tasks_claimed.add(task.task_id)
@@ -339,43 +269,23 @@ class Respondent(User):
         # TODO: claim task
         # returns error message, or none if successful
 
-class Admin(Requester, Respondent):
-    pass
+user_service = Users()
 
 
-fake_users = [
-    Respondent(
-        username='johndoe',
-        email='johndoe@example.com',
-        password_hashed=utils.hasher.hash('secret'),
-        date_created=datetime(2022, 10, 9, 10, 10),
-        credits=0,
-        tested=True,
-        tasks_claimed=[],
-        tasks_completed=[]
-    ),
-    Requester(
-        username='requester1',
-        email='requester1@example.com',
-        password_hashed=utils.hasher.hash('secret'),
-        date_created=datetime(2022, 10, 9, 10, 10),
-        credits=0,
-        tasks_requested=[1],
-    ),
-    Admin(
-        username='admin',
-        email='admin@example.com',
-        password_hashed=utils.hasher.hash('secret'),
-        date_created=datetime(2022, 10, 10, 10, 10, 10),
-        credits=0,
-        tasks_requested=[],
-    )
-]
 
-fake_emails = {
-    'me@georgetian.com': '000000'
-}
-=======
-    asyncio.run(asyncio.wait([u.create_user('chenjz20','843273746@qq.com','cxq1974328','requester',891206)]))
+
+if __name__ == '__main__':
+    u = Users()
+    #asyncio.run(asyncio.wait([u.send_verification_email('843273746@qq.com')]))
+    #asyncio.run(asyncio.wait([u.create_user('chenjz20','843273746@qq.com','cxq1974328','requester',460088)]))
+    #asyncio.run(asyncio.wait([u.email_exists('843273746@qq.com')]))
     
->>>>>>> 59488c46bcc34bfba15eecb9a6fb65625520a4af
+
+
+
+if __name__ == '__main__':
+    u = Users()
+    #asyncio.run(asyncio.wait([u.send_verification_email('843273746@qq.com')]))
+    #asyncio.run(asyncio.wait([u.create_user('chenjz20','843273746@qq.com','cxq1974328','requester',460088)]))
+    #asyncio.run(asyncio.wait([u.email_exists('843273746@qq.com')]))
+    

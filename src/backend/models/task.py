@@ -22,13 +22,12 @@ class Task(Base):
     tags = Column(String(MAX_TAGS_LENGTH))
     response_required = Column(Integer)
     file_path = Column(String(MAX_PATH_LENGTH))
+    requester_id = Column(Integer ,ForeignKey('requester.id'))
 
-
-    results = relationship('Results',cascade = 'all,delete-orphan')
+    #results = relationship('Results',cascade = 'all,delete-orphan')
     questions = relationship('Question',secondary='task2question',cascade="delete, delete-orphan",single_parent = True)    
-    requester = relationship('Requester',secondary='requester2task',cascade="delete, delete-orphan",single_parent = True)
-    respondent_claimed = relationship('Respondent',secondary='respondent2claim',cascade="delete, delete-orphan",single_parent = True)
-    respondent_complete = relationship('Respondent',secondary = 'respondent2complete',cascade="delete, delete-orphan",single_parent = True)
+    respondent_claimed = relationship('Respondent',secondary='respondent2claim',cascade="delete, delete-orphan",single_parent = True, overlaps="task_complete, task_claimed")
+    respondent_complete = relationship('Respondent',secondary = 'respondent2complete',cascade="delete, delete-orphan",single_parent = True, overlaps="task_complete")
    
 
 
