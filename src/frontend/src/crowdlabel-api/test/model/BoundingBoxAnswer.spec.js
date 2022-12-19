@@ -28,7 +28,7 @@
   var instance;
 
   beforeEach(function() {
-    instance = new CrowdLabelApi.QuestionsApi();
+    instance = new CrowdLabelApi.BoundingBoxAnswer();
   });
 
   var getProperty = function(object, getter, property) {
@@ -47,27 +47,25 @@
       object[property] = value;
   }
 
-  describe('QuestionsApi', function() {
-    describe('createAnswerTasksTaskIdQuestionsQuestionIdAnswerPut', function() {
-      it('should call createAnswerTasksTaskIdQuestionsQuestionIdAnswerPut successfully', function(done) {
-        //uncomment below and update the code to test createAnswerTasksTaskIdQuestionsQuestionIdAnswerPut
-        //instance.createAnswerTasksTaskIdQuestionsQuestionIdAnswerPut(function(error) {
-        //  if (error) throw error;
-        //expect().to.be();
-        //});
-        done();
-      });
+  describe('BoundingBoxAnswer', function() {
+    it('should create an instance of BoundingBoxAnswer', function() {
+      // uncomment below and update the code to test BoundingBoxAnswer
+      //var instance = new CrowdLabelApi.BoundingBoxAnswer();
+      //expect(instance).to.be.a(CrowdLabelApi.BoundingBoxAnswer);
     });
-    describe('getQuestionTasksTaskIdQuestionsQuestionIdGet', function() {
-      it('should call getQuestionTasksTaskIdQuestionsQuestionIdGet successfully', function(done) {
-        //uncomment below and update the code to test getQuestionTasksTaskIdQuestionsQuestionIdGet
-        //instance.getQuestionTasksTaskIdQuestionsQuestionIdGet(function(error) {
-        //  if (error) throw error;
-        //expect().to.be();
-        //});
-        done();
-      });
+
+    it('should have the property topLeft (base name: "top_left")', function() {
+      // uncomment below and update the code to test the property topLeft
+      //var instance = new CrowdLabelApi.BoundingBoxAnswer();
+      //expect(instance).to.be();
     });
+
+    it('should have the property bottomRight (base name: "bottom_right")', function() {
+      // uncomment below and update the code to test the property bottomRight
+      //var instance = new CrowdLabelApi.BoundingBoxAnswer();
+      //expect(instance).to.be();
+    });
+
   });
 
 }));

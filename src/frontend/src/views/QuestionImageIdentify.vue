@@ -42,7 +42,7 @@
           <p class="text_normal">（将鼠标置于图片之上，长按并拖动鼠标即可画框。可以通过点击已画出的方框对其进行调整。）</p>
         </div>
         <div class="content">
-          <img class="img_content" src="../assets/people.png" />
+          <!-- <img class="img_content" src="../assets/people.png" /> -->
           <canvas ref="markCanvas" tabindex='0'></canvas>
         </div>
         <div class="answers">
