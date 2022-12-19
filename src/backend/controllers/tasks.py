@@ -6,6 +6,7 @@ import services.tasks
 import services.users
 from .jsondocumentedresponse import JSONDocumentedResponse, create_documentation, forbidden_jdr, not_found_jdr
 import schemas.tasks
+import schemas.questions
 from utils.datetime_str import datetime_now_str
 from typing import Optional
 
@@ -48,7 +49,7 @@ async def search_tasks(query: schemas.tasks.TaskSearchRequest, current_user=Depe
 upload_success_jdr = JSONDocumentedResponse(
     status.HTTP_200_OK,
     'Task uploaded and created successfully',
-    schemas.tasks.Task
+    list[schemas.questions.Question]
 )
 upload_failed_jdr = JSONDocumentedResponse(
     status.HTTP_400_BAD_REQUEST,
@@ -63,7 +64,7 @@ async def upload_task(in_file: UploadFile, current_user=Depends(get_current_user
     await upload_file(in_file, filename)
     response = await task_service.process_task_archive(filename)
     if isinstance(response, str):
-        return upload_failed_jdr(schemas.tasks.ErrorResponse('Error'))
+        return await upload_failed_jdr(schemas.tasks.ErrorResponse('Error'))
     return upload_success_jdr.response(response)
 ###############################################################################
 
@@ -78,6 +79,9 @@ create_task_success_jdr = JSONDocumentedResponse(
 create_task_failed_jdr = JSONDocumentedResponse(
     status.HTTP_400_BAD_REQUEST,
     'Task not created',
+)
+@router.post('/create_task',
+    **create_documentation([create_task_success_jdr, create_task_failed_jdr])
 )
 async def create_task(task: schemas.tasks.CreateTaskRequest, cover: Optional[UploadFile]=None,
     current_user=Depends(get_current_user(['requester']))

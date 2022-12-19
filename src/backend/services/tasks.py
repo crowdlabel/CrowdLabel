@@ -25,9 +25,9 @@ class Tasks:
     def __init__(self):
         pass
 
-    async def create_task(self, creator: schemas.users.Respondent, name: str, description: str,
+    async def create_task(self, creator: schemas.users.Requester, name: str, description: str,
                           introduction: str, tags: set[str], cover_path: str, responses_required: int,
-                          credits: float, questions: list[schemas.questions.Question]) -> schemas.tasks.Task | str:
+                          credits: float) -> schemas.tasks.Task | str:
 
         if responses_required < 1:
             return '`responses_required` must be positive'
@@ -50,7 +50,7 @@ class Tasks:
         # if not __verify_task_format():
         #     return None
         filepath = 0 # TODO
-        task = models.task.Task(creator = creator , name = name ,description = description ,
+        task = models.task.Task(creator = creator.username , name = name ,description = description ,
                     introduction = introduction ,cover_path = cover_path ,
                     response_required = responses_required,credits = credits,date_created = date_created,filepath = filepath)
                     
@@ -58,13 +58,13 @@ class Tasks:
             target = await con.execute(select(models.user.Requester).where(models.user.Requester.username==creator).options(selectinload(models.user.Requester.task_requested)))
             res = target.scalars().first()
             if res == None:
-                return None
+                return 'requester not found'
         res.task_requested.append(task)
         con.add(task)
         await con.commit()
         response_task = schemas.tasks.Task()
         response_task.cover = cover_path
-        response_task.creator=creator
+        response_task.creator=creator.username
         response_task.credits=credits
         response_task.date_created=date_created
         response_task.description=description
@@ -72,9 +72,10 @@ class Tasks:
         response_task.name=name
         response_task.tags = []
         response_task.task_id = task.id
-        response_task.responses_required = response_required
-        self.process_task_archive(task.id,filepath)
-        return task
+        response_task.responses_required = responses_required
+        questions = self.process_task_archive(task.id,filepath)
+        response_task.questions = questions
+        return response_task
 
     async def claim_task(self,user_name,task_id)->schemas.tasks.Task | None:
         async with con.begin():
@@ -138,7 +139,7 @@ class Tasks:
         await con.commit()
         return True
             
-    async def process_task_archive(self, id,filename: str) -> list[schemas.questions.Question] | str:
+    async def process_task_archive(self,filename: str) -> list[schemas.questions.Question] | str:
         '''
         Filename: filename of the file that was uploaded
         Creates and returns the task, or returns an error message
@@ -149,8 +150,7 @@ class Tasks:
         elif suffix == 'rar':  
             file = rarfile.RarFile(filename)
         extract = file.extractall()
-        extract.close()
-        questions = services.questions.question_service.create_question_from_file(id,filename)
+        questions = services.questions.question_service.create_question_from_file('questions.json')
         return questions
 
     async def search(
