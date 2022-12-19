@@ -43,7 +43,6 @@ async def get_result(id):
         for child in target.child_result:
             info = info + str(child.id) + '\n'
             info = info + child.response + '\n'
-        print(info)
         if target is None:
             return{
                 "status":"not found",
@@ -66,7 +65,6 @@ async def edit_result(id):
             return{
                 "status":"not found",
             },400
-        print('type is',type(datetime.now()))
         target.date_download=datetime.now()
         await con.flush()
         con.expunge(target)

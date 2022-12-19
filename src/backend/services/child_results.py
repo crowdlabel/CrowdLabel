@@ -37,7 +37,6 @@ async def get_result(id):
     async with con.begin():
         result = await con.execute(select(ChildResults).where(ChildResults.id==id)) #.options(selectinload(Task.questions)))
         target = result.scalars().first()
-        print(target.result_id)
         if target is None:
             return{
                 "status":"not found",

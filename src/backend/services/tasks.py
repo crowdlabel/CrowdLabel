@@ -1,10 +1,10 @@
 from typing import Iterable
-from pydantic import BaseModel
 import schemas.questions
 from utils.datetime_str import datetime_now_str
 from datetime import datetime
 
 from services.database import engine
+import services.questions
 import models.task
 import models.user
 from sqlalchemy.orm import sessionmaker, scoped_session, selectinload
@@ -17,22 +17,43 @@ import schemas.tasks
 import schemas.users
 
 import asyncio
-
-
+import zipfile
+import rarfile
+import json
 class Tasks:
 
     def __init__(self):
         pass
 
-    async def create_task(self,creator: str ,name:str ,description:str,
-                          introduction:str,cover_path:str,response_required:int,
-                          credits:int) -> schemas.tasks.Task | None:
+    async def create_task(self, creator: schemas.users.Respondent, name: str, description: str,
+                          introduction: str, tags: set[str], cover_path: str, responses_required: int,
+                          credits: float, questions: list[schemas.questions.Question]) -> schemas.tasks.Task | str:
+
+        if responses_required < 1:
+            return '`responses_required` must be positive'
+        if credits < 0:
+            return '`credits` must be positive'
+        if credits * responses_required > creator.credits:
+            return 'Insufficient credits'
+
         date_created = datetime.utcnow()
+        task_schema = schemas.tasks.Task(
+            name=name,
+            credits=credits,
+            introduction=introduction,
+            description=description,
+            tags=tags,
+            responses_required=responses_required,
+            date_created=date_created,
+        )
+
         # if not __verify_task_format():
         #     return None
+        filepath = 0 # TODO
         task = models.task.Task(creator = creator , name = name ,description = description ,
                     introduction = introduction ,cover_path = cover_path ,
-                    response_required = response_required,credits = credits,date_created = date_created)
+                    response_required = responses_required,credits = credits,date_created = date_created,filepath = filepath)
+                    
         async with con.begin():
             target = await con.execute(select(models.user.Requester).where(models.user.Requester.username==creator).options(selectinload(models.user.Requester.task_requested)))
             res = target.scalars().first()
@@ -41,22 +62,68 @@ class Tasks:
         res.task_requested.append(task)
         con.add(task)
         await con.commit()
+        response_task = schemas.tasks.Task()
+        response_task.cover = cover_path
+        response_task.creator=creator
+        response_task.credits=credits
+        response_task.date_created=date_created
+        response_task.description=description
+        response_task.introduction=introduction
+        response_task.name=name
+        response_task.tags = []
+        response_task.task_id = task.id
+        response_task.responses_required = response_required
+        self.process_task_archive(task.id,filepath)
         return task
 
+    async def claim_task(self,user_name,task_id)->schemas.tasks.Task | None:
+        async with con.begin():
+            user = await con.execute(select(models.user.Respondent).where(models.user.Respondent.username == user_name).options(
+                selectinload(models.user.Respondent.task_claimed)
+            )
+            )
+            user = user.scalars().first()
+            if user == None:
+                return None
+            task = await con.execute(select(models.task.Task).where(models.task.Task.id==task_id).options(
+                selectinload(models.task.Task.respondent_claimed)
+            ))
+            task = task.scalars().first()
+            if task == None:
+                return None
+            user.task_claimed.append(task)
+            response_task = schemas.tasks.Task(task)
+            return response_task
 
     async def get_task(self, task_id: int) -> schemas.tasks.Task | None:
         async with con.begin():
             result = await con.execute(select(models.task.Task).where(models.task.Task.id == task_id).options(
                 selectinload(models.task.Task.questions),
-                selectinload(models.task.Task.results),
-                selectinload(models.task.Task.requester),
                 selectinload(models.task.Task.respondent_claimed),
                 selectinload(models.task.Task.respondent_complete)
             ))
             target = result.scalars().first()
             if target is None:
                 return None
-            return target
+            response_task = schemas.tasks.Task(target)
+            for question in target.questions:
+                qtype = question.question_type
+                if qtype == 'single_choice':
+                    q = schemas.questions.SingleChoiceQuestion(question)
+                elif qtype == 'multi_choice':
+                    q = schemas.questions.MultiChoiceQuestion(question)
+                elif qtype == 'ranking':
+                    q = schemas.questions.RankingQuestion(question)
+                elif qtype == 'open':
+                    q = schemas.questions.OpenQuestion(question)
+                else : 
+                    continue
+                response_task.questions.append(q)
+            claim_names = list(map(lambda A:A.username,target.respondent_claimed))
+            response_task.respondents_claimed = set(claim_names)
+            complete_names = list(map(lambda A:A.username,target.respondent_complete))
+            response_task.respondents_completed = set(complete_names)
+            return response_task
 
     
     async def delete_task(task_id:int) -> bool:
@@ -71,22 +138,28 @@ class Tasks:
         await con.commit()
         return True
             
-    async def process_task_archive(self, filename: str) -> schemas.tasks.Task | str:
+    async def process_task_archive(self, id,filename: str) -> list[schemas.questions.Question] | str:
         '''
         Filename: filename of the file that was uploaded
         Creates and returns the task, or returns an error message
         '''
-        pass
-
-
+        suffix = filename.split('.')[-1]
+        if suffix == 'zip':
+            file = zipfile.ZipFile(filename)
+        elif suffix == 'rar':
+            file = rarfile.RarFile(filename)
+        extract = file.extractall()
+        extract.close()
+        questions = services.questions.question_service.create_question_from_file(id,filename)
+        return questions
 
     async def search(
         user: schemas.users.User,
         name: str=None,
         tags: Iterable=None,
-        credits_min: float=None,
+        credits_min: float=0,
         credits_max: float=None,
-        questions_min: int=-1,
+        questions_min: int=0,
         questions_max: int=10e9,
         requesters: set[str]=None,
         result_count: int=-1,
@@ -122,24 +195,30 @@ class Tasks:
         # TODO: creator -> requesters, multiple usernames
 
         async with con.begin():
+
+            result = await con.execute(select(models.task.Task))
+
+            '''
             if sort_ascending is True:
-                result = await con.execute(select(models.task.Task).where(and_(or_(models.task.Task.creator == models.task.creator,models.task.creator == None),
+                result = await con.execute(select(models.task.Task).where(and_(
                             or_(models.task.Task.name == name, name ==None),
-                            or_(models.task.Task.credits == credits,credits = None),
+                            models.task.Task.credits >= credits_min,
+                            models.task.Task.credits <= credits_max,
                             len(models.task.Task.questions)>questions_min,
                             len(models.task.Task.questions)<questions_max,),
                             or_(models.task.Task.response_required == result_count , result_count == -1))
                             .order_by(models.task.Task.id.asc()).options(selectinload(models.task.Task.questions),selectinload(models.task.Task.results)))
             else:
  
-                result = await con.execute(select(models.task.Task).where(and_(or_(models.task.Task.creator == models.task.creator,models.task.creator == None),
+                result = await con.execute(select(models.task.Task).where(and_(
                                 or_(models.task.Task.name == name, name ==None),
-                                or_(models.task.Task.credits == credits,credits = None),
+                                models.task.Task.credits >= credits_min,
+                                models.task.Task.credits <= credits_max,
                                 len(models.task.Task.questions)>questions_min,
                                 len(models.task.Task.questions)<questions_max,),
                                 or_(models.task.Task.response_required == result_count , result_count == -1))
                                 .order_by(models.task.Task.id.desc()).options(selectinload(models.task.Task.questions),selectinload(models.task.Task.results)))
-
+            '''
 
             tasks = result.scalar().all()
             if page_size == -1:
@@ -171,7 +250,5 @@ class Tasks:
 task_service = Tasks()
 
 
-if __name__ == '__main__':
-    t = Tasks()
-    asyncio.run(asyncio.wait([t.create_task('chenjz20','tsk1','des','intro','./1.png',10,10)]))
+
 

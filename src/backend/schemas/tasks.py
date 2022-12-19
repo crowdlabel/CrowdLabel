@@ -5,14 +5,15 @@ import schemas.questions
 
 
 class TaskSearchRequest(BaseModel):
-    name: Optional[str]
-    tags: Optional[set[str]]
-    requesters: Optional[set[str]]
-    page: Optional[int]
-    credits_min: Optional[float]
-    credits_max: Optional[float]
-    sort_criteria: Optional[str]
-    sort_ascending: Optional[bool]
+    name: Optional[str] = '' # empty name searches for any name
+    tags: Optional[set[str]] = set()
+    requesters: Optional[set[str]] = set()
+    page: Optional[int] = 1
+    page_size: Optional[int] = -1 # negative value implies return all results
+    credits_min: Optional[float] = 0
+    credits_max: Optional[float] = -1 # negative value implies no upper limit
+    sort_criteria: Optional[str] = 'name'
+    sort_ascending: Optional[bool] = True
 
 class TaskSearchResponse(TaskSearchRequest):
     tasks: list[int]=[] # list of Task IDs
@@ -22,17 +23,25 @@ class ErrorResponse(BaseModel):
     error: str
 
 
-class Task(BaseModel):
-    task_id: int
-    creator: str
-    date_created: datetime
-    credits: float
+class CreateTaskRequest(BaseModel):
     name: str
+    credits: float
     introduction: str=''
     description: str=''
-    cover: str=''
     tags: list[str]=[]
     responses_required: int
+    questions: list[schemas.questions.Question]=[] # list of Questions
+
+class Task(CreateTaskRequest):
+    task_id: int
+    creator: str
+    cover: str=''
+    date_created: datetime
     respondents_claimed: set[str]=set() # usernames of respondents who have claimed the task but have not completed it
     respondents_completed: set[str]=set() # usernames of respondents who have claimed and completed the task
     questions: list[schemas.questions.Question]=[] # list of Questions
+    def __init__(self,task):
+        super(Task,self).__init__(task_id = task.id,creator = task.creator ,date_created = task.date_created,
+        credits = task.credits , name = task.name , introduction = task.introduction ,
+        description = task.description ,cover = task.cover_path,responses_required = task.response_required,
+        tags =[task.tags])

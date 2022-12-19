@@ -55,7 +55,6 @@ class Users:
                 con.add(email_create)
                 await con.commit()
             else:
-                print(f'update code from {target.verification_code} to {verification_code}')
                 target.verification_code = verification_code
                 await con.flush()
                 con.expunge(target)
@@ -98,7 +97,6 @@ class Users:
         '''
         # get the arguments as a dictionary
         args = locals()
-        del args['self']
 
 
         errors = {}
@@ -107,8 +105,8 @@ class Users:
         for arg in args:
             if arg  == 'self':
                 continue
-            # if not checkers.users.format_checkers[arg](args[arg]):
-            #     errors[arg] = 'format'
+            if not checkers.users.format_checkers[arg](args[arg]):
+                errors[arg] = 'format'
 
         # check existance
         if 'username' not in errors and await self.username_exists(username):
@@ -121,22 +119,36 @@ class Users:
         if not await self.check_verification_code(email, verification_code):
             errors['verification_code'] = 'wrong'
             return errors
+
+
         if user_type in ['0', 'respondent']:
             new_user = models.user.Respondent()
-
         elif user_type in ['1', 'requester']:
             new_user = models.user.Requester()
+        elif user_type == 'admin':
+            new_user = models.user.Admin()
+        else:
+            return {'user_type': 'format'}
+            
         new_user.username = username
         new_user.email = email
         new_user.password_hashed = utils.hasher.hash(password)
         new_user.date_created = datetime.utcnow()  
         new_user.credits = 0
-        new_user.token = ''     
-        if user_type in ['0', 'respondent']:
-             response_user = schemas.users.Respondent(new_user)
+        new_user.token = ''
 
+        if user_type in ['0', 'respondent']:
+            response_user = schemas.users.Respondent(new_user)
         elif user_type in ['1', 'requester']:
             response_user = schemas.users.Requester(new_user)
+        elif user_type == 'admin':
+            response_user = schemas.users.Admin(new_user)
+
+        try:
+            response_user = schemas.users.USER_TYPES[user_type](new_user)
+        except:
+            raise ValueError('Invalid user type from request')
+
         con.add(new_user)     
         await con.commit()
 
@@ -167,14 +179,11 @@ class Users:
             target = res.scalars().first()
             if target == None:
                 return None
-        if target.user_type == 'respondent':
-            return schemas.users.Respondent(target)
-        elif target.user_type == 'requester':
-            return schemas.users.Requester(target)
-        elif target.user_type == 'admin':
-            return schemas.users.Admin(target)
-        else:
+        try:
+            return schemas.users.USER_TYPES[target.user_type](target)
+        except:
             raise ValueError('Invalid user type from database')
+
 
 
     async def username_exists(self, username: str) -> bool:
