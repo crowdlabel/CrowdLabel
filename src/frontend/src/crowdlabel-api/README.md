@@ -132,7 +132,6 @@ Class | Method | HTTP request | Description
 *CrowdLabelApi.QuestionsApi* | [**createAnswerTasksTaskIdQuestionsQuestionIdAnswerPut**](docs/QuestionsApi.md#createAnswerTasksTaskIdQuestionsQuestionIdAnswerPut) | **PUT** /tasks/{task_id}/questions/{question_id}/answer | Create Answer
 *CrowdLabelApi.QuestionsApi* | [**getQuestionTasksTaskIdQuestionsQuestionIdGet**](docs/QuestionsApi.md#getQuestionTasksTaskIdQuestionsQuestionIdGet) | **GET** /tasks/{task_id}/questions/{question_id} | Get Question
 *CrowdLabelApi.TasksApi* | [**claimTaskTasksTaskIdClaimPost**](docs/TasksApi.md#claimTaskTasksTaskIdClaimPost) | **POST** /tasks/{task_id}/claim | Claim Task
-*CrowdLabelApi.TasksApi* | [**createTaskTasksCreatePost**](docs/TasksApi.md#createTaskTasksCreatePost) | **POST** /tasks/create | Create Task
 *CrowdLabelApi.TasksApi* | [**deleteTaskTasksTaskIdDelete**](docs/TasksApi.md#deleteTaskTasksTaskIdDelete) | **DELETE** /tasks/{task_id} | Delete Task
 *CrowdLabelApi.TasksApi* | [**downloadTaskResultsTasksTaskIdDownloadGet**](docs/TasksApi.md#downloadTaskResultsTasksTaskIdDownloadGet) | **GET** /tasks/{task_id}/download | Download Task Results
 *CrowdLabelApi.TasksApi* | [**editTaskTasksTaskIdPatch**](docs/TasksApi.md#editTaskTasksTaskIdPatch) | **PATCH** /tasks/{task_id} | Edit Task
@@ -154,11 +153,14 @@ Class | Method | HTTP request | Description
  - [CrowdLabelApi.AvailabilityRequest](docs/AvailabilityRequest.md)
  - [CrowdLabelApi.AvailabilityResponse](docs/AvailabilityResponse.md)
  - [CrowdLabelApi.BoundingBoxAnswer](docs/BoundingBoxAnswer.md)
+ - [CrowdLabelApi.EditEmailRequest](docs/EditEmailRequest.md)
+ - [CrowdLabelApi.EditPasswordRequest](docs/EditPasswordRequest.md)
  - [CrowdLabelApi.Email](docs/Email.md)
  - [CrowdLabelApi.ErrorResponse](docs/ErrorResponse.md)
  - [CrowdLabelApi.HTTPValidationError](docs/HTTPValidationError.md)
  - [CrowdLabelApi.LocationInner](docs/LocationInner.md)
  - [CrowdLabelApi.MultiChoiceAnswer](docs/MultiChoiceAnswer.md)
+ - [CrowdLabelApi.NewInfo](docs/NewInfo.md)
  - [CrowdLabelApi.OpenAnswer](docs/OpenAnswer.md)
  - [CrowdLabelApi.Point](docs/Point.md)
  - [CrowdLabelApi.Question](docs/Question.md)

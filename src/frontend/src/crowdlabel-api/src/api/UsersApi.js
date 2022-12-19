@@ -17,6 +17,7 @@ import AvailabilityRequest from '../model/AvailabilityRequest';
 import AvailabilityResponse from '../model/AvailabilityResponse';
 import Email from '../model/Email';
 import HTTPValidationError from '../model/HTTPValidationError';
+import NewInfo from '../model/NewInfo';
 import RegistrationError from '../model/RegistrationError';
 import RegistrationRequest from '../model/RegistrationRequest';
 import User from '../model/User';
@@ -93,11 +94,16 @@ export default class UsersApi {
     /**
      * Edit Me
      * Updates user info
+     * @param {module:model/NewInfo} newInfo 
      * @param {module:api/UsersApi~editMeUsersMePatchCallback} callback The callback function, accepting three arguments: error, data, response
      * data is of type: {@link Object}
      */
-    editMeUsersMePatch(callback) {
-      let postBody = null;
+    editMeUsersMePatch(newInfo, callback) {
+      let postBody = newInfo;
+      // verify the required parameter 'newInfo' is set
+      if (newInfo === undefined || newInfo === null) {
+        throw new Error("Missing the required parameter 'newInfo' when calling editMeUsersMePatch");
+      }
 
       let pathParams = {
       };
@@ -109,7 +115,7 @@ export default class UsersApi {
       };
 
       let authNames = ['OAuth2PasswordBearer'];
-      let contentTypes = [];
+      let contentTypes = ['application/json'];
       let accepts = ['application/json'];
       let returnType = Object;
       return this.apiClient.callApi(

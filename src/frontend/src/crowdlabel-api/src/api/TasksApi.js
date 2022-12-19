@@ -13,7 +13,6 @@
 
 
 import ApiClient from "../ApiClient";
-import CreateTaskRequest from '../model/CreateTaskRequest';
 import ErrorResponse from '../model/ErrorResponse';
 import HTTPValidationError from '../model/HTTPValidationError';
 import Task from '../model/Task';
@@ -76,58 +75,6 @@ export default class TasksApi {
       let returnType = Task;
       return this.apiClient.callApi(
         '/tasks/{task_id}/claim', 'POST',
-        pathParams, queryParams, headerParams, formParams, postBody,
-        authNames, contentTypes, accepts, returnType, null, callback
-      );
-    }
-
-    /**
-     * Callback function to receive the result of the createTaskTasksCreatePost operation.
-     * @callback module:api/TasksApi~createTaskTasksCreatePostCallback
-     * @param {String} error Error message, if any.
-     * @param {module:model/Task} data The data returned by the service call.
-     * @param {String} response The complete HTTP response.
-     */
-
-    /**
-     * Create Task
-     * @param {module:model/CreateTaskRequest} task 
-     * @param {File} questionsFile 
-     * @param {Object} opts Optional parameters
-     * @param {File} opts.cover 
-     * @param {module:api/TasksApi~createTaskTasksCreatePostCallback} callback The callback function, accepting three arguments: error, data, response
-     * data is of type: {@link module:model/Task}
-     */
-    createTaskTasksCreatePost(task, questionsFile, opts, callback) {
-      opts = opts || {};
-      let postBody = null;
-      // verify the required parameter 'task' is set
-      if (task === undefined || task === null) {
-        throw new Error("Missing the required parameter 'task' when calling createTaskTasksCreatePost");
-      }
-      // verify the required parameter 'questionsFile' is set
-      if (questionsFile === undefined || questionsFile === null) {
-        throw new Error("Missing the required parameter 'questionsFile' when calling createTaskTasksCreatePost");
-      }
-
-      let pathParams = {
-      };
-      let queryParams = {
-      };
-      let headerParams = {
-      };
-      let formParams = {
-        'task': task,
-        'questions_file': questionsFile,
-        'cover': opts['cover']
-      };
-
-      let authNames = ['OAuth2PasswordBearer'];
-      let contentTypes = ['multipart/form-data'];
-      let accepts = ['application/json'];
-      let returnType = Task;
-      return this.apiClient.callApi(
-        '/tasks/create', 'POST',
         pathParams, queryParams, headerParams, formParams, postBody,
         authNames, contentTypes, accepts, returnType, null, callback
       );
@@ -356,15 +303,15 @@ export default class TasksApi {
 
     /**
      * Upload Task
-     * @param {File} inFile 
+     * @param {File} taskFile 
      * @param {module:api/TasksApi~uploadTaskTasksUploadPostCallback} callback The callback function, accepting three arguments: error, data, response
      * data is of type: {@link module:model/Task}
      */
-    uploadTaskTasksUploadPost(inFile, callback) {
+    uploadTaskTasksUploadPost(taskFile, callback) {
       let postBody = null;
-      // verify the required parameter 'inFile' is set
-      if (inFile === undefined || inFile === null) {
-        throw new Error("Missing the required parameter 'inFile' when calling uploadTaskTasksUploadPost");
+      // verify the required parameter 'taskFile' is set
+      if (taskFile === undefined || taskFile === null) {
+        throw new Error("Missing the required parameter 'taskFile' when calling uploadTaskTasksUploadPost");
       }
 
       let pathParams = {
@@ -374,7 +321,7 @@ export default class TasksApi {
       let headerParams = {
       };
       let formParams = {
-        'in_file': inFile
+        'task_file': taskFile
       };
 
       let authNames = ['OAuth2PasswordBearer'];
