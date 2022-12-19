@@ -6,7 +6,7 @@
         <h2 class="logo">CrowdLabel</h2>
       </div>
       <div class="page_title">
-        <h3 class="title">历史记录</h3>
+        <h3 class="title">草稿箱</h3>
           <a class="notifications" data-external="true" href="/notifications">
             <img src="../assets/notifications.svg" alt="label" height="24"/>
           </a>
@@ -25,8 +25,8 @@
                     </a>
                 </li>
                 <li>
-                    <a aria-current="page" class="left_nav_list_item left_nav_list_item_active" data-external="true" href="/history">
-                        <img src="../assets/history_active.png" height="19" width="20">
+                    <a aria-current="page" class="left_nav_list_item" data-external="true" href="/history">
+                        <img src="../assets/history.png" height="19" width="20">
                         <p class="list_item_title">历史记录</p>
                     </a>
                 </li>
@@ -37,8 +37,8 @@
                     </a>
                 </li>
                 <li>
-                    <a aria-current="page" class="left_nav_list_item" data-external="true" href="/draftbox">
-                        <img src="../assets/draftbox.png" height="21" width="21">
+                    <a aria-current="page" class="left_nav_list_item left_nav_list_item_active" data-external="true" href="/draftbox">
+                        <img src="../assets/draftbox_active.png" height="21" width="21">
                         <p class="list_item_title">草稿箱</p>
                     </a>
                 </li>
@@ -61,18 +61,6 @@
             </ul>
         </div>
         <div class="main_body">
-            <div class="filter">
-              <p class="title_filter">筛选：</p>
-              <el-button type="success" round>全部</el-button>
-              <el-button round>文字任务</el-button>
-              <el-button round>图像任务</el-button>
-              <el-button round>音频任务</el-button>
-            </div>
-            <div class="order_by">
-              <p class="title_order_by">排序：</p>
-              <el-button type="success" round>发布时间</el-button>
-              <el-button round>热度</el-button>
-            </div>
             <div class="scroll_view">
               <el-scrollbar style="height: 100%">
                 <!-- 用于展示下拉，填充的内容 -->
@@ -81,9 +69,8 @@
                   <div class="scroll_element_text">
                     <h4 class="project_title">任务名称</h4>
                     <p class="project_detail">任务类型: 文字</p>
-                    <p class="project_detail">完成时间: 2022年11月27日</p>
-                    <p class="project_detail">审核状态: 通过</p>
-                    <p class="project_detail">获得积分: 15</p>
+                    <p class="project_detail">保存时间: 2022年11月27日</p>
+                    <p class="project_detail">答题进度: 11/60</p>
                   </div>
                 </div>
                 <div class="scroll_element">
@@ -91,9 +78,8 @@
                   <div class="scroll_element_text">
                     <h4 class="project_title">任务名称</h4>
                     <p class="project_detail">任务类型: 文字</p>
-                    <p class="project_detail">完成时间: 2022年11月27日</p>
-                    <p class="project_detail">审核状态: 通过</p>
-                    <p class="project_detail">获得积分: 15</p>
+                    <p class="project_detail">保存时间: 2022年11月27日</p>
+                    <p class="project_detail">答题进度: 11/60</p>
                   </div>
                 </div>
                 <div class="scroll_element">
@@ -101,9 +87,8 @@
                   <div class="scroll_element_text">
                     <h4 class="project_title">任务名称</h4>
                     <p class="project_detail">任务类型: 文字</p>
-                    <p class="project_detail">完成时间: 2022年11月27日</p>
-                    <p class="project_detail">审核状态: 通过</p>
-                    <p class="project_detail">获得积分: 15</p>
+                    <p class="project_detail">保存时间: 2022年11月27日</p>
+                    <p class="project_detail">答题进度: 11/60</p>
                   </div>
                 </div>
                 <div class="scroll_element">
@@ -111,9 +96,8 @@
                   <div class="scroll_element_text">
                     <h4 class="project_title">任务名称</h4>
                     <p class="project_detail">任务类型: 文字</p>
-                    <p class="project_detail">完成时间: 2022年11月27日</p>
-                    <p class="project_detail">审核状态: 通过</p>
-                    <p class="project_detail">获得积分: 15</p>
+                    <p class="project_detail">保存时间: 2022年11月27日</p>
+                    <p class="project_detail">答题进度: 11/60</p>
                   </div>
                 </div>
                 <div class="scroll_element">
@@ -121,9 +105,8 @@
                   <div class="scroll_element_text">
                     <h4 class="project_title">任务名称</h4>
                     <p class="project_detail">任务类型: 文字</p>
-                    <p class="project_detail">完成时间: 2022年11月27日</p>
-                    <p class="project_detail">审核状态: 通过</p>
-                    <p class="project_detail">获得积分: 15</p>
+                    <p class="project_detail">保存时间: 2022年11月27日</p>
+                    <p class="project_detail">答题进度: 11/60</p>
                   </div>
                 </div>
                 <div class="scroll_element">
@@ -131,9 +114,8 @@
                   <div class="scroll_element_text">
                     <h4 class="project_title">任务名称</h4>
                     <p class="project_detail">任务类型: 文字</p>
-                    <p class="project_detail">完成时间: 2022年11月27日</p>
-                    <p class="project_detail">审核状态: 通过</p>
-                    <p class="project_detail">获得积分: 15</p>
+                    <p class="project_detail">保存时间: 2022年11月27日</p>
+                    <p class="project_detail">答题进度: 11/60</p>
                   </div>
                 </div>
                 <div class="scroll_element">
@@ -141,9 +123,8 @@
                   <div class="scroll_element_text">
                     <h4 class="project_title">任务名称</h4>
                     <p class="project_detail">任务类型: 文字</p>
-                    <p class="project_detail">完成时间: 2022年11月27日</p>
-                    <p class="project_detail">审核状态: 通过</p>
-                    <p class="project_detail">获得积分: 15</p>
+                    <p class="project_detail">保存时间: 2022年11月27日</p>
+                    <p class="project_detail">答题进度: 11/60</p>
                   </div>
                 </div>
                 <div class="scroll_element">
@@ -151,9 +132,8 @@
                   <div class="scroll_element_text">
                     <h4 class="project_title">任务名称</h4>
                     <p class="project_detail">任务类型: 文字</p>
-                    <p class="project_detail">完成时间: 2022年11月27日</p>
-                    <p class="project_detail">审核状态: 通过</p>
-                    <p class="project_detail">获得积分: 15</p>
+                    <p class="project_detail">保存时间: 2022年11月27日</p>
+                    <p class="project_detail">答题进度: 11/60</p>
                   </div>
                 </div>
                 <div class="scroll_element">
@@ -161,9 +141,8 @@
                   <div class="scroll_element_text">
                     <h4 class="project_title">任务名称</h4>
                     <p class="project_detail">任务类型: 文字</p>
-                    <p class="project_detail">完成时间: 2022年11月27日</p>
-                    <p class="project_detail">审核状态: 通过</p>
-                    <p class="project_detail">获得积分: 15</p>
+                    <p class="project_detail">保存时间: 2022年11月27日</p>
+                    <p class="project_detail">答题进度: 11/60</p>
                   </div>
                 </div>
                 <div class="scroll_element">
@@ -171,9 +150,8 @@
                   <div class="scroll_element_text">
                     <h4 class="project_title">任务名称</h4>
                     <p class="project_detail">任务类型: 文字</p>
-                    <p class="project_detail">完成时间: 2022年11月27日</p>
-                    <p class="project_detail">审核状态: 通过</p>
-                    <p class="project_detail">获得积分: 15</p>
+                    <p class="project_detail">保存时间: 2022年11月27日</p>
+                    <p class="project_detail">答题进度: 11/60</p>
                   </div>
                 </div>
                 <div class="scroll_element">
@@ -181,9 +159,8 @@
                   <div class="scroll_element_text">
                     <h4 class="project_title">任务名称</h4>
                     <p class="project_detail">任务类型: 文字</p>
-                    <p class="project_detail">完成时间: 2022年11月27日</p>
-                    <p class="project_detail">审核状态: 通过</p>
-                    <p class="project_detail">获得积分: 15</p>
+                    <p class="project_detail">保存时间: 2022年11月27日</p>
+                    <p class="project_detail">答题进度: 11/60</p>
                   </div>
                 </div>
               </el-scrollbar>
@@ -437,10 +414,8 @@ export default {
 }
 
 .scroll_view {
-  border-top: 1.2px solid rgba(0,0,0,.1);
-  margin-top: 20px;
-  height: calc(100vh - 187px);
-  min-height: 225px;
+  height: calc(100vh - 50px);
+  min-height: 362px;
 }
 
 .scroll_element {

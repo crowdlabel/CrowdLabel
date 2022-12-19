@@ -81,20 +81,15 @@
         </div>
         <div class="answers">
           <el-radio-group v-model="radio">
-            <el-radio :label="1">是</el-radio>
-            <el-radio :label="2">否</el-radio>
+            <el-radio :label="item.value" @change="handleChange" v-for="(item,index) in choicesGiven">{{item.label}}</el-radio>
           </el-radio-group>
         </div>
         <div class="footer">
-          <a href="/projects">
-            <el-button type="primary" plain>退出答题</el-button>
-          </a>
+          <el-button id="quit_button" type="primary" v-on:click="quit()" plain>退出答题</el-button>
           <a>
-            <el-button type="primary" disabled>&lt 上一题</el-button>
+            <el-button id="prev_button" type="primary" disabled>&lt 上一题</el-button>
           </a>
-          <a href="/question_image_classify">
-            <el-button type="primary">下一题 ></el-button>
-          </a>
+          <el-button id="next_button" type="primary" v-on:click="nextQuestion()">下一题 ></el-button>
         </div>
         <el-progress :percentage="percentage" :color="customColor"></el-progress>
       </div>
@@ -107,18 +102,73 @@
 // @ is an alias to /src
 // import HelloWorld from '@/components/HelloWorld.vue'
 import axios from 'axios'
+// import { MessageBox } from 'element-ui';
+//Vue.prototype.$msgbox = MessageBox;
+// Vue.prototype.$confirm= MessageBox.confirm;
+// Vue.prototype.$message= Message
 export default {
   data() {
     return {
       percentage: 20,
       customColor: '#5D3BE6',
-      radio: -1
+      radio: -1,
+      choicesGiven: [
+        { label: "是", value: 0 },
+        { label: "否", value: 1 }
+      ],
     };
   },
   methods: {
-    
-  }
+    alertMessage() {
+        this.$message({
+          showClose: true,
+          message: '您尚未作答本题目，请先完成本题。',
+          type: 'warning'
+        });
+    },
+    nextQuestion() {
+      let _radio = this.radio;
+      console.log(_radio);
+      if (_radio == -1) {
+        this.alertMessage();
+      } else {
+        document.location.href = '/question_image_classify';
+      }
+    },
+    handleChange(val) {
+      console.log(val);
+      this.radio = val;
+      console.log(this.radio);
+    },
+    quit() {
+        this.$confirm('是否要保存当前的答题进度?', '退出任务', {
+          confirmButtonText: '是',
+          cancelButtonText: '否',
+          type: 'warning'
+        }).then(() => {
+          /*
+          this.$message({
+            type: 'success',
+            message: '保存成功!'
+          });
+          */
+          document.location.href = '/projects';
+        }).catch(() => {
+          /*
+          this.$message({
+            type: 'info',
+            message: '已取消保存'
+          });  
+          */     
+          document.location.href = '/projects';   
+        });
+      }
+  },
+  
 }
+
+
+
 </script>
 
 <style scoped>
