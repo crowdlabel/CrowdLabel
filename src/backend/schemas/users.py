@@ -80,7 +80,7 @@ class User(BaseModel):
     email: str=''
     user_type: str=''
     credits: float=0
-    date_created: datetime=datetime.utcnow()
+    date_created: datetime
     password_hashed: str=''
 
     def __init__(self, user):

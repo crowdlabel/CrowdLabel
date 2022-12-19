@@ -70,8 +70,6 @@ No authorization required
 
 Token
 
-same function as the &#x60;login&#x60; endpoint
-
 ### Example
 
 ```javascript

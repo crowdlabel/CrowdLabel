@@ -50,9 +50,6 @@ class TaskSearchRequest {
             if (data.hasOwnProperty('name')) {
                 obj['name'] = ApiClient.convertToType(data['name'], 'String');
             }
-            if (data.hasOwnProperty('credits')) {
-                obj['credits'] = ApiClient.convertToType(data['credits'], 'Number');
-            }
             if (data.hasOwnProperty('tags')) {
                 obj['tags'] = ApiClient.convertToType(data['tags'], ['String']);
             }
@@ -61,6 +58,9 @@ class TaskSearchRequest {
             }
             if (data.hasOwnProperty('page')) {
                 obj['page'] = ApiClient.convertToType(data['page'], 'Number');
+            }
+            if (data.hasOwnProperty('page_size')) {
+                obj['page_size'] = ApiClient.convertToType(data['page_size'], 'Number');
             }
             if (data.hasOwnProperty('credits_min')) {
                 obj['credits_min'] = ApiClient.convertToType(data['credits_min'], 'Number');
@@ -111,13 +111,9 @@ class TaskSearchRequest {
 
 /**
  * @member {String} name
+ * @default ''
  */
-TaskSearchRequest.prototype['name'] = undefined;
-
-/**
- * @member {Number} credits
- */
-TaskSearchRequest.prototype['credits'] = undefined;
+TaskSearchRequest.prototype['name'] = '';
 
 /**
  * @member {Array.<String>} tags
@@ -131,28 +127,39 @@ TaskSearchRequest.prototype['requesters'] = undefined;
 
 /**
  * @member {Number} page
+ * @default 1
  */
-TaskSearchRequest.prototype['page'] = undefined;
+TaskSearchRequest.prototype['page'] = 1;
+
+/**
+ * @member {Number} page_size
+ * @default -1
+ */
+TaskSearchRequest.prototype['page_size'] = -1;
 
 /**
  * @member {Number} credits_min
+ * @default 0
  */
-TaskSearchRequest.prototype['credits_min'] = undefined;
+TaskSearchRequest.prototype['credits_min'] = 0;
 
 /**
  * @member {Number} credits_max
+ * @default -1
  */
-TaskSearchRequest.prototype['credits_max'] = undefined;
+TaskSearchRequest.prototype['credits_max'] = -1;
 
 /**
  * @member {String} sort_criteria
+ * @default 'name'
  */
-TaskSearchRequest.prototype['sort_criteria'] = undefined;
+TaskSearchRequest.prototype['sort_criteria'] = 'name';
 
 /**
  * @member {Boolean} sort_ascending
+ * @default true
  */
-TaskSearchRequest.prototype['sort_ascending'] = undefined;
+TaskSearchRequest.prototype['sort_ascending'] = true;
 
 
 
