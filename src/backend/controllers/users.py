@@ -81,10 +81,15 @@ async def get_me(current_user: schemas.users.User = Depends(get_current_user()))
 @router.patch('/me',
     description='Updates user info'
 )
-async def edit_me(current_user: schemas.users.User = Depends(get_current_user())):
+async def edit_me(new_info : schemas.users.EditEmailRequest | schemas.users.EditPasswordRequest,
+    current_user: schemas.users.User = Depends(get_current_user())
+):
     # edit user's own details
     # TODO
-    pass
+    if isinstance(new_info, schemas.users.EditEmailRequest):
+        await user_service.edit_user(email=new_info.new_email, password=new_info.password)
+    elif isinstance(new_info, schemas.users.EditPasswordRequest):
+        await user_service.edit_user(new_password=new_info.new_password, password=new_info.old_password)
 ###############################################################################
 username_success_jdr = JSONDocumentedResponse(
     status.HTTP_200_OK,

@@ -138,7 +138,7 @@ class Tasks:
         await con.commit()
         return True
             
-    async def process_task_archive(self, id,filename: str) -> list[schemas.questions.Question] | str:
+    async def process_task_archive(self, filename: str) -> schemas.tasks.Task | str:
         '''
         Filename: filename of the file that was uploaded
         Creates and returns the task, or returns an error message
@@ -149,8 +149,9 @@ class Tasks:
         elif suffix == 'rar':
             file = rarfile.RarFile(filename)
         extract = file.extractall()
-        extract.close()
-        questions = services.questions.question_service.create_question_from_file(id,filename)
+        #extract.close()
+        file.close() #?
+        questions = await services.questions.question_service.create_question_from_file(id,filename)
         return questions
 
     async def search(
