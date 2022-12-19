@@ -103,7 +103,6 @@ export default class AuthApi {
 
     /**
      * Token
-     * same function as the `login` endpoint
      * @param {String} username 
      * @param {String} password 
      * @param {Object} opts Optional parameters

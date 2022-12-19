@@ -8,7 +8,6 @@ Name | Type | Description | Notes
 **questionType** | **String** |  | 
 **prompt** | **String** |  | 
 **resource** | **String** |  | [optional] 
-**taskId** | **Number** |  | 
-**answers** | [**[Answer]**](Answer.md) |  | 
+**answers** | [**[Answer]**](Answer.md) |  | [optional] 
 
 

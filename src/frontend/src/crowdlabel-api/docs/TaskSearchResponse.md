@@ -4,16 +4,16 @@
 
 Name | Type | Description | Notes
 ------------ | ------------- | ------------- | -------------
-**name** | **String** |  | [optional] 
-**credits** | **Number** |  | [optional] 
+**name** | **String** |  | [optional] [default to &#39;&#39;]
 **tags** | **[String]** |  | [optional] 
 **requesters** | **[String]** |  | [optional] 
-**page** | **Number** |  | [optional] 
-**creditsMin** | **Number** |  | [optional] 
-**creditsMax** | **Number** |  | [optional] 
-**sortCriteria** | **String** |  | [optional] 
-**sortAscending** | **Boolean** |  | [optional] 
-**tasks** | **[Number]** |  | 
-**total** | **Number** |  | 
+**page** | **Number** |  | [optional] [default to 1]
+**pageSize** | **Number** |  | [optional] [default to -1]
+**creditsMin** | **Number** |  | [optional] [default to 0]
+**creditsMax** | **Number** |  | [optional] [default to -1]
+**sortCriteria** | **String** |  | [optional] [default to &#39;name&#39;]
+**sortAscending** | **Boolean** |  | [optional] [default to true]
+**tasks** | **[Number]** |  | [optional] 
+**total** | **Number** |  | [optional] [default to 0]
 
 

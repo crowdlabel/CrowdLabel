@@ -24,19 +24,19 @@ class ErrorResponse(BaseModel):
 
 
 class CreateTaskRequest(BaseModel):
-    name: str
-    credits: float
+    name: str='My Task'
+    credits: float=0
     introduction: str=''
     description: str=''
-    tags: list[str]=[]
-    responses_required: int
-    questions: list[schemas.questions.Question]=[] # list of Questions
+    tags: set[str]=set()
+    responses_required: int=1
 
 class Task(CreateTaskRequest):
     task_id: int
     creator: str
     cover: str=''
     date_created: datetime
+    questions: list[schemas.questions.Question]=[] # list of Questions
     respondents_claimed: set[str]=set() # usernames of respondents who have claimed the task but have not completed it
     respondents_completed: set[str]=set() # usernames of respondents who have claimed and completed the task
     questions: list[schemas.questions.Question]=[] # list of Questions

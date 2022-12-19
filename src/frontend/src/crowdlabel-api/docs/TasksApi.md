@@ -5,11 +5,12 @@ All URIs are relative to *http://localhost*
 Method | HTTP request | Description
 ------------- | ------------- | -------------
 [**claimTaskTasksTaskIdClaimPost**](TasksApi.md#claimTaskTasksTaskIdClaimPost) | **POST** /tasks/{task_id}/claim | Claim Task
+[**createTaskTasksCreatePost**](TasksApi.md#createTaskTasksCreatePost) | **POST** /tasks/create | Create Task
 [**deleteTaskTasksTaskIdDelete**](TasksApi.md#deleteTaskTasksTaskIdDelete) | **DELETE** /tasks/{task_id} | Delete Task
 [**downloadTaskResultsTasksTaskIdDownloadGet**](TasksApi.md#downloadTaskResultsTasksTaskIdDownloadGet) | **GET** /tasks/{task_id}/download | Download Task Results
 [**editTaskTasksTaskIdPatch**](TasksApi.md#editTaskTasksTaskIdPatch) | **PATCH** /tasks/{task_id} | Edit Task
 [**getTaskTasksTaskIdGet**](TasksApi.md#getTaskTasksTaskIdGet) | **GET** /tasks/{task_id} | Get Task
-[**searchTasksTasksGet**](TasksApi.md#searchTasksTasksGet) | **GET** /tasks/ | Search Tasks
+[**searchTasksTasksPut**](TasksApi.md#searchTasksTasksPut) | **PUT** /tasks/ | Search Tasks
 [**uploadTaskTasksUploadPost**](TasksApi.md#uploadTaskTasksUploadPost) | **POST** /tasks/upload | Upload Task
 
 
@@ -58,6 +59,59 @@ Name | Type | Description  | Notes
 ### HTTP request headers
 
 - **Content-Type**: Not defined
+- **Accept**: application/json
+
+
+## createTaskTasksCreatePost
+
+> Task createTaskTasksCreatePost(task, questionsFile, opts)
+
+Create Task
+
+### Example
+
+```javascript
+import CrowdLabelApi from 'crowd_label_api';
+let defaultClient = CrowdLabelApi.ApiClient.instance;
+// Configure OAuth2 access token for authorization: OAuth2PasswordBearer
+let OAuth2PasswordBearer = defaultClient.authentications['OAuth2PasswordBearer'];
+OAuth2PasswordBearer.accessToken = 'YOUR ACCESS TOKEN';
+
+let apiInstance = new CrowdLabelApi.TasksApi();
+let task = new CrowdLabelApi.CreateTaskRequest(); // CreateTaskRequest | 
+let questionsFile = "/path/to/file"; // File | 
+let opts = {
+  'cover': "/path/to/file" // File | 
+};
+apiInstance.createTaskTasksCreatePost(task, questionsFile, opts, (error, data, response) => {
+  if (error) {
+    console.error(error);
+  } else {
+    console.log('API called successfully. Returned data: ' + data);
+  }
+});
+```
+
+### Parameters
+
+
+Name | Type | Description  | Notes
+------------- | ------------- | ------------- | -------------
+ **task** | [**CreateTaskRequest**](CreateTaskRequest.md)|  | 
+ **questionsFile** | **File**|  | 
+ **cover** | **File**|  | [optional] 
+
+### Return type
+
+[**Task**](Task.md)
+
+### Authorization
+
+[OAuth2PasswordBearer](../README.md#OAuth2PasswordBearer)
+
+### HTTP request headers
+
+- **Content-Type**: multipart/form-data
 - **Accept**: application/json
 
 
@@ -249,9 +303,9 @@ Name | Type | Description  | Notes
 - **Accept**: application/json
 
 
-## searchTasksTasksGet
+## searchTasksTasksPut
 
-> TaskSearchResponse searchTasksTasksGet(taskSearchRequest)
+> TaskSearchResponse searchTasksTasksPut(taskSearchRequest)
 
 Search Tasks
 
@@ -268,7 +322,7 @@ OAuth2PasswordBearer.accessToken = 'YOUR ACCESS TOKEN';
 
 let apiInstance = new CrowdLabelApi.TasksApi();
 let taskSearchRequest = new CrowdLabelApi.TaskSearchRequest(); // TaskSearchRequest | 
-apiInstance.searchTasksTasksGet(taskSearchRequest, (error, data, response) => {
+apiInstance.searchTasksTasksPut(taskSearchRequest, (error, data, response) => {
   if (error) {
     console.error(error);
   } else {

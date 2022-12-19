@@ -129,14 +129,15 @@ Class | Method | HTTP request | Description
 ------------ | ------------- | ------------- | -------------
 *CrowdLabelApi.AuthApi* | [**loginLoginPost**](docs/AuthApi.md#loginLoginPost) | **POST** /login | Login
 *CrowdLabelApi.AuthApi* | [**tokenTokenPost**](docs/AuthApi.md#tokenTokenPost) | **POST** /token | Token
-*CrowdLabelApi.QuestionsApi* | [**createAnswerQuestionsPost**](docs/QuestionsApi.md#createAnswerQuestionsPost) | **POST** /questions | Create Answer
-*CrowdLabelApi.QuestionsApi* | [**getQuestionQuestionsQuestionsQuestionIdGet**](docs/QuestionsApi.md#getQuestionQuestionsQuestionsQuestionIdGet) | **GET** /questions/questions/{question_id} | Get Question
+*CrowdLabelApi.QuestionsApi* | [**createAnswerTasksTaskIdQuestionsQuestionIdAnswerPut**](docs/QuestionsApi.md#createAnswerTasksTaskIdQuestionsQuestionIdAnswerPut) | **PUT** /tasks/{task_id}/questions/{question_id}/answer | Create Answer
+*CrowdLabelApi.QuestionsApi* | [**getQuestionTasksTaskIdQuestionsQuestionIdGet**](docs/QuestionsApi.md#getQuestionTasksTaskIdQuestionsQuestionIdGet) | **GET** /tasks/{task_id}/questions/{question_id} | Get Question
 *CrowdLabelApi.TasksApi* | [**claimTaskTasksTaskIdClaimPost**](docs/TasksApi.md#claimTaskTasksTaskIdClaimPost) | **POST** /tasks/{task_id}/claim | Claim Task
+*CrowdLabelApi.TasksApi* | [**createTaskTasksCreatePost**](docs/TasksApi.md#createTaskTasksCreatePost) | **POST** /tasks/create | Create Task
 *CrowdLabelApi.TasksApi* | [**deleteTaskTasksTaskIdDelete**](docs/TasksApi.md#deleteTaskTasksTaskIdDelete) | **DELETE** /tasks/{task_id} | Delete Task
 *CrowdLabelApi.TasksApi* | [**downloadTaskResultsTasksTaskIdDownloadGet**](docs/TasksApi.md#downloadTaskResultsTasksTaskIdDownloadGet) | **GET** /tasks/{task_id}/download | Download Task Results
 *CrowdLabelApi.TasksApi* | [**editTaskTasksTaskIdPatch**](docs/TasksApi.md#editTaskTasksTaskIdPatch) | **PATCH** /tasks/{task_id} | Edit Task
 *CrowdLabelApi.TasksApi* | [**getTaskTasksTaskIdGet**](docs/TasksApi.md#getTaskTasksTaskIdGet) | **GET** /tasks/{task_id} | Get Task
-*CrowdLabelApi.TasksApi* | [**searchTasksTasksGet**](docs/TasksApi.md#searchTasksTasksGet) | **GET** /tasks/ | Search Tasks
+*CrowdLabelApi.TasksApi* | [**searchTasksTasksPut**](docs/TasksApi.md#searchTasksTasksPut) | **PUT** /tasks/ | Search Tasks
 *CrowdLabelApi.TasksApi* | [**uploadTaskTasksUploadPost**](docs/TasksApi.md#uploadTaskTasksUploadPost) | **POST** /tasks/upload | Upload Task
 *CrowdLabelApi.UsersApi* | [**availabilityUsersAvailabilityPut**](docs/UsersApi.md#availabilityUsersAvailabilityPut) | **PUT** /users/availability | Availability
 *CrowdLabelApi.UsersApi* | [**editMeUsersMePatch**](docs/UsersApi.md#editMeUsersMePatch) | **PATCH** /users/me | Edit Me
@@ -149,16 +150,22 @@ Class | Method | HTTP request | Description
 ## Documentation for Models
 
  - [CrowdLabelApi.Answer](docs/Answer.md)
+ - [CrowdLabelApi.Answer1](docs/Answer1.md)
  - [CrowdLabelApi.AvailabilityRequest](docs/AvailabilityRequest.md)
  - [CrowdLabelApi.AvailabilityResponse](docs/AvailabilityResponse.md)
- - [CrowdLabelApi.BodyCreateAnswerQuestionsPost](docs/BodyCreateAnswerQuestionsPost.md)
+ - [CrowdLabelApi.BoundingBoxAnswer](docs/BoundingBoxAnswer.md)
  - [CrowdLabelApi.Email](docs/Email.md)
  - [CrowdLabelApi.ErrorResponse](docs/ErrorResponse.md)
  - [CrowdLabelApi.HTTPValidationError](docs/HTTPValidationError.md)
  - [CrowdLabelApi.LocationInner](docs/LocationInner.md)
+ - [CrowdLabelApi.MultiChoiceAnswer](docs/MultiChoiceAnswer.md)
+ - [CrowdLabelApi.OpenAnswer](docs/OpenAnswer.md)
+ - [CrowdLabelApi.Point](docs/Point.md)
  - [CrowdLabelApi.Question](docs/Question.md)
+ - [CrowdLabelApi.RankingAnswer](docs/RankingAnswer.md)
  - [CrowdLabelApi.RegistrationError](docs/RegistrationError.md)
  - [CrowdLabelApi.RegistrationRequest](docs/RegistrationRequest.md)
+ - [CrowdLabelApi.SingleChoiceAnswer](docs/SingleChoiceAnswer.md)
  - [CrowdLabelApi.Task](docs/Task.md)
  - [CrowdLabelApi.TaskSearchRequest](docs/TaskSearchRequest.md)
  - [CrowdLabelApi.TaskSearchResponse](docs/TaskSearchResponse.md)
