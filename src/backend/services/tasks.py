@@ -19,9 +19,10 @@ import schemas.tasks
 import schemas.users
 
 import asyncio
-import zipfile
-import rarfile
 import json
+import patoolib
+
+
 class Tasks:
 
     def __init__(self):
@@ -140,21 +141,50 @@ class Tasks:
         await con.commit()
         return True
             
-    async def process_task_archive(self, filename: str) -> schemas.tasks.Task | str:
+    async def process_task_archive(self, filename: pathlib.Path) -> schemas.tasks.Task | str:
         '''
         Filename: filename of the file that was uploaded
         Creates and returns the task, or returns an error message
         '''
-        suffix = filename.split('.')[-1]
-        if suffix == 'zip':
-            file = zipfile.ZipFile(filename)
-        elif suffix == 'rar':
-            file = rarfile.RarFile(filename)
-        extract = file.extractall()
-        #extract.close()
-        file.close() #?
-        questions = await services.questions.question_service.create_question_from_file(id,filename)
-        return questions
+        output_dir = filename.parent / filename.stem
+        try:
+            resp = patoolib.extract_archive(str(filename), outdir=output_dir, verbosity=-1, interactive=False)
+        except Exception as e:
+            return str(e)
+
+        try:
+            with open(output_dir / 'task.json', 'rb') as f:
+                data = f.read()
+        except FileNotFoundError:
+            return '`task.json` not found'
+
+        try:
+            data = json.loads(data)
+        except Exception as e:
+            return str(e)
+
+        try:
+            questions = data['questions']
+        except:
+            return 'No questions'
+
+        del data['questions']
+
+        try:
+            task = schemas.tasks.CreateTaskRequest.parse_obj(data)
+        except Exception as e:
+            return str(e)
+
+        for question in questions:
+            try:
+                task.questions.append(schemas.questions.QUESTION_TYPES[question['question_type']].parse_obj(question))
+            except Exception as e:
+                return str(e)
+
+        return task
+
+        
+
 
     async def search(
         user: schemas.users.User,

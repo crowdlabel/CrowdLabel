@@ -19,30 +19,30 @@ class QuestionRequest(BaseModel):
 
 class Question(QuestionRequest):
     answers: list[schemas.answers.Answer]=[]
-    def __init__(self,question):
+"""     def __init__(self,question):
         super(Question,self).__init__(question_id = question.id , question_type = question.type,
         prompt = question.prompt , resource = question.resource,task_id = question.task_id)
-        answers = []
+        answers = [] """
 class ClosedQuestion(Question):
     options: list[str]
-    def __init__(self,question):
+"""     def __init__(self,question):
         super(ClosedQuestion,self).__init__(question)
-        options = question.options.split('|')
+        options = question.options.split('|') """
 class SingleChoiceQuestion(ClosedQuestion):
     question_type='single_choice'
-    answers: list[schemas.answers.SingleChoiceAnswer]
+    answers: list[schemas.answers.SingleChoiceAnswer]=[]
 class MultiChoiceQuestion(ClosedQuestion):
     question_type='multi_choice'
-    answers: list[schemas.answers.MultiChoiceAnswer]
+    answers: list[schemas.answers.MultiChoiceAnswer]=[]
 class RankingQuestion(ClosedQuestion):
     question_type='ranking'
-    answers: list[schemas.answers.RankingAnswer]
+    answers: list[schemas.answers.RankingAnswer]=[]
 class OpenQuestion(Question):
     question_type='open'
-    answers: list[schemas.answers.OpenAnswer]
+    answers: list[schemas.answers.OpenAnswer]=[]
 class BoundingBoxQuestion(Question):
     question_type='bounding_box'
-    answers: list[schemas.answers.BoundingBoxAnswer]
+    answers: list[schemas.answers.BoundingBoxAnswer]=[]
 
 
 QUESTION_TYPES = {
