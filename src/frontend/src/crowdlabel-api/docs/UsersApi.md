@@ -60,7 +60,7 @@ No authorization required
 
 ## editMeUsersMePatch
 
-> Object editMeUsersMePatch()
+> Object editMeUsersMePatch(newInfo)
 
 Edit Me
 
@@ -76,7 +76,8 @@ let OAuth2PasswordBearer = defaultClient.authentications['OAuth2PasswordBearer']
 OAuth2PasswordBearer.accessToken = 'YOUR ACCESS TOKEN';
 
 let apiInstance = new CrowdLabelApi.UsersApi();
-apiInstance.editMeUsersMePatch((error, data, response) => {
+let newInfo = new CrowdLabelApi.NewInfo(); // NewInfo | 
+apiInstance.editMeUsersMePatch(newInfo, (error, data, response) => {
   if (error) {
     console.error(error);
   } else {
@@ -87,7 +88,10 @@ apiInstance.editMeUsersMePatch((error, data, response) => {
 
 ### Parameters
 
-This endpoint does not need any parameter.
+
+Name | Type | Description  | Notes
+------------- | ------------- | ------------- | -------------
+ **newInfo** | [**NewInfo**](NewInfo.md)|  | 
 
 ### Return type
 
@@ -99,7 +103,7 @@ This endpoint does not need any parameter.
 
 ### HTTP request headers
 
-- **Content-Type**: Not defined
+- **Content-Type**: application/json
 - **Accept**: application/json
 
 

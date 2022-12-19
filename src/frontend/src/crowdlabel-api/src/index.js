@@ -18,11 +18,14 @@ import Answer1 from './model/Answer1';
 import AvailabilityRequest from './model/AvailabilityRequest';
 import AvailabilityResponse from './model/AvailabilityResponse';
 import BoundingBoxAnswer from './model/BoundingBoxAnswer';
+import EditEmailRequest from './model/EditEmailRequest';
+import EditPasswordRequest from './model/EditPasswordRequest';
 import Email from './model/Email';
 import ErrorResponse from './model/ErrorResponse';
 import HTTPValidationError from './model/HTTPValidationError';
 import LocationInner from './model/LocationInner';
 import MultiChoiceAnswer from './model/MultiChoiceAnswer';
+import NewInfo from './model/NewInfo';
 import OpenAnswer from './model/OpenAnswer';
 import Point from './model/Point';
 import Question from './model/Question';
@@ -111,6 +114,18 @@ export {
     BoundingBoxAnswer,
 
     /**
+     * The EditEmailRequest model constructor.
+     * @property {module:model/EditEmailRequest}
+     */
+    EditEmailRequest,
+
+    /**
+     * The EditPasswordRequest model constructor.
+     * @property {module:model/EditPasswordRequest}
+     */
+    EditPasswordRequest,
+
+    /**
      * The Email model constructor.
      * @property {module:model/Email}
      */
@@ -139,6 +154,12 @@ export {
      * @property {module:model/MultiChoiceAnswer}
      */
     MultiChoiceAnswer,
+
+    /**
+     * The NewInfo model constructor.
+     * @property {module:model/NewInfo}
+     */
+    NewInfo,
 
     /**
      * The OpenAnswer model constructor.

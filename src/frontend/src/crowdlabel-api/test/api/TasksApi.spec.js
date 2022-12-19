@@ -58,16 +58,6 @@
         done();
       });
     });
-    describe('createTaskTasksCreatePost', function() {
-      it('should call createTaskTasksCreatePost successfully', function(done) {
-        //uncomment below and update the code to test createTaskTasksCreatePost
-        //instance.createTaskTasksCreatePost(function(error) {
-        //  if (error) throw error;
-        //expect().to.be();
-        //});
-        done();
-      });
-    });
     describe('deleteTaskTasksTaskIdDelete', function() {
       it('should call deleteTaskTasksTaskIdDelete successfully', function(done) {
         //uncomment below and update the code to test deleteTaskTasksTaskIdDelete

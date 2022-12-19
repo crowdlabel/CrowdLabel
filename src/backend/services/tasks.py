@@ -13,6 +13,8 @@ from sqlalchemy import select, and_ ,or_
 Connection = sessionmaker(bind=engine, expire_on_commit=False, class_=AsyncSession)
 con = scoped_session(Connection)
 
+import pathlib
+
 import schemas.tasks
 import schemas.users
 

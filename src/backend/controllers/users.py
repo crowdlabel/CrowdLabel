@@ -52,7 +52,7 @@ register_success_jdr = JSONDocumentedResponse(
 )
 register_failed_jdr = JSONDocumentedResponse(
     status.HTTP_400_BAD_REQUEST,
-    'Account creation failed. The field(s) that caused the failure and its corresponding error (`exists` for existing field (`username` or `email`), `format` (any field), or `wrong` (`verification_code`) is returned. Not all fields will necessarily be present.',
+    'Account creation failed. The field(s) that caused the failure and its corresponding error (`exists` for existing field (`username` or `email`), `format` (any field), or `wrong` (`verification_code`) is returned. Not all fields will necessarily be present. `user_type` must be one of `"requester"`, `"respondent"`, or `"admin"`',
     schemas.users.RegistrationError
 )
 @router.post('/register', 

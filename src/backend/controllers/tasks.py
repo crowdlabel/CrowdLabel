@@ -62,8 +62,8 @@ upload_failed_jdr = JSONDocumentedResponse(
     **create_documentation([upload_success_jdr, upload_failed_jdr])
 )
 async def upload_task(task_file: UploadFile, current_user=Depends(get_current_user(['requester']))):
-    filename = 'upload_' + current_user.username + '_' + datetime_now_str() + '.zip'
-    await upload_file(task_file, TASK_UPLOAD_DIR / filename)
+    filename = TASK_UPLOAD_DIR / ('upload_' + current_user.username + '_' + datetime_now_str() + '.zip')
+    await upload_file(task_file, filename)
     response = await task_service.process_task_archive(filename)
     if isinstance(response, str):
         return upload_failed_jdr(schemas.tasks.ErrorResponse('Error'))
