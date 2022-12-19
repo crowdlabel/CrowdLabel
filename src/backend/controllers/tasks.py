@@ -9,7 +9,7 @@ import schemas.tasks
 from utils.datetime_str import datetime_now_str
 
 router = APIRouter()
-task_service = services.tasks.Tasks
+task_service = services.tasks.Tasks()
 
 
 ###############################################################################
@@ -175,7 +175,7 @@ claim_failed_jdr = JSONDocumentedResponse(
     **create_documentation([claim_success_jdr, claim_failed_jdr])
 )
 async def claim_task(task_id: int, current_user=Depends(get_current_user(['respondent']))):
-    task = await current_user.claim_task(task_id)
+    task = await task_service.claim_task(current_user.username,task_id)
 
     return claim_success_jdr.response(task)
 ###############################################################################
