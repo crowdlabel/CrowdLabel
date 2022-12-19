@@ -92,8 +92,9 @@ class Questions:
         task_id:int,
         file_path:str
     )->list[schemas.questions.Question]:
-        if not __verify_question_format():
-            return False
+        # TODO
+        #if not __verify_question_format():
+        #    return False
         file = json.load(open(file_path,'r'))
         response_questions = []
         async with con.begin():
