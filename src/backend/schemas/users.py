@@ -33,6 +33,11 @@ class AvailabilityResponse(BaseModel):
             }
         }
 
+class UserEditRequest(BaseModel):
+    email: Optional[str]
+    new_password: Optional[str]
+    old_password: str
+
 class RegistrationRequest(BaseModel):
     username: str
     email: str
@@ -76,6 +81,7 @@ class User(BaseModel):
     user_type: str=''
     credits: float=0
     date_created: datetime=datetime.utcnow()
+    password_hashed: str=''
 
     def __init__(self, user):
         super(User, self).__init__(
@@ -86,12 +92,6 @@ class User(BaseModel):
             password_hashed=user.password_hashed,
         )
         
-
-
-    async def edit_user_info(new_info: dict) -> bool:
-        """
-        Edits self using the new user
-        """
 
     class Config:
         schema_extra = {
