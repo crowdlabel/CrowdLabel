@@ -36,7 +36,7 @@ class Tasks:
         if credits * responses_required > creator.credits:
             return 'Insufficient credits'
 
-        date_created = datetime.utcnow()
+        date_created = datetime.datetime.utcnow()
         task_schema = schemas.tasks.Task(
             name=name,
             credits=credits,
@@ -55,7 +55,7 @@ class Tasks:
                     response_required = responses_required,credits = credits,date_created = date_created,filepath = filepath)
                     
         async with con.begin():
-            target = await con.execute(select(models.user.Requester).where(models.user.Requester.username==creator).options(selectinload(models.user.Requester.task_requested)))
+            target = await con.execute(select(models.user.Requester).where(models.user.Requester.username==creator.username).options(selectinload(models.user.Requester.task_requested)))
             res = target.scalars().first()
             if res == None:
                 return 'requester not found'
@@ -139,7 +139,7 @@ class Tasks:
         await con.commit()
         return True
             
-    async def process_task_archive(self,filename: str) -> list[schemas.questions.Question] | str:
+    async def process_task_archive(self,task_id,filename: str) -> list[schemas.questions.Question] | str:
         '''
         Filename: filename of the file that was uploaded
         Creates and returns the task, or returns an error message
@@ -149,8 +149,8 @@ class Tasks:
             file = zipfile.ZipFile(filename)
         elif suffix == 'rar':  
             file = rarfile.RarFile(filename)
-        extract = file.extractall()
-        questions = services.questions.question_service.create_question_from_file('questions.json')
+        file.extractall()
+        questions = services.questions.question_service.create_question_from_file(task_id,'questions.json')
         return questions
 
     async def search(

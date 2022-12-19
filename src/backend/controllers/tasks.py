@@ -94,7 +94,7 @@ async def create_task(task: schemas.tasks.CreateTaskRequest, questions_file: Upl
 
     await upload_file(questions_file, questions_filename)
 
-    questions = await task_service.process_questions_archive(questions_filename)
+    #questions = await task_service.process_task_archive(questions_filename)
 
     result = await task_service.create_task(
         creator=current_user,
@@ -104,7 +104,6 @@ async def create_task(task: schemas.tasks.CreateTaskRequest, questions_file: Upl
         cover_filename=cover_filename if cover else None,
         responses_required=task.responses_required,
         credits=task.credits,
-        questions=questions
     )
 
     if not isinstance(result, schemas.tasks.Task):
