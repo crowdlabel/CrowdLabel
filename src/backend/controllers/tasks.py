@@ -7,6 +7,7 @@ import services.users
 from .jsondocumentedresponse import JSONDocumentedResponse, create_documentation, forbidden_jdr, not_found_jdr
 import schemas.tasks
 from utils.datetime_str import datetime_now_str
+from typing import Optional
 
 router = APIRouter()
 task_service = services.tasks.Tasks()
@@ -26,11 +27,16 @@ get_task_failed_hdr = JSONDocumentedResponse(
 @router.put('/',
     **create_documentation([get_task_success_jdr, get_task_failed_hdr])
 )
-async def search_tasks(query: schemas.tasks.TaskSearchRequest, current_user=Depends(get_current_user(['admin', 'respondent']))):
+async def search_tasks(query: schemas.tasks.TaskSearchRequest, current_user=Depends(get_current_user(['respondent']))):
     """
     Task search
     """
-    tasks = await task_service.search(current_user, **query.dict())
+    print(query)
+    print(query.dict())
+
+    # TODO: complete arguments
+    tasks = await task_service.search(current_user)
+
     if isinstance(tasks, str):
         return get_task_failed_hdr.response(schemas.tasks.ErrorResponse(tasks))
 
@@ -61,9 +67,49 @@ async def upload_task(in_file: UploadFile, current_user=Depends(get_current_user
     return upload_success_jdr.response(response)
 ###############################################################################
 
+
+
+
+create_task_success_jdr = JSONDocumentedResponse(
+    status.HTTP_201_CREATED,
+    'Task created successfully',
+    schemas.tasks.Task
+)
+create_task_failed_jdr = JSONDocumentedResponse(
+    status.HTTP_400_BAD_REQUEST,
+    'Task not created',
+)
+async def create_task(task: schemas.tasks.CreateTaskRequest, cover: Optional[UploadFile]=None,
+    current_user=Depends(get_current_user(['requester']))
+):
+
+    cover_filename = 'cover_' + current_user.username + datetime_now_str() + '.png'
+
+    result = await task_service.create_task(
+        creator=current_user,
+        name=task.name,
+        description=task.description,
+        introduction=task.introduction,
+        cover_filename=cover_filename if cover else None,
+        responses_required=task.responses_required,
+        credits=task.credits
+    )
+
+    if cover:
+        await upload_file(cover, 'cover_' + current_user.username + datetime_now_str() + '.png')
+
+
+
+
+
+
+
+
+
+###############################################################################
+
 @router.get('/{task_id}')
 async def get_task(task_id: int, current_user=Depends(get_current_user())):
-    print('get tasks', task_id)
     task = await task_service.get_task(task_id=task_id)
     if not task:
         return {'description': 'Task not found'}, status.HTTP_404_NOT_FOUND

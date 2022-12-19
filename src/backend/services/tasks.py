@@ -1,5 +1,4 @@
 from typing import Iterable
-from pydantic import BaseModel
 import schemas.questions
 from utils.datetime_str import datetime_now_str
 from datetime import datetime
@@ -26,15 +25,35 @@ class Tasks:
     def __init__(self):
         pass
 
-    async def create_task(self,creator: str ,name:str ,description:str,
-                          introduction:str,cover_path:str,response_required:int,
-                          credits:int,filepath:str) -> schemas.tasks.Task | None:
+    async def create_task(self, creator: schemas.users.Respondent, name: str, description: str,
+                          introduction: str, tags: set[str], cover_path: str, responses_required: int,
+                          credits: float, questions: list[schemas.questions.Question]) -> schemas.tasks.Task | str:
+
+        if responses_required < 1:
+            return '`responses_required` must be positive'
+        if credits < 0:
+            return '`credits` must be positive'
+        if credits * responses_required > creator.credits:
+            return 'Insufficient credits'
+
         date_created = datetime.utcnow()
+        task_schema = schemas.tasks.Task(
+            name=name,
+            credits=credits,
+            introduction=introduction,
+            description=description,
+            tags=tags,
+            responses_required=responses_required,
+            date_created=date_created,
+        )
+
         # if not __verify_task_format():
         #     return None
+        filepath = 0 # TODO
         task = models.task.Task(creator = creator , name = name ,description = description ,
                     introduction = introduction ,cover_path = cover_path ,
-                    response_required = response_required,credits = credits,date_created = date_created,filepath = filepath)
+                    response_required = responses_required,credits = credits,date_created = date_created,filepath = filepath)
+                    
         async with con.begin():
             target = await con.execute(select(models.user.Requester).where(models.user.Requester.username==creator).options(selectinload(models.user.Requester.task_requested)))
             res = target.scalars().first()
@@ -138,9 +157,9 @@ class Tasks:
         user: schemas.users.User,
         name: str=None,
         tags: Iterable=None,
-        credits_min: float=None,
+        credits_min: float=0,
         credits_max: float=None,
-        questions_min: int=-1,
+        questions_min: int=0,
         questions_max: int=10e9,
         requesters: set[str]=None,
         result_count: int=-1,
@@ -176,24 +195,30 @@ class Tasks:
         # TODO: creator -> requesters, multiple usernames
 
         async with con.begin():
+
+            result = await con.execute(select(models.task.Task))
+
+            '''
             if sort_ascending is True:
-                result = await con.execute(select(models.task.Task).where(and_(or_(models.task.Task.creator == models.task.creator,models.task.creator == None),
+                result = await con.execute(select(models.task.Task).where(and_(
                             or_(models.task.Task.name == name, name ==None),
-                            or_(models.task.Task.credits == credits,credits = None),
+                            models.task.Task.credits >= credits_min,
+                            models.task.Task.credits <= credits_max,
                             len(models.task.Task.questions)>questions_min,
                             len(models.task.Task.questions)<questions_max,),
                             or_(models.task.Task.response_required == result_count , result_count == -1))
                             .order_by(models.task.Task.id.asc()).options(selectinload(models.task.Task.questions),selectinload(models.task.Task.results)))
             else:
  
-                result = await con.execute(select(models.task.Task).where(and_(or_(models.task.Task.creator == models.task.creator,models.task.creator == None),
+                result = await con.execute(select(models.task.Task).where(and_(
                                 or_(models.task.Task.name == name, name ==None),
-                                or_(models.task.Task.credits == credits,credits = None),
+                                models.task.Task.credits >= credits_min,
+                                models.task.Task.credits <= credits_max,
                                 len(models.task.Task.questions)>questions_min,
                                 len(models.task.Task.questions)<questions_max,),
                                 or_(models.task.Task.response_required == result_count , result_count == -1))
                                 .order_by(models.task.Task.id.desc()).options(selectinload(models.task.Task.questions),selectinload(models.task.Task.results)))
-
+            '''
 
             tasks = result.scalar().all()
             if page_size == -1:

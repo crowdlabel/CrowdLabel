@@ -77,10 +77,15 @@ class User(BaseModel):
     credits: float=0
     date_created: datetime=datetime.utcnow()
 
-    def __init__(self,user):
-        super(User,self).__init__(username = user.username,email = user.email ,credits = user.credits ,
-                                 date_created = user.date_created ,password_hashed = user.password_hashed,
-                                 usertype = user.user_type)
+    def __init__(self, user):
+        super(User, self).__init__(
+            username=user.username,
+            email=user.email,
+            credits=user.credits,
+            date_created=user.date_created,
+            password_hashed=user.password_hashed,
+        )
+        
 
 
     async def edit_user_info(new_info: dict) -> bool:
@@ -117,5 +122,13 @@ class Respondent(User):
         self.user_type = 'respondent'
 
 class Admin(Requester, Respondent):
+    user_type = 'admin'
     def __init__(self, user):
         super(Admin, self).__init__(user)
+
+
+USER_TYPES = {
+    'requester': Requester,
+    'respondent': Respondent,
+    'admin': Admin,
+}
