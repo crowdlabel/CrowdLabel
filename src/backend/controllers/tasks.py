@@ -83,11 +83,17 @@ create_task_failed_jdr = JSONDocumentedResponse(
 @router.post('/create',
     **create_documentation([create_task_success_jdr, create_task_failed_jdr])
 )
-async def create_task(task: schemas.tasks.CreateTaskRequest, cover: Optional[UploadFile]=None,
+async def create_task(task: schemas.tasks.CreateTaskRequest, questions_file: UploadFile,
+    cover: Optional[UploadFile]=None,
     current_user=Depends(get_current_user(['requester']))
 ):
 
     cover_filename = 'cover_' + current_user.username + datetime_now_str() + '.png'
+    questions_filename = 'questions_' + current_user.username + datetime_now_str() + '.zip'
+
+    await upload_file(questions_file, questions_filename)
+
+    questions = await task_service.process_questions_archive(questions_filename)
 
     result = await task_service.create_task(
         creator=current_user,
@@ -96,7 +102,8 @@ async def create_task(task: schemas.tasks.CreateTaskRequest, cover: Optional[Upl
         introduction=task.introduction,
         cover_filename=cover_filename if cover else None,
         responses_required=task.responses_required,
-        credits=task.credits
+        credits=task.credits,
+        questions=questions
     )
 
     if not isinstance(result, schemas.tasks.Task):
@@ -132,87 +139,13 @@ task_delete_success_jdr = JSONDocumentedResponse(
     **create_documentation([task_delete_success_jdr, forbidden_jdr, not_found_jdr])
 )
 async def delete_task(task_id: int, current_user=Depends(get_current_user(['requester']))):
+    task = await task_service.get_task(task_id)
+    if not task:
+        return not_found_jdr.response()
     response = await task_service.delete_task(task_id)
     if response == 'forbidden':
         return forbidden_jdr.response()
-    if response == 'not_found':
-        return not_found_jdr.response()
     return task_delete_success_jdr.response()
-###############################################################################
-
-
-
-""" @app.post('/create_task')
-async def create_task(details:TaskInfo):
-    response = await services.task.create_task(
-        details.name,
-        details.creator,
-        details.type,
-        details.details,
-        details.introduction,
-        details.path)
-    if response['status'] != 'ok':
-        return {
-            'error': f'already exists'
-        }, 400
-
-    
-    else:
-        return {
-            'name': details.name,
-            'creator': details.creator,
-            'details': details.details,
-            'introduction':details.introduction,
-            'type':details.type,
-            'path':details.path
-        }, 200 """
-
-
-""" @router.patch('/{task_id}')
-async def edit_task(details: TaskDetails):
-    response = await ts.edit_task(
-        details.id,
-        details.details,
-        details.introduction
-
-    )
-    if response[0]['status'] != 'ok':
-        return {
-            'error': 'edit failed'
-        },400
-    else:
-        return {
-            'id':response[0]['id'],
-            'name':response[0]['name'],
-            'creator':response[0]['creator'],
-            'details':response[0]['details'],
-            'introduction':response[0]['introduction']
-        } """
-
-
-
-""" 
-    
-    response = await services.task.get_task(details.id)
-    if response[0]["status"] != "ok":
-        return {
-            'error' : f'not found id {details.id}'
-        },400
-    else :
-        return {
-            'id':response[0]['id'],
-            'name':response[0]['name'],
-            'creator':response[0]['creator'],
-            'details':response[0]['details'],
-            'questions':response[0]['questions'],
-            'results':response[0]['results'],
-            'type':response[0]['type'],
-            'introduction':response[0]['introduction'],
-            'path':response[0]['path']
-        },200
-
-    """
-
 ###############################################################################
 claim_success_jdr = JSONDocumentedResponse(
     status.HTTP_200_OK,
