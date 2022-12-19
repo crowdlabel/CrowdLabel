@@ -12,6 +12,7 @@
  */
 
 import ApiClient from '../ApiClient';
+import Answer1 from './Answer1';
 
 /**
  * The Answer model module.
@@ -22,15 +23,13 @@ class Answer {
     /**
      * Constructs a new <code>Answer</code>.
      * @alias module:model/Answer
+     * @param answer {module:model/Answer1} 
      * @param respondent {String} 
      * @param dateAnswered {Date} 
-     * @param taskId {Number} 
-     * @param questionId {Number} 
-     * @param questionType {Number} 
      */
-    constructor(respondent, dateAnswered, taskId, questionId, questionType) { 
+    constructor(answer, respondent, dateAnswered) { 
         
-        Answer.initialize(this, respondent, dateAnswered, taskId, questionId, questionType);
+        Answer.initialize(this, answer, respondent, dateAnswered);
     }
 
     /**
@@ -38,12 +37,10 @@ class Answer {
      * This method is used by the constructors of any subclasses, in order to implement multiple inheritance (mix-ins).
      * Only for internal use.
      */
-    static initialize(obj, respondent, dateAnswered, taskId, questionId, questionType) { 
+    static initialize(obj, answer, respondent, dateAnswered) { 
+        obj['answer'] = answer;
         obj['respondent'] = respondent;
         obj['date_answered'] = dateAnswered;
-        obj['task_id'] = taskId;
-        obj['question_id'] = questionId;
-        obj['question_type'] = questionType;
     }
 
     /**
@@ -57,23 +54,14 @@ class Answer {
         if (data) {
             obj = obj || new Answer();
 
+            if (data.hasOwnProperty('answer')) {
+                obj['answer'] = Answer1.constructFromObject(data['answer']);
+            }
             if (data.hasOwnProperty('respondent')) {
                 obj['respondent'] = ApiClient.convertToType(data['respondent'], 'String');
             }
             if (data.hasOwnProperty('date_answered')) {
                 obj['date_answered'] = ApiClient.convertToType(data['date_answered'], 'Date');
-            }
-            if (data.hasOwnProperty('task_id')) {
-                obj['task_id'] = ApiClient.convertToType(data['task_id'], 'Number');
-            }
-            if (data.hasOwnProperty('question_id')) {
-                obj['question_id'] = ApiClient.convertToType(data['question_id'], 'Number');
-            }
-            if (data.hasOwnProperty('question_type')) {
-                obj['question_type'] = ApiClient.convertToType(data['question_type'], 'Number');
-            }
-            if (data.hasOwnProperty('answer')) {
-                obj['answer'] = ApiClient.convertToType(data['answer'], Object);
             }
         }
         return obj;
@@ -91,6 +79,10 @@ class Answer {
                 throw new Error("The required field `" + property + "` is not found in the JSON data: " + JSON.stringify(data));
             }
         }
+        // validate the optional field `answer`
+        if (data['answer']) { // data not null
+          Answer1.validateJSON(data['answer']);
+        }
         // ensure the json data is a string
         if (data['respondent'] && !(typeof data['respondent'] === 'string' || data['respondent'] instanceof String)) {
             throw new Error("Expected the field `respondent` to be a primitive type in the JSON string but got " + data['respondent']);
@@ -102,7 +94,12 @@ class Answer {
 
 }
 
-Answer.RequiredProperties = ["respondent", "date_answered", "task_id", "question_id", "question_type"];
+Answer.RequiredProperties = ["answer", "respondent", "date_answered"];
+
+/**
+ * @member {module:model/Answer1} answer
+ */
+Answer.prototype['answer'] = undefined;
 
 /**
  * @member {String} respondent
@@ -113,26 +110,6 @@ Answer.prototype['respondent'] = undefined;
  * @member {Date} date_answered
  */
 Answer.prototype['date_answered'] = undefined;
-
-/**
- * @member {Number} task_id
- */
-Answer.prototype['task_id'] = undefined;
-
-/**
- * @member {Number} question_id
- */
-Answer.prototype['question_id'] = undefined;
-
-/**
- * @member {Number} question_type
- */
-Answer.prototype['question_type'] = undefined;
-
-/**
- * @member {Object} answer
- */
-Answer.prototype['answer'] = undefined;
 
 
 

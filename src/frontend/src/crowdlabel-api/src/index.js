@@ -14,16 +14,22 @@
 
 import ApiClient from './ApiClient';
 import Answer from './model/Answer';
+import Answer1 from './model/Answer1';
 import AvailabilityRequest from './model/AvailabilityRequest';
 import AvailabilityResponse from './model/AvailabilityResponse';
-import BodyCreateAnswerQuestionsPost from './model/BodyCreateAnswerQuestionsPost';
+import BoundingBoxAnswer from './model/BoundingBoxAnswer';
 import Email from './model/Email';
 import ErrorResponse from './model/ErrorResponse';
 import HTTPValidationError from './model/HTTPValidationError';
 import LocationInner from './model/LocationInner';
+import MultiChoiceAnswer from './model/MultiChoiceAnswer';
+import OpenAnswer from './model/OpenAnswer';
+import Point from './model/Point';
 import Question from './model/Question';
+import RankingAnswer from './model/RankingAnswer';
 import RegistrationError from './model/RegistrationError';
 import RegistrationRequest from './model/RegistrationRequest';
+import SingleChoiceAnswer from './model/SingleChoiceAnswer';
 import Task from './model/Task';
 import TaskSearchRequest from './model/TaskSearchRequest';
 import TaskSearchResponse from './model/TaskSearchResponse';
@@ -81,6 +87,12 @@ export {
     Answer,
 
     /**
+     * The Answer1 model constructor.
+     * @property {module:model/Answer1}
+     */
+    Answer1,
+
+    /**
      * The AvailabilityRequest model constructor.
      * @property {module:model/AvailabilityRequest}
      */
@@ -93,10 +105,10 @@ export {
     AvailabilityResponse,
 
     /**
-     * The BodyCreateAnswerQuestionsPost model constructor.
-     * @property {module:model/BodyCreateAnswerQuestionsPost}
+     * The BoundingBoxAnswer model constructor.
+     * @property {module:model/BoundingBoxAnswer}
      */
-    BodyCreateAnswerQuestionsPost,
+    BoundingBoxAnswer,
 
     /**
      * The Email model constructor.
@@ -123,10 +135,34 @@ export {
     LocationInner,
 
     /**
+     * The MultiChoiceAnswer model constructor.
+     * @property {module:model/MultiChoiceAnswer}
+     */
+    MultiChoiceAnswer,
+
+    /**
+     * The OpenAnswer model constructor.
+     * @property {module:model/OpenAnswer}
+     */
+    OpenAnswer,
+
+    /**
+     * The Point model constructor.
+     * @property {module:model/Point}
+     */
+    Point,
+
+    /**
      * The Question model constructor.
      * @property {module:model/Question}
      */
     Question,
+
+    /**
+     * The RankingAnswer model constructor.
+     * @property {module:model/RankingAnswer}
+     */
+    RankingAnswer,
 
     /**
      * The RegistrationError model constructor.
@@ -139,6 +175,12 @@ export {
      * @property {module:model/RegistrationRequest}
      */
     RegistrationRequest,
+
+    /**
+     * The SingleChoiceAnswer model constructor.
+     * @property {module:model/SingleChoiceAnswer}
+     */
+    SingleChoiceAnswer,
 
     /**
      * The Task model constructor.
