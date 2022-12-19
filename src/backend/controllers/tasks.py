@@ -27,11 +27,16 @@ get_task_failed_hdr = JSONDocumentedResponse(
 @router.put('/',
     **create_documentation([get_task_success_jdr, get_task_failed_hdr])
 )
-async def search_tasks(query: schemas.tasks.TaskSearchRequest, current_user=Depends(get_current_user(['admin', 'respondent']))):
+async def search_tasks(query: schemas.tasks.TaskSearchRequest, current_user=Depends(get_current_user(['respondent']))):
     """
     Task search
     """
-    tasks = await task_service.search(current_user, **query.dict())
+    print(query)
+    print(query.dict())
+
+    # TODO: complete arguments
+    tasks = await task_service.search(current_user)
+
     if isinstance(tasks, str):
         return get_task_failed_hdr.response(schemas.tasks.ErrorResponse(tasks))
 
@@ -105,7 +110,6 @@ async def create_task(task: schemas.tasks.CreateTaskRequest, cover: Optional[Upl
 
 @router.get('/{task_id}')
 async def get_task(task_id: int, current_user=Depends(get_current_user())):
-    print('get tasks', task_id)
     task = await task_service.get_task(task_id=task_id)
     if not task:
         return {'description': 'Task not found'}, status.HTTP_404_NOT_FOUND

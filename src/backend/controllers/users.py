@@ -19,15 +19,11 @@ availability_jdr = JSONDocumentedResponse(
     **create_documentation([availability_jdr])
 )
 async def availability(fields: schemas.users.AvailabilityRequest):
-    print(fields)
     response = schemas.users.AvailabilityResponse()
     if fields.username:
         response.username = not await user_service.username_exists(fields.username)
-        print('###########')
-        print(response.username)
     if fields.email:
         response.email = not await user_service.email_exists(fields.email)
-    print(response)
     return availability_jdr.response(response)
 ###############################################################################
 verify_email_success_jdr = JSONDocumentedResponse(
@@ -80,7 +76,6 @@ me_jdr = JSONDocumentedResponse(
     **create_documentation([me_jdr])
 )
 async def get_me(current_user: schemas.users.User = Depends(get_current_user())):
-    print(current_user)
     return me_jdr.response(current_user, {'password_hashed'})
 ###############################################################################
 @router.patch('/me',

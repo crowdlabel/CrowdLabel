@@ -5,14 +5,15 @@ import schemas.questions
 
 
 class TaskSearchRequest(BaseModel):
-    name: Optional[str]
-    tags: Optional[set[str]]
-    requesters: Optional[set[str]]
-    page: Optional[int]
-    credits_min: Optional[float]
-    credits_max: Optional[float]
-    sort_criteria: Optional[str]
-    sort_ascending: Optional[bool]
+    name: Optional[str] = '' # empty name searches for any name
+    tags: Optional[set[str]] = set()
+    requesters: Optional[set[str]] = set()
+    page: Optional[int] = 1
+    page_size: Optional[int] = -1 # negative value implies return all results
+    credits_min: Optional[float] = 0
+    credits_max: Optional[float] = -1 # negative value implies no upper limit
+    sort_criteria: Optional[str] = 'name'
+    sort_ascending: Optional[bool] = True
 
 class TaskSearchResponse(TaskSearchRequest):
     tasks: list[int]=[] # list of Task IDs

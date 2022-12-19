@@ -55,7 +55,6 @@ class Users:
                 con.add(email_create)
                 await con.commit()
             else:
-                print(f'update code from {target.verification_code} to {verification_code}')
                 target.verification_code = verification_code
                 await con.flush()
                 con.expunge(target)
@@ -181,7 +180,6 @@ class Users:
             if target == None:
                 return None
         try:
-            print(target)
             return schemas.users.USER_TYPES[target.user_type](target)
         except:
             raise ValueError('Invalid user type from database')
