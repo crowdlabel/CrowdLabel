@@ -45,9 +45,11 @@ class Tasks:
             tags=tags,
             responses_required=responses_required,
             date_created=date_created,
+        )
 
         # if not __verify_task_format():
         #     return None
+        filepath = 0 # TODO
         task = models.task.Task(creator = creator , name = name ,description = description ,
                     introduction = introduction ,cover_path = cover_path ,
                     response_required = responses_required,credits = credits,date_created = date_created,filepath = filepath)
