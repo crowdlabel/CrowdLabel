@@ -72,7 +72,7 @@ class Tasks:
         response_task.name=name
         response_task.tags = []
         response_task.task_id = task.id
-        response_task.responses_required = response_required
+        response_task.responses_required = responses_required
         self.process_task_archive(task.id,filepath)
         return task
 
