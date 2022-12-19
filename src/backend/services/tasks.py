@@ -127,7 +127,7 @@ class Tasks:
         suffix = filename.split('.')[-1]
         if suffix == 'zip':
             file = zipfile.ZipFile(filename)
-        elif suffix == 'rar':
+        elif suffix == 'rar':  
             file = rarfile.RarFile(filename)
         extract = file.extractall()
         extract.close()
