@@ -78,6 +78,10 @@ create_task_success_jdr = JSONDocumentedResponse(
 create_task_failed_jdr = JSONDocumentedResponse(
     status.HTTP_400_BAD_REQUEST,
     'Task not created',
+    schemas.tasks.ErrorResponse
+)
+@router.post('/create',
+    **create_documentation([create_task_success_jdr, create_task_failed_jdr])
 )
 async def create_task(task: schemas.tasks.CreateTaskRequest, cover: Optional[UploadFile]=None,
     current_user=Depends(get_current_user(['requester']))
@@ -94,6 +98,9 @@ async def create_task(task: schemas.tasks.CreateTaskRequest, cover: Optional[Upl
         responses_required=task.responses_required,
         credits=task.credits
     )
+
+    if not isinstance(result, schemas.tasks.Task):
+        return create_task_failed_jdr(schemas.tasks.ErrorResponse(result))
 
     if cover:
         await upload_file(cover, 'cover_' + current_user.username + datetime_now_str() + '.png')

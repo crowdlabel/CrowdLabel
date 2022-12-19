@@ -24,12 +24,12 @@ class ErrorResponse(BaseModel):
 
 
 class CreateTaskRequest(BaseModel):
-    name: str
-    credits: float
+    name: str='My Task'
+    credits: float=0
     introduction: str=''
     description: str=''
-    tags: list[str]=[]
-    responses_required: int
+    tags: set[str]=set()
+    responses_required: int=1
     questions: list[schemas.questions.Question]=[] # list of Questions
 
 class Task(CreateTaskRequest):
