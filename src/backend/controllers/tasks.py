@@ -67,8 +67,9 @@ async def upload_task(task_file: UploadFile, current_user=Depends(get_current_us
     task = await task_service.process_task_archive(filename)
     if isinstance(task, str):
         return upload_failed_jdr.response(schemas.tasks.ErrorResponse(error=task))
-    task = await task_service.create_task(
-    return upload_success_jdr.response(response)
+    #task = await task_service.create_task()
+    # TODO
+    return upload_success_jdr.response(task)
 ###############################################################################
 
 
