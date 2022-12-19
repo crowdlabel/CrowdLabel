@@ -7,6 +7,7 @@ import services.users
 from .jsondocumentedresponse import JSONDocumentedResponse, create_documentation, forbidden_jdr, not_found_jdr
 import schemas.tasks
 from utils.datetime_str import datetime_now_str
+from typing import Optional
 
 router = APIRouter()
 task_service = services.tasks.Tasks
@@ -59,6 +60,47 @@ async def upload_task(in_file: UploadFile, current_user=Depends(get_current_user
     if isinstance(response, str):
         return upload_failed_jdr(schemas.tasks.ErrorResponse('Error'))
     return upload_success_jdr.response(response)
+###############################################################################
+
+
+
+
+create_task_success_jdr = JSONDocumentedResponse(
+    status.HTTP_201_CREATED,
+    'Task created successfully',
+    schemas.tasks.Task
+)
+create_task_failed_jdr = JSONDocumentedResponse(
+    status.HTTP_400_BAD_REQUEST,
+    'Task not created',
+)
+async def create_task(task: schemas.tasks.CreateTaskRequest, cover: Optional[UploadFile]=None,
+    current_user=Depends(get_current_user(['requester']))
+):
+
+    cover_filename = 'cover_' + current_user.username + datetime_now_str() + '.png'
+
+    result = await task_service.create_task(
+        creator=current_user,
+        name=task.name,
+        description=task.description,
+        introduction=task.introduction,
+        cover_filename=cover_filename if cover else None,
+        responses_required=task.responses_required,
+        credits=task.credits
+    )
+
+    if cover:
+        await upload_file(cover, 'cover_' + current_user.username + datetime_now_str() + '.png')
+
+
+
+
+
+
+
+
+
 ###############################################################################
 
 @router.get('/{task_id}')

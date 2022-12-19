@@ -1,5 +1,4 @@
 from typing import Iterable
-from pydantic import BaseModel
 import schemas.questions
 from utils.datetime_str import datetime_now_str
 from datetime import datetime
@@ -24,15 +23,33 @@ class Tasks:
     def __init__(self):
         pass
 
-    async def create_task(self,creator: str ,name:str ,description:str,
-                          introduction:str,cover_path:str,response_required:int,
-                          credits:int) -> schemas.tasks.Task | None:
+    async def create_task(self, creator: schemas.users.Respondent, name: str, description: str,
+                          introduction: str, tags: set[str], cover_path: str, responses_required: int,
+                          credits: float, questions: list[schemas.questions.Question]) -> schemas.tasks.Task | str:
+
+        if responses_required < 1:
+            return '`responses_required` must be positive'
+        if credits < 0:
+            return '`credits` must be positive'
+        if credits * responses_required > creator.credits:
+            return 'Insufficient credits'
+
         date_created = datetime.utcnow()
+        task_schema = schemas.tasks.Task(
+            name=name,
+            credits=credits,
+            introduction=introduction,
+            description=description,
+            tags=tags,
+            responses_required=responses_required,
+            date_created=date_created,
+
         # if not __verify_task_format():
         #     return None
-        task = models.task.Task(creator = creator , name = name ,description = description ,
-                    introduction = introduction ,cover_path = cover_path ,
-                    response_required = response_required,credits = credits,date_created = date_created)
+        task = models.task.Task(creator=creator, name=name, description=description,
+            introduction=introduction, cover_path=cover_path,
+            response_required=responses_required, credits=credits, date_created=date_created
+        )
         async with con.begin():
             target = await con.execute(select(models.user.Requester).where(models.user.Requester.username==creator).options(selectinload(models.user.Requester.task_requested)))
             res = target.scalars().first()

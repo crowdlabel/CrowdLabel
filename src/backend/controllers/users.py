@@ -65,7 +65,6 @@ register_failed_jdr = JSONDocumentedResponse(
 )
 async def register(details: schemas.users.RegistrationRequest):
     response = await user_service.create_user(**details.dict())
-
     if isinstance(response, dict):
         response = schemas.users.RegistrationError(**response)
         return register_failed_jdr.response(response)
@@ -98,18 +97,15 @@ username_success_jdr = JSONDocumentedResponse(
     schemas.users.User
 )
 username_failed_jdr = JSONDocumentedResponse(
-    status.HTTP_200_OK,
+    status.HTTP_404_NOT_FOUND,
     'User not found.',
-    schemas.users.User
 )
 @router.get('/{username}',
     description='Gets information for the specified username.',
-    **create_documentation([username_success_jdr])
+    **create_documentation([username_success_jdr, username_failed_jdr])
 )
-async def get_user(username: str, current_user: schemas.users.User = Depends(get_current_user(['admin']))):
-    #return 'requested info for ' + username + ' as ' + str(current_user)
-    user = user_service.get_user(username)
+async def get_user(username: str, current_user: schemas.users.User = Depends(get_current_user([]))):
+    user = await user_service.get_user(username)
     if not user:
         return username_failed_jdr.response()
-    return user
-
+    return username_success_jdr.response(user)
