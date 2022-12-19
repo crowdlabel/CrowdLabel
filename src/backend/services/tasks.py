@@ -5,7 +5,7 @@ from utils.datetime_str import datetime_now_str
 from datetime import datetime
 
 from services.database import engine
-from services.questions import question_service
+import services.questions
 import models.task
 import models.user
 from sqlalchemy.orm import sessionmaker, scoped_session, selectinload
@@ -57,12 +57,29 @@ class Tasks:
         self.process_task_archive(task.id,filepath)
         return task
 
+    async def claim_task(self,user_name,task_id)->schemas.tasks.Task | None:
+        async with con.begin():
+            user = await con.execute(select(models.user.Respondent).where(models.user.Respondent.username == user_name).options(
+                selectinload(models.user.Respondent.task_claimed)
+            )
+            )
+            user = user.scalars().first()
+            if user == None:
+                return None
+            task = await con.execute(select(models.task.Task).where(models.task.Task.id==task_id).options(
+                selectinload(models.task.Task.respondent_claimed)
+            ))
+            task = task.scalars().first()
+            if task == None:
+                return None
+            user.task_claimed.append(task)
+            response_task = schemas.tasks.Task(task)
+            return response_task
 
     async def get_task(self, task_id: int) -> schemas.tasks.Task | None:
         async with con.begin():
             result = await con.execute(select(models.task.Task).where(models.task.Task.id == task_id).options(
                 selectinload(models.task.Task.questions),
-                selectinload(models.task.Task.requester),
                 selectinload(models.task.Task.respondent_claimed),
                 selectinload(models.task.Task.respondent_complete)
             ))
@@ -86,7 +103,7 @@ class Tasks:
             claim_names = list(map(lambda A:A.username,target.respondent_claimed))
             response_task.respondents_claimed = set(claim_names)
             complete_names = list(map(lambda A:A.username,target.respondent_complete))
-            response_task.respondents_claimed = set(complete_names)
+            response_task.respondents_completed = set(complete_names)
             return response_task
 
     
@@ -114,7 +131,7 @@ class Tasks:
             file = rarfile.RarFile(filename)
         extract = file.extractall()
         extract.close()
-        questions = question_service.create_question_from_file(id,filename)
+        questions = services.questions.question_service.create_question_from_file(id,filename)
         return questions
 
     async def search(

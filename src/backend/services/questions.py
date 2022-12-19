@@ -19,17 +19,14 @@ import schemas.questions
 import schemas.tasks
 import schemas.users
 
-import services.questions
-import services.users
-from services.tasks import task_service
-
+import services.tasks
 
 
 
 class Questions:
     async def get_question(self, task: schemas.tasks.Task | int, question_id: int) -> schemas.questions.Question | None:
         if isinstance(task, int):
-            task = await task_service.get_task(task)
+            task = await services.tasks.task_service.get_task(task)
         for question in task.questions:
             if question.question_id == question_id:
                 return question

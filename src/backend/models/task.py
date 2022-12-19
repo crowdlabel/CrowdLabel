@@ -22,7 +22,7 @@ class Task(Base):
     tags = Column(String(MAX_TAGS_LENGTH))
     response_required = Column(Integer)
     file_path = Column(String(MAX_PATH_LENGTH))
-    requester_id = Column(int ,ForeignKey('requester.id'))
+    requester_id = Column(Integer ,ForeignKey('requester.id'))
 
     #results = relationship('Results',cascade = 'all,delete-orphan')
     questions = relationship('Question',secondary='task2question',cascade="delete, delete-orphan",single_parent = True)    

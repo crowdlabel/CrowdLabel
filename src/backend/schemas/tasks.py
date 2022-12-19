@@ -39,5 +39,5 @@ class Task(BaseModel):
     def __init__(self,task):
         super(Task,self).__init__(task_id = task.id,creator = task.creator ,date_created = task.date_created,
         credits = task.credits , name = task.name , introduction = task.introduction ,
-        description = task.description ,cover = task.cover_path,response_required = task.response_required,
-        tags = task.tags)
+        description = task.description ,cover = task.cover_path,responses_required = task.response_required,
+        tags =[task.tags])
