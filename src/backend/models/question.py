@@ -25,6 +25,7 @@ class Question(Base):
     id_in_task = Column(Integer)
     task_id = Column(Integer,ForeignKey('task.task_id'))
     answer = relationship('Answer')
+    
     __mapper_args__ = {
         'polymorphic_on':question_type
     }

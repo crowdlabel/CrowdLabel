@@ -121,7 +121,7 @@ class Users:
         await con.commit()
 
 
-
+ 
 
         request = request.dict()
         request['password_hashed'] = utils.hasher.hash(request['password'])
