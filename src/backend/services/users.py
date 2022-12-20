@@ -47,6 +47,7 @@ class Users:
 
         verification_code = '123456'
         # TODO: check?
+        
         async with con.begin():
             res= await con.execute(select(models.email.Email).where(models.email.Email.email==email))
             target = res.scalars().first()
