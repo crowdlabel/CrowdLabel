@@ -105,12 +105,16 @@ class Tasks:
             )
             user = user.scalars().first()
             if user == None:
+                await asyncio.shield(con.close())
+            
                 return None
             task = await con.execute(select(models.task.Task).where(models.task.Task.id==task_id).options(
                 selectinload(models.task.Task.respondents_claimed)
             ))
             task = task.scalars().first()
             if task == None:
+                await asyncio.shield(con.close())
+
                 return None
             user.task_claimed.append(task)
             response_task = schemas.tasks.Task(task)
@@ -128,6 +132,7 @@ class Tasks:
         print('#'*100)
         target = result.scalars().first()
         if target is None:
+            await asyncio.shield(con.close())
             return None
         print(target)
         dict = target.dict()
@@ -158,8 +163,8 @@ class Tasks:
         response_task.respondents_claimed = set(claim_names)
         complete_names = list(map(lambda A:A.username,target.respondents_complete))
         response_task.respondents_completed = set(complete_names)
-        print('#'*100)
-        print(f'response_task is {response_task} ,type is {type(response_task)}')
+        await asyncio.shield(con.close())
+      
         return response_task
 
     
@@ -246,6 +251,7 @@ Returns: list of `Task`s matching the query within the specified `page` and `pag
 
         async with con:
             result = await con.execute(select(models.task.Task))
+        await asyncio.shield(con.close())
         return result, 1
 
         '''

@@ -251,9 +251,16 @@ class Users:
             return 'Insufficient credits' """ 
         else:
             user.credits -= request.amount
-
+        target = await con.execute(select(models.user.User).where(models.user.User.username == user.username))
+        res = target.scalars().first()
+        if res == None:
+            return 'user not found'
+        res.credits =  user.credits 
+        print(res.credits)
+        await con.flush() 
+        con.expunge(res)
         # TODO: update user balance in database
-
+        await con.commit()
         return user.credits
 
 user_service = Users()
