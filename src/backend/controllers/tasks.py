@@ -36,12 +36,10 @@ async def search_tasks(query: schemas.tasks.TaskSearchRequest, current_user=Depe
     """
     Task search
     """
-    print(query)
-    print(query.dict())
-
     # TODO: complete arguments
-    tasks = await task_service.search(current_user)
-
+    tasks = await task_service.search(current_user, query)
+    print('#' * 80)
+    print(tasks)
     if isinstance(tasks, str):
         return get_task_failed_hdr.response(schemas.tasks.ErrorResponse(tasks))
 
@@ -127,8 +125,15 @@ async def create_task(task: schemas.tasks.CreateTaskRequest, questions_file: Upl
 
 
 ###############################################################################
-
-@router.get('/{task_id}')
+get_task_success_jdr = JSONDocumentedResponse(
+    status.HTTP_200_OK,
+    'Task found successfully.',
+    schemas.tasks.Task,
+)
+@router.get('/{task_id}',
+    description='Get a task based on its task_id',
+    **create_documentation([get_task_success_jdr, not_found_jdr, forbidden_jdr])    
+)
 async def get_task(task_id: int, current_user=Depends(get_current_user())):
     task = await task_service.get_task(task_id=task_id)
     if not task:

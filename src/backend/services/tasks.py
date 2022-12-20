@@ -59,17 +59,14 @@ class Tasks:
             requester=requester.username,
             date_created=datetime.utcnow(),
         )
-        print('#'*100)
 
 
         task = models.task.Task(task_schema,
             resource_path=str(resource_path)
         )
         for question in task_request.dict()['questions']:
-            print(question)
             question_created = await question_service.create_question(question['question_type'],question['prompt'],
-                                             question['resource'],question['options'] if question['question_type'] in ['single_choice','multi_choice'] else []
-                                             ,task.task_id)
+            question['resource'],question['options'] if question['question_type'] in ['single_choice','multi_choice'] else [],task.task_id)
             task.questions.append(question_created)
         async with con.begin():
             target = await con.execute(select(models.user.Requester).where(models.user.Requester.username==requester.username).options(selectinload(models.user.Requester.task_requested)))

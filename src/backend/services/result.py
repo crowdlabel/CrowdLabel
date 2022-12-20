@@ -65,7 +65,7 @@ async def edit_result(id):
             return{
                 "status":"not found",
             },400
-        target.date_download=datetime.now()
+        target.date_download=datetime.utcnow()
         await con.flush()
         con.expunge(target)
     return {

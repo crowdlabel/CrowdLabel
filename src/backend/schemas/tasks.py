@@ -1,8 +1,8 @@
-from pydantic import BaseModel
+from pydantic import BaseModel, validator
 from typing import Optional
 from datetime import datetime
 import schemas.questions
-
+import re
 
 class TaskSearchRequest(BaseModel):
     """
@@ -40,6 +40,21 @@ class TaskSearchResponse(BaseModel):
 class ErrorResponse(BaseModel):
     error: str
 
+
+class Tag(BaseModel):
+    tag: str
+
+    __chars = 'a-z0-9\+#\-\.' # https://stackoverflow.help/en/articles/5611219-create-a-tag
+    __pattern = re.compile(f'[{__chars}]+')
+    @validator('tag')
+    def tag_format(cls, tag):
+        tag = tag.replace(' ', '-')
+        tag = tag.lower()
+        if not re.fullmatch(cls.__pattern, tag):
+            raise ValueError('Invalid tag')
+        return tag
+
+        
 
 class CreateTaskRequest(BaseModel):
     name: str='My Task'
