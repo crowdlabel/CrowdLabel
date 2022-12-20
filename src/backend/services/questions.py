@@ -49,9 +49,8 @@ class Questions:
         
         new_answer.date_answered = answer.date_answered
         new_answer.question_id = self.question_id
-        async with con.begin():
-            res= await con.execute(select(models.user.Respondent).where(models.user.Respondent.username == answer.respondent))
-            target = res.scalar().first
+        res= await con.execute(select(models.user.Respondent).where(models.user.Respondent.username == answer.respondent))
+        target = res.scalar().first
         new_answer.respondent_id = target.id
         new_answer.question_type = answer.question_type
         new_answer.respondent_name = answer.respondent
@@ -61,6 +60,7 @@ class Questions:
         # if not __verify_question_format():
         #     return None
         async with con.begin():
+
             if type == 'multi_choice':
                 question = models.question.MultipleChoice(type,prompt,file_path,'|'.join(options),task_id)
             elif type == 'single_choice':
@@ -71,6 +71,7 @@ class Questions:
                 question = models.question.OpenQuestion(type,prompt,file_path,'|'.join(options),task_id)
             con.add(question)
             await con.commit()
+            await asyncio.shield(con.close())
         return question
     async def create_question_from_file(
         self,
@@ -82,12 +83,11 @@ class Questions:
         #    return False
         file = json.load(open(file_path,'r'))
         response_questions = []
-        async with con.begin():
-            result = await con.execute(select(models.task.Task).where(models.task.Task.id==task_id))
-            target = result.scalars().first()
-            if target == None:
-                return None
-            type = target.type
+        result = await con.execute(select(models.task.Task).where(models.task.Task.id==task_id))
+        target = result.scalars().first()
+        if target == None:
+            return None
+        type = target.type
         try:
             for question in file:
                 question = await self.create_question(file[question]['type'],file[question]['prompt'],file[question]['file_path'],file[question]['options'],task_id)
@@ -96,66 +96,66 @@ class Questions:
             return None
         return response_questions
 
-    async def get_question(self, task_id: int, question_id: int) -> schemas.questions.Question | None:
+    # async def get_question(self, task_id: int, question_id: int) -> schemas.questions.Question | None:
 
-        async with con.begin():
-            result = await con.execute(select(models.question.Question).where(models.question.Question.id==id))
-            target = result.scalars().first()
-            if target is None:
-                return{
-                    "status":"not found",
-                },400
-        return {
-            "status":"ok",
-            "type" :target.type,
-            "prompt":target.prompt,
-            "resource":target.resource,
-            "options":target.options,
-            "task_id":target.task_id
-        },200
+    #     async with con.begin():
+    #         result = await con.execute(select(models.question.Question).where(models.question.Question.id==id))
+    #         target = result.scalars().first()
+    #         if target is None:
+    #             return{
+    #                 "status":"not found",
+    #             },400
+    #     return {
+    #         "status":"ok",
+    #         "type" :target.type,
+    #         "prompt":target.prompt,
+    #         "resource":target.resource,
+    #         "options":target.options,
+    #         "task_id":target.task_id
+    #     },200
 
 
 
-    async def edit_question(id,type,prompt,resource,options,task_id):
-        async with con.begin():
-            result = await con.execute(select(models.question.Question).where(models.question.Question.id==id))
-            target = result.scalars().first()
-            if target is None:
-                return{
-                    "status":"not found",
-                },400
-            target.type= type
-            target.prompt =prompt
-            target.resource = resource
-            target.options = options
-            target.task_id = task_id
-            await con.flush()
-            con.expunge(target)
-        return {
-            "status":"ok",
-            "type" :target.type,
-            "prompt":target.prompt,
-            "resource":target.resource,
-            "options":target.options,
-            "task_id":target.task_id
-        },200
+    # async def edit_question(id,type,prompt,resource,options,task_id):
+    #     async with con.begin():
+    #         result = await con.execute(select(models.question.Question).where(models.question.Question.id==id))
+    #         target = result.scalars().first()
+    #         if target is None:
+    #             return{
+    #                 "status":"not found",
+    #             },400
+    #         target.type= type
+    #         target.prompt =prompt
+    #         target.resource = resource
+    #         target.options = options
+    #         target.task_id = task_id
+    #         await con.flush()
+    #         con.expunge(target)
+    #     return {
+    #         "status":"ok",
+    #         "type" :target.type,
+    #         "prompt":target.prompt,
+    #         "resource":target.resource,
+    #         "options":target.options,
+    #         "task_id":target.task_id
+    #     },200
         
 
-    async def delete_question(task_id, question_id):
-        async with con.begin():
-            result = await con.execute(select(models.question.Question).where(models.question.Question.id==id))
-            target = result.scalars().first()
-            if target == None:
-                return {
-                    "status": 'not found'
-                },400
-            await con.delete(target)
-            # for item in result:
-            #     await con.delete(item)
-        await con.commit()
-        return {
-            'status':'ok'
-        },200
+    # async def delete_question(task_id, question_id):
+    #     async with con.begin():
+    #         result = await con.execute(select(models.question.Question).where(models.question.Question.id==id))
+    #         target = result.scalars().first()
+    #         if target == None:
+    #             return {
+    #                 "status": 'not found'
+    #             },400
+    #         await con.delete(target)
+    #         # for item in result:
+    #         #     await con.delete(item)
+    #     await con.commit()
+    #     return {
+    #         'status':'ok'
+    #     },200
 
 
 question_service = Questions()
