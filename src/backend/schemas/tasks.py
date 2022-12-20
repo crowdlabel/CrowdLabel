@@ -58,7 +58,7 @@ class Tag(BaseModel):
         
 
 class CreateTaskRequest(BaseModel):
-    name: str='My Task'
+    name: str=''
     credits: float=0
     introduction: str=''
     description: str=''

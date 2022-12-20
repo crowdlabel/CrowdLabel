@@ -40,6 +40,6 @@ class Task(Base):
         self.credits = task_schema.credits
         self.tags = '|'.join(task_schema.tags)
         self.responses_required = task_schema.responses_required
-        self.resource_path = resource_path
+        self.resource_path = str(resource_path)
     def dict(self):
         return {key: self.__dict__[key] for key in self.__dict__ if key[0] != '_'}

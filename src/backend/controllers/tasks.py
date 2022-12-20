@@ -64,7 +64,7 @@ async def upload_task(task_file: UploadFile, current_user=Depends(get_current_us
     task = await task_service.process_task_archive(out_path)
     if isinstance(task, str):
         return upload_failed_jdr.response(schemas.tasks.ErrorResponse(error=task))
-    task = await task_service.create_task(current_user, task, out_path)
+    task = await task_service.create_task(current_user, task, out_path.parent / out_path.stem)
     if isinstance(task, str):
         return upload_failed_jdr.response(schemas.tasks.ErrorResponse(error=task))
 
@@ -121,22 +121,24 @@ async def create_task(task: schemas.tasks.CreateTaskRequest, questions_file: Upl
 
 
 ###############################################################################
-get_tasks_success_jdr = JSONDocumentedResponse(
+get_task_success_jdr = JSONDocumentedResponse(
     status.HTTP_200_OK,
     'Task retrieved successfully.',
     schemas.tasks.Task,
 )
 @router.get('/{task_id}',
     description='Get a task based on its task_id',
-    **create_documentation([search_tasks_success_jdr, not_found_jdr, forbidden_jdr])    
+    **create_documentation([get_task_success_jdr, not_found_jdr, forbidden_jdr])    
 )
 async def get_task(task_id: int, current_user: schemas.users.User=Depends(get_current_user())):
     task = await task_service.get_task(task_id=task_id)
     if not task:
         return not_found_jdr.response()
-    # if current_user.username not in 
+    if (current_user.username != task.requester and
+        current_user.username not in task.respondents_claimed):
 
-    return task
+        return forbidden_jdr.response()
+    return get_task_success_jdr.response(task)
 
 ###############################################################################
 task_delete_success_jdr = JSONDocumentedResponse(
@@ -170,7 +172,8 @@ claim_failed_jdr = JSONDocumentedResponse(
 )
 async def claim_task(task_id: int, current_user=Depends(get_current_user(['respondent']))):
     task = await task_service.claim_task(current_user.username,task_id)
-
+    if not isinstance(task, schemas.tasks.Task):
+        return claim_failed_jdr.response(schemas.tasks.ErrorResponse(error=task))
     return claim_success_jdr.response(task)
 ###############################################################################
 

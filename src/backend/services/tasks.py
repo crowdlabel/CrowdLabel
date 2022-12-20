@@ -55,7 +55,6 @@ class Tasks:
         # TODO: which task_id to use?
 
 
-
         task_schema = schemas.tasks.Task(**task_request.dict(), 
             task_id= 0,
             requester=requester.username,
@@ -67,7 +66,6 @@ class Tasks:
         for question in task_schema.questions:
             if not question.resource:
                 continue
-            print(resource_path / question.resource)
             if not pathlib.Path(resource_path / question.resource).is_file():
                 missing.append(str(question.resource))
 
@@ -123,19 +121,17 @@ class Tasks:
             await asyncio.shield(con.close())
             return response_task
 
-    async def get_task(self, task_id: int) -> schemas.tasks.Task | None:
+    async def get_task(self, task_id: int) -> schemas.tasks.Task | str:
         async with con.begin():
             result = await con.execute(select(models.task.Task).where(models.task.Task.task_id == task_id).options(
                 selectinload(models.task.Task.questions),
                 selectinload(models.task.Task.respondents_claimed),
                 selectinload(models.task.Task.respondents_complete)
             ))
-        print('#'*100)
         target = result.scalars().first()
         if target is None:
             await asyncio.shield(con.close())
             return None
-        print(target)
         dict = target.dict()
         del dict['tags']
         dict['tags'] = set(target.tags.split('|'))
@@ -182,16 +178,30 @@ class Tasks:
             await asyncio.shield(con.close())
         return True
 
-    async def claim_task(self, task: schemas.tasks.Task | int, respondent: schemas.users.Respondent) -> str | None:
-        if isinstance(task, int):
-            task = await self.get_task(task)
-        if not isinstance(task, schemas.tasks.Task):
-            return task
-        respondent.tasks_claimed.add(task.task_id)
-        task.respondents_claimed.add(respondent.username)
-        # TODO: claim task in database
-        return None
-        # returns error message, or none if successful
+    async def claim_task(self,user_name,task_id)->schemas.tasks.Task | None:
+        async with con.begin():
+            user = await con.execute(select(models.user.Respondent).where(models.user.Respondent.username == user_name).options(
+                selectinload(models.user.Respondent.task_claimed)
+            )
+            )
+            user = user.scalars().first()
+            if user == None:
+                await asyncio.shield(con.close())
+            
+                return None
+            task = await con.execute(select(models.task.Task).where(models.task.Task.id==task_id).options(
+                selectinload(models.task.Task.respondents_claimed)
+            ))
+            task = task.scalars().first()
+            if task == None:
+                await asyncio.shield(con.close())
+
+                return None
+            user.task_claimed.append(task)
+            response_task = schemas.tasks.Task(task)
+            await con.commit()
+            await asyncio.shield(con.close())
+            return response_task
             
     async def process_task_archive(self, path: pathlib.Path) -> schemas.tasks.Task | str:
         '''
@@ -215,6 +225,7 @@ class Tasks:
         except Exception as e:
             return str(e)
 
+
         try:
             questions = data['questions']
         except:
@@ -226,6 +237,7 @@ class Tasks:
             task = schemas.tasks.CreateTaskRequest.parse_obj(data)
         except Exception as e:
             return str(e)
+
 
         for question in questions:
             try:
