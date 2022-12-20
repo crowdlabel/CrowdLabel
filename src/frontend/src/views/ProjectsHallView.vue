@@ -67,15 +67,21 @@
             </div>
             <div class="filter">
               <p class="title_filter">筛选：</p>
-              <el-button round id="all_button" autofocus="true">全部</el-button>
-              <el-button round id="text_button">文字任务</el-button>
-              <el-button round id="img_button">图像任务</el-button>
-              <el-button round id="audio_button">音频任务</el-button>
+              <div>
+              <el-radio-group v-model="tab1" size="small">
+                <el-radio-button label="all">全部</el-radio-button>
+                <el-radio-button label="text">文字任务</el-radio-button>
+                <el-radio-button label="img">图像任务</el-radio-button>
+                <el-radio-button label="audio">音频任务</el-radio-button>
+              </el-radio-group>
+              </div>
             </div>
             <div class="order_by">
               <p class="title_order_by">排序：</p>
-              <el-button round id="order_by_time" autofocus="true">发布时间</el-button>
-              <el-button round id="order_by_popularity">热度</el-button>
+              <el-radio-group v-model="tab2" size="small">
+                <el-radio-button label="time">发布时间</el-radio-button>
+                <el-radio-button label="popularity">热度</el-radio-button>
+              </el-radio-group>
             </div>
             <div class="display_projects">
               <div class="display_projects_row">
@@ -177,7 +183,9 @@ export default {
     
     return {
       page_num: 100,
-      input: ''
+      input: '',
+      tab1: 'all',
+      tab2: 'time'
     };
   },
   methods: {
@@ -391,27 +399,35 @@ a {
   margin: 20px 100px 0px 100px;
 }
 .title_filter {
-  padding: 0px;
+  padding: 0px 8px 0px 0px;
   font-size: 14px;
   color:rgba(0,0,0,.6);
 }
-::v-deep .el-button--success {
-  margin: 0px 0px 0px 10px;
-  height: 30px;
-  padding: 0px 0px !important;
-  border-width: 0.5px;
-  background-color: #5D3BE6;
+
+::v-deep .el-radio-group {
+  border-color: #5D3BE6;
+}
+::v-deep .el-radio-button__inner {
+  background: #fff;
+  border-color: #5D3BE6;
+  color:#5D3BE6;
   font-size: 12.5px;
   min-width: 80px;
+  align-items:center;
+  box-shadow:none;
+  outline: none;
 }
-::v-deep .el-button--success:hover{
-  background-color: #5D3BE6;
+::v-deep .el-radio-button__orig-radio:hover + .el-radio-button__inner {
+  background: #5D3BE6;
+  border-color: #5D3BE6;
+  color: #fff;
 }
-
-::v-deep .el-button--success:focus {
-  background-color: #5D3BE6;
+::v-deep .el-radio-button__orig-radio:checked + .el-radio-button__inner{
+  background: #5D3BE6;
+  border-color: #5D3BE6;
+  box-shadow:none;
+  color: #fff;
 }
-
 ::v-deep .el-button--default.is-round {
   margin: 0px 0px 0px 10px;
   height: 30px;
@@ -441,7 +457,7 @@ a {
   margin: 0px 100px 0px 100px;
 }
 .title_order_by {
-  padding: 0px;
+  padding: 0px 8px 0px 0px;
   font-size: 14px;
   color:rgba(0,0,0,.6);
 }
