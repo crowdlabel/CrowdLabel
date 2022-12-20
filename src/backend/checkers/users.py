@@ -1,17 +1,17 @@
 import re
 from email_validator import validate_email
-from models.user import MAX_USERNAME_LENGTH
+
 from schemas.users import USER_TYPES
 
 
-
+from models.user import MAX_USERNAME_LENGTH
 
 
 MIN_USERNAME_LENGTH = 3
 MIN_PASSWORD_LENGTH = 8
 MAX_PASSWORD_LENGTH = 64
 
-USERNAME_CHARS = r'[A-Za-z0-9_\.\_]' # alphanumeric + dash, underscore, and period
+USERNAME_CHARS = r'A-Za-z0-9_\.\_' # alphanumeric + dash, underscore, and period
 PASSWORD_CHARS = r'\x20-\x7e'# printable chars excluding delete
 USERNAME_PATTERN = fr'[{USERNAME_CHARS}]{{{MIN_USERNAME_LENGTH},{MAX_USERNAME_LENGTH}}}'
 PASSWORD_PATTERN = fr'[{PASSWORD_CHARS}]{{{MIN_USERNAME_LENGTH},{MAX_USERNAME_LENGTH}}}'

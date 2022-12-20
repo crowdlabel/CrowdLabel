@@ -20,11 +20,13 @@ class User(Base):
     user_type = Column(String(MAX_USERTYPE_LENGTH))
     date_created = Column(DateTime,default = datetime.datetime.now)
     credits = Column(FLOAT)
-    token = Column(String(MAX_TOKEN_LENGTH))
     __mapper_args__ = {
         'polymorphic_on':user_type,
         'polymorphic_identity':'user'
     }
+
+    def dict(self):
+        return {key: self.__dict__[key] for key in self.__dict__ if key[0] != '_'}
 
     # def __init__(self, username, password_hashed, email, user_type, status):
     #     self.username = username

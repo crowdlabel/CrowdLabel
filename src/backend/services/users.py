@@ -8,7 +8,6 @@ import random
 from services.database import *
 from datetime import datetime
 from pydantic import BaseModel
-import services.tasks
 import models.email
 import models.user
 
@@ -20,9 +19,6 @@ import schemas.users
 
 Connection = sessionmaker(bind=engine, expire_on_commit=False, class_=AsyncSession)
 con = scoped_session(Connection)
-
-task_service = services.tasks.Tasks()
-
 
 
 
@@ -83,77 +79,63 @@ class Users:
                 return False
             await con.commit()
             return True
-    async def create_user(self, 
-        username: str,
-        email: str,
-        password: str,
-        user_type: str,
-        verification_code: str,
-    ) -> schemas.users.User | dict:
+    async def create_user(self, request: schemas.users.RegistrationRequest) -> schemas.users.User | dict:
         '''
         Creates a new user
         If successful, returns User object
         If unsuccessful, returns a dict with the fields along with their error message
         '''
-        # get the arguments as a dictionary
-        args = locals()
 
 
         errors = {}
 
-        # check arguments' formats
-        for arg in args:
-            if arg  == 'self':
-                continue
-            if not checkers.users.format_checkers[arg](args[arg]):
-                errors[arg] = 'format'
-
         # check existance
-        if 'username' not in errors and await self.username_exists(username):
+        if 'username' not in errors and await self.username_exists(request.username):
             errors['username'] = 'exists'
-        if 'email' not in errors and await self.email_exists(email):
+        if 'email' not in errors and await self.email_exists(request.email):
             errors['email'] = 'exists'
         if errors:
             return errors
 
-        if not await self.check_verification_code(email, verification_code):
+        if not await self.check_verification_code(request.email, request.verification_code):
             errors['verification_code'] = 'wrong'
             return errors
 
 
-        if user_type in ['0', 'respondent']:
+        if request.user_type == 'respondent':
             new_user = models.user.Respondent()
-        elif user_type in ['1', 'requester']:
+        elif request.user_type == 'requester':
             new_user = models.user.Requester()
-        elif user_type == 'admin':
+        elif request.user_type == 'admin':
             new_user = models.user.Admin()
-        else:
-            return {'user_type': 'format'}
             
-        new_user.username = username
-        new_user.email = email
-        new_user.password_hashed = utils.hasher.hash(password)
+        new_user.username = request.username
+        new_user.email = request.email
+        new_user.password_hashed = utils.hasher.hash(request.password)
         new_user.date_created = datetime.utcnow()  
         new_user.credits = 0
         new_user.token = ''
-
-        if user_type in ['0', 'respondent']:
-            response_user = schemas.users.Respondent(new_user)
-        elif user_type in ['1', 'requester']:
-            response_user = schemas.users.Requester(new_user)
-        elif user_type == 'admin':
-            response_user = schemas.users.Admin(new_user)
-
-        try:
-            response_user = schemas.users.USER_TYPES[user_type](new_user)
-        except:
-            raise ValueError('Invalid user type from request')
 
         con.add(new_user)     
         await con.commit()
 
 
-        return response_user
+
+
+        request = request.dict()
+        request['password_hashed'] = utils.hasher.hash(request['password'])
+        del request['password']
+        del request['verification_code']
+
+
+        user_schema = schemas.users.USER_TYPES[request['user_type']](
+            **request,
+            date_created=datetime.utcnow()
+        )
+
+
+
+        return user_schema
 
 
     async def authenticate(self, username: str, password: str) -> bool:
@@ -173,14 +155,13 @@ class Users:
         Returns User object, or None if user not found
         """
 
-        res= await con.execute(select(models.user.User).where(models.user.User.username == username))
+        res = await con.execute(select(models.user.User).where(models.user.User.username == username))
         target = res.scalars().first()
         if target == None:
             return None
-        try:
-            return schemas.users.USER_TYPES[target.user_type](target)
-        except:
-            raise ValueError('Invalid user type from database')
+
+        return schemas.users.USER_TYPES[target.user_type](**target.dict())
+
 
 
 
@@ -254,15 +235,24 @@ class Users:
             target.password_hashed = utils.hasher.hash(new_info['password'])
             return True
 
+    async def handle_transaction(self, request: schemas.users.TransactionRequest, user: schemas.users.User) -> float | str:
+        '''
+        Handles a transaction request
+        Returns the new balance as a `float` if the transaction succeeded
+        Returns a str detailing the error if the transaction failed
+        '''
 
-    async def claim_task(self, task: schemas.tasks.Task | int) -> str | None:
-        if isinstance(task, int):
-            task = await task_service.get_task(task)
-        self.tasks_claimed.add(task.task_id)
-        task.respondents_claimed.add(self.username)
-        return task
-        # TODO: claim task
-        # returns error message, or none if successful
+        if request.amount == 100:
+            user.credits = 100
+            # TODO: not checking balance right now
+            """ elif user.credits - request.amount < 0:
+            return 'Insufficient credits' """ 
+        else:
+            user.credits -= request.amount
+
+        # TODO: update user balance in database
+
+        return user.credits
 
 user_service = Users()
 
