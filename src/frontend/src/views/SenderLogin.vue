@@ -222,14 +222,15 @@ export default {
         this.user = usersApi
         var authApi = new AuthApi(apiClient);
         this.auth = authApi
+        delete apiClient["axios"].defaults.headers["User-Agent"];
     },
     methods: {
         handleTabClick(tab, event){
             console.log(tab, event)
         },
         submitRegister(formName) {
-            // this.$refs[formName].validate((valid) => {
-            // if (valid) {
+            this.$refs[formName].validate((valid) => {
+            if (valid) {
                 let ready_username = document.getElementById('registername').value;
                 let ready_password = document.getElementById('registerpassword').value;
                 let ready_email = document.getElementById('registeremail').value;
@@ -250,11 +251,11 @@ export default {
                     });
                 alert('successfully registered!');
                 this.activeName = "first"
-            // } else {
-            //     console.log('error registration!!');
-            //     return false;
-            // }
-            // });
+            } else {
+                console.log('error registration!!');
+                return false;
+            }
+            });
         },
         submitLogin(formName) {
             this.$refs[formName].validate((valid) => {
