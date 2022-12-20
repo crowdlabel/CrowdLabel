@@ -48,17 +48,16 @@ class Users:
         verification_code = '123456'
         # TODO: check?
         
-        async with con.begin():
-            res= await con.execute(select(models.email.Email).where(models.email.Email.email==email))
-            target = res.scalars().first()
-            if target is None:
-                email_create = models.email.Email(email=email,code = verification_code)
-                con.add(email_create)
-                await con.commit()
-            else:
-                target.verification_code = verification_code
-                await con.flush() 
-                con.expunge(target)
+        res= await con.execute(select(models.email.Email).where(models.email.Email.email==email))
+        target = res.scalars().first()
+        if target is None:
+            email_create = models.email.Email(email=email,code = verification_code)
+            con.add(email_create)
+            await con.commit()
+        else:
+            target.verification_code = verification_code
+            await con.flush() 
+            con.expunge(target)
                     
         try:
             return True
@@ -162,11 +161,10 @@ class Users:
 
         # TODO: check?
         con = scoped_session(Connection)
-        async with con.begin():
-            res= await con.execute(select(models.user.User).where(models.user.User.username==username))
-            target = res.scalars().first()
-            if target == None:
-                return False
+        res= await con.execute(select(models.user.User).where(models.user.User.username==username))
+        target = res.scalars().first()
+        if target == None:
+            return False
         return utils.hasher.verify(target.password_hashed, password)
 
 
