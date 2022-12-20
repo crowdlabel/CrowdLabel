@@ -78,6 +78,7 @@ class Users:
             if target is None or target.verification_code != verification_code:
                 return False
             await con.commit()
+            await asyncio.shield(con.close())
             return True
     async def create_user(self, request: schemas.users.RegistrationRequest) -> schemas.users.User | dict:
         '''
@@ -220,6 +221,7 @@ class Users:
                 return False
             await con.delete(target)
             con.commit()
+            await asyncio.shield(con.close())
         return True
     async def edit_user_info(userid:int,new_info: dict) -> str | None:
         """
