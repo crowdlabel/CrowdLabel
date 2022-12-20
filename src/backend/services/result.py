@@ -33,29 +33,30 @@ async def create_result(
         'status':'ok',
         'arg': 'ok',
         'error': 'ok',
-    },200   
+         },200   
 
-async def get_result(id):
-    async with con.begin():
-        result = await con.execute(select(Results).where(Results.id==id).options(selectinload(Results.child_result)))
-        target = result.scalars().first()
-        info = ""
-        for child in target.child_result:
-            info = info + str(child.id) + '\n'
-            info = info + child.response + '\n'
-        if target is None:
-            return{
-                "status":"not found",
-            },400
-    return {
-        "status":"ok",
-        "id" :target.id,
-        "name":target.name,
-        "task_id":target.task_id,
-        "date_created":target.date_created,
-        "date_download":target.date_download,
-        "info":info
-    },200
+# async def get_result(id):
+#     async with con.begin():
+#         result = await con.execute(select(Results).where(Results.id==id).options(selectinload(Results.child_result)))
+#         target = result.scalars().first()
+#         info = ""
+#         for child in target.child_result:
+#             info = info + str(child.id) + '\n'
+#             info = info + child.response + '\n'
+#         if target is None:
+#             return{
+#                 "status":"not found",
+#             },400
+#     return {
+#         "status":"ok",
+#         "id" :target.id,
+#         "name":target.name,
+#         "task_id":target.task_id,
+#         "date_created":target.date_created,
+#         "date_download":target.date_download,
+#         "info":info
+#     },200
+
 
 async def edit_result(id):
     async with con.begin():
@@ -76,20 +77,21 @@ async def edit_result(id):
         "date_created":target.date_created,
         "date_download":target.date_download
     },200
+
     
 
-async def delete_result(id):
-    async with con.begin():
-        result = await con.execute(select(Results).where(Results.id==id))
-        target = result.scalars().first()
-        if target == None:
-            return {
-                "status": 'not found'
-            },400
-        await con.delete(target)
-        # for item in result:
-        #     await con.delete(item)
-    await con.commit()
-    return {
-        'status':'ok'
-    },200
+# async def delete_result(id):
+#     async with con.begin():
+#         result = await con.execute(select(Results).where(Results.id==id))
+#         target = result.scalars().first()
+#         if target == None:
+#             return {
+#                 "status": 'not found'
+#             },400
+#         await con.delete(target)
+#         # for item in result:
+#         #     await con.delete(item)
+#     await con.commit()
+#     return {
+#         'status':'ok'
+#     },200

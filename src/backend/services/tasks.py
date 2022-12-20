@@ -65,9 +65,10 @@ class Tasks:
             resource_path=str(resource_path)
         )
         for question in task_request.dict()['questions']:
-            question_created = await question_service.create_question(question['question_type'],question['prompt'],
-            question['resource'],question['options'] if question['question_type'] in ['single_choice','multi_choice'] else [],task.task_id)
-            task.questions.append(question_created)
+
+            await question_service.create_question(question['question_type'],question['prompt'],
+                                             question['resource'],question['options'] if question['question_type'] in ['single_choice','multi_choice'] else []
+                                             ,task.task_id)
         async with con.begin():
             target = await con.execute(select(models.user.Requester).where(models.user.Requester.username==requester.username).options(selectinload(models.user.Requester.task_requested)))
             res = target.scalars().first()
@@ -77,7 +78,8 @@ class Tasks:
             res.task_requested.append(task)
             con.add(task)
             await con.commit()
-
+            await asyncio.shield(con.close())
+        task_schema.task_id = task.task_id
         return task_schema
 
     async def claim_task(self,user_name,task_id)->schemas.tasks.Task | None:
@@ -97,37 +99,38 @@ class Tasks:
                 return None
             user.task_claimed.append(task)
             response_task = schemas.tasks.Task(task)
+            await con.commit()
+            await asyncio.shield(con.close())
             return response_task
 
     async def get_task(self, task_id: int) -> schemas.tasks.Task | None:
-        async with con.begin():
-            result = await con.execute(select(models.task.Task).where(models.task.Task.id == task_id).options(
-                selectinload(models.task.Task.questions),
-                selectinload(models.task.Task.respondent_claimed),
-                selectinload(models.task.Task.respondent_complete)
-            ))
-            target = result.scalars().first()
-            if target is None:
-                return None
-            response_task = schemas.tasks.Task(target)
-            for question in target.questions:
-                qtype = question.question_type
-                if qtype == 'single_choice':
-                    q = schemas.questions.SingleChoiceQuestion(question)
-                elif qtype == 'multi_choice':
-                    q = schemas.questions.MultiChoiceQuestion(question)
-                elif qtype == 'ranking':
-                    q = schemas.questions.RankingQuestion(question)
-                elif qtype == 'open':
-                    q = schemas.questions.OpenQuestion(question)
-                else : 
-                    continue
-                response_task.questions.append(q)
-            claim_names = list(map(lambda A:A.username,target.respondent_claimed))
-            response_task.respondents_claimed = set(claim_names)
-            complete_names = list(map(lambda A:A.username,target.respondent_complete))
-            response_task.respondents_completed = set(complete_names)
-            return response_task
+        result = await con.execute(select(models.task.Task).where(models.task.Task.id == task_id).options(
+            selectinload(models.task.Task.questions),
+            selectinload(models.task.Task.respondent_claimed),
+            selectinload(models.task.Task.respondent_complete)
+        ))
+        target = result.scalars().first()
+        if target is None:
+            return None
+        response_task = schemas.tasks.Task(target)
+        for question in target.questions:
+            qtype = question.question_type
+            if qtype == 'single_choice':
+                q = schemas.questions.SingleChoiceQuestion(question)
+            elif qtype == 'multi_choice':
+                q = schemas.questions.MultiChoiceQuestion(question)
+            elif qtype == 'ranking':
+                q = schemas.questions.RankingQuestion(question)
+            elif qtype == 'open':
+                q = schemas.questions.OpenQuestion(question)
+            else : 
+                continue
+            response_task.questions.append(q)
+        claim_names = list(map(lambda A:A.username,target.respondent_claimed))
+        response_task.respondents_claimed = set(claim_names)
+        complete_names = list(map(lambda A:A.username,target.respondent_complete))
+        response_task.respondents_completed = set(complete_names)
+        return response_task
 
     
     async def delete_task(task_id:int) -> bool:
@@ -139,7 +142,8 @@ class Tasks:
             await con.delete(target)
             # for item in result:
             #     await con.delete(item)
-        await con.commit()
+            await con.commit()
+            await asyncio.shield(con.close())
         return True
 
     async def claim_task(self, task: schemas.tasks.Task | int, respondent: schemas.users.Respondent) -> str | None:
@@ -210,36 +214,42 @@ Returns: list of `Task`s matching the query within the specified `page` and `pag
 
         # TODO: use query parameters from `parameters`
 
-        async with con.begin():
 
-            result = await con.execute(select(models.task.Task))
+        result = await con.execute(select(models.task.Task))
 
-            '''
-            if sort_ascending is True:
-                result = await con.execute(select(models.task.Task).where(and_(
+        '''
+        if sort_ascending is True:
+            result = await con.execute(select(models.task.Task).where(and_(
+                        or_(models.task.Task.name == name, name ==None),
+                        models.task.Task.credits >= credits_min,
+                        models.task.Task.credits <= credits_max,
+                        len(models.task.Task.questions)>questions_min,
+                        len(models.task.Task.questions)<questions_max,),
+                        or_(models.task.Task.response_required == result_count , result_count == -1))
+                        .order_by(models.task.Task.id.asc()).options(selectinload(models.task.Task.questions),selectinload(models.task.Task.results)))
+        else:
+
+            result = await con.execute(select(models.task.Task).where(and_(
                             or_(models.task.Task.name == name, name ==None),
                             models.task.Task.credits >= credits_min,
                             models.task.Task.credits <= credits_max,
                             len(models.task.Task.questions)>questions_min,
                             len(models.task.Task.questions)<questions_max,),
                             or_(models.task.Task.response_required == result_count , result_count == -1))
-                            .order_by(models.task.Task.id.asc()).options(selectinload(models.task.Task.questions),selectinload(models.task.Task.results)))
-            else:
- 
-                result = await con.execute(select(models.task.Task).where(and_(
-                                or_(models.task.Task.name == name, name ==None),
-                                models.task.Task.credits >= credits_min,
-                                models.task.Task.credits <= credits_max,
-                                len(models.task.Task.questions)>questions_min,
-                                len(models.task.Task.questions)<questions_max,),
-                                or_(models.task.Task.response_required == result_count , result_count == -1))
-                                .order_by(models.task.Task.id.desc()).options(selectinload(models.task.Task.questions),selectinload(models.task.Task.results)))
-            '''
+                            .order_by(models.task.Task.id.desc()).options(selectinload(models.task.Task.questions),selectinload(models.task.Task.results)))
+        '''
 
-            tasks = result.scalar().all()
-            if parameters.page_size == -1:
-                return tasks , len(tasks)
+        tasks = result.scalar().all()
+        if parameters.page_size == -1:
+            return tasks , len(tasks)
+        else :
+            if len(tasks) > parameters.page * parameters.page_size:
+                target = tasks[(parameters.page-1)*parameters.page_size:parameters.page*parameters.page_size-1]
+                return target , len(target)
+            elif len(tasks) < (parameters.page-1)*parameters.page_size:
+                return [] , 0
             else :
+
                 if len(tasks) > parameters.page * parameters.page_size:
                     target = tasks[(parameters.page-1)*parameters.page_size:parameters.page*parameters.page_size-1]
                     return target, len(target)
@@ -248,6 +258,7 @@ Returns: list of `Task`s matching the query within the specified `page` and `pag
                 else :
                     target = tasks[(parameters.page-1)*parameters.page_size:-1]
                     return target, len(target)
+
 
     async def create_task_results_file(self, id: int) -> str:
         '''
