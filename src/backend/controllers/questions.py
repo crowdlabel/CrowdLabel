@@ -21,20 +21,20 @@ from .auth import Depends, get_current_user
 router = APIRouter(prefix='/tasks/{task_id}/questions')
 
 
-###############################################################################
-question_not_found_error = JSONDocumentedResponse(
-    status.HTTP_404_NOT_FOUND,
-    'Question not found'
+get_question_success_jdr = JSONDocumentedResponse(
+    status.HTTP_200_OK,
+    'Question retrieved successfully',
+    schemas.questions.Question
 )
 @router.get('/{question_id}',
-    **create_documentation([question_not_found_error])
+    **create_documentation([get_question_success_jdr, not_found_jdr])
 )
 async def get_question(question_id: int, task=Depends(controllers.tasks.get_task), current_user=Depends(get_current_user)):
     question = await question_service.get_question(task, question_id)
     if not question:
-        return question_not_found_error.response()
+        return not_found_jdr.response()
     
-    return question
+    return get_question_success_jdr.response(question)
 ###############################################################################
 create_answer_success = JSONDocumentedResponse(
     status.HTTP_200_OK,
@@ -101,5 +101,3 @@ async def get_question_resource(
     resource_path = task.resource_path / question.resource
 
     return download_file(resource_path)
-
-    # TODO: return the file

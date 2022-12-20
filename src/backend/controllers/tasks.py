@@ -7,6 +7,7 @@ import services.users
 from .jsondocumentedresponse import JSONDocumentedResponse, create_documentation, forbidden_jdr, not_found_jdr
 import schemas.tasks
 import schemas.questions
+import schemas.users
 from utils.datetime_str import datetime_now_str
 from typing import Optional
 from utils.config import get_config
@@ -18,19 +19,19 @@ task_service = services.tasks.Tasks()
 
 
 ###############################################################################
-get_task_success_jdr = JSONDocumentedResponse(
+search_tasks_success_jdr = JSONDocumentedResponse(
     status.HTTP_200_OK,
     'Successfully queried tasks.',
     schemas.tasks.TaskSearchResponse
 )
-get_task_failed_hdr = JSONDocumentedResponse(
+search_tasks_failed_hdr = JSONDocumentedResponse(
     status.HTTP_400_BAD_REQUEST,
     'Task query failed.',
     schemas.tasks.ErrorResponse
 )
 @router.put('/',
     description=task_service.search.__doc__ + schemas.tasks.TaskSearchRequest.__doc__,
-    **create_documentation([get_task_success_jdr, get_task_failed_hdr])
+    **create_documentation([search_tasks_success_jdr, search_tasks_failed_hdr])
 )
 async def search_tasks(query: schemas.tasks.TaskSearchRequest, current_user=Depends(get_current_user(['respondent']))):
     """
@@ -39,10 +40,10 @@ async def search_tasks(query: schemas.tasks.TaskSearchRequest, current_user=Depe
     # TODO: complete arguments
     tasks = await task_service.search(current_user, query)
     if isinstance(tasks, str):
-        return get_task_failed_hdr.response(schemas.tasks.ErrorResponse(tasks))
+        return search_tasks_failed_hdr.response(schemas.tasks.ErrorResponse(tasks))
 
     # exclude tasks.questions
-    return get_task_success_jdr.response(schemas.tasks.TaskSearchResponse(tasks=tasks[0], total=tasks[1]), exclude={'questions'})
+    return search_tasks_success_jdr.response(schemas.tasks.TaskSearchResponse(tasks=tasks[0], total=tasks[1]), exclude={'questions'})
 ###############################################################################
 upload_success_jdr = JSONDocumentedResponse(
     status.HTTP_200_OK,
@@ -119,23 +120,21 @@ async def create_task(task: schemas.tasks.CreateTaskRequest, questions_file: Upl
 
 
 
-
-
-
 ###############################################################################
-get_task_success_jdr = JSONDocumentedResponse(
+get_tasks_success_jdr = JSONDocumentedResponse(
     status.HTTP_200_OK,
-    'Task found successfully.',
+    'Task retrieved successfully.',
     schemas.tasks.Task,
 )
 @router.get('/{task_id}',
     description='Get a task based on its task_id',
-    **create_documentation([get_task_success_jdr, not_found_jdr, forbidden_jdr])    
+    **create_documentation([search_tasks_success_jdr, not_found_jdr, forbidden_jdr])    
 )
-async def get_task(task_id: int, current_user=Depends(get_current_user())):
+async def get_task(task_id: int, current_user: schemas.users.User=Depends(get_current_user())):
     task = await task_service.get_task(task_id=task_id)
     if not task:
-        return {'description': 'Task not found'}, status.HTTP_404_NOT_FOUND
+        return not_found_jdr.response()
+    # if current_user.username not in 
 
     return task
 

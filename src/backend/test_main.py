@@ -69,6 +69,7 @@ def test_get_me():
     assert response.status_code == 200
     for field in ['username', 'email', 'user_type']:
         assert req[field] == response.json()[field]
+    print(response.json())
 
 def time_in_range(time, buffer=5):
     if isinstance(time, str):
@@ -104,10 +105,12 @@ def test_availability():
 
     response = client.put('/users/availability',
         json={
-            'username': 'johndoe',
+            'username': 'kennyl',
             'email': 'johndoe@example.com',
         }
     )
+
+    print(response.json())
 
 
 def test_upload():
@@ -188,5 +191,6 @@ from services.tasks import Tasks
 
 if __name__ == '__main__':
     #test_register()
-    test_upload()
+    #test_availability()
     #test_search()
+    test_get_me()
