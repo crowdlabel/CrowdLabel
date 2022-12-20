@@ -222,7 +222,6 @@ export default {
         this.user = usersApi
         var authApi = new AuthApi(apiClient);
         this.auth = authApi
-        delete apiClient["axios"].defaults.headers["User-Agent"];
     },
     methods: {
         handleTabClick(tab, event){
