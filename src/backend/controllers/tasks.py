@@ -38,8 +38,6 @@ async def search_tasks(query: schemas.tasks.TaskSearchRequest, current_user=Depe
     """
     # TODO: complete arguments
     tasks = await task_service.search(current_user, query)
-    print('#' * 80)
-    print(tasks)
     if isinstance(tasks, str):
         return get_task_failed_hdr.response(schemas.tasks.ErrorResponse(tasks))
 

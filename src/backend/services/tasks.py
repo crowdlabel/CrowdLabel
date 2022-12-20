@@ -1,17 +1,15 @@
-from typing import Iterable
 import schemas.questions
 from utils.datetime_str import datetime_now_str
 from datetime import datetime
 
 from services.database import engine
-import services.questions
 import models.task
 import models.user
 from sqlalchemy.orm import sessionmaker, scoped_session, selectinload
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy import select, and_ ,or_
-Connection = sessionmaker(bind=engine, expire_on_commit=False, class_=AsyncSession)
-con = scoped_session(Connection)
+conection = sessionmaker(bind=engine, expire_on_commit=False, class_=AsyncSession)
+con = scoped_session(conection)
 
 import pathlib
 
@@ -25,6 +23,8 @@ TASK_UPLOAD_DIR = pathlib.Path(get_config('file_locations.tasks'))
 
 from services.users import user_service
 from services.questions import question_service
+
+import asyncio
 
 
 
@@ -54,8 +54,15 @@ class Tasks:
 
         # TODO: which task_id to use?
 
+        task_id = 1
+        while True:
+            task = await self.get_task(task_id)
+            if not isinstance(task, schemas.tasks.Task):
+                break
+            task_id += 1
+
         task_schema = schemas.tasks.Task(**task_request.dict(), 
-            task_id=1,
+            task_id= task_id,
             requester=requester.username,
             date_created=datetime.utcnow(),
         )
@@ -70,7 +77,8 @@ class Tasks:
                                              question['resource'],question['options'] if question['question_type'] in ['single_choice','multi_choice'] else []
                                              ,task.task_id)
         async with con.begin():
-            target = await con.execute(select(models.user.Requester).where(models.user.Requester.username==requester.username).options(selectinload(models.user.Requester.task_requested)))
+            target = await con.execute(select(models.user.Requester)
+                .where(models.user.Requester.username==requester.username))#.options(selectinload(models.user.Requester.task_requested)))
             res = target.scalars().first()
             if res == None:
                 return 'requester not found'
@@ -92,7 +100,7 @@ class Tasks:
             if user == None:
                 return None
             task = await con.execute(select(models.task.Task).where(models.task.Task.id==task_id).options(
-                selectinload(models.task.Task.respondent_claimed)
+                selectinload(models.task.Task.respondents_claimed)
             ))
             task = task.scalars().first()
             if task == None:
@@ -104,11 +112,12 @@ class Tasks:
             return response_task
 
     async def get_task(self, task_id: int) -> schemas.tasks.Task | None:
-        result = await con.execute(select(models.task.Task).where(models.task.Task.id == task_id).options(
-            selectinload(models.task.Task.questions),
-            selectinload(models.task.Task.respondent_claimed),
-            selectinload(models.task.Task.respondent_complete)
-        ))
+        async with engine.begin() as con:
+            result = await con.execute(select(models.task.Task).where(models.task.Task.task_id == task_id).options(
+                selectinload(models.task.Task.questions),
+                selectinload(models.task.Task.respondents_claimed),
+                selectinload(models.task.Task.respondents_complete)
+            ))
         target = result.scalars().first()
         if target is None:
             return None
@@ -126,9 +135,9 @@ class Tasks:
             else : 
                 continue
             response_task.questions.append(q)
-        claim_names = list(map(lambda A:A.username,target.respondent_claimed))
+        claim_names = list(map(lambda A:A.username,target.respondents_claimed))
         response_task.respondents_claimed = set(claim_names)
-        complete_names = list(map(lambda A:A.username,target.respondent_complete))
+        complete_names = list(map(lambda A:A.username,target.respondents_complete))
         response_task.respondents_completed = set(complete_names)
         return response_task
 
@@ -212,10 +221,11 @@ Returns: list of `Task`s matching the query within the specified `page` and `pag
         """
 
 
-        # TODO: creator -> requesters, multiple usernames
+        # TODO: use query parameters from `parameters`
 
-
-        result = await con.execute(select(models.task.Task))
+        async with con:
+            result = await con.execute(select(models.task.Task))
+        return result, 1
 
         '''
         if sort_ascending is True:
