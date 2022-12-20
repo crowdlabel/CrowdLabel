@@ -22,19 +22,22 @@ class Question(Base):
     prompt = Column(String(MAX_PROMPT_LENGTH))
     resource = Column(String(MAX_RES_LENGTH))
     options = Column(String(MAX_OPT_LENGTH))
+    id_in_task = Column(Integer)
     task_id = Column(Integer,ForeignKey('task.task_id'))
     answer = relationship('Answer')
     __mapper_args__ = {
         'polymorphic_on':question_type
     }
     
-    def __init__(self, type, prompt, resource, options,task_id):
+    def __init__(self, id_in_task,type, prompt, resource, options,task_id):
+        self.id_in_task = id_in_task
         self.type = type
         self.prompt = prompt
         self.resource = resource
         self.options = options
         self.task_id = task_id
-
+    def dict(self):
+        return {key: self.__dict__[key] for key in self.__dict__ if key[0] != '_'}
 class MultipleChoice(Question):
     __tablename__ = 'multiplechoice'
     id = Column(Integer,ForeignKey('question.id'),primary_key = True)

@@ -116,7 +116,7 @@ def test_upload():
     token = __login(req)
     __top_up(token, 100)
     now = datetime.utcnow()
-    file = Path('D:/tsinghua/se 软件工程/CrowdLabel/examples/example_task/example_task.zip')
+    file = Path('D:/example_task.zip')
     response = __upload_task(token, file)
     assert response.status_code == 200
     expected = {
@@ -124,7 +124,7 @@ def test_upload():
         'credits': 2.0,
         'description': 'This task is an example of a valid task',
         'introduction': 'This is an example',
-        'name': 'My Task',
+        'name': 'Example task',
         'questions': [{'answers': [],
                         'prompt': 'What sentiment does this text convey',
                         'question_id': 1,
@@ -165,6 +165,7 @@ def test_upload():
     del expected['tags']
     del json['task_id']
     del json['date_created']
+
     assert json == expected
 
     #response = __upload_task(token, file)
