@@ -20,10 +20,12 @@ async def init_models():
         await conn.run_sync(Base.metadata.drop_all)
         await conn.run_sync(Base.metadata.create_all)
 
-def init_models_sync():
-    print('###############################################')
-    print('Database:', database_filename)
-    print('###############################################')
+def init_models_sync(verbose=False):
+    if verbose:
+        print('#' * 80)
+        print('Database at:', database_filename)
+        print('#' * 80)
+
 
     asyncio.run(init_models())
 

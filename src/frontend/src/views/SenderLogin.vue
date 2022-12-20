@@ -93,7 +93,9 @@ export default {
                 if (!/^[\x21-\x7e]{3,64}$/.test(value)) {
                     callback(new Error('用户名格式错误:请输入3-64位用户名'));
                 } else {
-                    this.user.availabilityUsersAvailabilityPut({'username': value, 'email': ''},
+                    let ready_username = document.getElementById('registername').value;
+                    console.log(ready_username);
+                    this.user.availabilityUsersAvailabilityPut({'username': ready_username, 'email': ''},
                     (error, data, response) => {
                         console.log(error, data, response);
                         if (!data['username']){
@@ -115,9 +117,11 @@ export default {
                     callback(new Error('邮箱格式错误'));
                 } else {
                     this.disable = false;
-                    this.user.availabilityUsersAvailabilityPut({'username': '', 'email': value},
+                    let ready_email = document.getElementById('registeremail').value;
+                    console.log(ready_email);
+                    this.user.availabilityUsersAvailabilityPut({'username': '', 'email': ready_email},
                     (error, data, response) => {
-                        console.log(error, data, response);
+                        console.log(response);
                         if (!data['email']){
                             callback(new Error('邮箱已被占用'));
                             } else {
@@ -224,19 +228,21 @@ export default {
             console.log(tab, event)
         },
         submitRegister(formName) {
-            this.$refs[formName].validate((valid) => {
-            if (valid) {
+            // this.$refs[formName].validate((valid) => {
+            // if (valid) {
                 let ready_username = document.getElementById('registername').value;
                 let ready_password = document.getElementById('registerpassword').value;
                 let ready_email = document.getElementById('registeremail').value;
                 let ready_verification = document.getElementById('registerverification').value
-                var apiClient = new ApiClient('http://localhost:8000');
-                var usersApi = new UsersApi(apiClient);
+                console.log(ready_username);
+                console.log(ready_password);
+                console.log(ready_email);
+                console.log(ready_verification);
                 this.user.registerUsersRegisterPost({
-                    'username': ready_username,
+                    "username": ready_username,
                     "password": ready_password,
-                    'email': ready_email,
-                    "user_type": 0,
+                    "email": ready_email,
+                    "user_type": "requester",
                     "verification_code": ready_verification
                     },
                     (error, data, response) => {
@@ -244,22 +250,17 @@ export default {
                     });
                 alert('successfully registered!');
                 this.activeName = "first"
-            } else {
-                console.log('error registration!!');
-                return false;
-            }
-            });
+            // } else {
+            //     console.log('error registration!!');
+            //     return false;
+            // }
+            // });
         },
         submitLogin(formName) {
             this.$refs[formName].validate((valid) => {
             if (valid) {
                 let ready_login_username = document.getElementById('loginusername').value;
                 let ready_login_password = document.getElementById('loginpassword').value;
-                // console.log(ready_login_username);
-                // console.log(ready_login_password);
-                // const data = new FormData();
-                // data.append('username', ready_login_username);
-                // data.append('password', ready_login_password);
                 this.auth.loginLoginPost(ready_login_username, ready_login_password, {}, 
                     (error, data, response) => {
                         console.log(error, data, response);

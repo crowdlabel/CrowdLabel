@@ -1,31 +1,32 @@
 import re
 from email_validator import validate_email
 from models.user import MAX_USERNAME_LENGTH
+from schemas.users import USER_TYPES
 
-# printable chars excluding space and delete
-ALLOWED_CHARS = r'\x21-\x7e'
+
+
+
 
 MIN_USERNAME_LENGTH = 3
 MIN_PASSWORD_LENGTH = 8
 MAX_PASSWORD_LENGTH = 64
 
-def check_string(s: str, min_length: int, max_length: int) -> bool:
-    if type(s) != str:
-        return False
+USERNAME_CHARS = r'[A-Za-z0-9_\.\_]' # alphanumeric + dash, underscore, and period
+PASSWORD_CHARS = r'\x20-\x7e'# printable chars excluding delete
+USERNAME_PATTERN = fr'[{USERNAME_CHARS}]{{{MIN_USERNAME_LENGTH},{MAX_USERNAME_LENGTH}}}'
+PASSWORD_PATTERN = fr'[{PASSWORD_CHARS}]{{{MIN_USERNAME_LENGTH},{MAX_USERNAME_LENGTH}}}'
 
-    # returns True if `s` only contains `allowed_chars`,
-    # and its length is between `min_length` and `max_length` inclusive
-    pattern = fr'[{ALLOWED_CHARS}]{{{min_length},{max_length}}}'
-    is_valid = re.fullmatch(pattern, s)
+
+   
+def check_username_format(username: str) -> bool:
+     
+    is_valid = re.fullmatch(USERNAME_PATTERN, username)
     return bool(is_valid)
 
-
-def check_username_format(username: str) -> bool:
-    return check_string(username, MIN_USERNAME_LENGTH, MAX_USERNAME_LENGTH)
-
-
 def check_password_format(password: str) -> bool:
-    return check_string(password, MIN_PASSWORD_LENGTH, MAX_PASSWORD_LENGTH)
+    
+    is_valid = re.fullmatch(PASSWORD_PATTERN, password)
+    return bool(is_valid)
 
 
 def check_email_format(email: str) -> bool:
@@ -38,11 +39,8 @@ def check_email_format(email: str) -> bool:
     except:
         return False
 
-user_types = {'requester','respondent', 'admin'}
-
-
 def check_user_type_format(user_type: str) -> bool:
-    return user_type in user_types
+    return user_type in USER_TYPES
 
 def check_verification_code_format(verification_code:str )->bool:
     return re.fullmatch(r'\d{6}',verification_code)
