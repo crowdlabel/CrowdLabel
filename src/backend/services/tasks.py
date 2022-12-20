@@ -54,15 +54,10 @@ class Tasks:
 
         # TODO: which task_id to use?
 
-        task_id = 1
-        while True:
-            task = await self.get_task(task_id)
-            if not isinstance(task, schemas.tasks.Task):
-                break
-            task_id += 1
+
 
         task_schema = schemas.tasks.Task(**task_request.dict(), 
-            task_id= task_id,
+            task_id= 0,
             requester=requester.username,
             date_created=datetime.utcnow(),
             resource_path=resource_path
@@ -83,14 +78,15 @@ class Tasks:
         task = models.task.Task(task_schema,
             resource_path=str(resource_path)
         )
+        
         for question in task_request.dict()['questions']:
 
-            await question_service.create_question(question['question_type'],question['prompt'],
+            await question_service.create_question(question['question_id'],question['question_type'],question['prompt'],
                                              question['resource'],question['options'] if question['question_type'] in ['single_choice','multi_choice'] else []
                                              ,task.task_id)
         async with con.begin():
             target = await con.execute(select(models.user.Requester)
-                .where(models.user.Requester.username==requester.username))#.options(selectinload(models.user.Requester.task_requested)))
+                .where(models.user.Requester.username==requester.username).options(selectinload(models.user.Requester.task_requested)))
             res = target.scalars().first()
             if res == None:
                 return 'requester not found'
@@ -110,12 +106,16 @@ class Tasks:
             )
             user = user.scalars().first()
             if user == None:
+                await asyncio.shield(con.close())
+            
                 return None
             task = await con.execute(select(models.task.Task).where(models.task.Task.id==task_id).options(
                 selectinload(models.task.Task.respondents_claimed)
             ))
             task = task.scalars().first()
             if task == None:
+                await asyncio.shield(con.close())
+
                 return None
             user.task_claimed.append(task)
             response_task = schemas.tasks.Task(task)
@@ -124,26 +124,39 @@ class Tasks:
             return response_task
 
     async def get_task(self, task_id: int) -> schemas.tasks.Task | None:
-        async with engine.begin() as con:
+        async with con.begin():
             result = await con.execute(select(models.task.Task).where(models.task.Task.task_id == task_id).options(
                 selectinload(models.task.Task.questions),
                 selectinload(models.task.Task.respondents_claimed),
                 selectinload(models.task.Task.respondents_complete)
             ))
+        print('#'*100)
         target = result.scalars().first()
         if target is None:
+            await asyncio.shield(con.close())
             return None
-        response_task = schemas.tasks.Task(target)
+        print(target)
+        dict = target.dict()
+        del dict['tags']
+        dict['tags'] = set(target.tags.split('|'))
+        del dict['questions']
+        response_task = schemas.tasks.Task(**dict)
         for question in target.questions:
             qtype = question.question_type
+            di = question.dict()
+            del di['id_in_task']
+            del di['options']
+            di['question_id'] = question.id_in_task
             if qtype == 'single_choice':
-                q = schemas.questions.SingleChoiceQuestion(question)
+                di['options'] = question.options.split('|')
+                q = schemas.questions.SingleChoiceQuestion(**di)
             elif qtype == 'multi_choice':
-                q = schemas.questions.MultiChoiceQuestion(question)
-            elif qtype == 'ranking':
-                q = schemas.questions.RankingQuestion(question)
+                di['options'] = question.options.split('|')
+                q = schemas.questions.MultiChoiceQuestion(**di)
+            elif qtype == 'bounding_box':
+                q = schemas.questions.BoundingBoxQuestion(**di)
             elif qtype == 'open':
-                q = schemas.questions.OpenQuestion(question)
+                q = schemas.questions.OpenQuestion(**di)
             else : 
                 continue
             response_task.questions.append(q)
@@ -151,6 +164,8 @@ class Tasks:
         response_task.respondents_claimed = set(claim_names)
         complete_names = list(map(lambda A:A.username,target.respondents_complete))
         response_task.respondents_completed = set(complete_names)
+        await asyncio.shield(con.close())
+      
         return response_task
 
     
@@ -237,6 +252,7 @@ Returns: list of `Task`s matching the query within the specified `page` and `pag
 
         async with con.begin():
             result = await con.execute(select(models.task.Task))
+        await asyncio.shield(con.close())
         return result, 1
 
         '''
