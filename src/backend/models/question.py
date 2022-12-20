@@ -22,7 +22,7 @@ class Question(Base):
     prompt = Column(String(MAX_PROMPT_LENGTH))
     resource = Column(String(MAX_RES_LENGTH))
     options = Column(String(MAX_OPT_LENGTH))
-    task_id = Column(Integer,ForeignKey('task.id'))
+    task_id = Column(Integer,ForeignKey('task.task_id'))
     answer = relationship('Answer')
     __mapper_args__ = {
         'polymorphic_on':question_type

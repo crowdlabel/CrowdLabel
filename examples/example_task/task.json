@@ -5,7 +5,7 @@
     "description": "This task is an example of a valid task",
     "tags": ["sentiment-analysis", "object-detection", "object-bounding", "audio-transcription"],
     "responses_required": 2,
-    "cover": "cover.jpg",
+    "cover_image": "cover.jpg",
     "questions": [
         {
             "question_id": 1,

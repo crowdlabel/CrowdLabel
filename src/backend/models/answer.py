@@ -12,7 +12,7 @@ class Answer(Base):
     id = Column(BigInteger,primary_key=True,autoincrement=True)
     date_answered = Column(DateTime,default = datetime.datetime.now)
     question_id = Column(Integer,ForeignKey('question.id'))
-    task_id = Column(Integer,ForeignKey('task.id'))
+    task_id = Column(Integer,ForeignKey('task.task_id'))
     respondent_id = Column(Integer,ForeignKey('user.id')) 
     question_type = Column(String(MAX_TYPE_LENGTH))
     answer_type = Column(String(MAX_TYPE_LENGTH))

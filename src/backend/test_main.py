@@ -2,7 +2,7 @@ from fastapi.testclient import TestClient
 
 from main import app, init_models_sync
 from datetime import datetime
-
+from pathlib import Path
 
 client = TestClient(app)
 
@@ -31,10 +31,42 @@ req = {
     'verification_code': '123456'
 }
 
+def __register(user):
+    response = client.post('/users/register', json=user)
+    assert response.status_code == 201
+
+def __login(user):
+    # TODO
+    response = client.post('/login', data={
+        'username': user['username'],
+        'password': user['password']
+    })
+    token = {'Authorization': f'Bearer {response.json()["access_token"]}'}
+    return token
+
+def __top_up(token, amount):
+    response = client.post('/users/me/balance',
+        headers=token,
+        json={'amount': amount}
+    )
+    assert response.status_code == 200
+
+def __get_me(token):
+    return client.get('/users/me/', headers=token)
+
+def test_get_me():
+    init_models_sync()
+    __register(req)
+    token = __login(req)
+    response = __get_me(token)
+    assert response.status_code == 200
+    for field in ['username', 'email', 'user_type']:
+        assert req[field] == response.json()[field]
+
+
 
 def test_register():
     init_models_sync()
-
     now = datetime.utcnow()
     response = client.post('/users/register', json=admin)
     assert response.status_code == 201
@@ -67,12 +99,22 @@ def test_availability():
     )
 
 
+def test_upload():
+    init_models_sync()
+    __register(req)
+    token = __login(req)
+    print(__get_me(token).json())
+    __top_up(token, 100)
+    print(__get_me(token).json())
+    file = Path('D:/test/example_task.zip').absolute()
+    files = {'task_file': (file.name, open(file, 'rb'))}
+    response = client.post('/tasks/upload',
+        headers=token,
+        files=files
+    )
+
+    print(response.status_code, response.json())
+
 
 if __name__ == '__main__':
-    tests = [
-        test_register,
-        test_availability,
-    ]
-
-    for test in tests:
-        test() # run test function
+    test_upload()

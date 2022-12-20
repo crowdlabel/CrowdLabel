@@ -23,61 +23,51 @@ import json
 import patoolib
 
 
+from services.users import user_service
+
 class Tasks:
 
     def __init__(self):
         pass
 
-    async def create_task(self, creator: schemas.users.Respondent, name: str, description: str,
+    """ async def create_task(self, creator: schemas.users.Respondent, name: str, description: str,
                           introduction: str, tags: set[str], cover_path: str, responses_required: int,
-                          credits: float, questions: list[schemas.questions.Question]) -> schemas.tasks.Task | str:
+                          credits: float, questions: list[schemas.questions.Question]) -> schemas.tasks.Task | str: """
 
-        if responses_required < 1:
+    async def create_task(self, requester: schemas.users.Requester,
+        task_request: schemas.tasks.CreateTaskRequest) -> schemas.tasks.Task | str:
+
+        if task_request.responses_required < 1:
             return '`responses_required` must be positive'
-        if credits < 0:
+        if task_request.credits < 0:
             return '`credits` must be positive'
-        if credits * responses_required > creator.credits:
-            return 'Insufficient credits'
 
-        date_created = datetime.utcnow()
-        task_schema = schemas.tasks.Task(
-            name=name,
-            credits=credits,
-            introduction=introduction,
-            description=description,
-            tags=tags,
-            responses_required=responses_required,
-            date_created=date_created,
+        response = await user_service.handle_transaction(
+            schemas.users.TransactionRequest(amount=task_request.credits * task_request.responses_required),
+            user=requester
+        )
+        if not isinstance(response, float):
+            return response
+
+        # TODO: which task_id to use?
+
+        task_schema = schemas.tasks.Task(**task_request.dict(), 
+            task_id=1,
+            requester=requester.username,
+            date_created=datetime.utcnow(),
         )
 
-        # if not __verify_task_format():
-        #     return None
-        filepath = 0 # TODO
-        task = models.task.Task(creator = creator , name = name ,description = description ,
-                    introduction = introduction ,cover_path = cover_path ,
-                    response_required = responses_required,credits = credits,date_created = date_created,filepath = filepath)
-                    
+        task = models.task.Task(**task_schema.dict())
         async with con.begin():
-            target = await con.execute(select(models.user.Requester).where(models.user.Requester.username==creator).options(selectinload(models.user.Requester.task_requested)))
+            target = await con.execute(select(models.user.Requester).where(models.user.Requester.username==requester.username).options(selectinload(models.user.Requester.task_requested)))
             res = target.scalars().first()
             if res == None:
                 return None
         res.task_requested.append(task)
         con.add(task)
         await con.commit()
-        response_task = schemas.tasks.Task()
-        response_task.cover = cover_path
-        response_task.creator=creator
-        response_task.credits=credits
-        response_task.date_created=date_created
-        response_task.description=description
-        response_task.introduction=introduction
-        response_task.name=name
-        response_task.tags = []
-        response_task.task_id = task.id
-        response_task.responses_required = responses_required
-        self.process_task_archive(task.id,filepath)
-        return task
+
+        return task_schema
 
     async def claim_task(self,user_name,task_id)->schemas.tasks.Task | None:
         async with con.begin():
@@ -140,15 +130,26 @@ class Tasks:
             #     await con.delete(item)
         await con.commit()
         return True
+
+    async def claim_task(self, task: schemas.tasks.Task | int, respondent: schemas.users.Respondent) -> str | None:
+        if isinstance(task, int):
+            task = await self.get_task(task)
+        if not isinstance(task, schemas.tasks.Task):
+            return task
+        respondent.tasks_claimed.add(task.task_id)
+        task.respondents_claimed.add(respondent.username)
+        # TODO: claim task in database
+        return None
+        # returns error message, or none if successful
             
-    async def process_task_archive(self, filename: pathlib.Path) -> schemas.tasks.Task | str:
+    async def process_task_archive(self, path: pathlib.Path) -> schemas.tasks.Task | str:
         '''
         Filename: filename of the file that was uploaded
         Creates and returns the task, or returns an error message
         '''
-        output_dir = filename.parent / filename.stem
+        output_dir = path.parent / path.stem
         try:
-            resp = patoolib.extract_archive(str(filename), outdir=output_dir, verbosity=-1, interactive=False)
+            response = patoolib.extract_archive(str(path), outdir=output_dir, verbosity=-1, interactive=False)
         except Exception as e:
             return str(e)
 
