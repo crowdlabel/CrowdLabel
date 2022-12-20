@@ -29,25 +29,22 @@ get_task_failed_hdr = JSONDocumentedResponse(
     schemas.tasks.ErrorResponse
 )
 @router.put('/',
+    description=task_service.search.__doc__ + schemas.tasks.TaskSearchRequest.__doc__,
     **create_documentation([get_task_success_jdr, get_task_failed_hdr])
 )
 async def search_tasks(query: schemas.tasks.TaskSearchRequest, current_user=Depends(get_current_user(['respondent']))):
     """
     Task search
     """
-    print(query)
-    print(query.dict())
-
     # TODO: complete arguments
-    tasks = await task_service.search(current_user)
-
+    tasks = await task_service.search(current_user, query)
+    print('#' * 80)
+    print(tasks)
     if isinstance(tasks, str):
         return get_task_failed_hdr.response(schemas.tasks.ErrorResponse(tasks))
 
-    response = schemas.tasks.TaskSearchResponse(**query.dict())
-    response.tasks, response.total = tasks
-    # TODO: exclude tasks.questions
-    return get_task_success_jdr.response(response)
+    # exclude tasks.questions
+    return get_task_success_jdr.response(schemas.tasks.TaskSearchResponse(tasks=tasks[0], total=tasks[1]), exclude={'questions'})
 ###############################################################################
 upload_success_jdr = JSONDocumentedResponse(
     status.HTTP_200_OK,
@@ -128,8 +125,15 @@ async def create_task(task: schemas.tasks.CreateTaskRequest, questions_file: Upl
 
 
 ###############################################################################
-
-@router.get('/{task_id}')
+get_task_success_jdr = JSONDocumentedResponse(
+    status.HTTP_200_OK,
+    'Task found successfully.',
+    schemas.tasks.Task,
+)
+@router.get('/{task_id}',
+    description='Get a task based on its task_id',
+    **create_documentation([get_task_success_jdr, not_found_jdr, forbidden_jdr])    
+)
 async def get_task(task_id: int, current_user=Depends(get_current_user())):
     task = await task_service.get_task(task_id=task_id)
     if not task:

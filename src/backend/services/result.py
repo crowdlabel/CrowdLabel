@@ -57,25 +57,27 @@ async def create_result(
 #         "info":info
 #     },200
 
-# async def edit_result(id):
-#     async with con.begin():
-#         result = await con.execute(select(Results).where(Results.id==id))
-#         target = result.scalars().first()
-#         if target is None:
-#             return{
-#                 "status":"not found",
-#             },400
-#         target.date_download=datetime.now()
-#         await con.flush()
-#         con.expunge(target)
-#     return {
-#         "status":"ok",
-#         "id" :id,
-#         "name":target.name,
-#         "task_id":target.task_id,
-#         "date_created":target.date_created,
-#         "date_download":target.date_download
-#     },200
+
+async def edit_result(id):
+    async with con.begin():
+        result = await con.execute(select(Results).where(Results.id==id))
+        target = result.scalars().first()
+        if target is None:
+            return{
+                "status":"not found",
+            },400
+        target.date_download=datetime.utcnow()
+        await con.flush()
+        con.expunge(target)
+    return {
+        "status":"ok",
+        "id" :id,
+        "name":target.name,
+        "task_id":target.task_id,
+        "date_created":target.date_created,
+        "date_download":target.date_download
+    },200
+
     
 
 # async def delete_result(id):

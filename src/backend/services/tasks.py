@@ -18,7 +18,6 @@ import pathlib
 import schemas.tasks
 import schemas.users
 
-import asyncio
 import json
 import patoolib
 from utils.config import get_config
@@ -60,14 +59,13 @@ class Tasks:
             requester=requester.username,
             date_created=datetime.utcnow(),
         )
-        print('#'*100)
 
 
         task = models.task.Task(task_schema,
             resource_path=str(resource_path)
         )
         for question in task_request.dict()['questions']:
-            print(question)
+
             await question_service.create_question(question['question_type'],question['prompt'],
                                              question['resource'],question['options'] if question['question_type'] in ['single_choice','multi_choice'] else []
                                              ,task.task_id)
@@ -204,33 +202,15 @@ class Tasks:
         
 
 
-    async def search(
+    async def search(self, 
         user: schemas.users.User,
         parameters = schemas.tasks.TaskSearchRequest
     ) -> tuple[list[schemas.tasks.Task], int]:
-
         """
-        Gets the tasks matching the search criteria
-
-        Parameters:
-            `username`: username of the querier
-            `name`: name of the task
-            `tags`: Iterable of tags
-            `creator`: username of the person who created the task
-            `credits`: number of credits rewarded upon task completion
-            `questions_min`: minimum number of questions in the task
-            `questions_max`: maximum number of questions in the task
-            `page`: the page
-            `page_size`: the size of each page; if -1 then `page` would not be considered and all results will be returned
-                e.g., if `page` is 2 and `page_size` is 10, then it will return the 11th to 20th results, inclusive
-                e.g., if `page` is _ and `page_size` is -1, then it will return all the results
-            `sort_criteria`: criteria that the results should be sorted against
-            `sort_ascending`: True to sort in ascending order, False to sort in descending order
-
-
-        Returns: list of Tasks queried, and total number of tasks
-
+Gets the tasks matching the search criteria\n
+Returns: list of `Task`s matching the query within the specified `page` and `page_size`, and total number of `Task`s matching the query
         """
+
 
         # TODO: creator -> requesters, multiple usernames
 
@@ -269,8 +249,16 @@ class Tasks:
             elif len(tasks) < (parameters.page-1)*parameters.page_size:
                 return [] , 0
             else :
-                target = tasks[(parameters.page-1)*parameters.page_size:-1]
-                return target ,len(target)
+
+                if len(tasks) > parameters.page * parameters.page_size:
+                    target = tasks[(parameters.page-1)*parameters.page_size:parameters.page*parameters.page_size-1]
+                    return target, len(target)
+                elif len(tasks) < (parameters.page-1)*parameters.page_size:
+                    return [], 0
+                else :
+                    target = tasks[(parameters.page-1)*parameters.page_size:-1]
+                    return target, len(target)
+
 
     async def create_task_results_file(self, id: int) -> str:
         '''
