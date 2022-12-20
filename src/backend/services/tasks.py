@@ -21,9 +21,13 @@ import schemas.users
 import asyncio
 import json
 import patoolib
-
+from utils.config import get_config
+TASK_UPLOAD_DIR = pathlib.Path(get_config('file_locations.tasks'))
 
 from services.users import user_service
+
+
+
 
 class Tasks:
 
@@ -34,8 +38,11 @@ class Tasks:
                           introduction: str, tags: set[str], cover_path: str, responses_required: int,
                           credits: float, questions: list[schemas.questions.Question]) -> schemas.tasks.Task | str: """
 
-    async def create_task(self, requester: schemas.users.Requester,
-        task_request: schemas.tasks.CreateTaskRequest) -> schemas.tasks.Task | str:
+    async def create_task(self,
+        requester: schemas.users.Requester,
+        task_request: schemas.tasks.CreateTaskRequest,
+        resource_path: pathlib.Path    
+    ) -> schemas.tasks.Task | str:
 
         if task_request.responses_required < 1:
             return '`responses_required` must be positive'
@@ -56,8 +63,9 @@ class Tasks:
             requester=requester.username,
             date_created=datetime.utcnow(),
         )
-
-        task = models.task.Task(**task_schema.dict())
+        task = models.task.Task(**task_schema.dict(),
+            resource_path=str(resource_path)
+        )
         async with con.begin():
             target = await con.execute(select(models.user.Requester).where(models.user.Requester.username==requester.username).options(selectinload(models.user.Requester.task_requested)))
             res = target.scalars().first()
@@ -189,18 +197,7 @@ class Tasks:
 
     async def search(
         user: schemas.users.User,
-        name: str=None,
-        tags: Iterable=None,
-        credits_min: float=0,
-        credits_max: float=None,
-        questions_min: int=0,
-        questions_max: int=10e9,
-        requesters: set[str]=None,
-        result_count: int=-1,
-        page: int=1,
-        page_size: int = -1,
-        sort_criteria: str=None,
-        sort_ascending: bool=True,
+        parameters = schemas.tasks.TaskSearchRequest
     ) -> tuple[list[schemas.tasks.Task], int]:
 
         """
@@ -255,16 +252,16 @@ class Tasks:
             '''
 
             tasks = result.scalar().all()
-            if page_size == -1:
+            if parameters.page_size == -1:
                 return tasks , len(tasks)
             else :
-                if len(tasks) > page*page_size:
-                    target = tasks[(page-1)*page_size:page*page_size-1]
+                if len(tasks) > parameters.page * parameters.page_size:
+                    target = tasks[(parameters.page-1)*parameters.page_size:parameters.page*parameters.page_size-1]
                     return target , len(target)
-                elif len(tasks) < (page-1)*page_size:
+                elif len(tasks) < (parameters.page-1)*parameters.page_size:
                     return [] , 0
                 else :
-                    target = tasks[(page-1)*page_size:-1]
+                    target = tasks[(parameters.page-1)*parameters.page_size:-1]
                     return target ,len(target)
 
     async def create_task_results_file(self, id: int) -> str:

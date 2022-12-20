@@ -21,6 +21,7 @@ class Task(Base):
     credits = Column(Float)
     tags = Column(String(MAX_TAGS_LENGTH))
     responses_required = Column(Integer)
+    resource_path = Column(String(MAX_PATH_LENGTH))
     requester_id = Column(Integer ,ForeignKey('requester.id'))
 
     #results = relationship('Results',cascade = 'all,delete-orphan')
