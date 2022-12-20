@@ -32,6 +32,7 @@ class Questions:
                                   .options(selectinload(models.question.Question.answer)))
         target = result.scalars().first()
         if target == None:
+            await asyncio.shield(con.close())
             return None
         type = target.question_type
         di = target.dict()
@@ -72,6 +73,7 @@ class Questions:
                 ans = res.scalars().first()
                 new_answer = schemas.answers.OpenAnswer(ans.text)
                 new_question.answers.append(new_answer)
+        await asyncio.shield(con.close())
         return new_question
     async def create_answer(self, 
         task_id:int ,
@@ -85,8 +87,7 @@ class Questions:
         # TODO
         target = result.scalars().first()
         if target == None:
-            print('#'*50)
-            print('question not found')
+            await asyncio.shield(con.close())
             return 'question not found'
         if isinstance(answer,schemas.answers.MultiChoiceAnswer):
             new_answer = models.answer.MultiChoiceAnswer()
@@ -109,6 +110,7 @@ class Questions:
         res= await con.execute(select(models.user.Respondent).where(models.user.Respondent.username == current_user.username))
         respondent = res.scalars().first()
         if respondent == None:
+            await asyncio.shield(con.close())
             return 'respondent not found'
         new_answer.respondent_id = respondent.id
         new_answer.respondent_name = respondent.username
@@ -147,6 +149,7 @@ class Questions:
         result = await con.execute(select(models.task.Task).where(models.task.Task.id==task_id))
         target = result.scalars().first()
         if target == None:
+            await asyncio.shield(con.close())
             return None
         type = target.type
         try:
@@ -154,7 +157,9 @@ class Questions:
                 question = await self.create_question(file[question]['type'],file[question]['prompt'],file[question]['file_path'],file[question]['options'],task_id)
                 response_questions.append(question)
         except:
+            await asyncio.shield(con.close())
             return None
+        await asyncio.shield(con.close())
         return response_questions
 
     # async def get_question(self, task_id: int, question_id: int) -> schemas.questions.Question | None:
