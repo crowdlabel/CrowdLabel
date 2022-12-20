@@ -34,7 +34,7 @@ class Question(Base):
         self.id_in_task = id_in_task
         self.type = type
         self.prompt = prompt
-        self.resource = resource
+        self.resource = str(resource)
         self.options = options
         self.task_id = task_id
     def dict(self):

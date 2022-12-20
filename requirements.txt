@@ -13,3 +13,4 @@ PyMySql==1.0.2
 python_jose==3.3.0
 rarfile==4.0
 patool
+aiosqlite

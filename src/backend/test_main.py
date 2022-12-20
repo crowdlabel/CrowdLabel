@@ -31,6 +31,8 @@ req = {
     'verification_code': '123456'
 }
 
+example_task = Path('D:/tsinghua/se 软件工程/CrowdLabel/examples/example_task/example_task.zip')
+
 def __register(user):
     return client.post('/users/register', json=user)
 
@@ -61,6 +63,13 @@ def __upload_task(token, file):
     )
     return response
 
+def __claim(token, task_id):
+    response = client.post(f'/tasks/{task_id}/claim', headers=token)
+    return response
+
+def __get_task(token, task_id):
+    return client.get(f'/tasks/{task_id}', headers=token)
+
 def test_get_me():
     init_models_sync()
     __register(req)
@@ -69,6 +78,7 @@ def test_get_me():
     assert response.status_code == 200
     for field in ['username', 'email', 'user_type']:
         assert req[field] == response.json()[field]
+    print(response.json())
 
 def time_in_range(time, buffer=5):
     if isinstance(time, str):
@@ -104,10 +114,12 @@ def test_availability():
 
     response = client.put('/users/availability',
         json={
-            'username': 'johndoe',
+            'username': 'kennyl',
             'email': 'johndoe@example.com',
         }
     )
+
+    print(response.json())
 
 
 def test_upload():
@@ -115,9 +127,9 @@ def test_upload():
     __register(req)
     token = __login(req)
     __top_up(token, 100)
-    now = datetime.utcnow()
-    file = Path('D:/example_task.zip')
+    file = example_task
     response = __upload_task(token, file)
+    print(response.status_code)
     assert response.status_code == 200
     expected = {
         'cover_image': 'cover.jpg',
@@ -154,17 +166,17 @@ def test_upload():
                 'object-detection',
                 'sentiment-analysis'],
     }
-    
     json = response.json()
     assert 'date_created' in json
     assert time_in_range(json['date_created'])
     assert 'task_id' in json
     assert 'tags' in json
     assert set(json['tags']) == set(expected['tags'])
-    del json['tags']
+    assert 'resource_path' in json
+    for key in ['resource_path', 'tags', 'task_id', 'date_created']:
+        del json[key]
     del expected['tags']
-    del json['task_id']
-    del json['date_created']
+
 
     assert json == expected
 
@@ -178,16 +190,39 @@ def test_search():
     init_models_sync()
     __register(req)
     token = __login(req)
-    task1 = __upload_task(token, Path('D:/tsinghua/se 软件工程/CrowdLabel/examples/example_task/example_task.zip'))
+    task1 = __upload_task(token, example_task)
     __register(johndoe)
     jd = __login(johndoe)
     response = client.put('/tasks/', headers=jd, json={})
     print(response.status_code, response.content)
+
+def test_claim():
+    init_models_sync()
+    __register(johndoe)
+    __register(req)
+    reqt = __login(req)
+    johnt = __login(johndoe)
+    tasku = __upload_task(reqt, example_task).json()
+    cresp = __claim(johnt, tasku['task_id'])
+    print(cresp.status_code)
+    pprint(cresp.json())
+
+    task = __get_task(reqt, tasku['task_id'])
+    print(task.status_code)
+    pprint(task.json())
+
+
+
+    
+
 
 from schemas.tasks import TaskSearchRequest
 from services.tasks import Tasks
 
 if __name__ == '__main__':
     #test_register()
-    test_upload()
+    #test_availability()
     #test_search()
+    #test_get_me()
+    #test_upload()
+    test_claim()

@@ -115,7 +115,6 @@ class Questions:
             return 'respondent not found'
         new_answer.respondent_id = respondent.id
         new_answer.respondent_name = respondent.username
-        print(new_answer.__dict__)
         con.add(new_answer)
         await con.commit()
         await asyncio.shield(con.close())

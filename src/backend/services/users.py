@@ -256,7 +256,6 @@ class Users:
         if res == None:
             return 'user not found'
         res.credits =  user.credits 
-        print(res.credits)
         await con.flush() 
         con.expunge(res)
         # TODO: update user balance in database
