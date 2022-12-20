@@ -95,7 +95,7 @@ export default {
                 } else {
                     let ready_username = document.getElementById('registername').value;
                     console.log(ready_username);
-                    this.user.availabilityUsersAvailabilityPut({'username': ready_username, 'email': ''},
+                    this.user.availabilityUsersAvailabilityPut({'username': ready_username},
                     (error, data, response) => {
                         console.log(error, data, response);
                         if (!data['username']){
@@ -119,7 +119,7 @@ export default {
                     this.disable = false;
                     let ready_email = document.getElementById('registeremail').value;
                     console.log(ready_email);
-                    this.user.availabilityUsersAvailabilityPut({'username': '', 'email': ready_email},
+                    this.user.availabilityUsersAvailabilityPut({'email': ready_email},
                     (error, data, response) => {
                         console.log(response);
                         if (!data['email']){
