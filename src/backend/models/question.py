@@ -29,7 +29,7 @@ class Question(Base):
     }
     
     def __init__(self, type, prompt, resource, options,task_id):
-        self.type =type
+        self.type = type
         self.prompt = prompt
         self.resource = resource
         self.options = options
@@ -50,12 +50,12 @@ class SingeChoiceQuestion(Question):
         'polymorphic_identity': 'single_choice'
     }
 
-class RankingQuestion(Question):
-    __tablename__ = 'rankingquestion'
+class BoundingBoxQuestion(Question):
+    __tablename__ = 'boundingboxquestion'
     id = Column(Integer,ForeignKey('question.id'),primary_key = True)
 
     __mapper_args__ = {
-        'polymorphic_identity': 'ranking'
+        'polymorphic_identity': 'bounding_box'
     }
 class OpenQuestion(Question):
     __tablename__ = 'openquestion'

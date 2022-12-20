@@ -41,15 +41,15 @@ class Questions:
             new_answer = schemas.answers.MultiChoiceAnswer()
         elif  answer.question_type == 'single_choice':
             new_answer = schemas.answers.SingleChoiceAnswer()
-        elif  answer.question_type == 'ranking':
-            new_answer = schemas.answers.RankingAnswer()
+        elif  answer.question_type == 'bounding_box':
+            new_answer = schemas.answers.BoundingBoxAnswer()
         elif  answer.question_type == 'open':
             new_answer = schemas.answers.OpenAnswer()
 
         
         new_answer.date_answered = answer.date_answered
         new_answer.question_id = self.question_id
-        with con.begin():
+        async with con.begin():
             res= await con.execute(select(models.user.Respondent).where(models.user.Respondent.username == answer.respondent))
             target = res.scalar().first
         new_answer.respondent_id = target.id
@@ -57,36 +57,21 @@ class Questions:
         new_answer.respondent_name = answer.respondent
         return True
         
-    async def create_question(self,type,prompt,file_path,options,task_id) ->schemas.questions.Question|None:
-        if not __verify_question_format():
-            return None
-        question = models.question.Question()
-        question.question_type = type
-        question.prompt = prompt
-        question.resource = file_path
-        question.options = '|'.join(options)
-        question.task_id = task_id
-        con.add(question)
-        await con.commit()
-        if type == 'single':
-            response_question = schemas.questions.SingleChoiceQuestion()
-            response_question.options = options
-        elif type == 'multi':
-            response_question = schemas.questions.MultiChoiceQuestion()
-            response_question.options = options
-        elif type == 'ranking':
-            response_question = schemas.questions.RankingQuestion()
-            response_question.options = options
-        elif type == 'open':
-            response_question = schemas.questions.OpenQuestion()
-        else:
-            return None
-        response_question.task_id = task_id
-        response_question.question_id
-        response_question.prompt = prompt
-        response_question.resource = file_path
-        response_question.answers = []
-        return response_question
+    async def create_question(self,type,prompt,file_path,options,task_id) ->models.question.Question:
+        # if not __verify_question_format():
+        #     return None
+        async with con.begin():
+            if type == 'multi_choice':
+                question = models.question.MultipleChoice(type,prompt,file_path,'|'.join(options),task_id)
+            elif type == 'single_choice':
+                question = models.question.SingeChoiceQuestion(type,prompt,file_path,'|'.join(options),task_id)
+            elif type == 'bounding_box':
+                question = models.question.BoundingBoxQuestion(type,prompt,file_path,'|'.join(options),task_id)
+            elif type == 'open':
+                question = models.question.OpenQuestion(type,prompt,file_path,'|'.join(options),task_id)
+            con.add(question)
+            await con.commit()
+        return question
     async def create_question_from_file(
         self,
         task_id:int,
