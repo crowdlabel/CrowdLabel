@@ -5,17 +5,35 @@ import schemas.questions
 
 
 class TaskSearchRequest(BaseModel):
-    name: Optional[str] = '' # empty name searches for any name
+    """
+The following are all valid search parameters:\n
+`name`: name of the task, empty name searches for any task\n
+`tags`: keywords that identify the type of task, for example "object-detection"\n
+`requesters`: username of the requesters who created task, empty searches for any requester\n
+`credits_min`, `credits_max`: minimum and maximum number of credits rewarded upon task completion; negative `credits_max` implies no upper limit\n
+`questions_min`, `questions_max`: minimum and maximum number of questions in the task; negative `questions_max` implies no upper limit\n
+`page`: the page; negative value counts backwards, e.g. -1 returns the last page\n
+`page_size`: the size of each page; if -1 then `page` would not be considered and all results will be returned, e.g.:\n
+- if `page` is 2 and `page_size` is 10, then it will return the 11th to 20th results, inclusive\n
+- if `page` is _ and `page_size` is -1, then it will return all the results\n
+- if `page` is -1, `page_size` is 10, and there are 26 results in total, then it will return the 21st to 26th results, inclusive\n
+`sort_criteria`: search parameter that the results should be sorted against\n
+`sort_ascending`: True to sort in ascending order, False to sort in descending order
+    """
+    
+    name: Optional[str] = ''
     tags: Optional[set[str]] = set()
     requesters: Optional[set[str]] = set()
-    page: Optional[int] = 1
-    page_size: Optional[int] = -1 # negative value implies return all results
+    page: Optional[int] = 1 
+    page_size: Optional[int] = -1
     credits_min: Optional[float] = 0
-    credits_max: Optional[float] = -1 # negative value implies no upper limit
+    credits_max: Optional[float] = -1
+    questions_min: Optional[int] = 0
+    questions_max: Optional[int] = -1
     sort_criteria: Optional[str] = 'name'
     sort_ascending: Optional[bool] = True
 
-class TaskSearchResponse(TaskSearchRequest):
+class TaskSearchResponse(BaseModel):
     tasks: list[int]=[] # list of Task IDs
     total: int=0 # total number of tasks
 

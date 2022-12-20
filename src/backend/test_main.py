@@ -116,5 +116,9 @@ def test_upload():
     print(response.status_code, response.json())
 
 
+
+from schemas.tasks import TaskSearchRequest
+from services.tasks import Tasks
+
 if __name__ == '__main__':
     test_upload()
