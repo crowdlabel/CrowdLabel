@@ -208,7 +208,7 @@ Returns: list of `Task`s matching the query within the specified `page` and `pag
         """
 
 
-        # TODO: creator -> requesters, multiple usernames
+        # TODO: use query parameters from `parameters`
 
         async with con.begin():
 
