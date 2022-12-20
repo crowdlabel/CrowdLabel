@@ -59,16 +59,16 @@
             </div>
             <div class="create_main">
               <el-form label-width="80px" ref="form" :model="form" :rules="rules">
-                <el-form-item prop="name" class="name_item" required>
+                <el-form-item prop="name" class="name_item">
                   <el-input placeholder="请输入任务名称"  class="mission_name" v-model="form.name"></el-input>
                 </el-form-item>
-                <el-form-item label="任务简介:" class="mission_brief" prop="brief" required>
+                <el-form-item label="任务简介:" class="mission_brief" prop="brief">
                   <el-input type="textarea" v-model="form.brief" class="brief_input"></el-input>
                 </el-form-item>
-                <el-form-item label="任务详情:" class="mission_details" prop="details" required>
+                <el-form-item label="任务详情:" class="mission_details" prop="details">
                   <el-input type="textarea" v-model="form.details" class="details_input"></el-input>
                 </el-form-item>
-                <el-form-item label="上传封面:" class="mission_file" required>
+                <el-form-item label="上传封面:" class="mission_file">
                   <el-upload class="upload_file" action="none"
                     :headers="{ 'Content-Type': 'multipart/form-data'}"
                     accept=".jpg, .png"
@@ -94,10 +94,10 @@
                     <div slot="tip" class="el-upload__tip">只能上传zip或rar文件</div>
                   </el-upload>
                 </el-form-item>
-                <el-form-item prop="amount" label="任务份额:" required class="mission_credits">
+                <el-form-item prop="amount" label="任务份额:" class="mission_credits">
                   <el-input placeholder="请输入任务总份数"  class="credits_input" v-model="form.amount"></el-input>
                 </el-form-item>
-                <el-form-item prop="credits_each" label="积分奖励:" required class="mission_credits">
+                <el-form-item prop="credits_each" label="积分奖励:" class="mission_credits">
                   <el-input placeholder="请输入每份任务报酬积分"  class="credits_input" v-model="form.credits_each"></el-input>
                 </el-form-item>
                 <el-form-item>
@@ -224,7 +224,10 @@
   
   
 <script>
-import axios from 'axios'
+import { ApiClient } from '@/crowdlabel-api/src';
+import { UsersApi } from '@/crowdlabel-api/src';
+import { TasksApi } from '@/crowdlabel-api/src';
+
 export default {
   data() {
     // page_num = 5;
@@ -266,8 +269,11 @@ export default {
     return {
       dialogVisible: false,
       // 
-      userid: this.$route.query.userid,
-      usercredits: 50,
+      client: '',
+      task: '',
+      user: '',
+      userid: '',
+      usercredits: '',
       // 
       multipartFile: [],
       form: {
@@ -318,7 +324,7 @@ export default {
         self.file = "";
         self.form.cover=[];
       }else{
-        self.multipartFile.append("cover", file.raw)
+        // self.multipartFile.append("cover", file.raw)
         self.file = file.raw;
         self.form.cover = fileList;
       }
@@ -342,7 +348,7 @@ export default {
         self.file = "";
         self.form.zipfile=[];
       }else{
-        self.multipartFile.append("file", file.raw)
+        // self.multipartFile.append("file", file.raw)
         self.file = file.raw;
         self.form.zipfile = fileList;
       }
@@ -362,19 +368,37 @@ export default {
       this.dialogVisible = true;
     },
     create_new_project () {
-      this.multipartFile.append('username', this.userid);
-      this.multipartFile.append('missionname', this.form.name);
-      this.multipartFile.append('missionamount', this.form.amount);
-      this.multipartFile.append('missioncredits', this.form.credits_each)
-      this.multipartFile.append('missionbrief', this.form.brief);
-      this.multipartFile.append('missiondetails', this.form.details);
+      // this.multipartFile.append('username', this.userid);
+      // this.multipartFile.append('missionname', this.form.name);
+      // this.multipartFile.append('missionamount', this.form.amount);
+      // this.multipartFile.append('missioncredits', this.form.credits_each)
+      // this.multipartFile.append('missionbrief', this.form.brief);
+      // this.multipartFile.append('missiondetails', this.form.details);
       // axios post to create mission
-    },
+      this.task.uploadTaskTasksUploadPost(this.file, (error, data, response) => {
+        console.log(error, data, response);
+      })
+    }
   },
   create() {
     this.multipartFile = new FormData();
+  },
+  mounted () {
+    var apiClient = new ApiClient('http://localhost:8000');
+    this.client = apiClient
+    var usersApi = new UsersApi(apiClient);
+    this.user = usersApi
+    var tasksApi = new TasksApi(apiClient);
+    this.task = tasksApi
+    let username = JSON.parse(this.$route.query.userid)
+    this.user.getMeUsersMeGet((error, data, response) => {
+      this.userid = data['username'];
+      this.usercredits = data['credits'];
+    })
+    this.userid = username
+    console.log(this.userid);
+    console.log(this.usercredits);
   }
-
 }
 </script>
   

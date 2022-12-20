@@ -247,7 +247,7 @@ export default {
                     (error, data, response) => {
                         console.log(error, data, response);
                     });
-                alert('successfully registered!');
+                // alert('successfully registered!');
                 this.activeName = "first"
             } else {
                 console.log('error registration!!');
@@ -264,7 +264,7 @@ export default {
                     (error, data, response) => {
                         console.log(error, data, response);
                         if (response.status == 200){
-                            alert('logging in...');
+                            // alert('logging in...');
                                 this.$router.push({
                                 path: '/projects',
                                 query: {
