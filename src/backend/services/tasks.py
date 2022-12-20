@@ -68,10 +68,9 @@ class Tasks:
         )
         for question in task_request.dict()['questions']:
             print(question)
-            question_created = await question_service.create_question(question['question_type'],question['prompt'],
+            await question_service.create_question(question['question_type'],question['prompt'],
                                              question['resource'],question['options'] if question['question_type'] in ['single_choice','multi_choice'] else []
                                              ,task.task_id)
-            task.questions.append(question_created)
         async with con.begin():
             target = await con.execute(select(models.user.Requester).where(models.user.Requester.username==requester.username).options(selectinload(models.user.Requester.task_requested)))
             res = target.scalars().first()
