@@ -2,10 +2,10 @@ from sqlalchemy.ext.asyncio import create_async_engine
 from models.basicbase import Base
 import asyncio
 import utils.config
-from models.email import Email
-from models.question import Question
-from models.results import Results
-from models.task import Task
+from models.email import *
+from models.question import *
+from models.results import *
+from models.task import *
 from models.user import *
 from models.answer import *
 

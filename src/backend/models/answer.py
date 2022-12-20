@@ -9,12 +9,11 @@ MAX_TEXT_LENGTH = 1024
 MAX_NAME_LENGTH = 256
 class Answer(Base):
     __tablename__ = 'answer'
-    id = Column(BigInteger,primary_key=True,autoincrement=True)
+    id = Column(Integer,primary_key=True,autoincrement=True)
     date_answered = Column(DateTime,default = datetime.datetime.now)
     question_id = Column(Integer,ForeignKey('question.id'))
     task_id = Column(Integer,ForeignKey('task.task_id'))
     respondent_id = Column(Integer,ForeignKey('user.id')) 
-    question_type = Column(String(MAX_TYPE_LENGTH))
     answer_type = Column(String(MAX_TYPE_LENGTH))
     respondent_name = Column(String(MAX_NAME_LENGTH))
     __mapper_args__ = {
@@ -24,7 +23,7 @@ class Answer(Base):
     
 class SingleChoiceAnswer(Answer):
     __tablename__ = 'singlechoiceanswer'
-    id =Column(BigInteger,ForeignKey('answer.id'),primary_key = True)
+    id =Column(Integer,ForeignKey('answer.id'),primary_key = True)
     choice = Column(Integer)
     __mapper_args__ = {
         'polymorphic_identity':'singlechoiceanswer'
@@ -32,7 +31,7 @@ class SingleChoiceAnswer(Answer):
 
 class MultiChoiceAnswer(Answer):
     __tablename__ = 'multichoiceanswer'
-    id =Column(BigInteger,ForeignKey('answer.id'),primary_key = True)
+    id =Column(Integer,ForeignKey('answer.id'),primary_key = True)
     choices = Column(String(MAX_CHOICES_LENGTH))
     __mapper_args__ = {
         'polymorphic_identity':'multichoiceanswer'
@@ -40,7 +39,7 @@ class MultiChoiceAnswer(Answer):
 
 class RankingAnswer(Answer):
     __tablename__ = 'rankinganswer'
-    id =Column(BigInteger,ForeignKey('answer.id'),primary_key = True)
+    id =Column(Integer,ForeignKey('answer.id'),primary_key = True)
     ranking = Column(String(MAX_CHOICES_LENGTH))
     __mapper_args__ = {
         'polymorphic_identity':'rankinganswer'
@@ -48,7 +47,7 @@ class RankingAnswer(Answer):
 
 class OpenAnswer(Answer):
     __tablename__ = 'openanswer'
-    id =Column(BigInteger,ForeignKey('answer.id'),primary_key = True)
+    id =Column(Integer,ForeignKey('answer.id'),primary_key = True)
     text = Column(String(MAX_TEXT_LENGTH))    
     __mapper_args__ = {
         'polymorphic_identity':'openanswer'
@@ -56,7 +55,7 @@ class OpenAnswer(Answer):
 
 class BoundingBoxAnswer(Answer):
     __tablename__ = 'boundingboxanswer'
-    id =Column(BigInteger,ForeignKey('answer.id'),primary_key = True)
+    id =Column(Integer,ForeignKey('answer.id'),primary_key = True)
     top_left_x =  Column(Integer)
     top_left_y = Column(Integer)
     bottom_right_x = Column(Integer)

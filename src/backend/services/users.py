@@ -78,6 +78,7 @@ class Users:
             if target is None or target.verification_code != verification_code:
                 return False
             await con.commit()
+            await asyncio.shield(con.close())
             return True
     async def create_user(self, request: schemas.users.RegistrationRequest) -> schemas.users.User | dict:
         '''
@@ -120,7 +121,7 @@ class Users:
         await con.commit()
 
 
-
+ 
 
         request = request.dict()
         request['password_hashed'] = utils.hasher.hash(request['password'])
@@ -155,7 +156,6 @@ class Users:
         Returns User object, or None if user not found
         """
 
-<<<<<<< HEAD
         res = await con.execute(select(models.user.User).where(models.user.User.username == username))
         target = res.scalars().first()
         if target == None:
@@ -163,16 +163,6 @@ class Users:
 
         return schemas.users.USER_TYPES[target.user_type](**target.dict())
 
-=======
-        res= await con.execute(select(models.user.User).where(models.user.User.username == username))
-        target = res.scalars().first()
-        if target == None:
-            return None
-        try:
-            return schemas.users.USER_TYPES[target.user_type](target)
-        except:
-            raise ValueError('Invalid user type from database')
->>>>>>> huge-homework-dev
 
 
 
@@ -231,6 +221,7 @@ class Users:
                 return False
             await con.delete(target)
             con.commit()
+            await asyncio.shield(con.close())
         return True
     async def edit_user_info(userid:int,new_info: dict) -> str | None:
         """
@@ -270,18 +261,3 @@ user_service = Users()
 
 
 
-if __name__ == '__main__':
-    u = Users()
-    #asyncio.run(asyncio.wait([u.send_verification_email('843273746@qq.com')]))
-    #asyncio.run(asyncio.wait([u.create_user('chenjz20','843273746@qq.com','cxq1974328','requester',460088)]))
-    #asyncio.run(asyncio.wait([u.email_exists('843273746@qq.com')]))
-    
-
-
-
-if __name__ == '__main__':
-    u = Users()
-    #asyncio.run(asyncio.wait([u.send_verification_email('843273746@qq.com')]))
-    #asyncio.run(asyncio.wait([u.create_user('chenjz20','843273746@qq.com','cxq1974328','requester',460088)]))
-    #asyncio.run(asyncio.wait([u.email_exists('843273746@qq.com')]))
-    

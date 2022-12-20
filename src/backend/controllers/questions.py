@@ -8,7 +8,7 @@ import schemas.questions
 from .jsondocumentedresponse import JSONDocumentedResponse, create_documentation
 import controllers.tasks
 import services.questions
-
+import datetime
 from services.questions import question_service
 
 import schemas.answers
@@ -126,9 +126,10 @@ async def create_answer(
     task_id: int=Path(), question_id: int=Path(),
     current_user=Depends(get_current_user(['respondent']))
 ):
-    question = await question_service.get_question(task_id, question_id)
-    response = question.create_answer(current_user, answer)
+
+    response = await services.questions.question_service.create_answer(task_id,question_id,current_user, answer)
     if response:
+
         return create_answer_failed.response(schemas.tasks.ErrorResponse(response))    
     return create_answer_success.response(answer)
 ###############################################################################

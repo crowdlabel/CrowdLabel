@@ -3,7 +3,7 @@ from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.orm import relationship
 from .basicbase import Base
 from .user2task import *
-from .task2question import *
+import schemas.tasks
 import datetime
 MAX_NAME_LENGTH = 64
 MAX_DETAIL_LENGTH = 512
@@ -25,9 +25,21 @@ class Task(Base):
     requester_id = Column(Integer ,ForeignKey('requester.id'))
 
     #results = relationship('Results',cascade = 'all,delete-orphan')
-    questions = relationship('Question',secondary='task2question',cascade="delete, delete-orphan",single_parent = True)    
+    questions = relationship('Question')    
     respondents_claimed = relationship('Respondent',secondary='respondent2claim',cascade="delete, delete-orphan",single_parent = True, overlaps="task_complete, task_claimed")
     respondents_complete = relationship('Respondent',secondary = 'respondent2complete',cascade="delete, delete-orphan",single_parent = True, overlaps="task_complete")
    
-
-
+    def __init__(self,task_schema:schemas.tasks.Task,resource_path):
+        self.task_id = task_schema.task_id
+        self.requester = task_schema.requester
+        self.introduction = task_schema.introduction
+        self.description = task_schema.description
+        self.name = task_schema.name
+        self.cover_image = task_schema.cover_image
+        self.date_created = task_schema.date_created
+        self.credits = task_schema.credits
+        self.tags = '|'.join(task_schema.tags)
+        self.responses_required = task_schema.responses_required
+        self.resource_path = resource_path
+    def dict(self):
+        return {key: self.__dict__[key] for key in self.__dict__ if key[0] != '_'}
