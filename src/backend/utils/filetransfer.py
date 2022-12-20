@@ -3,13 +3,12 @@ from fastapi.responses import StreamingResponse
 from fastapi import UploadFile
 import aiofiles
 
-async def download_file(filename, media_type: str='octet-stream', chunk_size: int=1024 * 1024):
+async def download_file(filename: Path, media_type: str='octet-stream', chunk_size: int=1024 * 1024):
     async def iterfile():
-       async with aiofiles.open(filename, 'rb') as f:
+        async with aiofiles.open(filename, 'rb') as f:
             while chunk := await f.read(chunk_size):
                 yield chunk
-    filename = Path(filename).name
-    headers = {'Content-Disposition': f'attachment; filename="{filename}"'}
+    headers = {'Content-Disposition': f'attachment; filename="{filename.name}"'}
     return StreamingResponse(iterfile(), headers=headers, media_type=f'application/{media_type}')
 
 

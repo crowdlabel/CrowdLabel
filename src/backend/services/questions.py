@@ -22,6 +22,7 @@ import schemas.users
 
 import services.tasks
 
+from datetime import datetime
 
 class Questions:
     async def get_question(self, task: schemas.tasks.Task | int, question_id: int) -> schemas.questions.Question | None:
@@ -31,29 +32,32 @@ class Questions:
             if question.question_id == question_id:
                 return question
         return None
-    async def create_answer(self, 
-        current_user: schemas.users.User,
-        answer: schemas.answers.AnswerRequest,
-    ) -> str | None:
 
-        # TODO
-        if answer.question_type == 'multi_choice':
-            new_answer = schemas.answers.MultiChoiceAnswer()
-        elif  answer.question_type == 'single_choice':
-            new_answer = schemas.answers.SingleChoiceAnswer()
-        elif  answer.question_type == 'bounding_box':
-            new_answer = schemas.answers.BoundingBoxAnswer()
-        elif  answer.question_type == 'open':
-            new_answer = schemas.answers.OpenAnswer()
 
         
-        new_answer.date_answered = answer.date_answered
-        new_answer.question_id = self.question_id
-        res= await con.execute(select(models.user.Respondent).where(models.user.Respondent.username == answer.respondent))
+    async def create_answer(self, 
+        respondent: schemas.users.Respondent,
+        task: schemas.tasks.Task,
+        question: schemas.questions.Question,
+        answer_request: schemas.answers.AnswerRequest,
+    ) -> str | None:
+        """
+        Returns `str` if an error occurred, otherwise `None`
+        """
+
+        answer = schemas.answers.ANSWER_TYPE[question.question_type](
+            answer=answer_request,
+            respondent=respondent,
+            date_created=datetime.utcnow()
+        )
+        
+        # TODO: add answer to database
+
+        """ res= await con.execute(select(models.user.Respondent).where(models.user.Respondent.username == answer.respondent))
         target = res.scalar().first
         new_answer.respondent_id = target.id
         new_answer.question_type = answer.question_type
-        new_answer.respondent_name = answer.respondent
+        new_answer.respondent_name = answer.respondent """
         return True
         
     async def create_question(self,type,prompt,file_path,options,task_id) ->models.question.Question:
