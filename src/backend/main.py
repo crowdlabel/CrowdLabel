@@ -19,6 +19,7 @@ def parse_args():
     parser = argparse.ArgumentParser()
     parser.add_argument('--docs', action='store_true')
     parser.add_argument('--init_db', action='store_true')
+    parser.add_argument('--prod', action='store_true')
     args = parser.parse_args()
     return args
 
@@ -32,8 +33,11 @@ def run():
     if args.docs:
         generate_docs()
         return
+    root_path = ''
+    if args.prod:
+        root_path = '/api'
 
-    uvicorn.run('main:app', host='localhost', port=8000, reload=False)
+    uvicorn.run('main:app', host='localhost', port=8000, reload=False, root_path=root_path)
     
 
 

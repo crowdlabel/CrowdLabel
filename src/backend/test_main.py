@@ -121,6 +121,7 @@ def test_upload():
     now = datetime.utcnow()
     file = Path('D:/tsinghua/se 软件工程/CrowdLabel/examples/example_task/example_task.zip')
     response = __upload_task(token, file)
+    print(response.status_code, response.json())
     assert response.status_code == 200
     expected = {
         'cover_image': 'cover.jpg',
@@ -193,4 +194,5 @@ if __name__ == '__main__':
     #test_register()
     #test_availability()
     #test_search()
-    test_get_me()
+    #test_get_me()
+    test_upload()

@@ -72,8 +72,9 @@ class Tasks:
         for question in task_schema.questions:
             if not question.resource:
                 continue
+            print(resource_path / question.resource)
             if not pathlib.Path(resource_path / question.resource).is_file():
-                missing.append(question.resource)
+                missing.append(str(question.resource))
 
         if missing:
             return 'The following resources are missing: ' + ', '.join(missing)
@@ -234,7 +235,7 @@ Returns: list of `Task`s matching the query within the specified `page` and `pag
 
         # TODO: use query parameters from `parameters`
 
-        async with con:
+        async with con.begin():
             result = await con.execute(select(models.task.Task))
         return result, 1
 
