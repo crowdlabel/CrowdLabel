@@ -58,8 +58,14 @@
 </template>
 
 <script>
+import { ApiClient } from '@/crowdlabel-api/src';
+import { UsersApi } from '@/crowdlabel-api/src';
+import { AuthApi } from '@/crowdlabel-api/src';
+
 export default {
+    
     data () {
+        
         var validatePass = (rule, value, callback) => {
             if (value === '') {
                 callback(new Error('请输入密码'));
@@ -86,15 +92,18 @@ export default {
                 if (!/^[\x21-\x7e]{3,64}$/.test(value)) {
                     callback(new Error('用户名格式错误:请输入3-64位用户名'));
                 } else {
-                    let self = this
-                    
-                    // let checkname = userclient.availabilityUsersAvailabilityPut({'username':value, 'email':''});
-                    let checkname = self.fetch_json('http://localhost:8000/users/availability', 'PUT', {'username':value, 'email':''});
-                    if (checkname.username){
-                        callback(new Error('用户名已被占用'));
-                    } else {
-                        callback();
-                    }
+                    let ready_username = document.getElementById('registername').value;
+                    console.log(ready_username);
+                    this.user.availabilityUsersAvailabilityPut({'username': ready_username},
+                    (error, data, response) => {
+                        console.log(error, data, response);
+                        if (!data['username']){
+                            callback(new Error('用户名已被占用'));
+                            } else {
+                                callback();
+                            }
+                        }
+                    );
                 }
             }
         };
@@ -107,14 +116,19 @@ export default {
                     callback(new Error('邮箱格式错误'));
                 } else {
                     this.disable = false;
-                    let self = this
-                    let checkmail = self.fetch_json('http://localhost:8000/users/availability', 'PUT', {'username':'', 'email':value});
-                    if (checkmail.email) {
-                        callback(new Error('邮箱已被占用'));
-                    } else {
-                        this.disable = false;
-                        callback();
-                    }
+                    let ready_email = document.getElementById('registeremail').value;
+                    console.log(ready_email);
+                    this.user.availabilityUsersAvailabilityPut({'email': ready_email},
+                    (error, data, response) => {
+                        console.log(response);
+                        if (!data['email']){
+                            callback(new Error('邮箱已被占用'));
+                            } else {
+                                this.disable = false;
+                                callback();
+                            }
+                        }
+                    );
                 }
             }
         };
@@ -152,6 +166,9 @@ export default {
             timer: null,
             disable: true,
             activeName: 'second',
+            client: '',
+            auth: '',
+            user: '',
             ruleForm: {
                 name: '',
                 pass: '',
@@ -192,35 +209,20 @@ export default {
         };
     },
     created () {
-        // 调用后端api
-        // userclient = this.UserClient(this.ApiClient('http://localhost:8082'));
         const time = localStorage.getItem('time');
         if (time && time>0) {
             this.text = time + "s后重新发送"
             this.time = time
             this.verifyEmailbtn();
         }
+        var apiClient = new ApiClient('http://localhost:8000');
+        this.client = apiClient
+        var usersApi = new UsersApi(apiClient);
+        this.user = usersApi
+        var authApi = new AuthApi(apiClient);
+        this.auth = authApi
     },
     methods: {
-        // waiting for backend ...
-        async fetch_json (url, method, data = {}) {
-            const response = await fetch(url, {
-                method: method,
-                headers: {'Content-Type': 'application/json'},
-                body: JSON.stringify(data)
-            });
-            return response.json();
-        },
-        // checkRegisterSubmit(formName) {
-        //     this.$refs[formName].validate((valid) => {
-        //         if (valid) {
-        //             alert('successfully registered!');
-        //         } else {
-        //             console.log('error submit!!');
-        //             return false;
-        //         }
-        //     });
-        // },
         handleTabClick(tab, event){
             console.log(tab, event)
         },
@@ -231,14 +233,21 @@ export default {
                 let ready_password = document.getElementById('registerpassword').value;
                 let ready_email = document.getElementById('registeremail').value;
                 let ready_verification = document.getElementById('registerverification').value
-                this.fetch_json('http://localhost:8000/register','POST',{
+                console.log(ready_username);
+                console.log(ready_password);
+                console.log(ready_email);
+                console.log(ready_verification);
+                this.user.registerUsersRegisterPost({
                     "username": ready_username,
                     "password": ready_password,
                     "email": ready_email,
-                    "user_type": 1,
+                    "user_type": "respondent",
                     "verification_code": ready_verification
-                });
-                alert('successfully registered!');
+                    },
+                    (error, data, response) => {
+                        console.log(error, data, response);
+                    });
+                // alert('successfully registered!');
                 this.activeName = "first"
             } else {
                 console.log('error registration!!');
@@ -251,22 +260,21 @@ export default {
             if (valid) {
                 let ready_login_username = document.getElementById('loginusername').value;
                 let ready_login_password = document.getElementById('loginpassword').value;
-                console.log(ready_login_username);
-                console.log(ready_login_password);
-                const data = new FormData();
-                data.append('username', ready_login_username);
-                data.append('password', ready_login_password);
-                fetch('http://localhost:8000/token',{
-                    method: 'POST',
-                    body: data
-                }).then(res => {
-                    if (res.status == 200){
-                        alert('logging in...');
-                        this.$router.push('/projects');
-                    } else {
-                        alert('wrong username or password!')
-                    }
-                });
+                this.auth.loginLoginPost(ready_login_username, ready_login_password, {}, 
+                    (error, data, response) => {
+                        console.log(error, data, response);
+                        if (response.status == 200){
+                            // alert('logging in...');
+                                this.$router.push({
+                                path: '/projects',
+                                query: {
+                                    userid: ready_login_username
+                                }
+                            });
+                        } else {
+                            alert('wrong username or password!')
+                        }
+                    });
             } else {
                 console.log('error username or password');
                 return false;
@@ -281,9 +289,11 @@ export default {
         },
         verifyEmailbtn () {
             this.disable=true
-            console.log(this.ready_email);
             let ready_email = document.getElementById('registeremail').value
-            this.fetch_json('http://localhost:8000/verify_email', 'POST', {"email":ready_email});
+            console.log(ready_email);
+            this.user.verifyEmailUsersVerifyEmailPost({
+                "email": ready_email
+            });
             this.text = this.time + "s后重新发送"
             localStorage.setItem('time', this.time)
             this.timer = setInterval(() => {
@@ -296,7 +306,6 @@ export default {
                     this.time = 5
                     this.disable = false
                     this.text = '发送验证码'
-
                 }
             }, 1000)
         },

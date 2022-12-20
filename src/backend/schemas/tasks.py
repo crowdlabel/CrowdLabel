@@ -3,6 +3,7 @@ from typing import Optional
 from datetime import datetime
 import schemas.questions
 import re
+import pathlib
 
 class TaskSearchRequest(BaseModel):
     """
@@ -70,6 +71,7 @@ class Task(CreateTaskRequest):
     task_id: int
     requester: str
     date_created: datetime
+    resource_path: pathlib.Path
     respondents_claimed: set[str]=set() # usernames of respondents who have claimed the task but have not completed it
     respondents_completed: set[str]=set() # usernames of respondents who have claimed and completed the task
  

@@ -26,9 +26,8 @@ class AnswerRequest(BaseModel):
 
 class Answer(AnswerRequest):
     respondent: str # username of respondent
-    date_answered: datetime
+    date_created: datetime
 
-AnswerRequest = SingleChoiceAnswer | MultiChoiceAnswer | RankingAnswer | BoundingBoxAnswer | OpenAnswer
 
 ANSWER_TYPES = {
     'single_choice': SingleChoiceAnswer,

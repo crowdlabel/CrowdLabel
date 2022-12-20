@@ -60,7 +60,18 @@ class Tasks:
             task_id= 0,
             requester=requester.username,
             date_created=datetime.utcnow(),
+            resource_path=resource_path
         )
+
+        missing = []
+        for question in task_schema.questions:
+            if not question.resource:
+                continue
+            if not pathlib.Path(resource_path / question.resource).is_file():
+                missing.append(question.resource)
+
+        if missing:
+            return 'The following resources are missing: ' + ', '.join(missing)
 
 
         task = models.task.Task(task_schema,

@@ -1,97 +1,25 @@
-from fastapi import status
-from fastapi import APIRouter, Path
+import fastapi
+from fastapi import status, APIRouter
+from fastapi.responses import StreamingResponse, FileResponse
 from .base import app
 import services.questions
 import services.tasks
 import schemas.tasks
 import schemas.questions
-from .jsondocumentedresponse import JSONDocumentedResponse, create_documentation
+from .jsondocumentedresponse import JSONDocumentedResponse, create_documentation, not_found_jdr, forbidden_jdr
 import controllers.tasks
 import services.questions
 import datetime
 from services.questions import question_service
+from services.tasks import task_service
 
 import schemas.answers
+from utils.filetransfer import download_file
 
 from .auth import Depends, get_current_user
 
 router = APIRouter(prefix='/tasks/{task_id}/questions')
 
-
-""" @router.get('/questions')
-async def questions():
-    return 'api: questions'
-
-@app.post('/create_question_from_file')
-async def create_question_from_file(details:FilePath):
-    response = await services.question.create_question_from_file(
-        details.id,
-        details.path,
-        )
-    if response['status'] != 'ok':
-        return {
-            'error': f'{response} already exists'
-        }, 400
-    else:
-        return {
-            'status':'ok'
-        }, 200
-
-@app.post('/create_question')
-async def create_question(details:QuestionInfo):
-    response = await services.question.create_question(
-        details.type,
-        details.prompt,
-        details.resource,
-        details.options,
-        details.task_id
-    )
-    if response != 'ok':
-        return {
-            'error': f'{response} already exists'
-        }, 400
-    else:
-        return {
-        "type":details.type,
-        "prompt":details.prompt,
-        "resource":details.resource,
-        "options":details.options,
-        "task_id":details.task_id
-        }, 200
-@router.delete('/questions')
-async def delete_question(details:ID):
-    response = await services.question.delete_question(details.id)
-    if response[0]['status'] != 'ok':
-        return {
-            'error' : f'delete failed'
-        },400
-    else :
-        return {
-            'id':details.id
-        },200
-@router.post('/edit_question')
-async def edit_question(details:IDWithQuestionInfo):
-    response = await services.question.edit_question(
-        details.id,
-        details.type,
-        details.prompt,
-        details.resource,
-        details.options,
-        details.task_id
-    )
-    if response[0]['status'] != 'ok':
-        return {
-            'error': 'edit failed'
-        },400
-    else:
-        return {
-            "type":response[0]["type"],
-            "prompt":response[0]["prompt"],
-            "resource":response[0]["resource"],
-            "options":response[0]["options"],
-            "task_id":response[0]["task_id"]
-            
-        } """
 
 ###############################################################################
 question_not_found_error = JSONDocumentedResponse(
@@ -123,13 +51,56 @@ create_answer_failed = JSONDocumentedResponse(
 )
 async def create_answer(
     answer: schemas.answers.AnswerRequest,
-    task_id: int=Path(), question_id: int=Path(),
+    task_id: int=fastapi.Path(), question_id: int=fastapi.Path(),
     current_user=Depends(get_current_user(['respondent']))
 ):
+    task = await task_service.get_task(task_id)
+    if not task:
+        return not_found_jdr.response()
+    if current_user.username not in task.respondents_claimed:
+        return forbidden_jdr.response()
+    question = question_service.get_question(task, question_id)
+    if not question:
+        return not_found_jdr.response()
 
-    response = await services.questions.question_service.create_answer(task_id,question_id,current_user, answer)
+    response = await question_service.create_answer(current_user, task, question, answer)
+
     if response:
 
         return create_answer_failed.response(schemas.tasks.ErrorResponse(response))    
     return create_answer_success.response(answer)
 ###############################################################################
+get_answer_resource_success_jdr = JSONDocumentedResponse(
+    status.HTTP_200_OK,
+    'Resource retrieved successfully',
+)
+get_answer_resource_failed_jdr = JSONDocumentedResponse(
+    status.HTTP_400_BAD_REQUEST,
+    'No resource associated with this quesiton',
+)
+@router.get('/{question_id}/resource',
+    description='Get the resource (if any) associated with the question',
+    **create_documentation([get_answer_resource_success_jdr, forbidden_jdr, not_found_jdr])
+)
+async def get_question_resource(
+    task_id: int=fastapi.Path(), question_id: int=fastapi.Path(),
+    current_user=Depends(get_current_user()),
+):
+    task = await task_service.get_task(task_id)
+    if not task:
+        return not_found_jdr.response()
+    if (current_user.username not in task.respondents_claimed or
+        current_user.username != task.requester):
+        # only allow the requester who created the task or the respondents who claimed this task see the resource
+        return forbidden_jdr.response()
+    question = question_service.get_question(task, question_id)
+    if not question:
+        return not_found_jdr.response()
+    if not question.resource:
+        return get_answer_resource_failed_jdr.response()
+
+    resource_path = task.resource_path / question.resource
+
+    return download_file(resource_path)
+
+    # TODO: return the file

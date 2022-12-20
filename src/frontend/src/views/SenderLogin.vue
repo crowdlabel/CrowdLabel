@@ -95,7 +95,7 @@ export default {
                 } else {
                     let ready_username = document.getElementById('registername').value;
                     console.log(ready_username);
-                    this.user.availabilityUsersAvailabilityPut({'username': ready_username, 'email': ''},
+                    this.user.availabilityUsersAvailabilityPut({'username': ready_username},
                     (error, data, response) => {
                         console.log(error, data, response);
                         if (!data['username']){
@@ -119,7 +119,7 @@ export default {
                     this.disable = false;
                     let ready_email = document.getElementById('registeremail').value;
                     console.log(ready_email);
-                    this.user.availabilityUsersAvailabilityPut({'username': '', 'email': ready_email},
+                    this.user.availabilityUsersAvailabilityPut({'email': ready_email},
                     (error, data, response) => {
                         console.log(response);
                         if (!data['email']){
@@ -228,8 +228,8 @@ export default {
             console.log(tab, event)
         },
         submitRegister(formName) {
-            // this.$refs[formName].validate((valid) => {
-            // if (valid) {
+            this.$refs[formName].validate((valid) => {
+            if (valid) {
                 let ready_username = document.getElementById('registername').value;
                 let ready_password = document.getElementById('registerpassword').value;
                 let ready_email = document.getElementById('registeremail').value;
@@ -248,13 +248,13 @@ export default {
                     (error, data, response) => {
                         console.log(error, data, response);
                     });
-                alert('successfully registered!');
+                // alert('successfully registered!');
                 this.activeName = "first"
-            // } else {
-            //     console.log('error registration!!');
-            //     return false;
-            // }
-            // });
+            } else {
+                console.log('error registration!!');
+                return false;
+            }
+            });
         },
         submitLogin(formName) {
             this.$refs[formName].validate((valid) => {
@@ -265,11 +265,11 @@ export default {
                     (error, data, response) => {
                         console.log(error, data, response);
                         if (response.status == 200){
-                            alert('logging in...');
+                            // alert('logging in...');
                                 this.$router.push({
-                                path: '/senderhome',
+                                path: '/sendermission',
                                 query: {
-                                    userid: ready_login_username
+                                    userid: JSON.stringify(ready_login_username)
                                 }
                             });
                         } else {

@@ -1,6 +1,7 @@
 from typing import Optional
 from pydantic import BaseModel
 import schemas.answers
+import pathlib
 
 question_types = [
     'single_choice',
@@ -15,7 +16,7 @@ class QuestionRequest(BaseModel):
     question_id: int
     question_type: str
     prompt: str
-    resource: Optional[str]
+    resource: Optional[pathlib.Path]
 
 class Question(QuestionRequest):
     answers: list[schemas.answers.Answer]=[]
