@@ -106,7 +106,7 @@ def test_upload():
     print(__get_me(token).json())
     __top_up(token, 100)
     print(__get_me(token).json())
-    file = Path('D:/test/example_task.zip').absolute()
+    file = Path('D:/example_task.zip').absolute()
     files = {'task_file': (file.name, open(file, 'rb'))}
     response = client.post('/tasks/upload',
         headers=token,

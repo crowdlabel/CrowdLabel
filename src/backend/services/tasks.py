@@ -24,7 +24,7 @@ from utils.config import get_config
 TASK_UPLOAD_DIR = pathlib.Path(get_config('file_locations.tasks'))
 
 from services.users import user_service
-
+from services.questions import question_service
 
 
 
@@ -59,18 +59,27 @@ class Tasks:
             requester=requester.username,
             date_created=datetime.utcnow(),
         )
-        task = models.task.Task(**task_schema.dict(),
+        print('#'*100)
+
+
+        task = models.task.Task(task_schema,
             resource_path=str(resource_path)
         )
-        
+        for question in task_request.dict()['questions']:
+            print(question)
+            question_created = await question_service.create_question(question['question_type'],question['prompt'],
+                                             question['resource'],question['options'] if question['question_type'] in ['single_choice','multi_choice'] else []
+                                             ,task.task_id)
+            task.questions.append(question_created)
         async with con.begin():
             target = await con.execute(select(models.user.Requester).where(models.user.Requester.username==requester.username).options(selectinload(models.user.Requester.task_requested)))
             res = target.scalars().first()
             if res == None:
                 return 'requester not found'
-        res.task_requested.append(task)
-        con.add(task)
-        await con.commit()
+            task.requester_id = res.id
+            res.task_requested.append(task)
+            con.add(task)
+            await con.commit()
 
         return task_schema
 

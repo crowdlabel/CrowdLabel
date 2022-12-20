@@ -259,18 +259,3 @@ user_service = Users()
 
 
 
-if __name__ == '__main__':
-    u = Users()
-    #asyncio.run(asyncio.wait([u.send_verification_email('843273746@qq.com')]))
-    #asyncio.run(asyncio.wait([u.create_user('chenjz20','843273746@qq.com','cxq1974328','requester',460088)]))
-    #asyncio.run(asyncio.wait([u.email_exists('843273746@qq.com')]))
-    
-
-
-
-if __name__ == '__main__':
-    u = Users()
-    #asyncio.run(asyncio.wait([u.send_verification_email('843273746@qq.com')]))
-    #asyncio.run(asyncio.wait([u.create_user('chenjz20','843273746@qq.com','cxq1974328','requester',460088)]))
-    #asyncio.run(asyncio.wait([u.email_exists('843273746@qq.com')]))
-    
