@@ -56,7 +56,7 @@ class Users:
                 await con.commit()
             else:
                 target.verification_code = verification_code
-                await con.flush()
+                await con.flush() 
                 con.expunge(target)
                     
         try:
@@ -174,11 +174,10 @@ class Users:
         Returns User object, or None if user not found
         """
 
-        async with con.begin():
-            res= await con.execute(select(models.user.User).where(models.user.User.username == username))
-            target = res.scalars().first()
-            if target == None:
-                return None
+        res= await con.execute(select(models.user.User).where(models.user.User.username == username))
+        target = res.scalars().first()
+        if target == None:
+            return None
         try:
             return schemas.users.USER_TYPES[target.user_type](target)
         except:
@@ -194,13 +193,12 @@ class Users:
         if not checkers.users.check_username_format(username):
             return False
 
-        async with con.begin():
-            res= await con.execute(select(models.user.User).where(models.user.User.username==username))
-            target = res.scalars().first()
+
+        res= await con.execute(select(models.user.User).where(models.user.User.username==username))
+        target = res.scalars().first()
 
         if target is None:
-
-
+    
             return False
 
         return True
@@ -221,9 +219,8 @@ class Users:
         # TODO: check
         if not checkers.users.check_email_format(email):
             return False
-        async with con.begin():
-            res= await con.execute(select(models.user.User).where(models.user.User.email == email))
-            target = res.scalars().first()
+        res= await con.execute(select(models.user.User).where(models.user.User.email == email))
+        target = res.scalars().first()
         if target is None:
 
             return False
@@ -250,14 +247,13 @@ class Users:
         Edits self using the new info
         returns error message, or none if successful
         """
-        async with con.begin():
-            res = await con.execute(select(models.user.User).where(models.user.User.id == userid))
-            target = res.scalar().first()
-            if target == None:
-                return False
-            else :
-                target.password_hashed = utils.hasher.hash(new_info['password'])
-                return True
+        res = await con.execute(select(models.user.User).where(models.user.User.id == userid))
+        target = res.scalar().first()
+        if target == None:
+            return False
+        else :
+            target.password_hashed = utils.hasher.hash(new_info['password'])
+            return True
 
 
     async def claim_task(self, task: schemas.tasks.Task | int) -> str | None:

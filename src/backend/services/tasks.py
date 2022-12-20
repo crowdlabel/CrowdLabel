@@ -150,7 +150,7 @@ class Tasks:
         elif suffix == 'rar':  
             file = rarfile.RarFile(filename)
         file.extractall()
-        questions = services.questions.question_service.create_question_from_file(task_id,'questions.json')
+        questions = services.questions.question_service.create_question_from_file( 'questions.json')
         return questions
 
     async def search(
