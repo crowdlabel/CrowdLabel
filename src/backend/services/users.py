@@ -155,7 +155,6 @@ class Users:
         Returns User object, or None if user not found
         """
 
-<<<<<<< HEAD
         res = await con.execute(select(models.user.User).where(models.user.User.username == username))
         target = res.scalars().first()
         if target == None:
@@ -163,16 +162,6 @@ class Users:
 
         return schemas.users.USER_TYPES[target.user_type](**target.dict())
 
-=======
-        res= await con.execute(select(models.user.User).where(models.user.User.username == username))
-        target = res.scalars().first()
-        if target == None:
-            return None
-        try:
-            return schemas.users.USER_TYPES[target.user_type](target)
-        except:
-            raise ValueError('Invalid user type from database')
->>>>>>> huge-homework-dev
 
 
 
