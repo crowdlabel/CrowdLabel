@@ -6,6 +6,7 @@ import services.tasks
 import services.users
 from .jsondocumentedresponse import JSONDocumentedResponse, create_documentation, forbidden_jdr, not_found_jdr
 import schemas.tasks
+import schemas.questions
 from utils.datetime_str import datetime_now_str
 from typing import Optional
 from utils.config import get_config
@@ -51,7 +52,7 @@ async def search_tasks(query: schemas.tasks.TaskSearchRequest, current_user=Depe
 upload_success_jdr = JSONDocumentedResponse(
     status.HTTP_200_OK,
     'Task uploaded and created successfully',
-    schemas.tasks.Task
+    list[schemas.questions.Question]
 )
 upload_failed_jdr = JSONDocumentedResponse(
     status.HTTP_400_BAD_REQUEST,
@@ -100,7 +101,7 @@ async def create_task(task: schemas.tasks.CreateTaskRequest, questions_file: Upl
 
     await upload_file(questions_file, questions_filename)
 
-    questions = await task_service.process_questions_archive(questions_filename)
+    #questions = await task_service.process_task_archive(questions_filename)
 
     result = await task_service.create_task(
         creator=current_user,
@@ -110,7 +111,6 @@ async def create_task(task: schemas.tasks.CreateTaskRequest, questions_file: Upl
         cover_filename=cover_filename if cover else None,
         responses_required=task.responses_required,
         credits=task.credits,
-        questions=questions
     )
 
     if not isinstance(result, schemas.tasks.Task):

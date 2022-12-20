@@ -34,9 +34,6 @@ class Tasks:
     def __init__(self):
         pass
 
-    """ async def create_task(self, creator: schemas.users.Respondent, name: str, description: str,
-                          introduction: str, tags: set[str], cover_path: str, responses_required: int,
-                          credits: float, questions: list[schemas.questions.Question]) -> schemas.tasks.Task | str: """
 
     async def create_task(self,
         requester: schemas.users.Requester,
@@ -44,7 +41,7 @@ class Tasks:
         resource_path: pathlib.Path    
     ) -> schemas.tasks.Task | str:
 
-        if task_request.responses_required < 1:
+        if task_request.responses_required <= 0:
             return '`responses_required` must be positive'
         if task_request.credits < 0:
             return '`credits` must be positive'
@@ -70,7 +67,7 @@ class Tasks:
             target = await con.execute(select(models.user.Requester).where(models.user.Requester.username==requester.username).options(selectinload(models.user.Requester.task_requested)))
             res = target.scalars().first()
             if res == None:
-                return None
+                return 'requester not found'
         res.task_requested.append(task)
         con.add(task)
         await con.commit()

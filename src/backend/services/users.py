@@ -43,17 +43,17 @@ class Users:
 
         verification_code = '123456'
         # TODO: check?
-        async with con.begin():
-            res= await con.execute(select(models.email.Email).where(models.email.Email.email==email))
-            target = res.scalars().first()
-            if target is None:
-                email_create = models.email.Email(email=email,code = verification_code)
-                con.add(email_create)
-                await con.commit()
-            else:
-                target.verification_code = verification_code
-                await con.flush()
-                con.expunge(target)
+        
+        res= await con.execute(select(models.email.Email).where(models.email.Email.email==email))
+        target = res.scalars().first()
+        if target is None:
+            email_create = models.email.Email(email=email,code = verification_code)
+            con.add(email_create)
+            await con.commit()
+        else:
+            target.verification_code = verification_code
+            await con.flush() 
+            con.expunge(target)
                     
         try:
             return True
@@ -143,11 +143,10 @@ class Users:
 
         # TODO: check?
         con = scoped_session(Connection)
-        async with con.begin():
-            res= await con.execute(select(models.user.User).where(models.user.User.username==username))
-            target = res.scalars().first()
-            if target == None:
-                return False
+        res= await con.execute(select(models.user.User).where(models.user.User.username==username))
+        target = res.scalars().first()
+        if target == None:
+            return False
         return utils.hasher.verify(target.password_hashed, password)
 
 
@@ -156,15 +155,13 @@ class Users:
         Returns User object, or None if user not found
         """
 
-        async with con.begin():
-            res= await con.execute(select(models.user.User).where(models.user.User.username == username))
-            target = res.scalars().first()
-            if target == None:
-                return None
-        #try:
+        res = await con.execute(select(models.user.User).where(models.user.User.username == username))
+        target = res.scalars().first()
+        if target == None:
+            return None
+
         return schemas.users.USER_TYPES[target.user_type](**target.dict())
-        """ except:
-            raise ValueError('Invalid user type from database') """
+
 
 
 
@@ -176,13 +173,12 @@ class Users:
         if not checkers.users.check_username_format(username):
             return False
 
-        async with con.begin():
-            res= await con.execute(select(models.user.User).where(models.user.User.username==username))
-            target = res.scalars().first()
+
+        res= await con.execute(select(models.user.User).where(models.user.User.username==username))
+        target = res.scalars().first()
 
         if target is None:
-
-
+    
             return False
 
         return True
@@ -203,9 +199,8 @@ class Users:
         # TODO: check
         if not checkers.users.check_email_format(email):
             return False
-        async with con.begin():
-            res= await con.execute(select(models.user.User).where(models.user.User.email == email))
-            target = res.scalars().first()
+        res= await con.execute(select(models.user.User).where(models.user.User.email == email))
+        target = res.scalars().first()
         if target is None:
 
             return False
@@ -232,14 +227,13 @@ class Users:
         Edits self using the new info
         returns error message, or none if successful
         """
-        async with con.begin():
-            res = await con.execute(select(models.user.User).where(models.user.User.id == userid))
-            target = res.scalar().first()
-            if target == None:
-                return False
-            else :
-                target.password_hashed = utils.hasher.hash(new_info['password'])
-                return True
+        res = await con.execute(select(models.user.User).where(models.user.User.id == userid))
+        target = res.scalar().first()
+        if target == None:
+            return False
+        else :
+            target.password_hashed = utils.hasher.hash(new_info['password'])
+            return True
 
     async def handle_transaction(self, request: schemas.users.TransactionRequest, user: schemas.users.User) -> float | str:
         '''

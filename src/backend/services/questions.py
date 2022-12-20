@@ -104,8 +104,8 @@ class Questions:
                 return None
             type = target.type
         try:
-            for question in file['question']:
-                question = await self.create_question(type,file['question'][question]['prompt'],file_path,file['question'][question]['options'],task_id)
+            for question in file:
+                question = await self.create_question(file[question]['type'],file[question]['prompt'],file[question]['file_path'],file[question]['options'],task_id)
                 response_questions.append(question)
         except:
             return None
