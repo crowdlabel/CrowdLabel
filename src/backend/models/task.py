@@ -11,23 +11,23 @@ MAX_PATH_LENGTH =128
 MAX_TAGS_LENGTH = 256
 class Task(Base):
     __tablename__ = 'task'
-    id = Column(Integer,unique = True, primary_key=True,autoincrement=True)
-    creator = Column(String(MAX_NAME_LENGTH))
+    task_id = Column(Integer,unique = True, primary_key=True,autoincrement=True)
+    requester = Column(String(MAX_NAME_LENGTH))
     introduction =Column(String(MAX_NAME_LENGTH))
     description  = Column(String(MAX_DETAIL_LENGTH))
     name = Column(String(MAX_NAME_LENGTH))
-    cover_path = Column(String(MAX_PATH_LENGTH))
+    cover_image = Column(String(MAX_PATH_LENGTH))
     date_created = Column(DateTime,default = datetime.datetime.now)
     credits = Column(Float)
     tags = Column(String(MAX_TAGS_LENGTH))
-    response_required = Column(Integer)
-    file_path = Column(String(MAX_PATH_LENGTH))
+    responses_required = Column(Integer)
+    resource_path = Column(String(MAX_PATH_LENGTH))
     requester_id = Column(Integer ,ForeignKey('requester.id'))
 
     #results = relationship('Results',cascade = 'all,delete-orphan')
     questions = relationship('Question',secondary='task2question',cascade="delete, delete-orphan",single_parent = True)    
-    respondent_claimed = relationship('Respondent',secondary='respondent2claim',cascade="delete, delete-orphan",single_parent = True, overlaps="task_complete, task_claimed")
-    respondent_complete = relationship('Respondent',secondary = 'respondent2complete',cascade="delete, delete-orphan",single_parent = True, overlaps="task_complete")
+    respondents_claimed = relationship('Respondent',secondary='respondent2claim',cascade="delete, delete-orphan",single_parent = True, overlaps="task_complete, task_claimed")
+    respondents_complete = relationship('Respondent',secondary = 'respondent2complete',cascade="delete, delete-orphan",single_parent = True, overlaps="task_complete")
    
 
 

@@ -3,7 +3,7 @@ from fastapi.routing import APIRouter
 from .auth import Depends, get_current_user
 from .jsondocumentedresponse import JSONDocumentedResponse, create_documentation
 import schemas.users
-
+import schemas.tasks
 from services.users import user_service
 
 
@@ -60,7 +60,7 @@ register_failed_jdr = JSONDocumentedResponse(
     **create_documentation([register_success_jdr, register_failed_jdr])
 )
 async def register(details: schemas.users.RegistrationRequest):
-    response = await user_service.create_user(**details.dict())
+    response = await user_service.create_user(details)
     if isinstance(response, dict):
         response = schemas.users.RegistrationError(**response)
         return register_failed_jdr.response(response)
@@ -109,3 +109,28 @@ async def get_user(username: str, current_user: schemas.users.User = Depends(get
     if not user:
         return username_failed_jdr.response()
     return username_success_jdr.response(user)
+
+###############################################################################
+transaction_succeeded_hdr = JSONDocumentedResponse(
+    status.HTTP_200_OK,
+    'Transaction succeeded',
+)
+transaction_failed_hdr = JSONDocumentedResponse(
+    status.HTTP_400_BAD_REQUEST,
+    'Transaction failed',
+    schemas.tasks.ErrorResponse
+)
+@router.post('/me/balance',
+    description='Creates a transaction',
+    **create_documentation([transaction_succeeded_hdr, transaction_failed_hdr])
+)
+async def balance(
+    request: schemas.users.TransactionRequest,
+    current_user: schemas.users.User = Depends(get_current_user())
+):
+    response = await user_service.handle_transaction(request, current_user)
+    if isinstance(response, str):
+        return transaction_failed_hdr.response(
+            schemas.tasks.ErrorResponse(error=response)
+        )
+    return transaction_succeeded_hdr.response()

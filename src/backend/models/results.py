@@ -15,7 +15,7 @@ class Results(Base):
     __tablename__ = 'result'
     id = Column(Integer,unique=True,primary_key = True)
     name = Column(String(MAX_USERNAME_LENGTH))
-    task_id = Column(Integer,ForeignKey('task.id'))
+    task_id = Column(Integer,ForeignKey('task.task_id'))
     def __init__(self, task_id, name):
         self.task_id = task_id 
         self.name = name 

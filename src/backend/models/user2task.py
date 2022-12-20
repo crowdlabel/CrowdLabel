@@ -11,12 +11,12 @@ class Respondent2Claim(Base):
     __tablename__ = 'respondent2claim'
     id = Column(Integer,primary_key=True)
     respondent = Column(Integer,ForeignKey('respondent.id',ondelete='CASCADE'))
-    task = Column(Integer,ForeignKey('task.id',ondelete='CASCADE'))
+    task = Column(Integer,ForeignKey('task.task_id',ondelete='CASCADE'))
     UniqueConstraint('respondent','task',name='respondent2claim_relation')
     
 class Respondent2Complete(Base):
     __tablename__ = 'respondent2complete'
     id = Column(Integer,primary_key=True)
     respondent = Column(Integer,ForeignKey('respondent.id',ondelete='CASCADE'))
-    task = Column(Integer,ForeignKey('task.id',ondelete='CASCADE'))
+    task = Column(Integer,ForeignKey('task.task_id',ondelete='CASCADE'))
     UniqueConstraint('respondent','task',name='respondent2complete_relation')

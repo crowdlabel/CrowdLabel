@@ -3,7 +3,7 @@ from .basicbase import Base
 class Task2Question(Base):
     __tablename__ = 'task2question'
     id = Column(Integer,primary_key=True)
-    task = Column(Integer,ForeignKey('task.id'))
+    task = Column(Integer,ForeignKey('task.task_id'))
     question = Column(Integer,ForeignKey('question.id',ondelete='CASCADE'))
     UniqueConstraint('task','question',name='task2question_relation')
 

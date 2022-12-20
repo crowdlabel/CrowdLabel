@@ -1,10 +1,43 @@
 from datetime import datetime
-from pydantic import BaseModel
 from typing import Optional
+from pydantic import BaseModel, validator
+from email_validator import validate_email
 
+import re
+
+
+from models.user import MAX_USERNAME_LENGTH
+
+
+
+class Username(BaseModel):
+    username: str
+    __chars = r'A-Za-z0-9_\.\_'
+    __min_length = 3
+    __pattern = re.compile(fr'[{__chars}]{{{__min_length},{MAX_USERNAME_LENGTH}}}')
+    @validator('username')
+    def username_format(cls, username):
+        if not re.fullmatch(Username.__pattern, username):
+            raise ValueError('Username format incorrect')
+        return username
+    class Config:
+        schema_extra = {
+            'example': {
+                'username': 'johndoe',
+            }
+        }
 
 class Email(BaseModel):
     email: str
+    @validator('email')
+    def email_format(cls, email):
+        try:
+            if validate_email(email=email, check_deliverability=False):
+                return email
+        except:
+            pass
+
+        raise ValueError('Email format incorrect')
     class Config:
         schema_extra = {
             'example': {
@@ -12,9 +45,52 @@ class Email(BaseModel):
             }
         }
 
-class AvailabilityRequest(BaseModel):
-    username: Optional[str | None]
-    email: Optional[str | None]
+class Password(BaseModel):
+    password: str
+    __min_length = 8
+    __max_length = 64
+    __chars = r'\x20-\x7e' # printable chars excluding delete
+    __pattern = re.compile(fr'[{__chars}]{{{__min_length},{__max_length}}}')
+    @validator('password')
+    def password_format(cls, password):
+        if not re.fullmatch(Password.__pattern, password):
+            raise ValueError('Password format incorrect')
+        return password
+
+
+class UserType(BaseModel):
+    user_type: str
+    @validator('user_type')
+    def user_type_format(cls, user_type):
+        if user_type not in set(['requester', 'respondent', 'admin']):
+            raise ValueError('Invalid user_type, must be "requester", "respondent", or "admin"')
+        return user_type
+    class Config:
+        schema_extra = {
+            'example': {
+                'user_type': 'respondent',
+            }
+        }
+
+class VerificationCode(BaseModel):
+    verification_code: str
+    __pattern = r'\d{6}'
+    @validator('verification_code')
+    def verification_code_format(cls, verification_code):
+        if not re.fullmatch(VerificationCode.__pattern, verification_code):
+            raise ValueError('Verification code format invalid')
+        return verification_code
+    class Config:
+        schema_extra = {
+            'example': {
+                'verification_code': '123456',
+            }
+        }   
+
+
+class AvailabilityRequest(Username, Email):
+    username: Optional[str]
+    email: Optional[str]
     class Config:
         schema_extra = {
             'example': {
@@ -22,6 +98,7 @@ class AvailabilityRequest(BaseModel):
                 'email': 'taken@example.com',
             }
         }
+
 class AvailabilityResponse(BaseModel): 
     username: Optional[bool]
     email: Optional[bool]
@@ -33,13 +110,7 @@ class AvailabilityResponse(BaseModel):
             }
         }
 
-class RegistrationRequest(BaseModel):
-    username: str
-    email: str
-    password: str
-    user_type: str
-    verification_code: str
-
+class RegistrationRequest(Username, Email, Password, UserType, VerificationCode):
     class Config:
         schema_extra = {
             'example': {
@@ -55,16 +126,12 @@ class RegistrationRequest(BaseModel):
 class RegistrationError(BaseModel):
     username: Optional[str]
     email: Optional[str]
-    password: Optional[str]
-    user_type: Optional[str]
     verification_code: Optional[str]
     class Config:
         schema_extra = {
             'example': {
                 'username': 'exists',
                 'email': 'exists',
-                'user_type': 'format',
-                'password': 'format',
                 'verification_code': 'wrong',
             }
         }
@@ -95,22 +162,19 @@ class EditPasswordRequest(BaseModel):
         }
 
 
-class User(BaseModel):
-    username: str=''
-    email: str=''
-    user_type: str=''
+class User(Username, Email, UserType):
     credits: float=0
     date_created: datetime
     password_hashed: str=''
 
-    def __init__(self, user):
+    """ def __init__(self, user):
         super(User, self).__init__(
             username=user.username,
             email=user.email,
             credits=user.credits,
             date_created=user.date_created,
             password_hashed=user.password_hashed,
-        )
+        ) """
         
 
     class Config:
@@ -129,22 +193,26 @@ class User(BaseModel):
 
 class Requester(User):
     tasks_requested: set[int]=set() # list Task IDs
-    def __init__(self,user):
+    user_type='requester'
+
+    """ def __init__(self,user):
         super(Requester,self).__init__(user)
-        self.user_type='requester'
+        self.user_type='requester' """
 
 class Respondent(User):
     tested: bool=False
+    user_type = 'respondent'
+
     tasks_claimed: set[int]=set() # list Task IDs
     tasks_completed: set[int]=set() # list Task IDs
-    def __init__(self, user):
+    """ def __init__(self, user):
         super(Respondent, self).__init__(user)
-        self.user_type = 'respondent'
+        self.user_type = 'respondent' """
 
 class Admin(Requester, Respondent):
     user_type = 'admin'
-    def __init__(self, user):
-        super(Admin, self).__init__(user)
+    """ def __init__(self, user):
+        super(Admin, self).__init__(user) """
 
 
 USER_TYPES = {
@@ -152,3 +220,13 @@ USER_TYPES = {
     'respondent': Respondent,
     'admin': Admin,
 }
+
+class TransactionRequest(BaseModel):
+    amount: float
+
+    class Config:
+        schema_extra = {
+            'example': {
+                'amount': 2.56
+            }
+        }
