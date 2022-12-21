@@ -250,9 +250,9 @@ def test_claim():
     task_id = __upload_task(reqt, example_task).json()['task_id']
     cresp = __claim(johnt, task_id)
     assert cresp.status_code == 200
-    
     assert johndoe['username'] in __get_task(reqt, task_id).json()['respondents_claimed']
-    assert task_id in __get_me(johnt)
+    pprint( __get_me(johnt).json())
+    assert task_id in __get_me(johnt).json()['tasks_claimed']
 def test_credits():
     init_models_sync()
     __register(johndoe)
@@ -307,10 +307,11 @@ def test_answer():
     )
     assert response.status_code == 200
 
-    task = __get_task(reqt, task_id)
-
-    pprint(task.json())
-
+    task = __get_task(reqt, task_id).json()
+    for question in task['questions']:
+        if question['question_id'] == 1:
+            assert question['answers'] == [{'choice': 1}]
+            break
 
 def test_cover():
     init_models_sync()
@@ -326,7 +327,7 @@ def test_cover():
 
 if __name__ == '__main__':
     
-    """
+    """ 
     test_availability()
     test_register()
     test_login()
@@ -336,8 +337,8 @@ if __name__ == '__main__':
     test_search()
     test_get_task()
     test_get_task_question_resource() 
-    
     test_answer()
-    """
+   
     test_cover()
-    
+     """
+    test_claim()

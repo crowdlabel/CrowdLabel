@@ -214,6 +214,7 @@ class Admin(Requester, Respondent):
     """ def __init__(self, user):
         super(Admin, self).__init__(user) """
 
+UserType = Requester | Respondent | Admin
 
 USER_TYPES = {
     'requester': Requester,
