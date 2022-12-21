@@ -21,7 +21,7 @@
                     </a>
                 </li>
                 <li>
-                    <a aria-current="page" class="left_nav_list_item" data-external="true" href="/notifications">
+                    <a aria-current="page" class="left_nav_list_item" data-external="true" href="/sendernotice">
                         <img src="../assets/notifications_2.png" height="20" width="20">
                         <p class="list_item_title">消息中心</p>
                     </a>
