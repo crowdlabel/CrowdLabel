@@ -59,11 +59,11 @@ async def create_answer(
         return not_found_jdr.response()
     if current_user.username not in task.respondents_claimed:
         return forbidden_jdr.response()
-    question = question_service.get_question(task, question_id)
+    question = await question_service.get_question(task, question_id)
     if not question:
         return not_found_jdr.response()
 
-    response = await question_service.create_answer(current_user, task, question, answer)
+    response = await question_service.create_answer(task_id,question_id,current_user,answer)
 
     if response:
 
