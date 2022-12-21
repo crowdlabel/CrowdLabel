@@ -153,7 +153,7 @@ class Tasks:
             di = question.dict()
             del di['id_in_task']
             del di['options']
-            if di['resource'] == None:
+            if di['resource'] == 'None':
                 del di['resource']
             di['question_id'] = question.id_in_task
             if qtype == 'single_choice':
@@ -189,7 +189,6 @@ class Tasks:
         complete_names = list(map(lambda A:A.username,target.respondents_complete))
         response_task.respondents_completed = set(complete_names)
         await asyncio.shield(con.close())
-        print(response_task.questions)
         return response_task
 
     

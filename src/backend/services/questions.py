@@ -82,7 +82,6 @@ class Questions:
         current_user: schemas.users.User,
         answer: schemas.answers.AnswerRequest
     ) -> str | None:
-        print('!'*50)
         result = await con.execute(select(models.question.Question).where(and_( models.question.Question.task_id == task_id , models.question.Question.id_in_task == question_id))
                                   .options(selectinload(models.question.Question.answer)))
         # TODO
