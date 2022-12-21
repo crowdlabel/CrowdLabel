@@ -54,7 +54,7 @@ class Users:
             target.verification_code = verification_code
             await con.flush() 
             con.expunge(target)
-                    
+        await asyncio.shield(con.close())
         try:
             return True
             self.__email_sender.send_email(
@@ -76,6 +76,7 @@ class Users:
             res = await con.execute(select(models.email.Email).where(models.email.Email.email == email))
             target = res.scalars().first()
             if target is None or target.verification_code != verification_code:
+                await asyncio.shield(con.close())
                 return False
             await con.commit()
             await asyncio.shield(con.close())
@@ -134,7 +135,7 @@ class Users:
             date_created=datetime.utcnow()
         )
 
-
+        await asyncio.shield(con.close())
 
         return user_schema
 
@@ -147,7 +148,9 @@ class Users:
         res= await con.execute(select(models.user.User).where(models.user.User.username==username))
         target = res.scalars().first()
         if target == None:
+            await asyncio.shield(con.close())
             return False
+        await asyncio.shield(con.close())
         return utils.hasher.verify(target.password_hashed, password)
 
 
@@ -159,8 +162,9 @@ class Users:
         res = await con.execute(select(models.user.User).where(models.user.User.username == username))
         target = res.scalars().first()
         if target == None:
+            await asyncio.shield(con.close())
             return None
-
+        await asyncio.shield(con.close())
         return schemas.users.USER_TYPES[target.user_type](**target.dict())
 
 
@@ -179,9 +183,9 @@ class Users:
         target = res.scalars().first()
 
         if target is None:
-    
+            await asyncio.shield(con.close())
             return False
-
+        await asyncio.shield(con.close())
         return True
         
 
@@ -203,9 +207,9 @@ class Users:
         res= await con.execute(select(models.user.User).where(models.user.User.email == email))
         target = res.scalars().first()
         if target is None:
-
+            await asyncio.shield(con.close())
             return False
-
+        await asyncio.shield(con.close())
         return True
 
     async def delete(self, username: str) -> bool:
@@ -218,6 +222,7 @@ class Users:
             res= await con.execute(select(models.user.User).where(models.user.User.username==username))
             target = res.scalars().first()
             if target == None:
+                await asyncio.shield(con.close())
                 return False
             await con.delete(target)
             con.commit()
@@ -232,9 +237,11 @@ class Users:
         res = await con.execute(select(models.user.User).where(models.user.User.id == userid))
         target = res.scalar().first()
         if target == None:
+            await asyncio.shield(con.close())
             return False
         else :
             target.password_hashed = utils.hasher.hash(new_info['password'])
+            await asyncio.shield(con.close())
             return True
 
     async def handle_transaction(self, request: schemas.users.TransactionRequest, user: schemas.users.User) -> float | str:
@@ -250,12 +257,14 @@ class Users:
         target = await con.execute(select(models.user.User).where(models.user.User.username == user.username))
         res = target.scalars().first()
         if res == None:
+            await asyncio.shield(con.close())
             return 'user not found'
         res.credits =  user.credits 
         await con.flush() 
         con.expunge(res)
         # TODO: update user balance in database
         await con.commit()
+        await asyncio.shield(con.close())
         return user.credits
 
 user_service = Users()

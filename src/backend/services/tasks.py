@@ -53,6 +53,7 @@ class Tasks:
             user=requester
         )
         if not isinstance(response, float):
+            await asyncio.shield(con.close())
             return response
 
         # TODO: which task_id to use?
@@ -76,6 +77,7 @@ class Tasks:
                 missing.append(str(question.resource))
 
         if missing:
+            await asyncio.shield(con.close())
             return 'The following resources are missing: ' + ', '.join(missing)
 
 
@@ -94,12 +96,12 @@ class Tasks:
             res.task_requested.append(task)
             con.add(task)
             await con.commit()
-            await asyncio.shield(con.close())
         task_schema.task_id = task.task_id
         for question in task_request.dict()['questions']:
             await question_service.create_question(question['question_id'],question['question_type'],question['prompt'],
                                              question['resource'],question['options'] if question['question_type'] in ['single_choice','multi_choice'] else []
                                              ,task.task_id)
+        await asyncio.shield(con.close())
         return task_schema
 
     async def claim_task(self,user_name,task_id)->schemas.tasks.Task | None:
@@ -111,7 +113,6 @@ class Tasks:
             user = user.scalars().first()
             if user == None:
                 await asyncio.shield(con.close())
-            
                 return None
             task = await con.execute(select(models.task.Task).where(models.task.Task.id==task_id).options(
                 selectinload(models.task.Task.respondents_claimed)
@@ -119,7 +120,6 @@ class Tasks:
             task = task.scalars().first()
             if task == None:
                 await asyncio.shield(con.close())
-
                 return None
             user.task_claimed.append(task)
             response_task = schemas.tasks.Task(task)
@@ -214,7 +214,6 @@ class Tasks:
             user = user.scalars().first()
             if user == None:
                 await asyncio.shield(con.close())
-            
                 return None
             task = await con.execute(select(models.task.Task).where(models.task.Task.task_id==task_id).options(
                 selectinload(models.task.Task.respondents_claimed),selectinload(models.task.Task.respondents_complete)
@@ -222,7 +221,6 @@ class Tasks:
             task = task.scalars().first()
             if task == None:
                 await asyncio.shield(con.close())
-
                 return None
             user.task_claimed.append(task)
             info = {
@@ -280,6 +278,7 @@ class Tasks:
                 task.questions.append(schemas.questions.QUESTION_TYPES[question['question_type']].parse_obj(question))
             except Exception as e:
                 return str(e)
+        await asyncio.shield(con.close())
         return task
 
         
@@ -324,6 +323,7 @@ Returns: list of `Task`s matching the query within the specified `page` and `pag
             for task in tasks :
                 response_task = await task_service.get_task(task.task_id)
                 response_tasks.append(response_task)
+            await asyncio.shield(con.close())
             return response_tasks , len(tasks)
         else :
             if len(tasks) > parameters.page * parameters.page_size:
@@ -331,8 +331,10 @@ Returns: list of `Task`s matching the query within the specified `page` and `pag
                 for task in target :
                     response_task = await task_service.get_task(task.task_id)
                 response_tasks.append(response_task)
+                await asyncio.shield(con.close())
                 return response_tasks , len(target)
             elif len(tasks) < (parameters.page-1)*parameters.page_size:
+                await asyncio.shield(con.close())
                 return [] , 0
             else :
 
@@ -341,14 +343,17 @@ Returns: list of `Task`s matching the query within the specified `page` and `pag
                     for task in target :
                         response_task = await task_service.get_task(task.task_id)
                         response_tasks.append(response_task)
+                    await asyncio.shield(con.close())
                     return response_tasks, len(target)
                 elif len(tasks) < (parameters.page-1)*parameters.page_size:
+                    await asyncio.shield(con.close())
                     return [], 0
                 else :
                     target = tasks[(parameters.page-1)*parameters.page_size:-1]
                     for task in target :
                         response_task = await task_service.get_task(task.task_id)
                         response_tasks.append(response_task)
+                    await asyncio.shield(con.close())
                     return response_tasks, len(target)
 
 
