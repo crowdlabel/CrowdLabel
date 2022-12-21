@@ -161,13 +161,13 @@ class Tasks:
                 q = schemas.questions.SingleChoiceQuestion(**di)
                 answers = await con.execute(select(models.answer.SingleChoiceAnswer).where(models.answer.SingleChoiceAnswer.question_id==q.question_id))
                 answers = answers.scalars().all()
-                q.answers = list(map(lambda A:schemas.answers.SingleChoiceAnswer(A.choice),answers))
+                q.answers = list(map(lambda A:schemas.answers.SingleChoiceAnswer(choice = A.choice),answers))
             elif qtype == 'multi_choice':
                 di['options'] = question.options.split('|')
                 q = schemas.questions.MultiChoiceQuestion(**di)
                 answers = await con.execute(select(models.answer.MultiChoiceAnswer).where(models.answer.MultiChoiceAnswer.question_id==q.question_id))
                 answers = answers.scalars().all()
-                q.answers = list(map(lambda A:schemas.answers.MultiChoiceAnswer(A.choices),answers))
+                q.answers = list(map(lambda A:schemas.answers.MultiChoiceAnswer(choices = A.choices),answers))
             elif qtype == 'bounding_box':
                 q = schemas.questions.BoundingBoxQuestion(**di)
                 answers = await con.execute(select(models.answer.BoundingBoxAnswer).where(models.answer.BoundingBoxAnswer.question_id==q.question_id))
@@ -180,7 +180,7 @@ class Tasks:
                 q = schemas.questions.OpenQuestion(**di)
                 answers = await con.execute(select(models.answer.OpenAnswer).where(models.answer.OpenAnswer.question_id==q.question_id))
                 answers = answers.scalars().all()
-                q.answers = list(map(lambda A:schemas.answers.OpenAnswer(A.text),answers))
+                q.answers = list(map(lambda A:schemas.answers.OpenAnswer(text = A.text),answers))
             else : 
                 continue
             response_task.questions.append(q)
