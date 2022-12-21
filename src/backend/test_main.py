@@ -208,8 +208,6 @@ def test_upload():
         del json[key]
     del expected['tags']
     assert json == expected
-
-
 def test_search():
     init_models_sync()
     __register(req1)
@@ -225,12 +223,12 @@ def test_claim():
     __register(req1)
     reqt = __login(req1)
     johnt = __login(johndoe)
-    tasku = __upload_task(reqt, example_task).json()
-    cresp = __claim(johnt, tasku['task_id'])
-    print(cresp.status_code)
-    pprint(cresp.json())
-
-    task = __get_task(reqt, tasku['task_id'])
+    task_id = __upload_task(reqt, example_task).json()['task_id']
+    cresp = __claim(johnt, task_id)
+    assert cresp.status_code == 200
+    
+    assert johndoe['username'] in __get_task(reqt, task_id).json()['respondents_claimed']
+    assert task_id in __get_me(johnt)
 
 def test_credits():
     init_models_sync()
@@ -274,13 +272,16 @@ def test_answer():
     __register(req1)
     reqt = __login(req1)
     johnt = __login(johndoe)
-    tasku = __upload_task(reqt, example_task).json()
-    cresp = __claim(johnt, tasku['task_id'])   
-    response = __answer(johnt, tasku['task_id'], 1,
+    task_id = __upload_task(reqt, example_task).json()['task_id']
+    cresp = __claim(johnt, task_id)   
+    response = __answer(johnt, task_id, 1,
         {'choice': 1}
     )
 
-    print(response.status_code)
+    task = __get_task(reqt, task_id)
+
+    pprint(task.json())
+
 
 
 
@@ -294,7 +295,7 @@ if __name__ == '__main__':
     test_upload()
     test_get_task_question_resource()
     test_get_task()
-    test_claim()
-    '''
-    #test_search()
+    test_search()
     test_answer()
+    '''
+    test_claim()
