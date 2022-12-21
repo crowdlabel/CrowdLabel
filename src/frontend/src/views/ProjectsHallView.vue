@@ -177,11 +177,19 @@
 <script>
 // @ is an alias to /src
 // import HelloWorld from '@/components/HelloWorld.vue'
-import axios from 'axios'
+import { ApiClient } from '@/crowdlabel-api/src';
+import { UsersApi } from '@/crowdlabel-api/src';
+import { TasksApi } from '@/crowdlabel-api/src';
+
 export default {
   data() {
     
     return {
+      client: '',
+      task: '',
+      user: '',
+      userid: '',
+      usercredits: '',
       page_num: 100,
       input: '',
       tab1: 'all',
@@ -192,12 +200,33 @@ export default {
     
   },
   directives: {
-      focus: {
-        inserted: function(el) {
-          el.focus();
-        }
+    focus: {
+      inserted: function(el) {
+        el.focus();
       }
-    },
+    }
+  },
+  created () {
+
+  },
+  mounted () {
+    let self = this
+    var apiClient  = new ApiClient('http://localhost:8000');
+    apiClient.authentications['OAuth2PasswordBearer'].accessToken = localStorage.getItem('Authorization')
+    self.client = apiClient
+    var usersApi = new UsersApi(apiClient);
+    self.user = usersApi
+    var tasksApi = new TasksApi(apiClient);
+    self.task = tasksApi
+    self.user.getMeUsersMeGet((error, data, response) => {
+      if (error == 'Error: Unauthorized') {
+        localStorage.removeItem('Authorization');
+        this.$router.push('/senderlogin');
+      }
+      self.userid = data['username']
+      self.usercredits = data['credits']
+    })
+  }
 }
 </script>
 

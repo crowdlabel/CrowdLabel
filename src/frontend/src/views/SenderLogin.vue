@@ -62,6 +62,7 @@
 import { ApiClient } from '@/crowdlabel-api/src';
 import { UsersApi } from '@/crowdlabel-api/src';
 import { AuthApi } from '@/crowdlabel-api/src';
+import { mapMutations } from 'vuex';
 
 export default {
     
@@ -224,6 +225,7 @@ export default {
         this.auth = authApi
     },
     methods: {
+        ...mapMutations(['changeLogin']),
         handleTabClick(tab, event){
             console.log(tab, event)
         },
@@ -234,10 +236,6 @@ export default {
                 let ready_password = document.getElementById('registerpassword').value;
                 let ready_email = document.getElementById('registeremail').value;
                 let ready_verification = document.getElementById('registerverification').value
-                console.log(ready_username);
-                console.log(ready_password);
-                console.log(ready_email);
-                console.log(ready_verification);
                 this.user.registerUsersRegisterPost({
                     "username": ready_username,
                     "password": ready_password,
@@ -257,6 +255,7 @@ export default {
             });
         },
         submitLogin(formName) {
+            let _this = this;
             this.$refs[formName].validate((valid) => {
             if (valid) {
                 let ready_login_username = document.getElementById('loginusername').value;
@@ -265,12 +264,10 @@ export default {
                     (error, data, response) => {
                         console.log(error, data, response);
                         if (response.status == 200){
-                            // alert('logging in...');
-                                this.$router.push({
+                            let token = data["access_token"];
+                            _this.$store.commit('changeLogin', token);
+                            this.$router.push({
                                 path: '/sendermission',
-                                query: {
-                                    userid: JSON.stringify(ready_login_username)
-                                }
                             });
                         } else {
                             alert('wrong username or password!')
