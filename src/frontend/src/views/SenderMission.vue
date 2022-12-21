@@ -204,6 +204,7 @@ export default {
       user: '',
       userid: '',
       usercredits: '',
+      tasks_info: [],
       taskslist: '',
       task_name: [],
       task_cover_image: [],
@@ -377,8 +378,6 @@ export default {
     var tasksApi = new TasksApi(apiClient);
     self.task = tasksApi
     self.user.getMeUsersMeGet((error, data, response) => {
-      console.log("response: ")
-      console.log(response)
       if (error == 'Error: Unauthorized') {
         localStorage.removeItem('Authorization');
         this.$router.push('/senderlogin');
@@ -386,16 +385,24 @@ export default {
       let a = JSON.parse(response['text'])
       self.userid = data['username']
       self.usercredits = data['credits']
+      self.taskslist = []
       self.taskslist = a['tasks_requested']
       self.task_name = []
       self.task_cover_image = []
-      for (var task_id in self.taskslist){
-        self.task.getTaskTasksTaskIdGet(self.taskslist[task_id], (error, data, response) => {
+      self.tasks_info = []
+      self.taskslist.forEach(function(element) {
+        console.log(element);
+        self.task.getTaskTasksTaskIdGet(element, (error, data, response) => {
           let b = JSON.parse(response['text'])
           self.task_name.push(b['name']);
           self.task_cover_image.push(b['cover_image']);
+          console.log('c: ')
+          var c = { 'task_id':element, 'name':b['name'], 'cover_image':b['cover_image']}
+          console.log(c)
+          self.tasks_info.push(c)
+          console.log(self.tasks_info)
         })
-      }
+      });
     })
   }
 }
