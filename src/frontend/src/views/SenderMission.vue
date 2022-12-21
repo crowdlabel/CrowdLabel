@@ -1,5 +1,5 @@
 <template>
-  <div>
+  <div class="all">
     <div class="top_nav">
       <div class="top_nav_trigger">
         <img src="../assets/label.png" alt="label" height="26">
@@ -120,13 +120,13 @@
                 <el-button round>全部</el-button>
                 <el-button round>文字任务</el-button>
                 <el-button round>图像任务</el-button>
-                <el-button round>视频任务</el-button>
                 <el-button round>音频任务</el-button>
               </el-button-group>
+              <el-button type="primary" round @click="createProject" id="create">创建任务</el-button>
             </div>
-            <el-button type="primary" round @click="createProject" id="create">创建任务</el-button>
+            
             <div class="display_projects">
-              <div class="display_items">
+              <!--div class="display_items">
                 <el-card :body-style="{ padding: '0px' }">
                     <img src="../assets/image_placeholder.png" class="project_image">
                     <div style="padding: 0px;">
@@ -176,9 +176,8 @@
                     </div>
                   </el-card>
               </div>
-              <!-- <div class="display_projects_row">
-                <div class="project">
-                  <el-card :body-style="{ padding: '0px' }">
+              <div class="display_items">
+                <el-card :body-style="{ padding: '0px' }">
                     <img src="../assets/image_placeholder.png" class="project_image">
                     <div style="padding: 0px;">
                       <p class="project_title">任务标题</p>
@@ -186,28 +185,71 @@
                       </div>
                     </div>
                   </el-card>
-                </div>
-                <div class="project">
-                  <el-card :body-style="{ padding: '0px' }">
-                    <img src="../assets/image_placeholder.png" class="project_image">
-                    <div style="padding: 0px;">
-                      <p class="project_title">任务标题</p>
-                      <div class="bottom clearfix">
-                      </div>
-                    </div>
-                  </el-card>
-                </div>
-                <div class="project">
-                  <el-card :body-style="{ padding: '0px' }">
-                    <img src="../assets/image_placeholder.png" class="project_image">
-                    <div style="padding: 0px;">
-                      <p class="project_title">任务标题</p>
-                      <div class="bottom clearfix">
-                      </div>
-                    </div>
-                  </el-card>
-                </div>
               </div> -->
+              <div class="display_projects_row">
+                <div class="project">
+                  <el-card :body-style="{ padding: '0px' }">
+                    <img src="../assets/image_placeholder.png" class="project_image">
+                    <div style="padding: 0px;">
+                      <p class="project_title">任务标题</p>
+                      <div class="bottom clearfix">
+                      </div>
+                    </div>
+                  </el-card>
+                </div>
+                <div class="project">
+                  <el-card :body-style="{ padding: '0px' }">
+                    <img src="../assets/image_placeholder.png" class="project_image">
+                    <div style="padding: 0px;">
+                      <p class="project_title">任务标题</p>
+                      <div class="bottom clearfix">
+                      </div>
+                    </div>
+                  </el-card>
+                </div>
+                <div class="project">
+                  <el-card :body-style="{ padding: '0px' }">
+                    <img src="../assets/image_placeholder.png" class="project_image">
+                    <div style="padding: 0px;">
+                      <p class="project_title">任务标题</p>
+                      <div class="bottom clearfix">
+                      </div>
+                    </div>
+                  </el-card>
+                </div>
+              </div>
+              <div class="display_projects_row">
+                <div class="project">
+                  <el-card :body-style="{ padding: '0px' }">
+                    <img src="../assets/image_placeholder.png" class="project_image">
+                    <div style="padding: 0px;">
+                      <p class="project_title">任务标题</p>
+                      <div class="bottom clearfix">
+                      </div>
+                    </div>
+                  </el-card>
+                </div>
+                <div class="project">
+                  <el-card :body-style="{ padding: '0px' }">
+                    <img src="../assets/image_placeholder.png" class="project_image">
+                    <div style="padding: 0px;">
+                      <p class="project_title">任务标题</p>
+                      <div class="bottom clearfix">
+                      </div>
+                    </div>
+                  </el-card>
+                </div>
+                <div class="project">
+                  <el-card :body-style="{ padding: '0px' }">
+                    <img src="../assets/image_placeholder.png" class="project_image">
+                    <div style="padding: 0px;">
+                      <p class="project_title">任务标题</p>
+                      <div class="bottom clearfix">
+                      </div>
+                    </div>
+                  </el-card>
+                </div>
+              </div>
             </div>
 
             <div class="pagination">
@@ -416,6 +458,10 @@ export default {
   padding: 0;
 }
 
+.all {
+  min-width: 1250px;
+}
+
 .top_nav {
   background-color: #fff;
   border-bottom: 1.2px solid rgba(0,0,0,.1);
@@ -425,6 +471,7 @@ export default {
   position: sticky;
   top: 0;
   z-index: 1000;
+
 }
 .top_nav_trigger {
   align-items: center;
@@ -485,10 +532,6 @@ export default {
     box-sizing: border-box;
     flex-direction: column;
     position: relative;
-    display: flex;
-    flex:1;
-    justify-content: space-between;
-    height: 100%;
 }
 .left_nav_list_top {
     box-sizing: border-box;
@@ -497,6 +540,8 @@ export default {
     flex-direction: column;
     margin: 0;
     padding: 12px;
+    height: calc(100vh - 50px - 132.2px);
+    min-height: 130px;
 }
 .left_nav_list_bottom {
     box-sizing: border-box;
@@ -510,7 +555,7 @@ export default {
     padding: 12px;
 }
 .left_nav_spacer {
-    height: calc(100vh - 289.2px);
+    height: calc(100vh - 329.2px);
     flex: 1;
 }
 .left_nav_list_item {
@@ -525,10 +570,15 @@ export default {
     padding: 0 13px;
     text-decoration: none;
     white-space: nowrap;
+    margin: 5px 0px;
+}
+.left_nav_list_item:hover {
+    background-color: rgba(0,0,0,.06);
 }
 .left_nav_list_item_active {
     background-color: rgba(84,47,238,.14);
     color: rgba(84,47,238,1);
+    pointer-events: none;
 }
 .list_item_title {
     padding: 15px;
@@ -541,8 +591,6 @@ export default {
     position: relative;
     display: flex;
     flex:1;
-    height: calc(100vh - 50px);
-    min-width: 1000px;
 }
 
 .search_bar {
@@ -661,6 +709,7 @@ export default {
   color:rgba(0,0,0,.6);
 }
 
+/*
 .display_projects {
   flex-direction: column;
   display: flex;
@@ -693,9 +742,27 @@ export default {
 .project {
   margin: 0px 30px;
 }
+*/
+.display_projects {
+  flex-direction: column;
+  display: flex;
+  align-items:center;
+  margin: 10px 100px;
+}
+
+.display_projects_row {
+  flex-direction: row;
+  display: flex;
+  margin: 8px 0px;
+}
+
+.project {
+  margin: 0px 10px;
+  cursor: pointer;
+}
 
 ::v-deep .el-pagination {
-  margin-top: 10px !important;
+  margin-top: 20px !important;
   margin-bottom: 20px;
 }
 ::v-deep .el-pagination.is-background .el-pager li.active {
