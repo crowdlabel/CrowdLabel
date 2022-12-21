@@ -96,7 +96,6 @@ export default {
                     console.log(ready_username);
                     this.user.availabilityUsersAvailabilityPut({'username': ready_username},
                     (error, data, response) => {
-                        console.log(error, data, response);
                         if (!data['username']){
                             callback(new Error('用户名已被占用'));
                             } else {
@@ -120,7 +119,6 @@ export default {
                     console.log(ready_email);
                     this.user.availabilityUsersAvailabilityPut({'email': ready_email},
                     (error, data, response) => {
-                        console.log(response);
                         if (!data['email']){
                             callback(new Error('邮箱已被占用'));
                             } else {

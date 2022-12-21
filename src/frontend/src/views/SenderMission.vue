@@ -327,6 +327,7 @@ export default {
         credits_each: '',
         amount: '',
         cover: [],
+        file: '',
         zipfile: []
       },
       rules: {
@@ -412,15 +413,26 @@ export default {
       this.dialogVisible = true;
     },
     create_new_project () {
-      // this.multipartFile.append('username', this.userid);
-      // this.multipartFile.append('missionname', this.form.name);
-      // this.multipartFile.append('missionamount', this.form.amount);
-      // this.multipartFile.append('missioncredits', this.form.credits_each)
-      // this.multipartFile.append('missionbrief', this.form.brief);
-      // this.multipartFile.append('missiondetails', this.form.details);
-      this.task.uploadTaskTasksUploadPost(this.file, (error, data, response) => {
-        console.log(error, data, response);
-      })
+      if(this.zipfile === '' || this.zipfile === 'null'){
+        alert('You need to upload file');
+        return false;
+      } else {
+        // this.multipartFile.append('username', this.userid);
+        // this.multipartFile.append('missionname', this.form.name);
+        // this.multipartFile.append('missionamount', this.form.amount);
+        // this.multipartFile.append('missioncredits', this.form.credits_each)
+        // this.multipartFile.append('missionbrief', this.form.brief);
+        // this.multipartFile.append('missiondetails', this.form.details);
+        this.task.uploadTaskTasksUploadPost(this.file, (error, data, response) => {
+          console.log(error, data, response);
+          if (response.status == 400){
+            alert('not enough credits! please top up!')
+            //push
+          } else if(response.status == 200){
+            alert('upload suceed')
+          }
+        })
+      }
     }
   },
   created() {
@@ -442,6 +454,8 @@ export default {
       }
       self.userid = data['username']
       self.usercredits = data['credits']
+      console.log('credits: ')
+      console.log(self.usercredits)
     })
   }
 }
