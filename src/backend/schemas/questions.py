@@ -45,6 +45,7 @@ class BoundingBoxQuestion(Question):
     question_type='bounding_box'
     answers: list[schemas.answers.BoundingBoxAnswer]=[]
 
+QuestionTypes = SingleChoiceQuestion | MultiChoiceQuestion | RankingQuestion | OpenQuestion | BoundingBoxQuestion
 
 QUESTION_TYPES = {
     'single_choice': SingleChoiceQuestion,

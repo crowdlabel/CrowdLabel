@@ -65,7 +65,7 @@ class CreateTaskRequest(BaseModel):
     cover_image: str=''
     tags: set[str]=set()
     responses_required: int=1
-    questions: list[schemas.questions.Question]=[] # list of Questions
+    questions: list[schemas.questions.QuestionTypes]=[] # list of Questions
 
 class Task(CreateTaskRequest):
     task_id: int

@@ -120,11 +120,11 @@ transaction_failed_hdr = JSONDocumentedResponse(
     'Transaction failed',
     schemas.tasks.ErrorResponse
 )
-@router.post('/me/balance',
-    description='Creates a transaction',
+@router.post('/me/credits',
+    description='Adds (positive amount) or subtracts (negative amount) from the credits',
     **create_documentation([transaction_succeeded_hdr, transaction_failed_hdr])
 )
-async def balance(
+async def edit_credits(
     request: schemas.users.TransactionRequest,
     current_user: schemas.users.User = Depends(get_current_user())
 ):

@@ -32,6 +32,12 @@
             "prompt": "What objects are present in the following image",
             "resource": "nature.jpg",
             "options": ["lake", "mountain", "sky", "human"]
+        },
+        {
+            "question_id": 5,
+            "question_type": "multi_choice",
+            "prompt": "Which of the following is a prime number?",
+            "options": ["7", "8", "9", "10"]
         }
     ]
 }
