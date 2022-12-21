@@ -128,16 +128,6 @@
             </div>
             
             <div class="display_projects">
-              <!--div class="display_items">
-                <el-card :body-style="{ padding: '0px' }">
-                    <img src="../assets/image_placeholder.png" class="project_image">
-                    <div style="padding: 0px;">
-                      <p class="project_title">任务标题</p>
-                      <div class="bottom clearfix">
-                      </div>
-                    </div>
-                  </el-card>
-              </div>
               <div class="display_items">
                 <el-card :body-style="{ padding: '0px' }">
                     <img src="../assets/image_placeholder.png" class="project_image">
@@ -187,42 +177,9 @@
                       </div>
                     </div>
                   </el-card>
-              </div> -->
-              <div class="display_projects_row">
-                <div class="project">
-                  <el-card :body-style="{ padding: '0px' }">
-                    <img src="../assets/image_placeholder.png" class="project_image">
-                    <div style="padding: 0px;">
-                      <p class="project_title">任务标题</p>
-                      <div class="bottom clearfix">
-                      </div>
-                    </div>
-                  </el-card>
-                </div>
-                <div class="project">
-                  <el-card :body-style="{ padding: '0px' }">
-                    <img src="../assets/image_placeholder.png" class="project_image">
-                    <div style="padding: 0px;">
-                      <p class="project_title">任务标题</p>
-                      <div class="bottom clearfix">
-                      </div>
-                    </div>
-                  </el-card>
-                </div>
-                <div class="project">
-                  <el-card :body-style="{ padding: '0px' }">
-                    <img src="../assets/image_placeholder.png" class="project_image">
-                    <div style="padding: 0px;">
-                      <p class="project_title">任务标题</p>
-                      <div class="bottom clearfix">
-                      </div>
-                    </div>
-                  </el-card>
-                </div>
               </div>
-              <div class="display_projects_row">
-                <div class="project">
-                  <el-card :body-style="{ padding: '0px' }">
+              <div class="display_items">
+                <el-card :body-style="{ padding: '0px' }">
                     <img src="../assets/image_placeholder.png" class="project_image">
                     <div style="padding: 0px;">
                       <p class="project_title">任务标题</p>
@@ -230,30 +187,8 @@
                       </div>
                     </div>
                   </el-card>
-                </div>
-                <div class="project">
-                  <el-card :body-style="{ padding: '0px' }">
-                    <img src="../assets/image_placeholder.png" class="project_image">
-                    <div style="padding: 0px;">
-                      <p class="project_title">任务标题</p>
-                      <div class="bottom clearfix">
-                      </div>
-                    </div>
-                  </el-card>
-                </div>
-                <div class="project">
-                  <el-card :body-style="{ padding: '0px' }">
-                    <img src="../assets/image_placeholder.png" class="project_image">
-                    <div style="padding: 0px;">
-                      <p class="project_title">任务标题</p>
-                      <div class="bottom clearfix">
-                      </div>
-                    </div>
-                  </el-card>
-                </div>
               </div>
             </div>
-
             <div class="pagination">
               <el-pagination
                 background
@@ -426,10 +361,21 @@ export default {
         this.task.uploadTaskTasksUploadPost(this.file, (error, data, response) => {
           console.log(error, data, response);
           if (response.status == 400){
-            alert('not enough credits! please top up!')
-            //push
+            this.$confirm('积分不足！是否跳转到充值页面?', '提示', {
+              confirmButtonText: '确定',
+              cancelButtonText: '取消',
+              type: 'info',
+            }).then(() => {
+              this.$router.push('/sendercredits');
+            }).catch(() => {
+              this.$message({
+                type: 'info',
+                message: '已取消跳转'
+              });          
+            });
           } else if(response.status == 200){
-            alert('upload suceed')
+            alert('upload suceed');
+            this.dialogVisible = false
           }
         })
       }
@@ -460,10 +406,11 @@ export default {
   }
 }
 </script>
-  
+
+
 <style scoped>
 @import '@/assets/font/font.css';
-
+fffff
 ::v-deep .dialogClass .el-dialog{
   width: 50% !important;
   min-width: 700px;
@@ -724,7 +671,7 @@ export default {
   color:rgba(0,0,0,.6);
 }
 
-/*
+
 .display_projects {
   flex-direction: column;
   display: flex;
@@ -733,7 +680,7 @@ export default {
   margin-bottom:40px;
   cursor: pointer;
   flex-wrap: wrap;
-  width: 100%;
+  width: 80%;
   height: 360px !important;
 }
 
@@ -746,34 +693,9 @@ export default {
   box-sizing: border-box;
 }
 
-.display_projects_row {
-  width: 100%;
-  flex-direction: row;
-  display: flex;
-  margin: 15px 0px;
-}
-
 
 .project {
   margin: 0px 30px;
-}
-*/
-.display_projects {
-  flex-direction: column;
-  display: flex;
-  align-items:center;
-  margin: 10px 100px;
-}
-
-.display_projects_row {
-  flex-direction: row;
-  display: flex;
-  margin: 8px 0px;
-}
-
-.project {
-  margin: 0px 10px;
-  cursor: pointer;
 }
 
 ::v-deep .el-pagination {

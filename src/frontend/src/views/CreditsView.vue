@@ -66,14 +66,14 @@
             <div class="box_overview">
               <p class="box_title">近7日收入</p>
               <div class="box_credits">
-                <p class="box_number">27.5</p>
+                <p class="box_number">{{ credits_last_week }}</p>
                 <p class="box_unit">积分</p>
               </div> 
             </div>
             <div class="box_overview">
               <p class="box_title">累计总收入</p>
               <div class="box_credits">
-                <p class="box_number">126.3</p>
+                <p class="box_number">{{credits_total}}</p>
                 <p class="box_unit">积分</p>
               </div>
             </div>
@@ -104,39 +104,39 @@
 <script>
 // @ is an alias to /src
 // import HelloWorld from '@/components/HelloWorld.vue'
-import axios from 'axios'
+import { ApiClient } from '@/crowdlabel-api/src';
+import { UsersApi } from '@/crowdlabel-api/src';
+// import { AuthApi } from '@/crowdlabel-api/src';
+
 export default {
   data() {
     return {
-      dialogVisible: false
+      client: '',
+      username: '',
+      credits_last_week: '',
+      credits_total: ''
     };
   },
+  mounted() {
+      let self = this
+      var apiClient  = new ApiClient('http://localhost:8000');
+      apiClient.authentications['OAuth2PasswordBearer'].accessToken = localStorage.getItem('Authorization')
+      self.client = apiClient
+      var usersApi = new UsersApi(apiClient);
+      self.user = usersApi
+      self.user.getMeUsersMeGet((error, data, response) => {
+        if (error == 'Error: Unauthorized') {
+          localStorage.removeItem('Authorization');
+          this.$router.push('/receiverlogin');
+        }
+        self.username = data['username']
+        self.credits_last_week = data['credits']
+        self.credits_total = data['credits']
+        console.log('credits_total: ' + self.credits_total)
+      })
+  },
   methods: {
-    chooseType: function () {
-      this.dialogVisible = true
-    },
-    senderType: function (){
-      this.$router.push('/senderlogin')
-      // axios.get('http://localhost:8002/senderlogin', {params:{
-      //           username: this.username
-      //           }
-      //       }).then((res) => {
-      //           console.log(res)
-      //           this.$router.push({
-      //               name: 'connected',
-      //               params: {
-      //               username: this.username,
-      //               usage: res.data
-      //               }
-      //           })
-      //           })
-      //       .catch((error) => {
-      //           console.log(error)
-      //       })
-    },
-    receiverType: function () {
-      this.$router.push('/receiverlogin')
-    }
+    
   }
 }
 </script>
