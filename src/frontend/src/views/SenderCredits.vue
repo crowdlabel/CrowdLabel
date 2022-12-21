@@ -59,13 +59,13 @@
                 <el-button type="primary" @click="topUp" id="top_up">点击充值</el-button>
               </div>
             </div>
-            <div class="box_overview">
+            <!-- <div class="box_overview">
               <p class="box_title">已使用总积分</p>
               <div class="box_credits">
                 <p class="box_number">126.3 k</p>
                 <p class="box_unit">积分</p>
               </div>
-            </div>
+            </div> -->
           </div>
       </div>
     </div>
@@ -106,20 +106,38 @@ export default {
       })
     },
     methods: {
+      refresh: function() {
+        let self = this
+        self.user.getMeUsersMeGet((error, data, response) => {
+        if (error == 'Error: Unauthorized') {
+          localStorage.removeItem('Authorization');
+          this.$router.push('/senderlogin');
+        }
+        self.userid = data['username']
+        self.usercredits = data['credits']
+        })
+      },
       topUp() {
-          this.$prompt('请输入充值金额', '提示', {
-          confirmButtonText: '确定',
-          cancelButtonText: '取消',
-          inputPattern: /([0-9]*)/,
-          inputErrorMessage: '输入金额格式不正确'
-          }).then(({ value }) => {
-          this.$message({
+        let self = this;
+        this.$prompt('请输入充值金额', '提示', {
+        confirmButtonText: '确定',
+        cancelButtonText: '取消',
+        inputPattern: /([0-9]*)/,
+        inputErrorMessage: '输入金额格式不正确'
+        }).then(({ value }) => {
+          self.added_credits = value;
+          self.user.editCreditsUsersMeCreditsPost({'amount': self.added_credits},
+          (error, data, response) => {
+            if (response.status == 200){
+              self.$message({
               type: 'success',
               message: '已成功充值: ' + value + ' 积分'
+              });
+              this.refresh();
+            }
           });
-          this.added_credits = value;
-          }).catch(() => {
-          this.$message({
+        }).catch(() => {
+          self.$message({
               type: 'info',
               message: '取消充值'
           });       
