@@ -383,8 +383,6 @@ export default {
         this.$router.push('/senderlogin');
       }
       let a = JSON.parse(response['text'])
-      self.userid = data['username']
-      self.usercredits = data['credits']
       self.taskslist = []
       self.taskslist = a['tasks_requested']
       self.task_name = []
