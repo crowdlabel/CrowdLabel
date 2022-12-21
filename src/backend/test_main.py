@@ -82,7 +82,8 @@ expected = {'cover_image': 'cover.jpg',
             'object-detection'],
 }
 
-
+def __cover(token, task_id):
+    return client.get(f'/tasks/{task_id}/cover-image', headers=token)
 def __availability(username=None, email=None):
     request = {}
     if username:
@@ -249,9 +250,9 @@ def test_claim():
     task_id = __upload_task(reqt, example_task).json()['task_id']
     cresp = __claim(johnt, task_id)
     assert cresp.status_code == 200
-    
     assert johndoe['username'] in __get_task(reqt, task_id).json()['respondents_claimed']
-    assert task_id in __get_me(johnt)
+    pprint( __get_me(johnt).json())
+    assert task_id in __get_me(johnt).json()['tasks_claimed']
 def test_credits():
     init_models_sync()
     __register(johndoe)
@@ -306,16 +307,28 @@ def test_answer():
     )
     assert response.status_code == 200
 
-    task = __get_task(reqt, task_id)
+    task = __get_task(reqt, task_id).json()
+    for question in task['questions']:
+        if question['question_id'] == 1:
+            assert question['answers'] == [{'choice': 1}]
+            break
 
-    pprint(task.json())
-
-
-
+def test_cover():
+    init_models_sync()
+    __register(johndoe)
+    __register(req1)
+    reqt = __login(req1)
+    __credits(reqt, 100)
+    task_id = __upload_task(reqt, example_task).json()['task_id']
+    response = __cover(reqt, task_id)
+    assert response.status_code == 200
+    with open('../../examples/example_task/cover.jpg', 'rb') as f:
+        assert f.read() == response.content
 
 if __name__ == '__main__':
     
-    """ test_availability()
+    """ 
+    test_availability()
     test_register()
     test_login()
     test_get_me()
@@ -323,7 +336,9 @@ if __name__ == '__main__':
     test_upload()
     test_search()
     test_get_task()
-    test_get_task_question_resource() """
+    test_get_task_question_resource() 
     test_answer()
    
-    
+    test_cover()
+     """
+    test_claim()

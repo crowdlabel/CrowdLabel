@@ -1,5 +1,5 @@
 import checkers.users
-from sqlalchemy.orm import sessionmaker, scoped_session
+from sqlalchemy.orm import sessionmaker, scoped_session,selectinload
 from sqlalchemy.ext.asyncio import AsyncSession
 import utils.hasher
 import utils.emailsender
@@ -106,6 +106,7 @@ class Users:
 
         if request.user_type == 'respondent':
             new_user = models.user.Respondent()
+            new_user.tested = 0
         elif request.user_type == 'requester':
             new_user = models.user.Requester()
         elif request.user_type == 'admin':
@@ -158,14 +159,35 @@ class Users:
         """
         Returns User object, or None if user not found
         """
-
         res = await con.execute(select(models.user.User).where(models.user.User.username == username))
         target = res.scalars().first()
         if target == None:
             await asyncio.shield(con.close())
             return None
+        type = target.user_type
+        if type == 'requester':
+            res = await con.execute(select(models.user.Requester).where(models.user.Requester.username == username).options(selectinload(models.user.Requester.task_requested)))
+            user = res.scalars().first()
+            info = user.dict()
+            del info['task_requested']
+            response_user = schemas.users.USER_TYPES[target.user_type](**info)
+            response_user.tasks_requested = set(list(map(lambda A:A.task_id,user.task_requested)))
+        elif type == 'respondent':
+            res = await con.execute(select(models.user.Respondent).where(models.user.Respondent.username == username).options(selectinload(models.user.Respondent.task_claimed),selectinload(models.user.Respondent.task_complete)))
+            user = res.scalars().first()
+            info = user.dict()
+            del info['task_claimed']
+            del info['task_complete']
+            response_user = schemas.users.USER_TYPES[target.user_type](**info)
+            response_user.tasks_claimed = set(list(map(lambda A:A.task_id,user.task_claimed)))
+            response_user.tasks_completed = set(list(map(lambda A:A.task_id,user.task_complete)))
+
+        else :
+            res = await con.execute(select(models.user.Admin).where(models.user.Respondent.username == username))
+            user = res.scalars().first()
         await asyncio.shield(con.close())
-        return schemas.users.USER_TYPES[target.user_type](**target.dict())
+        return response_user
+
 
 
 
