@@ -31,7 +31,7 @@ req = {
     'verification_code': '123456'
 }
 
-example_task = Path('D:/tsinghua/se 软件工程/CrowdLabel/examples/example_task/example_task.zip')
+example_task = Path('D:/example_task.zip')
 
 def __register(user):
     return client.post('/users/register', json=user)
