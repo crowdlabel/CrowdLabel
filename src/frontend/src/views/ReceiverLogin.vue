@@ -96,7 +96,6 @@ export default {
                     console.log(ready_username);
                     this.user.availabilityUsersAvailabilityPut({'username': ready_username},
                     (error, data, response) => {
-                        console.log(error, data, response);
                         if (!data['username']){
                             callback(new Error('用户名已被占用'));
                             } else {
@@ -120,7 +119,6 @@ export default {
                     console.log(ready_email);
                     this.user.availabilityUsersAvailabilityPut({'email': ready_email},
                     (error, data, response) => {
-                        console.log(response);
                         if (!data['email']){
                             callback(new Error('邮箱已被占用'));
                             } else {
@@ -222,6 +220,9 @@ export default {
         var authApi = new AuthApi(apiClient);
         this.auth = authApi
     },
+    mounted () {
+        
+    },
     methods: {
         handleTabClick(tab, event){
             console.log(tab, event)
@@ -261,8 +262,9 @@ export default {
                     (error, data, response) => {
                         console.log(error, data, response);
                         if (response.status == 200){
-                            let token = response["access_token"]
+                            let token = data["access_token"]
                             _this.$store.commit('changeLogin', token);
+                            console.log(localStorage.getItem('Authorization'))
                             this.$router.push({
                                 path: '/projects',
                             });

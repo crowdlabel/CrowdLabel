@@ -37,7 +37,7 @@ def run():
     if args.prod:
         root_path = '/api'
 
-    uvicorn.run('main:app', host='localhost', port=8000, reload=False, root_path=root_path)
+    uvicorn.run('main:app', host='0.0.0.0', port=8000, reload=False, root_path=root_path)
     
 
 

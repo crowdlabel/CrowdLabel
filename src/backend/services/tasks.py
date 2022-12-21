@@ -189,7 +189,6 @@ class Tasks:
         complete_names = list(map(lambda A:A.username,target.respondents_complete))
         response_task.respondents_completed = set(complete_names)
         await asyncio.shield(con.close())
-        print(response_task.questions)
         return response_task
 
     

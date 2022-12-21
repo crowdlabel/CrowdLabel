@@ -18,6 +18,9 @@ export default new Vuex.Store({
         state.Authorization = value;
         localStorage.setItem('Authorization', value)
       },
+      removeStorage (state) {
+        localStorage.removeItem('Authorization');
+      }
   },
   actions: {
   },

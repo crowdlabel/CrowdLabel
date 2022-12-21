@@ -42,9 +42,11 @@ async def search_tasks(query: schemas.tasks.TaskSearchRequest, current_user=Depe
     if isinstance(tasks, str):
         return search_tasks_failed_hdr.response(schemas.tasks.ErrorResponse(tasks))
 
+    # exclude tasks.questions and resource path
     for i in range(len(tasks[0])):
-        tasks[0][i].questions = None
-    # exclude tasks.questions
+        tasks[0][i].resource_path = None
+        tasks[0][i].questions = len(tasks[0][i].questions)
+
     return search_tasks_success_jdr.response(schemas.tasks.TaskSearchResponse(tasks=tasks[0], total=tasks[1]), exclude={'questions'})
 ###############################################################################
 upload_success_jdr = JSONDocumentedResponse(
@@ -66,11 +68,9 @@ async def upload_task(task_file: UploadFile, current_user=Depends(get_current_us
     task = await task_service.process_task_archive(out_path)
     if isinstance(task, str):
         return upload_failed_jdr.response(schemas.tasks.ErrorResponse(error=task))
-
     task = await task_service.create_task(current_user, task, out_path.parent / out_path.stem)
     if isinstance(task, str):
         return upload_failed_jdr.response(schemas.tasks.ErrorResponse(error=task))
-
     return upload_success_jdr.response(task, exclude={'resource_path'})
 ###############################################################################
 

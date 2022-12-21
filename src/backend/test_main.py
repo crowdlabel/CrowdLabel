@@ -132,7 +132,23 @@ def time_in_range(time, buffer=5):
         time = datetime.strptime(time, '%Y-%m-%dT%H:%M:%S.%f')
     return abs((datetime.utcnow() - time).total_seconds()) < buffer
 
-
+def compare_tasks(t1, t2,
+    exclude = {
+        'date_created',
+    },
+    sets = {
+        'respondents_claimed',
+        'respondents_completed',
+        'tags'
+    }
+):
+    for key in t1:
+        if key in exclude:
+            continue
+        if key in sets:
+            assert set(t1[key]) == set(t2[key])
+            continue
+        assert t1[key] == t2[key]
 
 def test_get_me():
     init_models_sync()
@@ -194,25 +210,27 @@ def test_upload():
     __register(req1)
     token = __login(req1)
     __top_up(token, 100)
+
     file = example_task
     response = __upload_task(token, file)
     assert response.status_code == 200
 
-    expected_cp = expected.copy()
     json = response.json()
     assert 'date_created' in json
     assert time_in_range(json['date_created'])
     assert 'task_id' in json
     assert 'tags' in json
-    assert set(json['tags']) == set(expected['tags'])
+
+    compare_tasks(expected, json)
     for key in ['tags', 'task_id', 'date_created']:
         del json[key]
-    del expected_cp['tags']
-    assert json == expected_cp
+
+
 def test_search():
     init_models_sync()
     __register(req1)
     token = __login(req1)
+    __credits(token, 100)
     task1 = __upload_task(token, example_task)
     __register(johndoe)
     jd = __login(johndoe)
@@ -221,21 +239,19 @@ def test_search():
     json = response.json()
     assert 'tasks' in json and 'total' in json
     assert json['total'] == 1 and len(json['tasks']) == 1
-    pprint(json['tasks'][0])
-
 def test_claim():
     init_models_sync()
     __register(johndoe)
     __register(req1)
     reqt = __login(req1)
     johnt = __login(johndoe)
+    __credits(reqt, 100)
     task_id = __upload_task(reqt, example_task).json()['task_id']
     cresp = __claim(johnt, task_id)
     assert cresp.status_code == 200
     
     assert johndoe['username'] in __get_task(reqt, task_id).json()['respondents_claimed']
     assert task_id in __get_me(johnt)
-
 def test_credits():
     init_models_sync()
     __register(johndoe)
@@ -256,24 +272,25 @@ def test_get_task():
     init_models_sync()
     __register(req1)
     token = __login(req1)
+    __credits(token, 100)
+    __credits(token, 100)
     task = __upload_task(token, example_task).json()
-    response = __get_task(token, 1)
+    response = __get_task(token, task['task_id'])
     assert response.status_code == 200
-    pprint(task)
-    pprint(response.json())
-    assert task == response.json()
+    json = response.json()
+    compare_tasks(task, json)
 def test_get_task_question_resource():
     init_models_sync()
     __register(req1)
     token = __login(req1)
+    __credits(token, 100)
     task_id = __upload_task(token, example_task).json()['task_id']
     response = __get_task_question_resource(token, task_id, 2)
-    pprint(__get_task(token, task_id).json())
+    assert response.status_code == 200
     assert response.status_code == 200
     content = response.content
     with open('../../examples/example_task/camouflage.jpeg', 'rb') as f:
         original = f.read()
-    print(len(content), len(original))
     assert content == original
 def test_answer():
     init_models_sync()
@@ -281,11 +298,13 @@ def test_answer():
     __register(req1)
     reqt = __login(req1)
     johnt = __login(johndoe)
+    __credits(reqt, 100)
     task_id = __upload_task(reqt, example_task).json()['task_id']
     cresp = __claim(johnt, task_id)   
     response = __answer(johnt, task_id, 1,
         {'choice': 1}
     )
+    assert response.status_code == 200
 
     task = __get_task(reqt, task_id)
 
@@ -295,20 +314,16 @@ def test_answer():
 
 
 if __name__ == '__main__':
-    """ 
-    test_availability()
+    
+    """ test_availability()
     test_register()
+    test_login()
     test_get_me()
     test_credits()
-    test_login()
     test_upload()
-    
-    test_get_task_question_resource()
-    
     test_search()
-    test_answer()
-    
-    #test_get_task()
-    test_search()
-    """
     test_get_task()
+    test_get_task_question_resource() """
+    test_answer()
+   
+    

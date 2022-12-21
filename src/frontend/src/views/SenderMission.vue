@@ -7,9 +7,11 @@
       </div>
       <div class="page_title">
         <h3 class="title">任务大厅</h3>
-        <img src="../assets/notifications.svg" alt="label" height="24">
+        <a class="notifications" data-external="true" href="/notifications">
+            <img src="../assets/notifications.svg" alt="label" height="24"/>
+          </a>
       </div>
-      <div class="my_account">
+      <div class="my_account" data-external="true" href="/senderaccount">
         <img src="../assets/my_account.svg" alt="label" height="23">
       </div>
     </div>
@@ -325,6 +327,7 @@ export default {
         credits_each: '',
         amount: '',
         cover: [],
+        file: '',
         zipfile: []
       },
       rules: {
@@ -410,15 +413,26 @@ export default {
       this.dialogVisible = true;
     },
     create_new_project () {
-      // this.multipartFile.append('username', this.userid);
-      // this.multipartFile.append('missionname', this.form.name);
-      // this.multipartFile.append('missionamount', this.form.amount);
-      // this.multipartFile.append('missioncredits', this.form.credits_each)
-      // this.multipartFile.append('missionbrief', this.form.brief);
-      // this.multipartFile.append('missiondetails', this.form.details);
-      this.task.uploadTaskTasksUploadPost(this.file, (error, data, response) => {
-        console.log(error, data, response);
-      })
+      if(this.zipfile === '' || this.zipfile === 'null'){
+        alert('You need to upload file');
+        return false;
+      } else {
+        // this.multipartFile.append('username', this.userid);
+        // this.multipartFile.append('missionname', this.form.name);
+        // this.multipartFile.append('missionamount', this.form.amount);
+        // this.multipartFile.append('missioncredits', this.form.credits_each)
+        // this.multipartFile.append('missionbrief', this.form.brief);
+        // this.multipartFile.append('missiondetails', this.form.details);
+        this.task.uploadTaskTasksUploadPost(this.file, (error, data, response) => {
+          console.log(error, data, response);
+          if (response.status == 400){
+            alert('not enough credits! please top up!')
+            //push
+          } else if(response.status == 200){
+            alert('upload suceed')
+          }
+        })
+      }
     }
   },
   created() {
@@ -440,6 +454,8 @@ export default {
       }
       self.userid = data['username']
       self.usercredits = data['credits']
+      console.log('credits: ')
+      console.log(self.usercredits)
     })
   }
 }

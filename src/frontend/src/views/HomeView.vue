@@ -69,10 +69,10 @@
 
     <div class="footer">
       <div id="team_contact">
-        <p>联系方式 | 电话：+86 1xx-xxxx-xxxx</p>
+        <!--<p>联系方式 | 电话：+86 1xx-xxxx-xxxx</p>-->
       </div>
       <div id="team_email">
-        <p>邮箱：xxxx20@mails.tsinghua.edu.cn</p>
+        <p>邮箱：contact@crowdlabel.org</p>
       </div>
     </div>
 

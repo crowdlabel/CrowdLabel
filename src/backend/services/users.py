@@ -243,11 +243,7 @@ class Users:
         Returns the new balance as a `float` if the transaction succeeded
         Returns a str detailing the error if the transaction failed
         '''
-
-        if request.amount == 100:
-            user.credits = 100
-            # TODO: not checking balance right now
-        elif user.credits + request.amount < 0:
+        if user.credits + request.amount < 0:
             return 'Insufficient credits' 
         else:
             user.credits += request.amount
