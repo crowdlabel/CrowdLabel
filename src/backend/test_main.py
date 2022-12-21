@@ -300,4 +300,5 @@ if __name__ == '__main__':
     test_search()
     test_answer()
     '''
-    test_claim()
+    #test_get_task()
+    test_search()

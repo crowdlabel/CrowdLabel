@@ -30,7 +30,6 @@ class Task(Base):
     respondents_complete = relationship('Respondent',secondary = 'respondent2complete',cascade="delete, delete-orphan",single_parent = True, overlaps="task_complete")
    
     def __init__(self,task_schema:schemas.tasks.Task,resource_path):
-        self.task_id = task_schema.task_id
         self.requester = task_schema.requester
         self.introduction = task_schema.introduction
         self.description = task_schema.description
