@@ -388,8 +388,7 @@ export default {
       self.tasks_info = []
       self.taskslist.forEach(function(element) {
         self.task.getCoverTasksTaskIdCoverImageGet(element, (error, data, response) => {
-          let blob = new Blob([data])
-          let imageObjectURL = window.URL.createObjectURL(blob);
+          let imageObjectURL = window.URL.createObjectURL(response.body);
           self.imageObject = imageObjectURL
         })
         self.task.getTaskTasksTaskIdGet(element, (error, data, response) => {
