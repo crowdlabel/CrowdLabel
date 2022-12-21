@@ -416,7 +416,6 @@ export default {
       // this.multipartFile.append('missioncredits', this.form.credits_each)
       // this.multipartFile.append('missionbrief', this.form.brief);
       // this.multipartFile.append('missiondetails', this.form.details);
-      // axios post to create mission
       this.task.uploadTaskTasksUploadPost(this.file, (error, data, response) => {
         console.log(error, data, response);
       })
@@ -426,22 +425,22 @@ export default {
     this.multipartFile = new FormData();
   },
   mounted () {
-    var apiClient = new ApiClient('http://localhost:8000');
-    this.client = apiClient
+    let self = this
+    var apiClient  = new ApiClient('http://localhost:8000');
+    apiClient.authentications['OAuth2PasswordBearer'].accessToken = localStorage.getItem('Authorization')
+    self.client = apiClient
     var usersApi = new UsersApi(apiClient);
-    this.user = usersApi
+    self.user = usersApi
     var tasksApi = new TasksApi(apiClient);
-    this.task = tasksApi
-    this.user.getMeUsersMeGet((error, data, response) => {
-      console.log(error)
+    self.task = tasksApi
+    self.user.getMeUsersMeGet((error, data, response) => {
       if (error == 'Error: Unauthorized') {
         localStorage.removeItem('Authorization');
         this.$router.push('/senderlogin');
       }
-      this.userid = data['username'];
-      this.usercredits = data['credits'];
+      self.userid = data['username']
+      self.usercredits = data['credits']
     })
-    console.log(localStorage.getItem('Authorization'));
   }
 }
 </script>
