@@ -255,7 +255,8 @@ def test_get_task():
     task = __upload_task(token, example_task).json()
     response = __get_task(token, task['task_id'])
     assert response.status_code == 200
-
+    pprint(task)
+    pprint(response.json())
     assert task == response.json()
 
 
@@ -263,17 +264,15 @@ def test_get_task():
 
 
 if __name__ == '__main__':
-    
+    '''
     test_availability()
     test_register()
     test_get_me()
     test_credits()
     test_login()
-   
-    test_upload()
-    
-    test_claim()
     test_search()
-   
-   
     test_get_task()
+    test_upload()
+    '''
+    test_claim()
+    
