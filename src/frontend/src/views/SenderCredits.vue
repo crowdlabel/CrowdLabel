@@ -99,8 +99,9 @@ export default {
           localStorage.removeItem('Authorization');
           this.$router.push('/senderlogin');
         }
-        self.userid = data['username']
-        self.usercredits = data['credits']
+        let a = JSON.parse(response['text'])
+        self.userid = a['username']
+        self.usercredits = a['credits']
         console.log('credits: ')
         console.log(self.usercredits)
       })
@@ -113,8 +114,9 @@ export default {
           localStorage.removeItem('Authorization');
           this.$router.push('/senderlogin');
         }
-        self.userid = data['username']
-        self.usercredits = data['credits']
+        let a = JSON.parse(response['text'])
+        self.userid = a['username']
+        self.usercredits = a['credits']
         })
       },
       topUp() {

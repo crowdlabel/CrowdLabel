@@ -128,11 +128,11 @@
             </div>
             
             <div class="display_projects">
-              <div class="display_items" v-for="(item, index) in task_name" v-if="index<6">
+              <div class="display_items" v-for="(item, index) in tasks_info" v-if="index<6">
                 <el-card :body-style="{ padding: '0px' }">
                     <img src="../assets/image_placeholder.png" class="project_image">
                     <div style="padding: 0px;">
-                      <p class="project_title">{{item}}</p>
+                      <p class="project_title">{{item.name}}</p>
                       <div class="bottom clearfix">
                       </div>
                     </div>
@@ -299,21 +299,19 @@ export default {
         localStorage.removeItem('Authorization');
         this.$router.push('/senderlogin');
       }
-      self.userid = data['username']
-      self.usercredits = data['credits']
       let a = JSON.parse(response['text'])
-      self.userid = data['username']
-      self.usercredits = data['credits']
+      self.userid = a['username']
+      self.usercredits = a['credits']
       self.taskslist = a['tasks_requested']
-      self.task_name = []
-      self.task_cover_image = []
-      for (var task_id in self.taskslist){
-        self.task.getTaskTasksTaskIdGet(self.taskslist[task_id], (error, data, response) => {
+      self.tasks_info = []
+      self.taskslist.forEach(function(element) {
+        console.log(element);
+        self.task.getTaskTasksTaskIdGet(element, (error, data, response) => {
           let b = JSON.parse(response['text'])
-          self.task_name.push(b['name']);
-          self.task_cover_image.push(b['cover_image']);
+          var c = { 'task_id':element, 'name':b['name'], 'cover_image':b['cover_image']}
+          self.tasks_info.push(c)
         })
-      }
+      });
       })
     },
     getFileType(name){
@@ -383,22 +381,17 @@ export default {
         this.$router.push('/senderlogin');
       }
       let a = JSON.parse(response['text'])
+      self.userid = a['username']
+      self.usercredits = a['credits']
       self.taskslist = []
       self.taskslist = a['tasks_requested']
-      self.task_name = []
-      self.task_cover_image = []
       self.tasks_info = []
       self.taskslist.forEach(function(element) {
         console.log(element);
         self.task.getTaskTasksTaskIdGet(element, (error, data, response) => {
           let b = JSON.parse(response['text'])
-          self.task_name.push(b['name']);
-          self.task_cover_image.push(b['cover_image']);
-          console.log('c: ')
           var c = { 'task_id':element, 'name':b['name'], 'cover_image':b['cover_image']}
-          console.log(c)
           self.tasks_info.push(c)
-          console.log(self.tasks_info)
         })
       });
     })
@@ -675,9 +668,9 @@ export default {
 
 
 .display_projects {
-  flex-direction: column;
+  flex-direction: row;
   display: flex;
-  align-items:center;
+  align-items:left;
   margin: 20px 100px;
   margin-bottom:40px;
   cursor: pointer;
