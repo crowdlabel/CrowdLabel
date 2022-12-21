@@ -5,7 +5,7 @@ from fastapi.security import OAuth2PasswordBearer, OAuth2PasswordRequestForm
 from jose import JWTError, jwt
 
 from utils.config import get_config
-from .jsondocumentedresponse import JSONDocumentedResponse, create_documentation
+from .documentedresponse import JSONDocumentedResponse, create_documentation
 
 import schemas.auth
 import schemas.users

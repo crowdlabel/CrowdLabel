@@ -2,7 +2,8 @@ from fastapi import status
 from fastapi.responses import Response
 from pydantic import BaseModel
 
-class JSONDocumentedResponse:
+
+class DocumentedResponse:
     def __init__(self, status_code, description, model=None):
         self.status_code = status_code
         self.description = description
@@ -11,11 +12,27 @@ class JSONDocumentedResponse:
         return {
             'description': self.description,
         }
+
+class JSONDocumentedResponse(DocumentedResponse):
+    
     def response(self, data: BaseModel | dict=None, exclude: set=set()):
         return Response(
             content=data if not self.model else data.json(exclude_none=True, exclude=exclude),
             status_code=self.status_code,
             media_type='application/json',
+        )
+
+class MediaDocumentedResponse(DocumentedResponse):
+
+    def __init__(self, status_code, description, media_type, model=None):
+        super(MediaDocumentedResponse, self).__init__(status_code, description, model)
+        self.media_type = media_type
+
+    def response(self, data):
+        return Response(
+            content=data,
+            status_code=self.status_code,
+            media_type=self.media_type,
         )
 
 def create_documentation(responses: list[JSONDocumentedResponse]):
