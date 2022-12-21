@@ -5,3 +5,6 @@ if not exist "openapi-generator-cli-6.2.1.jar" (
 py main.py --docs
 
 java -jar .\openapi-generator-cli-6.2.1.jar generate -i .\openapi.json -g javascript -o ../frontend/src/crowdlabel-api
+
+cd ../frontend/src
+py patch-api.py

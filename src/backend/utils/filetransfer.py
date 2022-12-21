@@ -9,7 +9,7 @@ async def download_file(filename: Path, media_type: str='octet-stream', chunk_si
             while chunk := await f.read(chunk_size):
                 yield chunk
     headers = {'Content-Disposition': f'attachment; filename="{filename.name}"'}
-    return StreamingResponse(iterfile(), headers=headers, media_type=f'application/{media_type}')
+    return StreamingResponse(iterfile(), headers=headers, media_type=media_type)
 
 
 async def upload_file(in_file: UploadFile, out_filename, chunk_size: int=1024 * 1024):
