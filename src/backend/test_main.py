@@ -39,7 +39,7 @@ resp1 = {
     'verification_code': '123456'
 }
 
-example_task = Path('D:/tsinghua/se 软件工程/CrowdLabel/examples/example_task/example_task.zip')
+example_task = Path('D:/example_task.zip')
 
 
 def __availability(username=None, email=None):
@@ -296,5 +296,5 @@ if __name__ == '__main__':
     test_get_task()
     test_claim()
     '''
-    test_search()
+    #test_search()
     test_answer()

@@ -105,7 +105,7 @@ class Questions:
         elif  isinstance(answer,schemas.answers.OpenAnswer):
             new_answer = models.answer.OpenAnswer()
             new_answer.text = answer.text
-        new_answer.date_answered = datetime.datetime.utcnow()
+        new_answer.date_answered = datetime.utcnow()
         new_answer.question_id = target.id
         new_answer.task_id = task_id
         res= await con.execute(select(models.user.Respondent).where(models.user.Respondent.username == current_user.username))
