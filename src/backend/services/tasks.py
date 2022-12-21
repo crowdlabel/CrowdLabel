@@ -5,6 +5,8 @@ from datetime import datetime
 from services.database import engine
 import models.task
 import models.user
+import models.answer
+import models.question
 from sqlalchemy.orm import sessionmaker, scoped_session, selectinload
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy import select, and_ ,or_
@@ -15,7 +17,7 @@ import pathlib
 
 import schemas.tasks
 import schemas.users
-
+import schemas.answers
 import json
 import patoolib
 from utils.config import get_config
@@ -126,12 +128,13 @@ class Tasks:
             return response_task
 
     async def get_task(self, task_id: int) -> schemas.tasks.Task | str:
-        async with con.begin():
-            result = await con.execute(select(models.task.Task).where(models.task.Task.task_id == task_id).options(
-                selectinload(models.task.Task.questions),
-                selectinload(models.task.Task.respondents_claimed),
-                selectinload(models.task.Task.respondents_complete)
-            ))
+        
+        result = await con.execute(select(models.task.Task).where(models.task.Task.task_id == task_id).options(
+            selectinload(models.task.Task.questions),
+            selectinload(models.task.Task.respondents_claimed),
+            selectinload(models.task.Task.respondents_complete),
+            selectinload(models.task.Task.questions)
+        ))
         target = result.scalars().first()
         if target is None:
             await asyncio.shield(con.close())
@@ -157,13 +160,28 @@ class Tasks:
             if qtype == 'single_choice':
                 di['options'] = question.options.split('|')
                 q = schemas.questions.SingleChoiceQuestion(**di)
+                answers = await con.execute(select(models.answer.SingleChoiceAnswer).where(models.answer.SingleChoiceAnswer.question_id==q.question_id))
+                answers = answers.scalars().all()
+                q.answers = list(map(lambda A:schemas.answers.SingleChoiceAnswer(A.choice),answers))
             elif qtype == 'multi_choice':
                 di['options'] = question.options.split('|')
                 q = schemas.questions.MultiChoiceQuestion(**di)
+                answers = await con.execute(select(models.answer.MultiChoiceAnswer).where(models.answer.MultiChoiceAnswer.question_id==q.question_id))
+                answers = answers.scalars().all()
+                q.answers = list(map(lambda A:schemas.answers.MultiChoiceAnswer(A.choices),answers))
             elif qtype == 'bounding_box':
                 q = schemas.questions.BoundingBoxQuestion(**di)
+                answers = await con.execute(select(models.answer.BoundingBoxAnswer).where(models.answer.BoundingBoxAnswer.question_id==q.question_id))
+                answers = answers.scalars().all()
+                for target in answers:
+                    p1 = schemas.answers.Point(x = target.top_left_x, y= target.top_left_y)
+                    p2 = schemas.answers.Point(x = target.bottom_right_x, y= target.bottom_right_y)
+                    q.answers.append(schemas.answers.BoundingBoxAnswer(top_left=p1,bottom_right=p2))
             elif qtype == 'open':
                 q = schemas.questions.OpenQuestion(**di)
+                answers = await con.execute(select(models.answer.OpenAnswer).where(models.answer.OpenAnswer.question_id==q.question_id))
+                answers = answers.scalars().all()
+                q.answers = list(map(lambda A:schemas.answers.OpenAnswer(A.text),answers))
             else : 
                 continue
             response_task.questions.append(q)
@@ -282,52 +300,59 @@ Returns: list of `Task`s matching the query within the specified `page` and `pag
 
         # TODO: use query parameters from `parameters`
 
-        async with con.begin():
-            result = await con.execute(select(models.task.Task))
-        await asyncio.shield(con.close())
-        return result, 1
 
-        '''
-        if sort_ascending is True:
+        
+        if parameters.sort_ascending is True:
             result = await con.execute(select(models.task.Task).where(and_(
-                        or_(models.task.Task.name == name, name ==None),
-                        models.task.Task.credits >= credits_min,
-                        models.task.Task.credits <= credits_max,
-                        len(models.task.Task.questions)>questions_min,
-                        len(models.task.Task.questions)<questions_max,),
-                        or_(models.task.Task.response_required == result_count , result_count == -1))
-                        .order_by(models.task.Task.id.asc()).options(selectinload(models.task.Task.questions),selectinload(models.task.Task.results)))
-        else:
-
+                        or_ (parameters.name == '',models.task.Task.name == parameters.name),
+                        or_ (parameters.credits_min == 0  , models.task.Task.credits >= parameters.credits_min),
+                        or_ (parameters.credits_max == -1 , models.task.Task.credits <= parameters.credits_max),
+                        )).order_by(models.task.Task.task_id.asc())
+                        .options(selectinload(models.task.Task.questions),selectinload(models.task.Task.respondents_claimed),
+                                 selectinload(models.task.Task.respondents_complete)))
+                    
+        else:           
             result = await con.execute(select(models.task.Task).where(and_(
-                            or_(models.task.Task.name == name, name ==None),
-                            models.task.Task.credits >= credits_min,
-                            models.task.Task.credits <= credits_max,
-                            len(models.task.Task.questions)>questions_min,
-                            len(models.task.Task.questions)<questions_max,),
-                            or_(models.task.Task.response_required == result_count , result_count == -1))
-                            .order_by(models.task.Task.id.desc()).options(selectinload(models.task.Task.questions),selectinload(models.task.Task.results)))
-        '''
-
-        tasks = result.scalar().all()
+                        or_ (parameters.name == '',models.task.Task.name == parameters.name),
+                        or_ (parameters.credits_min == 0  , models.task.Task.credits >= parameters.credits_min),
+                        or_ (parameters.credits_max == -1 , models.task.Task.credits <= parameters.credits_max),
+                        )).order_by(models.task.Task.task_id.desc()) 
+                        .options(selectinload(models.task.Task.questions),selectinload(models.task.Task.respondents_claimed),
+                                 selectinload(models.task.Task.respondents_complete)))
+                    
+                        
+        tasks = result.scalars().all()
+        response_tasks = []
         if parameters.page_size == -1:
-            return tasks , len(tasks)
+            for task in tasks :
+                response_task = await task_service.get_task(task.task_id)
+                response_tasks.append(response_task)
+            return response_tasks , len(tasks)
         else :
             if len(tasks) > parameters.page * parameters.page_size:
                 target = tasks[(parameters.page-1)*parameters.page_size:parameters.page*parameters.page_size-1]
-                return target , len(target)
+                for task in target :
+                    response_task = await task_service.get_task(task.task_id)
+                response_tasks.append(response_task)
+                return response_tasks , len(target)
             elif len(tasks) < (parameters.page-1)*parameters.page_size:
                 return [] , 0
             else :
 
                 if len(tasks) > parameters.page * parameters.page_size:
                     target = tasks[(parameters.page-1)*parameters.page_size:parameters.page*parameters.page_size-1]
-                    return target, len(target)
+                    for task in target :
+                        response_task = await task_service.get_task(task.task_id)
+                        response_tasks.append(response_task)
+                    return response_tasks, len(target)
                 elif len(tasks) < (parameters.page-1)*parameters.page_size:
                     return [], 0
                 else :
                     target = tasks[(parameters.page-1)*parameters.page_size:-1]
-                    return target, len(target)
+                    for task in target :
+                        response_task = await task_service.get_task(task.task_id)
+                        response_tasks.append(response_task)
+                    return response_tasks, len(target)
 
 
     async def create_task_results_file(self, id: int) -> str:

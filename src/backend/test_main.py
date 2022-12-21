@@ -207,6 +207,8 @@ def test_upload():
     for key in ['tags', 'task_id', 'date_created']:
         del json[key]
     del expected['tags']
+    print(json)
+    print(expected)
     assert json == expected
 def test_search():
     init_models_sync()
@@ -298,4 +300,5 @@ if __name__ == '__main__':
     test_search()
     test_answer()
     '''
-    test_claim()
+    #test_get_task()
+    test_search()
