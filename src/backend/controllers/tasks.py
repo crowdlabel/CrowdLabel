@@ -42,6 +42,8 @@ async def search_tasks(query: schemas.tasks.TaskSearchRequest, current_user=Depe
     if isinstance(tasks, str):
         return search_tasks_failed_hdr.response(schemas.tasks.ErrorResponse(tasks))
 
+    for i in range(len(tasks[0])):
+        tasks[0][i].questions = None
     # exclude tasks.questions
     return search_tasks_success_jdr.response(schemas.tasks.TaskSearchResponse(tasks=tasks[0], total=tasks[1]), exclude={'questions'})
 ###############################################################################

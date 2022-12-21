@@ -34,9 +34,7 @@ The following are all valid search parameters:\n
     sort_criteria: Optional[str] = 'name'
     sort_ascending: Optional[bool] = True
 
-class TaskSearchResponse(BaseModel):
-    tasks: list[int]=[] # list of Task IDs
-    total: int=0 # total number of tasks
+
 
 class ErrorResponse(BaseModel):
     error: str
@@ -80,3 +78,7 @@ class Task(CreateTaskRequest):
     #     credits = task.credits , name = task.name , introduction = task.introduction ,
     #     description = task.description ,cover = task.cover_path,responses_required = task.response_required,
     #     tags =task.tags.split['|']) 
+
+class TaskSearchResponse(BaseModel):
+    tasks: list[Task]=[] # list of Tasks
+    total: int=0 # total number of tasks
