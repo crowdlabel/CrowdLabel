@@ -117,10 +117,6 @@ async def create_task(task: schemas.tasks.CreateTaskRequest, questions_file: Upl
         await upload_file(cover, 'cover_' + current_user.username + datetime_now_str() + '.png') """
 
 
-
-
-
-
 ###############################################################################
 get_task_success_jdr = JSONDocumentedResponse(
     status.HTTP_200_OK,

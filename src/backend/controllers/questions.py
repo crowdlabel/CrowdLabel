@@ -50,7 +50,7 @@ create_answer_failed = JSONDocumentedResponse(
     **create_documentation([create_answer_success, create_answer_failed])
 )
 async def create_answer(
-    answer: schemas.answers.AnswerRequest,
+    answer: schemas.answers.AnswerTypes,
     task_id: int=fastapi.Path(), question_id: int=fastapi.Path(),
     current_user=Depends(get_current_user(['respondent']))
 ):
@@ -89,11 +89,12 @@ async def get_question_resource(
     task = await task_service.get_task(task_id)
     if not task:
         return not_found_jdr.response()
-    if (current_user.username not in task.respondents_claimed or
+
+    if (current_user.username not in task.respondents_claimed and
         current_user.username != task.requester):
         # only allow the requester who created the task or the respondents who claimed this task see the resource
         return forbidden_jdr.response()
-    question = question_service.get_question(task, question_id)
+    question = await question_service.get_question(task, question_id)
     if not question:
         return not_found_jdr.response()
     if not question.resource:
@@ -101,4 +102,4 @@ async def get_question_resource(
 
     resource_path = task.resource_path / question.resource
 
-    return download_file(resource_path)
+    return await download_file(resource_path)

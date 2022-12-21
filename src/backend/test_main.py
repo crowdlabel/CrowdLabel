@@ -82,8 +82,10 @@ def __get_task(token, task_id):
     return client.get(f'/tasks/{task_id}', headers=token)
 def __credits(token, amount):
     return client.post('/users/me/credits', headers=token, json={'amount': amount})
-
-
+def __get_task_question_resource(token, task_id, question_id):
+    return client.get(f'/tasks/{task_id}/questions/{question_id}/resource', headers=token)
+def __answer(token, task_id, question_id, answer):
+    return client.put(f'/tasks/{task_id}/questions/{question_id}/answer', headers=token, json=answer)
 def time_in_range(time, buffer=5):
     if isinstance(time, str):
         time = datetime.strptime(time, '%Y-%m-%dT%H:%M:%S.%f')
@@ -229,8 +231,7 @@ def test_claim():
     pprint(cresp.json())
 
     task = __get_task(reqt, tasku['task_id'])
-    print(task.status_code)
-    pprint(task.json())
+
 def test_credits():
     init_models_sync()
     __register(johndoe)
@@ -247,7 +248,6 @@ def test_credits():
     withdraw = -12.7
     assert __credits(token, withdraw).status_code == 200
     assert __get_me(token).json()['credits'] == deposit + withdraw
-
 def test_get_task():
     init_models_sync()
     __register(req1)
@@ -258,8 +258,29 @@ def test_get_task():
     pprint(task)
     pprint(response.json())
     assert task == response.json()
+def test_get_task_question_resource():
+    init_models_sync()
+    __register(req1)
+    token = __login(req1)
+    task_id = __upload_task(token, example_task).json()['task_id']
+    response = __get_task_question_resource(token, task_id, 2)
+    content = response.content
+    with open('../../examples/example_task/camouflage.jpeg', 'rb') as f:
+        original = f.read()
+    assert content == original
+def test_answer():
+    init_models_sync()
+    __register(johndoe)
+    __register(req1)
+    reqt = __login(req1)
+    johnt = __login(johndoe)
+    tasku = __upload_task(reqt, example_task).json()
+    cresp = __claim(johnt, tasku['task_id'])   
+    response = __answer(johnt, tasku['task_id'], 1,
+        {'choice': 1}
+    )
 
-
+    print(response.status_code)
 
 
 
@@ -270,9 +291,10 @@ if __name__ == '__main__':
     test_get_me()
     test_credits()
     test_login()
-    test_search()
     test_upload()
+    test_get_task_question_resource()
+    test_get_task()
     test_claim()
     '''
-    test_get_task()
-    
+    test_search()
+    test_answer()

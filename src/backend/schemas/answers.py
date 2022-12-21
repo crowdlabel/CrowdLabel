@@ -24,6 +24,8 @@ class BoundingBoxAnswer(BaseModel):
 class AnswerRequest(BaseModel):
     answer: SingleChoiceAnswer | MultiChoiceAnswer | RankingAnswer | BoundingBoxAnswer | OpenAnswer
 
+AnswerTypes = SingleChoiceAnswer | MultiChoiceAnswer | RankingAnswer | BoundingBoxAnswer | OpenAnswer
+
 class Answer(AnswerRequest):
     respondent: str # username of respondent
     date_created: datetime
