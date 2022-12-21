@@ -49,7 +49,7 @@ class Tasks:
             return '`credits` must be positive'
 
         response = await user_service.handle_transaction(
-            schemas.users.TransactionRequest(amount=task_request.credits * task_request.responses_required),
+            schemas.users.TransactionRequest(amount=- task_request.credits * task_request.responses_required),
             user=requester
         )
         if not isinstance(response, float):
@@ -65,6 +65,7 @@ class Tasks:
             date_created=datetime.utcnow(),
             resource_path=resource_path
         )
+
         for question in task_request.questions:
             task_schema.questions.append(question)
         missing = []
@@ -82,11 +83,7 @@ class Tasks:
             resource_path=str(resource_path)
         )
         
-        for question in task_request.dict()['questions']:
-
-            await question_service.create_question(question['question_id'],question['question_type'],question['prompt'],
-                                             question['resource'],question['options'] if question['question_type'] in ['single_choice','multi_choice'] else []
-                                             ,task.task_id)
+       
         async with con.begin():
             target = await con.execute(select(models.user.Requester)
                 .where(models.user.Requester.username==requester.username).options(selectinload(models.user.Requester.task_requested)))
@@ -99,7 +96,10 @@ class Tasks:
             await con.commit()
             await asyncio.shield(con.close())
         task_schema.task_id = task.task_id
-
+        for question in task_request.dict()['questions']:
+            await question_service.create_question(question['question_id'],question['question_type'],question['prompt'],
+                                             question['resource'],question['options'] if question['question_type'] in ['single_choice','multi_choice'] else []
+                                             ,task.task_id)
         return task_schema
 
     async def claim_task(self,user_name,task_id)->schemas.tasks.Task | None:
@@ -133,7 +133,6 @@ class Tasks:
             selectinload(models.task.Task.questions),
             selectinload(models.task.Task.respondents_claimed),
             selectinload(models.task.Task.respondents_complete),
-            selectinload(models.task.Task.questions)
         ))
         target = result.scalars().first()
         if target is None:
@@ -190,7 +189,7 @@ class Tasks:
         complete_names = list(map(lambda A:A.username,target.respondents_complete))
         response_task.respondents_completed = set(complete_names)
         await asyncio.shield(con.close())
-      
+        print(response_task.questions)
         return response_task
 
     
@@ -282,7 +281,6 @@ class Tasks:
                 task.questions.append(schemas.questions.QUESTION_TYPES[question['question_type']].parse_obj(question))
             except Exception as e:
                 return str(e)
-
         return task
 
         
