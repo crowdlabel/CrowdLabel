@@ -52,7 +52,7 @@
             <div class="box_overview">
               <p class="box_title">剩余积分</p>
               <div class="box_credits">
-                <p class="box_number">27.5 k</p>
+                <p class="box_number">{{usercredits}}</p>
                 <p class="box_unit">积分</p>
               </div> 
               <div class="top_up_slot">
@@ -74,34 +74,57 @@
   
   
 <script>
-import axios from 'axios'
+import { ApiClient } from '@/crowdlabel-api/src';
+import { UsersApi } from '@/crowdlabel-api/src';
 export default {
     data() {
     //   page_num = 100;
         return{
-            added_credits: 0
+          client:'',
+          user:'',
+          added_credits: 0,
+          usercredits:'',
+          userid:'',
         };
     },
+    mounted () {
+      let self = this
+      var apiClient  = new ApiClient('http://localhost:8000');
+      apiClient.authentications['OAuth2PasswordBearer'].accessToken = localStorage.getItem('Authorization')
+      self.client = apiClient
+      var usersApi = new UsersApi(apiClient);
+      self.user = usersApi
+      self.user.getMeUsersMeGet((error, data, response) => {
+        if (error == 'Error: Unauthorized') {
+          localStorage.removeItem('Authorization');
+          this.$router.push('/senderlogin');
+        }
+        self.userid = data['username']
+        self.usercredits = data['credits']
+        console.log('credits: ')
+        console.log(self.usercredits)
+      })
+    },
     methods: {
-        topUp() {
-            this.$prompt('请输入充值金额', '提示', {
-            confirmButtonText: '确定',
-            cancelButtonText: '取消',
-            inputPattern: /([0-9]*)/,
-            inputErrorMessage: '输入金额格式不正确'
-            }).then(({ value }) => {
-            this.$message({
-                type: 'success',
-                message: '已成功充值: ' + value + ' 积分'
-            });
-            this.added_credits = value;
-            }).catch(() => {
-            this.$message({
-                type: 'info',
-                message: '取消充值'
-            });       
-            });
-      }
+      topUp() {
+          this.$prompt('请输入充值金额', '提示', {
+          confirmButtonText: '确定',
+          cancelButtonText: '取消',
+          inputPattern: /([0-9]*)/,
+          inputErrorMessage: '输入金额格式不正确'
+          }).then(({ value }) => {
+          this.$message({
+              type: 'success',
+              message: '已成功充值: ' + value + ' 积分'
+          });
+          this.added_credits = value;
+          }).catch(() => {
+          this.$message({
+              type: 'info',
+              message: '取消充值'
+          });       
+        });
+      },
     }
 }
 </script>

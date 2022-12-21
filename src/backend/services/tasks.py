@@ -49,7 +49,7 @@ class Tasks:
             return '`credits` must be positive'
 
         response = await user_service.handle_transaction(
-            schemas.users.TransactionRequest(amount=task_request.credits * task_request.responses_required),
+            schemas.users.TransactionRequest(amount=-task_request.credits * task_request.responses_required),
             user=requester
         )
         if not isinstance(response, float):
