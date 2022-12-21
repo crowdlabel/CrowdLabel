@@ -220,4 +220,4 @@ async def get_cover(task_id: int, current_user: schemas.users.User=Depends(get_c
 
     resource_path = task.resource_path / task.cover_image
 
-    return await download_file(resource_path)
+    return await download_file(resource_path, media_type='image/jpeg')

@@ -1,3 +1,7 @@
+import pytest
+
+from httpx import AsyncClient
+
 from fastapi.testclient import TestClient
 from pprint import pprint
 from main import app, init_models_sync
@@ -215,11 +219,13 @@ def test_availability():
     __register(resp1)
     response = __availability(req1['username'], resp1['email'])
     assert response.status_code == 200 and response.json() == {'username': False, 'email': False}
-def test_upload():
+
+@pytest.mark.anyio
+async def test_upload():
     init_models_sync()
     __register(req1)
     token = __login(req1)
-    __top_up(token, 100)
+    __top_up(token, 1000)
 
     file = example_task
     response = __upload_task(token, file)
@@ -307,6 +313,7 @@ def test_get_task_question_resource():
         original = f.read()
     assert content == original
 def test_answer():
+
     init_models_sync()
     __register(johndoe)
     __register(req1)
