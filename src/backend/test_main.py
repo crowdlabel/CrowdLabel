@@ -157,8 +157,17 @@ def test_get_me():
     token = __login(req1)
     response = __get_me(token)
     assert response.status_code == 200
+    json = response.json()
     for field in ['username', 'email', 'user_type']:
-        assert req1[field] == response.json()[field]
+        assert req1[field] == json[field]
+    assert 'tasks_requested' in json
+
+    __register(johndoe)
+    token2 = __login(johndoe)
+    response = __get_me(token2)
+    for key in ['tasks_claimed', 'tasks_completed']:
+        assert key in response.json()
+    
 def test_register():
     init_models_sync()
     now = datetime.utcnow()
@@ -215,7 +224,6 @@ def test_upload():
     file = example_task
     response = __upload_task(token, file)
     assert response.status_code == 200
-
     json = response.json()
     assert 'date_created' in json
     assert time_in_range(json['date_created'])
@@ -223,8 +231,12 @@ def test_upload():
     assert 'tags' in json
 
     compare_tasks(expected, json)
-    for key in ['tags', 'task_id', 'date_created']:
-        del json[key]
+
+    response = __get_me(token)
+    pprint(response.json())
+    assert response.status_code == 200
+    assert json['task_id'] in response.json()['tasks_requested']
+
 
 
 def test_search():
@@ -279,6 +291,7 @@ def test_get_task():
     response = __get_task(token, task['task_id'])
     assert response.status_code == 200
     json = response.json()
+    pprint(json)
     compare_tasks(task, json)
 def test_get_task_question_resource():
     init_models_sync()
@@ -335,10 +348,11 @@ if __name__ == '__main__':
     test_credits()
     test_upload()
     test_search()
-    test_get_task()
+    test_claim()
+    test_cover()
     test_get_task_question_resource() 
     test_answer()
-   
-    test_cover()
-     """
-    test_claim()
+    """
+
+    test_get_task()
+    

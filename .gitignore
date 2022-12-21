@@ -44,3 +44,5 @@ pnpm-debug.log*
 .openapi-generator
 
 .pytest_cache
+
+dist/

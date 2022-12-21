@@ -69,11 +69,11 @@ async def register(details: schemas.users.RegistrationRequest):
 me_jdr = JSONDocumentedResponse(
     status.HTTP_200_OK,
     'Successfully got me',
-    schemas.users.User
+    schemas.users.UserType,
 )
 @router.get('/me',
     description='Gets information for user who sent the request',
-    **create_documentation([me_jdr])
+    **create_documentation([me_jdr]),
 )
 async def get_me(current_user: schemas.users.User = Depends(get_current_user())):
     return me_jdr.response(current_user, exclude={'password_hashed'})

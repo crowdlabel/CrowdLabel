@@ -398,6 +398,7 @@ export default {
         localStorage.removeItem('Authorization');
         this.$router.push('/senderlogin');
       }
+      console.log(data)
       self.userid = data['username']
       self.usercredits = data['credits']
       console.log('credits: ')
