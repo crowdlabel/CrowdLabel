@@ -130,7 +130,7 @@
             <div class="display_projects">
               <div class="display_items" v-for="(item, index) in tasks_info" v-if="index<6">
                 <el-card :body-style="{ padding: '0px' }">
-                    <img src=imageObject alt="" class="project_image">
+                    <img :src=imageObject alt="" class="project_image">
                     <div style="padding: 0px;">
                       <p class="project_title">{{item.name}}</p>
                       <div class="bottom clearfix">
@@ -388,7 +388,7 @@ export default {
       self.tasks_info = []
       self.taskslist.forEach(function(element) {
         self.task.getCoverTasksTaskIdCoverImageGet(element, (error, data, response) => {
-          let blob = new Blob(data)
+          let blob = new Blob([data])
           let imageObjectURL = window.URL.createObjectURL(blob);
           self.imageObject = imageObjectURL
         })
