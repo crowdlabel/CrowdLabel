@@ -7,9 +7,11 @@
       </div>
       <div class="page_title">
         <h3 class="title">任务大厅</h3>
-        <img src="../assets/notifications.svg" alt="label" height="24">
+        <a class="notifications" data-external="true" href="/notifications">
+            <img src="../assets/notifications.svg" alt="label" height="24"/>
+          </a>
       </div>
-      <div class="my_account">
+      <div class="my_account" data-external="true" href="/senderaccount">
         <img src="../assets/my_account.svg" alt="label" height="23">
       </div>
     </div>

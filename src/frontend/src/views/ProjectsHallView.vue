@@ -221,7 +221,7 @@ export default {
     self.user.getMeUsersMeGet((error, data, response) => {
       if (error == 'Error: Unauthorized') {
         localStorage.removeItem('Authorization');
-        this.$router.push('/senderlogin');
+        this.$router.push('/receiverlogin');
       }
       self.userid = data['username']
       self.usercredits = data['credits']

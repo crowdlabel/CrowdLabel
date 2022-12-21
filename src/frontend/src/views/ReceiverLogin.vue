@@ -222,6 +222,9 @@ export default {
         var authApi = new AuthApi(apiClient);
         this.auth = authApi
     },
+    mounted () {
+        
+    },
     methods: {
         handleTabClick(tab, event){
             console.log(tab, event)
@@ -261,8 +264,9 @@ export default {
                     (error, data, response) => {
                         console.log(error, data, response);
                         if (response.status == 200){
-                            let token = response["access_token"]
+                            let token = data["access_token"]
                             _this.$store.commit('changeLogin', token);
+                            console.log(localStorage.getItem('Authorization'))
                             this.$router.push({
                                 path: '/projects',
                             });
