@@ -236,10 +236,6 @@ export default {
                 let ready_password = document.getElementById('registerpassword').value;
                 let ready_email = document.getElementById('registeremail').value;
                 let ready_verification = document.getElementById('registerverification').value
-                console.log(ready_username);
-                console.log(ready_password);
-                console.log(ready_email);
-                console.log(ready_verification);
                 this.user.registerUsersRegisterPost({
                     "username": ready_username,
                     "password": ready_password,
@@ -269,9 +265,7 @@ export default {
                         console.log(error, data, response);
                         if (response.status == 200){
                             let token = data["access_token"];
-                            console.log("token: ")
-                            console.log(token)
-                            _this.changeLogin({ Authorization: token});
+                            _this.$store.commit('changeLogin', token);
                             this.$router.push({
                                 path: '/sendermission',
                             });
