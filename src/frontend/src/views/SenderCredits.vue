@@ -1,5 +1,5 @@
 <template>
-  <div>
+  <div class="all">
     <div class="top_nav">
       <div class="top_nav_trigger">
         <img src="../assets/label.png" alt="label" height="26">
@@ -108,6 +108,9 @@ export default {
 
 <style scoped>
 @import '@/assets/font/font.css';
+.all {
+  min-width: 1150px;
+}
 .top_nav {
     background-color: #fff;
     border-bottom: 1.2px solid rgba(0,0,0,.1);
@@ -178,11 +181,6 @@ color:black;
     box-sizing: border-box;
     flex-direction: column;
     position: relative;
-    display: flex;
-    cursor: pointer;
-    flex:1;
-    justify-content: space-between;
-    height: 100%;
 }
 .left_nav_list_top {
     box-sizing: border-box;
@@ -191,6 +189,8 @@ color:black;
     flex-direction: column;
     margin: 0;
     padding: 12px;
+    height: calc(100vh - 50px - 132.2px);
+    min-height: 130px;
 }
 .left_nav_list_bottom {
     box-sizing: border-box;
@@ -204,7 +204,7 @@ color:black;
     padding: 12px;
 }
 .left_nav_spacer {
-    height: calc(100vh - 289.2px);
+    height: calc(100vh - 329.2px);
     flex: 1;
 }
 .left_nav_list_item {
@@ -219,10 +219,15 @@ color:black;
     padding: 0 13px;
     text-decoration: none;
     white-space: nowrap;
+    margin: 5px 0px;
+}
+.left_nav_list_item:hover {
+    background-color: rgba(0,0,0,.06);
 }
 .left_nav_list_item_active {
     background-color: rgba(84,47,238,.14);
     color: rgba(84,47,238,1);
+    pointer-events: none;
 }
 .list_item_title {
     padding: 15px;
