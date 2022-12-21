@@ -271,8 +271,8 @@ if __name__ == '__main__':
     test_credits()
     test_login()
     test_search()
-    test_get_task()
     test_upload()
-    '''
     test_claim()
+    '''
+    test_get_task()
     
