@@ -13,41 +13,58 @@
                 <el-button type="primary" plain>更换头像</el-button>
               </div>
             </div>
-            <div class="row row_center">
-              <div class="input">
-              <div class="row input_box">
-                <p class="field">用户名：</p>
-                <el-input placeholder="用户名" v-model="input" clearable>
-                </el-input>
+              <div class="row row_center">
+                <el-form :model="ruleForm" status-icon :rules="rules" ref="ruleForm" label-width="100px" class="demo-ruleForm">
+                <div class="input">
+                <div class="row input_box">
+                  <p class="field">用户名：</p>
+                  <el-form-item prop="name">
+                    <el-input placeholder="用户名" v-model="ruleForm.name" clearable>
+                    </el-input>
+                  </el-form-item>
+                </div>
+                <div class="row input_box">
+                  <p class="field">新密码：</p>
+                  <el-form-item prop="pass">
+                    <el-input placeholder="密码" v-model="ruleForm.pass" clearable show-password>
+                    </el-input>
+                  </el-form-item>
+                </div>
+                <div class="row input_box">
+                  <p class="field">确认新密码：</p>
+                  <el-form-item prop="checkPass">
+                    <el-input placeholder="密码" v-model="ruleForm.checkPass" clearable show-password>
+                    </el-input>
+                  </el-form-item>
+                </div>
+                <div class="row input_box">
+                  <p class="field">邮箱：</p>
+                  <el-form-item prop="email">
+                    <el-input placeholder="邮箱" v-model="ruleForm.email" clearable>
+                    </el-input>
+                  </el-form-item>
+                </div>
+                <div class="row input_box">
+                  <p class="field">验证码：</p>
+                  <el-form-item prop="verif">
+                    <el-input placeholder="验证码" v-model="ruleForm.verif" clearable :disabled="true">
+                    </el-input>
+                  </el-form-item>
+                </div>
               </div>
-              <div class="row input_box">
-                <p class="field">邮箱：</p>
-                <el-input placeholder="邮箱" v-model="input" clearable>
-                </el-input>
+            </el-form>
+              <div class="button_verify">
+                <el-button :disabled="disable" @click="verifyEmailbtn()">{{text}}</el-button>
               </div>
-              <div class="row input_box">
-                <p class="field">验证码：</p>
-                <el-input placeholder="验证码" v-model="input" clearable :disabled="true">
-                </el-input>
               </div>
-              <div class="row input_box">
-                <p class="field">密码：</p>
-                <el-input placeholder="密码" v-model="input" clearable show-password>
-                </el-input>
+              <div class="button_row">
+                  <a href="/myaccount">
+                    <el-button type="primary" plain>取消</el-button>
+                  </a>
+                  <a href="/myaccount">
+                    <el-button type="primary">保存</el-button>
+                  </a>
               </div>
-            </div>
-            <div class="button_verify">
-              <el-button type="primary">发送验证码</el-button>
-            </div>
-            </div>
-            <div class="button_row">
-                <a href="/myaccount">
-                  <el-button type="primary" plain>取消</el-button>
-                </a>
-                <a href="/myaccount">
-                  <el-button type="primary">保存</el-button>
-                </a>
-            </div>
         </div>
         
     </div>
@@ -59,14 +76,178 @@
 // @ is an alias to /src
 // import HelloWorld from '@/components/HelloWorld.vue'
 import axios from 'axios'
+import { ApiClient } from '@/crowdlabel-api/src';
+import { UsersApi } from '@/crowdlabel-api/src';
+import { AuthApi } from '@/crowdlabel-api/src';
 export default {
   data() {
+        var validatePass = (rule, value, callback) => {
+            if (value === '') {
+                callback(new Error('请输入密码'));
+            } else {
+            if (!/^[\x21-\x7e]{8,64}$/.test(value)) {
+                callback(new Error('密码格式错误:请输入8-64位密码'));
+            }
+                callback();
+            }
+        };
+        var validatePass2 = (rule, value, callback) => {
+            if (value === '') {
+                callback(new Error('请再次输入密码'));
+            } else if (value !== this.ruleForm.pass) {
+                callback(new Error('两次输入密码不一致!'));
+            } else {
+                callback();
+            }
+        };
+        var validateName = (rule, value, callback) => {
+            if (value === '') {
+            callback(new Error('请输入用户名'));
+            } else {
+                if (!/^[\x21-\x7e]{3,64}$/.test(value)) {
+                    callback(new Error('用户名格式错误:请输入3-64位用户名'));
+                } else {
+                    let ready_username = document.getElementById('registername').value;
+                    this.user.availabilityUsersAvailabilityPut({'username': ready_username},
+                    (error, data, response) => {
+                        if (!data['username']){
+                            callback(new Error('用户名已被占用'));
+                            } else {
+                                callback();
+                            }
+                        }
+                    );
+                }
+            }
+        };
+        var validateEmail = (rule, value, callback) => {
+            if (value === '') {
+            callback(new Error('请输入邮箱'));
+            } else {
+                let mailReg = /^([a-zA-Z0-9_-]+(.[a-zA-Z0-9])?)@([a-zA-Z0-9_-]+)((.[a-zA-Z0-9_-]+)+)$/
+                if (!mailReg.test(value)){
+                    callback(new Error('邮箱格式错误'));
+                } else {
+                    this.disable = false;
+                    let ready_email = document.getElementById('registeremail').value;
+                    this.user.availabilityUsersAvailabilityPut({'email': ready_email},
+                    (error, data, response) => {
+                        if (!data['email']){
+                            callback(new Error('邮箱已被占用'));
+                            } else {
+                                this.disable = false;
+                                callback();
+                            }
+                        }
+                    );
+                }
+            }
+        };
+        var validateVerif = (rule, value, callback) => {
+            if (value === ''){
+                callback(new Error('请输入验证码'))
+            } else {
+                let veriReg = /^[0-9]{6}$/
+                if (!veriReg.test(value)){
+                    callback(new Error('验证码格式错误'))
+                }
+                else {
+                    callback();
+                }
+
+            }
+        };
     return {
-      
+            text: "发送验证码",
+            time: 5,
+            timer: null,
+            disable: true,
+            activeName: 'second',
+            client: '',
+            auth: '',
+            user: '',
+            ruleForm: {
+                name: '',
+                pass: '',
+                checkPass: '',
+                email: '',
+                verif: ''
+            },
+            rules: {
+                name: [
+                    { validator: validateName, trigger: 'blur'}
+                ],
+                pass: [
+                    { validator: validatePass, trigger: 'blur'}
+                ],
+                checkPass: [
+                    { validator: validatePass2, trigger: 'blur' }
+                ],
+                email : [
+                    { validator: validateEmail, trigger: 'change'}
+                ],
+                verif: [
+                    { validator: validateVerif, trigger: 'blur' }
+
+                ]
+            }
     };
   },
+  created () {
+        const time = localStorage.getItem('time');
+        if (time && time>0) {
+            this.text = time + "s后重新发送"
+            this.time = time
+            this.verifyEmailbtn();
+        }
+        var apiClient = new ApiClient('http://localhost:8000');
+        this.client = apiClient
+        var usersApi = new UsersApi(apiClient);
+        this.user = usersApi
+        var authApi = new AuthApi(apiClient);
+        this.auth = authApi
+    },
+    mounted() {
+      let self = this;
+      var apiClient  = new ApiClient('http://localhost:8000');
+      apiClient.authentications['OAuth2PasswordBearer'].accessToken = localStorage.getItem('Authorization')
+      self.client = apiClient
+      var usersApi = new UsersApi(apiClient);
+      self.user = usersApi
+      self.user.getMeUsersMeGet((error, data, response) => {
+        if (error == 'Error: Unauthorized') {
+          localStorage.removeItem('Authorization');
+          this.$router.push('/receiverlogin');
+        }
+        self.ruleForm.name = data['username']
+        self.ruleForm.email = data['email']
+        console.log('username: ' + self.ruleForm.name)
+        console.log('email: ' + self.ruleForm.email)
+      })
+  },
   methods: {
-
+    verifyEmailbtn () {
+            this.disable=true
+            let ready_email = document.getElementById('registeremail').value
+            console.log(ready_email);
+            this.user.verifyEmailUsersVerifyEmailPost({
+                "email": ready_email
+            });
+            this.text = this.time + "s后重新发送"
+            localStorage.setItem('time', this.time)
+            this.timer = setInterval(() => {
+                if (this.time > 0) {
+                    this.time--
+                    localStorage.setItem('time', this.time)
+                    this.text = this.time + "s后重新发送"
+                } else {
+                    clearInterval(this.timer);
+                    this.time = 5
+                    this.disable = false
+                    this.text = '发送验证码'
+                }
+            }, 1000)
+        },
   }
 }
 </script>
@@ -317,6 +498,26 @@ export default {
 
 .button_verify {
   margin-left: 20px;
-  margin-top: 95px;
+  margin-top: 205px;
 }
+
+::v-deep .el-form-item {
+  margin: 0px !important;
+}
+::v-deep .el-form-item__error {
+    left: 10%;
+}
+
+::v-deep .el-form-item__content{
+    margin-left:0px !important;
+    margin-bottom: 0px !important;
+    width:100%;
+    line-height: 0px;
+}
+
+::v-deep .el-form-item.el-form-item--feedback{
+    display: flex;
+    /*margin-bottom: 18px !important;*/
+}
+
 </style>

@@ -48,8 +48,8 @@
             <div class="user_row">
               <img class="profile_pic" src="../assets/image_placeholder.png"/>
               <div class="user_column">
-                <p class="username">用户名，</p>
-                <p class="overview">您共有XX条新消息和XXX条历史消息。</p>
+                <p class="username">{{ username }}，</p>
+                <p class="overview">您共有{{ messages_new }}条新消息和{{ messages_total }}条历史消息。</p>
               </div>
             </div>
             <div class="scroll_view">
@@ -101,12 +101,33 @@
 <script>
 // @ is an alias to /src
 // import HelloWorld from '@/components/HelloWorld.vue'
-import axios from 'axios'
+import { ApiClient } from '@/crowdlabel-api/src';
+import { UsersApi } from '@/crowdlabel-api/src';
 export default {
   data() {
     return {
-      
+      client:'',
+      user:'',
+      username:'',
+      messages_new: 3,
+      messages_total: 57
     };
+  },
+  mounted() {
+      let self = this
+      var apiClient  = new ApiClient('http://localhost:8000');
+      apiClient.authentications['OAuth2PasswordBearer'].accessToken = localStorage.getItem('Authorization')
+      self.client = apiClient
+      var usersApi = new UsersApi(apiClient);
+      self.user = usersApi
+      self.user.getMeUsersMeGet((error, data, response) => {
+        if (error == 'Error: Unauthorized') {
+          localStorage.removeItem('Authorization');
+          this.$router.push('/receiverlogin');
+        }
+        self.username = data['username']
+        console.log('username: ' + self.username)
+      })
   },
   methods: {
 

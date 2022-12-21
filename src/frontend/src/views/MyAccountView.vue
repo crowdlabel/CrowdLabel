@@ -48,10 +48,10 @@
             <div class="user_info_row">
               <img class="profile_pic" src="../assets/image_placeholder.png"/>
               <div class="user_info_column">
-                <p class="username">用户名</p>
-                <p class="user_info_line">邮箱：example@123.com</p>
-                <p class="user_info_line">密码：********</p>
-                <p class="user_info_line">积分：256</p>
+                <p class="username">{{ username }}</p>
+                <p class="user_info_line">邮箱：{{ email }}</p>
+                <p class="user_info_line">密码：{{ password }}</p>
+                <p class="user_info_line">积分：{{ credits }}</p>
               </div>
             </div>
             <div class="button_row">
@@ -71,12 +71,38 @@
 <script>
 // @ is an alias to /src
 // import HelloWorld from '@/components/HelloWorld.vue'
-import axios from 'axios'
+import { ApiClient } from '@/crowdlabel-api/src';
+import { UsersApi } from '@/crowdlabel-api/src';
 export default {
   data() {
     return {
-      
+      client:'',
+      user:'',
+      username:'',
+      email:'',
+      password:'**********',
+      credits:''
     };
+  },
+  mounted() {
+      let self = this;
+      var apiClient  = new ApiClient('http://localhost:8000');
+      apiClient.authentications['OAuth2PasswordBearer'].accessToken = localStorage.getItem('Authorization')
+      self.client = apiClient
+      var usersApi = new UsersApi(apiClient);
+      self.user = usersApi
+      self.user.getMeUsersMeGet((error, data, response) => {
+        if (error == 'Error: Unauthorized') {
+          localStorage.removeItem('Authorization');
+          this.$router.push('/receiverlogin');
+        }
+        self.username = data['username']
+        self.email = data['email']
+        self.credits = data['credits']
+        console.log('username: ' + self.username)
+        console.log('email: ' + self.email)
+        console.log('credits: ' + self.credits)
+      })
   },
   methods: {
 
