@@ -131,7 +131,7 @@ const router = new VueRouter({
 })
 
 router.beforeEach((to, from, next) => {
-  if ((to.path === '/sendermiss') || (to.path === '/projects')){
+  if ((to.path === '/sendermission') || (to.path === '/projects')){
     next();
   } else {
     let token = localStorage.getItem('Authorization');

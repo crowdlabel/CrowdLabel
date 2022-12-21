@@ -233,10 +233,6 @@ export default {
                 let ready_password = document.getElementById('registerpassword').value;
                 let ready_email = document.getElementById('registeremail').value;
                 let ready_verification = document.getElementById('registerverification').value
-                console.log(ready_username);
-                console.log(ready_password);
-                console.log(ready_email);
-                console.log(ready_verification);
                 this.user.registerUsersRegisterPost({
                     "username": ready_username,
                     "password": ready_password,
@@ -256,6 +252,7 @@ export default {
             });
         },
         submitLogin(formName) {
+            let _this = this;
             this.$refs[formName].validate((valid) => {
             if (valid) {
                 let ready_login_username = document.getElementById('loginusername').value;
@@ -265,12 +262,9 @@ export default {
                         console.log(error, data, response);
                         if (response.status == 200){
                             let token = response["access_token"]
-                            // alert('logging in...');
-                                this.$router.push({
+                            _this.$store.commit('changeLogin', token);
+                            this.$router.push({
                                 path: '/projects',
-                                query: {
-                                    userid: ready_login_username
-                                }
                             });
                         } else {
                             alert('wrong username or password!')

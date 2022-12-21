@@ -421,8 +421,8 @@ export default {
       })
     }
   },
-  create() {
-    this.multipartFile = new FormData();
+  created() {
+    // this.multipartFile = new FormData();
   },
   mounted () {
     let self = this
