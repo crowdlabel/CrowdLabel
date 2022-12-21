@@ -250,9 +250,9 @@ def test_claim():
     task_id = __upload_task(reqt, example_task).json()['task_id']
     cresp = __claim(johnt, task_id)
     assert cresp.status_code == 200
-    
     assert johndoe['username'] in __get_task(reqt, task_id).json()['respondents_claimed']
-    assert task_id in __get_me(johnt)
+    pprint( __get_me(johnt).json())
+    assert task_id in __get_me(johnt).json()['tasks_claimed']
 def test_credits():
     init_models_sync()
     __register(johndoe)
@@ -323,6 +323,17 @@ def test_cover():
     assert response.status_code == 200
     with open('../../examples/example_task/cover.jpg', 'rb') as f:
         assert f.read() == response.content
+def test_cover():
+    init_models_sync()
+    __register(johndoe)
+    __register(req1)
+    reqt = __login(req1)
+    __credits(reqt, 100)
+    task_id = __upload_task(reqt, example_task).json()['task_id']
+    response = __cover(reqt, task_id)
+    assert response.status_code == 200
+    with open('../../examples/example_task/cover.jpg', 'rb') as f:
+        assert f.read() == response.content
 
 if __name__ == '__main__':
     
@@ -340,4 +351,6 @@ if __name__ == '__main__':
     test_answer()
     """
     test_cover()
+    
+
     
