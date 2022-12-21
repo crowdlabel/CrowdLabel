@@ -382,7 +382,6 @@ export default {
     border-color: #5D3BE6;
     margin-top: 0px;
     margin-bottom: 20px !important;
-
 }
 ::v-deep .el-button--default{
     width:80%;
