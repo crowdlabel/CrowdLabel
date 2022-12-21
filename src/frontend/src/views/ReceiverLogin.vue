@@ -264,6 +264,7 @@ export default {
                     (error, data, response) => {
                         console.log(error, data, response);
                         if (response.status == 200){
+                            let token = response["access_token"]
                             // alert('logging in...');
                                 this.$router.push({
                                 path: '/projects',

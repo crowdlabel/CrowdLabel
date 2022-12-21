@@ -40,6 +40,7 @@ class Tasks:
         resource_path: pathlib.Path    
     ) -> schemas.tasks.Task | str:
 
+
         if task_request.responses_required <= 0:
             return '`responses_required` must be positive'
         if task_request.credits < 0:
@@ -54,14 +55,16 @@ class Tasks:
 
         # TODO: which task_id to use?
 
-
-        task_schema = schemas.tasks.Task(**task_request.dict(), 
+        info = task_request.dict()
+        del info['questions']
+        task_schema = schemas.tasks.Task(**info, 
             task_id= 0,
             requester=requester.username,
             date_created=datetime.utcnow(),
             resource_path=resource_path
         )
-
+        for question in task_request.questions:
+            task_schema.questions.append(question)
         missing = []
         for question in task_schema.questions:
             if not question.resource:
@@ -94,6 +97,7 @@ class Tasks:
             await con.commit()
             await asyncio.shield(con.close())
         task_schema.task_id = task.task_id
+
         return task_schema
 
     async def claim_task(self,user_name,task_id)->schemas.tasks.Task | None:
@@ -147,6 +151,8 @@ class Tasks:
             di = question.dict()
             del di['id_in_task']
             del di['options']
+            if di['resource'] == None:
+                del di['resource']
             di['question_id'] = question.id_in_task
             if qtype == 'single_choice':
                 di['options'] = question.options.split('|')

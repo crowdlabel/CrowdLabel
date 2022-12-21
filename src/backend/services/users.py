@@ -247,10 +247,10 @@ class Users:
         if request.amount == 100:
             user.credits = 100
             # TODO: not checking balance right now
-            """ elif user.credits - request.amount < 0:
-            return 'Insufficient credits' """ 
+        elif user.credits + request.amount < 0:
+            return 'Insufficient credits' 
         else:
-            user.credits -= request.amount
+            user.credits += request.amount
         target = await con.execute(select(models.user.User).where(models.user.User.username == user.username))
         res = target.scalars().first()
         if res == None:

@@ -62,6 +62,7 @@
 import { ApiClient } from '@/crowdlabel-api/src';
 import { UsersApi } from '@/crowdlabel-api/src';
 import { AuthApi } from '@/crowdlabel-api/src';
+import { mapMutations } from 'vuex';
 
 export default {
     
@@ -224,6 +225,7 @@ export default {
         this.auth = authApi
     },
     methods: {
+        ...mapMutations(['changeLogin']),
         handleTabClick(tab, event){
             console.log(tab, event)
         },
@@ -257,6 +259,7 @@ export default {
             });
         },
         submitLogin(formName) {
+            let _this = this;
             this.$refs[formName].validate((valid) => {
             if (valid) {
                 let ready_login_username = document.getElementById('loginusername').value;
@@ -265,12 +268,12 @@ export default {
                     (error, data, response) => {
                         console.log(error, data, response);
                         if (response.status == 200){
-                            // alert('logging in...');
-                                this.$router.push({
+                            let token = 'Bearer ' + data["access_token"];
+                            console.log("token: ")
+                            console.log(token)
+                            _this.changeLogin({ Authorization: token});
+                            this.$router.push({
                                 path: '/sendermission',
-                                query: {
-                                    userid: JSON.stringify(ready_login_username)
-                                }
                             });
                         } else {
                             alert('wrong username or password!')

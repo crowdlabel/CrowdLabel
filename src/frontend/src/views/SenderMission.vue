@@ -432,14 +432,16 @@ export default {
     this.user = usersApi
     var tasksApi = new TasksApi(apiClient);
     this.task = tasksApi
-    let username = JSON.parse(this.$route.query.userid)
     this.user.getMeUsersMeGet((error, data, response) => {
+      console.log(error)
+      if (error == 'Error: Unauthorized') {
+        localStorage.removeItem('Authorization');
+        this.$router.push('/senderlogin');
+      }
       this.userid = data['username'];
       this.usercredits = data['credits'];
     })
-    this.userid = username
-    console.log(this.userid);
-    console.log(this.usercredits);
+    console.log(localStorage.getItem('Authorization'));
   }
 }
 </script>
