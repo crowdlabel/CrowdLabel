@@ -81,6 +81,47 @@ expected = {'cover_image': 'cover.jpg',
             'audio-transcription',
             'object-detection'],
 }
+expected = {'cover_image': 'cover.jpg',
+    'credits': 2.0,
+    'description': 'This task is an example of a valid task',
+    'introduction': 'This is an example',
+    'name': 'Example task',
+    'questions': [{'answers': [],
+                    'options': ['Positive', 'Negative', 'Neutral', 'N/A'],
+                    'prompt': 'What sentiment does this text convey',
+                    'question_id': 1,
+                    'question_type': 'single_choice',
+                    'resource': 'text.txt'},
+                {'answers': [],
+                    'prompt': 'Draw a box around the person in this image',
+                    'question_id': 2,
+                    'question_type': 'bounding_box',
+                    'resource': 'camouflage.jpeg'},
+                {'answers': [],
+                    'prompt': 'Transcribe the following audio recording',
+                    'question_id': 3,
+                    'question_type': 'open',
+                    'resource': 'armstrong.mp3'},
+                {'answers': [],
+                    'options': ['lake', 'mountain', 'sky', 'human'],
+                    'prompt': 'What objects are present in the following image',
+                    'question_id': 4,
+                    'question_type': 'multi_choice',
+                    'resource': 'nature.jpg'},
+                {'answers': [],
+                    'options': ['7', '8', '9', '10'],
+                    'prompt': 'Which of the following is a prime number?',
+                    'question_id': 5,
+                    'question_type': 'multi_choice'}],
+    'requester': 'req1',
+    'respondents_claimed': [],
+    'respondents_completed': [],
+    'responses_required': 2,
+    'tags': ['object-bounding',
+            'sentiment-analysis',
+            'audio-transcription',
+            'object-detection'],
+}
 
 
 def __availability(username=None, email=None):
@@ -209,6 +250,8 @@ def test_upload():
         del json[key]
     del expected_cp['tags']
     assert json == expected_cp
+    del expected_cp['tags']
+    assert json == expected_cp
 def test_search():
     init_models_sync()
     __register(req1)
@@ -270,9 +313,12 @@ def test_get_task_question_resource():
     response = __get_task_question_resource(token, task_id, 2)
     pprint(__get_task(token, task_id).json())
     assert response.status_code == 200
+    pprint(__get_task(token, task_id).json())
+    assert response.status_code == 200
     content = response.content
     with open('../../examples/example_task/camouflage.jpeg', 'rb') as f:
         original = f.read()
+    print(len(content), len(original))
     print(len(content), len(original))
     assert content == original
 def test_answer():
