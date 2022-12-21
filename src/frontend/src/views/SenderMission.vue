@@ -130,7 +130,7 @@
             <div class="display_projects">
               <div class="display_items" v-for="(item, index) in tasks_info" v-if="index<6">
                 <el-card :body-style="{ padding: '0px' }">
-                    <img src="../assets/image_placeholder.png" class="project_image">
+                    <img src=imageObject alt="" class="project_image">
                     <div style="padding: 0px;">
                       <p class="project_title">{{item.name}}</p>
                       <div class="bottom clearfix">
@@ -212,6 +212,7 @@ export default {
         responses_required: '',
         responses_completed: ''
       },
+      imageObject: '',
       // 
       multipartFile: [],
       form: {
@@ -308,7 +309,7 @@ export default {
         console.log(element);
         self.task.getTaskTasksTaskIdGet(element, (error, data, response) => {
           let b = JSON.parse(response['text'])
-          var c = { 'task_id':element, 'name':b['name'], 'cover_image':b['cover_image']}
+          var c = { 'task_id':element, 'name':b['name']}
           self.tasks_info.push(c)
         })
       });
@@ -340,7 +341,6 @@ export default {
         // this.multipartFile.append('missionbrief', this.form.brief);
         // this.multipartFile.append('missiondetails', this.form.details);
         this.task.uploadTaskTasksUploadPost(this.file, (error, data, response) => {
-          console.log(error, data, response);
           if (response.status == 400){
             this.$confirm('积分不足！是否跳转到充值页面?', '提示', {
               confirmButtonText: '确定',
@@ -387,12 +387,17 @@ export default {
       self.taskslist = a['tasks_requested']
       self.tasks_info = []
       self.taskslist.forEach(function(element) {
-        console.log(element);
+        self.task.getCoverTasksTaskIdCoverImageGet(element, (error, data, response) => {
+          let blob = new Blob(data)
+          let imageObjectURL = window.URL.createObjectURL(blob);
+          self.imageObject = imageObjectURL
+        })
         self.task.getTaskTasksTaskIdGet(element, (error, data, response) => {
           let b = JSON.parse(response['text'])
-          var c = { 'task_id':element, 'name':b['name'], 'cover_image':b['cover_image']}
+          var c = { 'task_id':element, 'name':b['name'], 'cover':self.imageObject}
           self.tasks_info.push(c)
         })
+
       });
     })
   }

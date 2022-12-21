@@ -258,7 +258,6 @@ export default {
                 let ready_login_password = document.getElementById('loginpassword').value;
                 this.auth.loginLoginPost(ready_login_username, ready_login_password, {}, 
                     (error, data, response) => {
-                        console.log(error, data, response);
                         if (response.status == 200){
                             let token = data["access_token"];
                             _this.$store.commit('changeLogin', token);
