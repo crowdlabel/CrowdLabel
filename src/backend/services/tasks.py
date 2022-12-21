@@ -153,7 +153,7 @@ class Tasks:
             di = question.dict()
             del di['id_in_task']
             del di['options']
-            if di['resource'] == None:
+            if di['resource'] == 'None':
                 del di['resource']
             di['question_id'] = question.id_in_task
             if qtype == 'single_choice':
