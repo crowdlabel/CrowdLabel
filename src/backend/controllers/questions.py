@@ -6,7 +6,7 @@ import services.questions
 import services.tasks
 import schemas.tasks
 import schemas.questions
-from .jsondocumentedresponse import JSONDocumentedResponse, create_documentation, not_found_jdr, forbidden_jdr
+from .documentedresponse import JSONDocumentedResponse, create_documentation, not_found_jdr, forbidden_jdr
 import controllers.tasks
 import services.questions
 import datetime

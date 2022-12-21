@@ -1,7 +1,7 @@
 from fastapi import status
 from fastapi.routing import APIRouter
 from .auth import Depends, get_current_user
-from .jsondocumentedresponse import JSONDocumentedResponse, create_documentation
+from .documentedresponse import JSONDocumentedResponse, create_documentation
 import schemas.users
 import schemas.tasks
 from services.users import user_service
