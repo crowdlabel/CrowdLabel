@@ -22,6 +22,7 @@ import SenderHome from '../views/SenderHome.vue'
 import SenderCredits from '../views/SenderCredits.vue'
 import SenderMission from '../views/SenderMission.vue'
 import SenderAccount from '../views/SenderAccount.vue'
+import SenderNotifications from '../views/SenderNotifications.vue'
 
 Vue.use(VueRouter)
 Vue.use(VueAxios, axios)
@@ -127,7 +128,12 @@ const routes = [
     path: '/senderaccount',
     name: 'senderaccount',
     component: SenderAccount
-  }
+  },
+  {
+    path: '/sendernotice',
+    name: 'sendernotice',
+    component: SenderNotifications
+  },
 ]
 
 const router = new VueRouter({

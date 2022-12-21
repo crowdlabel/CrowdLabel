@@ -128,66 +128,17 @@
             </div>
             
             <div class="display_projects">
-              <div class="display_items">
+              <div class="display_items" v-for="(item, index) in task_name" v-if="index<6">
                 <el-card :body-style="{ padding: '0px' }">
                     <img src="../assets/image_placeholder.png" class="project_image">
                     <div style="padding: 0px;">
-                      <p class="project_title">任务标题</p>
+                      <p class="project_title">{{item}}</p>
                       <div class="bottom clearfix">
                       </div>
                     </div>
                   </el-card>
               </div>
-              <div class="display_items">
-                <el-card :body-style="{ padding: '0px' }">
-                    <img src="../assets/image_placeholder.png" class="project_image">
-                    <div style="padding: 0px;">
-                      <p class="project_title">任务标题</p>
-                      <div class="bottom clearfix">
-                      </div>
-                    </div>
-                  </el-card>
-              </div>
-              <div class="display_items">
-                <el-card :body-style="{ padding: '0px' }">
-                    <img src="../assets/image_placeholder.png" class="project_image">
-                    <div style="padding: 0px;">
-                      <p class="project_title">任务标题</p>
-                      <div class="bottom clearfix">
-                      </div>
-                    </div>
-                  </el-card>
-              </div>
-              <div class="display_items">
-                <el-card :body-style="{ padding: '0px' }">
-                    <img src="../assets/image_placeholder.png" class="project_image">
-                    <div style="padding: 0px;">
-                      <p class="project_title">任务标题</p>
-                      <div class="bottom clearfix">
-                      </div>
-                    </div>
-                  </el-card>
-              </div>
-              <div class="display_items">
-                <el-card :body-style="{ padding: '0px' }">
-                    <img src="../assets/image_placeholder.png" class="project_image">
-                    <div style="padding: 0px;">
-                      <p class="project_title">任务标题</p>
-                      <div class="bottom clearfix">
-                      </div>
-                    </div>
-                  </el-card>
-              </div>
-              <div class="display_items">
-                <el-card :body-style="{ padding: '0px' }">
-                    <img src="../assets/image_placeholder.png" class="project_image">
-                    <div style="padding: 0px;">
-                      <p class="project_title">任务标题</p>
-                      <div class="bottom clearfix">
-                      </div>
-                    </div>
-                  </el-card>
-              </div>
+            
             </div>
             <div class="pagination">
               <el-pagination
@@ -253,6 +204,13 @@ export default {
       user: '',
       userid: '',
       usercredits: '',
+      taskslist: '',
+      task_name: [],
+      task_cover_image: [],
+      tasksinfo: {
+        responses_required: '',
+        responses_completed: ''
+      },
       // 
       multipartFile: [],
       form: {
@@ -333,6 +291,30 @@ export default {
         self.form.zipfile = fileList;
       }
     },
+    refresh: function() {
+      let self = this
+      self.user.getMeUsersMeGet((error, data, response) => {
+      if (error == 'Error: Unauthorized') {
+        localStorage.removeItem('Authorization');
+        this.$router.push('/senderlogin');
+      }
+      self.userid = data['username']
+      self.usercredits = data['credits']
+      let a = JSON.parse(response['text'])
+      self.userid = data['username']
+      self.usercredits = data['credits']
+      self.taskslist = a['tasks_requested']
+      self.task_name = []
+      self.task_cover_image = []
+      for (var task_id in self.taskslist){
+        self.task.getTaskTasksTaskIdGet(self.taskslist[task_id], (error, data, response) => {
+          let b = JSON.parse(response['text'])
+          self.task_name.push(b['name']);
+          self.task_cover_image.push(b['cover_image']);
+        })
+      }
+      })
+    },
     getFileType(name){
       let startIndex = name.lastIndexOf(".");
       if (startIndex !== -1) {
@@ -371,11 +353,12 @@ export default {
               this.$message({
                 type: 'info',
                 message: '已取消跳转'
-              });          
+              });
             });
           } else if(response.status == 200){
             alert('upload suceed');
             this.dialogVisible = false
+            this.refresh();
           }
         })
       }
@@ -394,14 +377,25 @@ export default {
     var tasksApi = new TasksApi(apiClient);
     self.task = tasksApi
     self.user.getMeUsersMeGet((error, data, response) => {
+      console.log("response: ")
+      console.log(response)
       if (error == 'Error: Unauthorized') {
         localStorage.removeItem('Authorization');
         this.$router.push('/senderlogin');
       }
+      let a = JSON.parse(response['text'])
       self.userid = data['username']
       self.usercredits = data['credits']
-      console.log('credits: ')
-      console.log(self.usercredits)
+      self.taskslist = a['tasks_requested']
+      self.task_name = []
+      self.task_cover_image = []
+      for (var task_id in self.taskslist){
+        self.task.getTaskTasksTaskIdGet(self.taskslist[task_id], (error, data, response) => {
+          let b = JSON.parse(response['text'])
+          self.task_name.push(b['name']);
+          self.task_cover_image.push(b['cover_image']);
+        })
+      }
     })
   }
 }
@@ -410,7 +404,10 @@ export default {
 
 <style scoped>
 @import '@/assets/font/font.css';
-fffff
+
+.dialogClass{
+  min-width: 800px !important;
+}
 ::v-deep .dialogClass .el-dialog{
   width: 50% !important;
   min-width: 700px;
@@ -686,6 +683,7 @@ fffff
 
 .display_items{
   width: 33.3333%;
+  float: left;
   height:180px;
   display: flex;
   flex-direction: center;
