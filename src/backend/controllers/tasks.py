@@ -137,7 +137,6 @@ async def get_task(task_id: int, current_user: schemas.users.User=Depends(get_cu
         current_user.username not in task.respondents_claimed):
 
         return forbidden_jdr.response()
-    print(task)
     return get_task_success_jdr.response(task, exclude={'resource_path'})
 
 ###############################################################################
