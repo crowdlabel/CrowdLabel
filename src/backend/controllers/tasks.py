@@ -64,11 +64,12 @@ async def upload_task(task_file: UploadFile, current_user=Depends(get_current_us
     task = await task_service.process_task_archive(out_path)
     if isinstance(task, str):
         return upload_failed_jdr.response(schemas.tasks.ErrorResponse(error=task))
+
     task = await task_service.create_task(current_user, task, out_path.parent / out_path.stem)
     if isinstance(task, str):
         return upload_failed_jdr.response(schemas.tasks.ErrorResponse(error=task))
 
-    return upload_success_jdr.response(task)
+    return upload_success_jdr.response(task, exclude={'resource_path'})
 ###############################################################################
 
 
@@ -138,7 +139,7 @@ async def get_task(task_id: int, current_user: schemas.users.User=Depends(get_cu
         current_user.username not in task.respondents_claimed):
 
         return forbidden_jdr.response()
-    return get_task_success_jdr.response(task)
+    return get_task_success_jdr.response(task, exclude={'resource_path'})
 
 ###############################################################################
 task_delete_success_jdr = JSONDocumentedResponse(

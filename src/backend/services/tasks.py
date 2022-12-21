@@ -52,15 +52,13 @@ class Tasks:
         if not isinstance(response, float):
             return response
 
-        # TODO: which task_id to use?
-
-
         task_schema = schemas.tasks.Task(**task_request.dict(), 
             task_id= 0,
             requester=requester.username,
             date_created=datetime.utcnow(),
             resource_path=resource_path
         )
+
 
         missing = []
         for question in task_schema.questions:
