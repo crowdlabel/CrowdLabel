@@ -268,7 +268,7 @@ export default {
                     (error, data, response) => {
                         console.log(error, data, response);
                         if (response.status == 200){
-                            let token = 'Bearer ' + data["access_token"];
+                            let token = data["access_token"];
                             console.log("token: ")
                             console.log(token)
                             _this.changeLogin({ Authorization: token});
