@@ -18,7 +18,6 @@ import schemas.users
 
 
 Connection = sessionmaker(bind=engine, expire_on_commit=False, class_=AsyncSession)
-con = scoped_session(Connection)
 
 
 
@@ -35,7 +34,7 @@ class Users:
         Returns `True` if the email was sent successfully,
         `False` otherwise
         """
-
+        con = scoped_session(Connection)
         if not checkers.users.check_email_format(email):
             return False
 
@@ -69,6 +68,7 @@ class Users:
 
 
     async def check_verification_code(self, email: str, verification_code: str):
+        con = scoped_session(Connection)
         if verification_code == '123456':
             return True
         # TODO: check?
@@ -90,7 +90,7 @@ class Users:
 
 
         errors = {}
-
+        con = scoped_session(Connection)
         # check existance
         if 'username' not in errors and await self.username_exists(request.username):
             errors['username'] = 'exists'
@@ -143,7 +143,7 @@ class Users:
 
     async def authenticate(self, username: str, password: str) -> bool:
 
-
+        con = scoped_session(Connection)    
         # TODO: check?
         con = scoped_session(Connection)
         res= await con.execute(select(models.user.User).where(models.user.User.username==username))
@@ -159,6 +159,7 @@ class Users:
         """
         Returns User object, or None if user not found
         """
+        con = scoped_session(Connection)
         res = await con.execute(select(models.user.User).where(models.user.User.username == username))
         target = res.scalars().first()
         if target == None:
@@ -196,7 +197,7 @@ class Users:
         '''
         Returns `True` if the username already exists
         '''
-
+        con = scoped_session(Connection)
         if not checkers.users.check_username_format(username):
             return False
 
@@ -217,7 +218,7 @@ class Users:
         '''
         Returns `True` if the email already exists
         '''
-
+        con = scoped_session(Connection)
         # TODO: check
         if not checkers.users.check_email_format(email):
             return False
@@ -239,6 +240,7 @@ class Users:
         Returns `True` if the username was successfully deleted
         '''
         # TODO: implement
+        con = scoped_session(Connection)
         async with con.begin():
 
             res= await con.execute(select(models.user.User).where(models.user.User.username==username))
@@ -256,6 +258,7 @@ class Users:
         Edits self using the new info
         returns error message, or none if successful
         """
+        con = scoped_session(Connection)
         res = await con.execute(select(models.user.User).where(models.user.User.id == userid))
         target = res.scalar().first()
         if target == None:
@@ -272,6 +275,7 @@ class Users:
         Returns the new balance as a `float` if the transaction succeeded
         Returns a str detailing the error if the transaction failed
         '''
+        con = scoped_session(Connection)
         if user.credits + request.amount < 0:
             return 'Insufficient credits' 
         else:

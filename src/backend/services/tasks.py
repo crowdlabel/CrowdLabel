@@ -11,7 +11,6 @@ from sqlalchemy.orm import sessionmaker, scoped_session, selectinload
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy import select, and_ ,or_
 conection = sessionmaker(bind=engine, expire_on_commit=False, class_=AsyncSession)
-con = scoped_session(conection)
 
 import pathlib
 
@@ -41,8 +40,7 @@ class Tasks:
         task_request: schemas.tasks.CreateTaskRequest,
         resource_path: pathlib.Path    
     ) -> schemas.tasks.Task | str:
-
-
+        con = scoped_session(conection)
         if task_request.responses_required <= 0:
             return '`responses_required` must be positive'
         if task_request.credits < 0:
@@ -105,6 +103,7 @@ class Tasks:
         return task_schema
 
     async def claim_task(self,user_name,task_id)->schemas.tasks.Task | None:
+        con = scoped_session(conection)
         async with con.begin():
             user = await con.execute(select(models.user.Respondent).where(models.user.Respondent.username == user_name).options(
                 selectinload(models.user.Respondent.task_claimed)
@@ -128,7 +127,7 @@ class Tasks:
             return response_task
 
     async def get_task(self, task_id: int) -> schemas.tasks.Task | str:
-        
+        con = scoped_session(conection)
         result = await con.execute(select(models.task.Task).where(models.task.Task.task_id == task_id).options(
             selectinload(models.task.Task.questions),
             selectinload(models.task.Task.respondents_claimed),
@@ -193,6 +192,7 @@ class Tasks:
 
     
     async def delete_task(task_id:int) -> bool:
+        con = scoped_session(conection)
         async with con.begin():
             result = await con.execute(select(models.task.Task).where(models.task.Task.id==task_id))
             target = result.scalars().first()
@@ -206,6 +206,7 @@ class Tasks:
         return True
 
     async def claim_task(self,user_name,task_id)->schemas.tasks.Task | None:
+        con = scoped_session(conection)
         async with con.begin():
             user = await con.execute(select(models.user.Respondent).where(models.user.Respondent.username == user_name).options(
                 selectinload(models.user.Respondent.task_claimed)
@@ -242,6 +243,7 @@ class Tasks:
         Filename: filename of the file that was uploaded
         Creates and returns the task, or returns an error message
         '''
+        con = scoped_session(conection)
         output_dir = path.parent / path.stem
         try:
             response = patoolib.extract_archive(str(path), outdir=output_dir, verbosity=-1, interactive=False)
@@ -297,7 +299,7 @@ Returns: list of `Task`s matching the query within the specified `page` and `pag
         # TODO: use query parameters from `parameters`
 
 
-        
+        con = scoped_session(conection)
         if parameters.sort_ascending is True:
             result = await con.execute(select(models.task.Task).where(and_(
                         or_ (parameters.name == '',models.task.Task.name == parameters.name),

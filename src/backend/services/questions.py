@@ -7,7 +7,6 @@ from sqlalchemy import select ,update,and_
 from .database import *
 import datetime
 Connection = sessionmaker(bind=engine,expire_on_commit=False,class_=AsyncSession)
-con = scoped_session(Connection)
 def __verify_question_format():
     return True
 
@@ -28,6 +27,7 @@ from datetime import datetime
 
 class Questions:
     async def get_question(self, task: schemas.tasks.Task | int, question_id: int) -> schemas.questions.Question | None:
+        con = scoped_session(Connection)
         id = task.task_id
         result = await con.execute(select(models.question.Question).where(and_( models.question.Question.task_id == id , models.question.Question.id_in_task == question_id))
                                   .options(selectinload(models.question.Question.answer)))
@@ -82,6 +82,7 @@ class Questions:
         current_user: schemas.users.User,
         answer: schemas.answers.AnswerRequest
     ) -> str | None:
+        con = scoped_session(Connection)
         result = await con.execute(select(models.question.Question).where(and_( models.question.Question.task_id == task_id , models.question.Question.id_in_task == question_id))
                                   .options(selectinload(models.question.Question.answer)))
         # TODO
@@ -122,6 +123,7 @@ class Questions:
     async def create_question(self,id_in_task,type,prompt,file_path,options,task_id) ->models.question.Question:
         # if not __verify_question_format():
         #     return None
+        con = scoped_session(Connection)
         async with con.begin():
             if type == 'multi_choice':
                 question = models.question.MultipleChoice(id_in_task,type,prompt,file_path,'|'.join(options),task_id)
@@ -143,6 +145,7 @@ class Questions:
         # TODO
         #if not __verify_question_format():
         #    return False
+        con = scoped_session(Connection)
         file = json.load(open(file_path,'r'))
         response_questions = []
         result = await con.execute(select(models.task.Task).where(models.task.Task.id==task_id))
