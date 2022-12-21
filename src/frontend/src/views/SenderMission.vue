@@ -299,14 +299,11 @@ export default {
         localStorage.removeItem('Authorization');
         this.$router.push('/senderlogin');
       }
-      self.userid = data['username']
-      self.usercredits = data['credits']
       let a = JSON.parse(response['text'])
       self.userid = a['username']
       self.usercredits = a['credits']
       self.taskslist = a['tasks_requested']
-      self.task_name = []
-      self.task_cover_image = []
+      self.tasks_info = []
       self.taskslist.forEach(function(element) {
         console.log(element);
         self.task.getTaskTasksTaskIdGet(element, (error, data, response) => {
@@ -671,9 +668,9 @@ export default {
 
 
 .display_projects {
-  flex-direction: column;
+  flex-direction: row;
   display: flex;
-  align-items:center;
+  align-items:left;
   margin: 20px 100px;
   margin-bottom:40px;
   cursor: pointer;
