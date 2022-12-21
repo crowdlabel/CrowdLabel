@@ -134,6 +134,11 @@ class Tasks:
         del dict['tags']
         dict['tags'] = set(target.tags.split('|'))
         del dict['questions']
+        del dict['respondents_claimed']
+        del dict['respondents_complete']
+        dict['respondents_claimed'] =set(list(map(lambda A:A.username,target.respondents_claimed))) 
+        dict['respondents_complete'] =set(list(map(lambda A:A.username,target.respondents_complete))) 
+
         response_task = schemas.tasks.Task(**dict)
         for question in target.questions:
             qtype = question.question_type
@@ -187,8 +192,8 @@ class Tasks:
                 await asyncio.shield(con.close())
             
                 return None
-            task = await con.execute(select(models.task.Task).where(models.task.Task.id==task_id).options(
-                selectinload(models.task.Task.respondents_claimed)
+            task = await con.execute(select(models.task.Task).where(models.task.Task.task_id==task_id).options(
+                selectinload(models.task.Task.respondents_claimed),selectinload(models.task.Task.respondents_complete)
             ))
             task = task.scalars().first()
             if task == None:
@@ -196,7 +201,16 @@ class Tasks:
 
                 return None
             user.task_claimed.append(task)
-            response_task = schemas.tasks.Task(task)
+            info = {
+                'task_id' :task_id,
+                'requester': task.requester,
+                'date_created':task.date_created,
+                'resource_path':task.resource_path,
+            }
+            response_task = schemas.tasks.Task(**info)
+            response_task.respondents_claimed =set(list( map(lambda A: A.username,task.respondents_claimed)))
+            response_task.respondents_claimed.add(user_name)
+            response_task.respondents_completed =set( list(map(lambda A: A.username,task.respondents_complete)))
             await con.commit()
             await asyncio.shield(con.close())
             return response_task
