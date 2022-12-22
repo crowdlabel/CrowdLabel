@@ -25,7 +25,7 @@ class Task(Base):
     requester_id = Column(Integer ,ForeignKey('requester.id'))
 
     #results = relationship('Results',cascade = 'all,delete-orphan')
-    questions = relationship('Question')    
+    questions = relationship('Question',cascade = 'delete, delete-orphan')    
     respondents_claimed = relationship('Respondent',secondary='respondent2claim',cascade="delete, delete-orphan",single_parent = True, overlaps="task_complete, task_claimed")
     respondents_complete = relationship('Respondent',secondary = 'respondent2complete',cascade="delete, delete-orphan",single_parent = True, overlaps="task_complete")
    
