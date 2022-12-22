@@ -19,7 +19,7 @@
                 {{ task_brief }}
               </p>
               <div class="placeholder_text"></div>
-              <p class="text_bold">任务类型：</p><p class="text_normal">文字任务</p>
+              <p class="text_bold">任务类型：</p><p class="text_normal">{{ task_type }}</p>
               <p class="text_bold"><br />问题数量：</p><p class="text_normal">{{ task_question_num }}</p>
               <p class="text_bold"><br />积分总额：</p><p class="text_normal">{{ task_credit }}</p>
             </div>

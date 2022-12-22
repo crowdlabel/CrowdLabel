@@ -130,7 +130,7 @@
             <div class="display_projects">
               <div class="display_items" v-for="(item, index) in tasks_info" v-if="index<6">
                 <el-card :body-style="{ padding: '0px' }" @click.native="seeDetails(item.task_id)">
-                    <img :src=item.cover alt="" class="project_image">
+                    <img :src=item.cover alt="" class="project_image" >
                     <div style="padding: 0px;">
                       <p class="project_title">{{item.name}}</p>
                       <div class="bottom clearfix">
@@ -320,7 +320,7 @@ export default {
           self.imageObject = imageObjectURL
           self.task.getTaskTasksTaskIdGet(element, (error, data, response) => {
             let b = JSON.parse(response['text'])
-            var c = { 'task_id':element, 'name':b.name, 'cover':self.imageObject, 'task_id':b.task_id}
+            var c = { task_id:element, name:b.name, cover:self.imageObject, task_id:b.task_id}
             self.tasks_info.push(c)
           })
         })
@@ -437,13 +437,14 @@ export default {
       self.tasks_info = []
       self.taskslist.forEach(function(element) {
         self.task.getCoverTasksTaskIdCoverImageGet(element, (error, data, response) => {
-          console.log(response.body)
           let imageObjectURL = window.URL.createObjectURL(response.body);
           self.imageObject = imageObjectURL
+          var c = { task_id:element, name:'', cover:self.imageObject, task_id:''}
           self.task.getTaskTasksTaskIdGet(element, (error, data, response) => {
             let b = JSON.parse(response['text'])
-            console.log(b)
-            var c = { 'task_id':element, 'name':b.name, 'cover':self.imageObject, 'task_id':b.task_id}
+            c.name = b.name
+            c.task_id = b.task_id
+            console.log(c.cover)
             self.tasks_info.push(c)
           })
         })
