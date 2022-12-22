@@ -149,6 +149,19 @@ export default {
 }
 </script>
 
+<style>
+.el-message-box__btns .el-button--primary{
+  color: #FFF !important;
+  background-color: #5D3BE6 !important;
+  border-color: #5D3BE6 !important;
+}
+.el-message-box__btns .el-button--primary:hover{
+  color: #FFF !important;
+  background:#3C1C66 !important;
+  border-color: #3C1C66 !important;
+}
+</style>
+
 <style scoped>
 @import '@/assets/font/font.css';
 .all {

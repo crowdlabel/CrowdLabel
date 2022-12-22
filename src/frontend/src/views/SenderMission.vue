@@ -7,7 +7,7 @@
       </div>
       <div class="page_title">
         <h3 class="title">任务大厅</h3>
-        <a class="notifications" data-external="true" href="/notifications">
+        <a class="notifications" data-external="true" href="/sendernotice">
             <img src="../assets/notifications.svg" alt="label" height="24"/>
           </a>
       </div>
@@ -138,8 +138,8 @@
                     </div>
                   </el-card>
               </div>
-            
             </div>
+
             <div class="pagination">
               <el-pagination
                 background
@@ -307,7 +307,6 @@ export default {
       self.tasks_info = []
       self.taskslist.forEach(function(element) {
         self.task.getCoverTasksTaskIdCoverImageGet(element, (error, data, response) => {
-          console.log(response.body)
           let imageObjectURL = window.URL.createObjectURL(response.body);
           self.imageObject = imageObjectURL
           self.task.getTaskTasksTaskIdGet(element, (error, data, response) => {
@@ -427,6 +426,10 @@ export default {
         this.$router.push('/senderlogin');
       }
       let a = JSON.parse(response['text'])
+      if (a.user_type != 'requester'){
+        localStorage.removeItem('Authorization');
+        this.$router.push('/');
+      }
       self.userid = a['username']
       self.usercredits = a['credits']
       self.taskslist = []
@@ -443,17 +446,11 @@ export default {
             self.tasks_info.push(c)
           })
         })
-        self.task.getTaskTasksTaskIdGet(element, (error, data, response) => {
-          let b = JSON.parse(response['text'])
-          var c = { 'task_id':element, 'name':b['name'], 'cover':self.imageObject}
-          self.tasks_info.push(c)
-        })
       });
     })
   }
 }
 </script>
-
 
 <style scoped>
 @import '@/assets/font/font.css';
