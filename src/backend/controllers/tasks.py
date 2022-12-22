@@ -191,6 +191,7 @@ async def claim_task(task_id: int, current_user=Depends(get_current_user(['respo
 download_task_success_jdr = MediaDocumentedResponse(
     status.HTTP_200_OK,
     'Task downloaded successfully',
+    'application/zip'
 )
 download_task_failed_jdr = JSONDocumentedResponse(
     status.HTTP_400_BAD_REQUEST,
@@ -199,7 +200,7 @@ download_task_failed_jdr = JSONDocumentedResponse(
 )
 @router.get('/{task_id}/cover-image',
     description='Get cover image',
-    **create_documentation([download_task_success_jdr, download_task_dfailed_jdr, forbidden_jdr, not_found_jdr]),
+    **create_documentation([download_task_success_jdr, download_task_failed_jdr, forbidden_jdr, not_found_jdr]),
 )
 @router.get('/{task_id}/download',)
 async def download_task_results(task_id: int, current_user=Depends(get_current_user(['requester']))):
