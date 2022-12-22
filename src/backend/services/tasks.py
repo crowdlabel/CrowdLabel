@@ -191,16 +191,14 @@ class Tasks:
         return response_task
 
     
-    async def delete_task(task_id:int) -> str | None:
+    async def delete_task(self,task_id:int) -> str | None:
         con = scoped_session(conection)
         async with con.begin():
-            result = await con.execute(select(models.task.Task).where(models.task.Task.id==task_id))
+            result = await con.execute(select(models.task.Task).where(models.task.Task.task_id==task_id))
             target = result.scalars().first()
             if target == None:
                 return 'not_found'
             await con.delete(target)
-            # for item in result:
-            #     await con.delete(item)
             await con.commit()
             await asyncio.shield(con.close())
 
