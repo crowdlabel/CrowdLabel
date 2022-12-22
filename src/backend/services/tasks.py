@@ -191,19 +191,18 @@ class Tasks:
         return response_task
 
     
-    async def delete_task(task_id:int) -> bool:
+    async def delete_task(task_id:int) -> str | None:
         con = scoped_session(conection)
         async with con.begin():
             result = await con.execute(select(models.task.Task).where(models.task.Task.id==task_id))
             target = result.scalars().first()
             if target == None:
-                return False
+                return 'not_found'
             await con.delete(target)
             # for item in result:
             #     await con.delete(item)
             await con.commit()
             await asyncio.shield(con.close())
-        return True
 
     async def claim_task(self,user_name,task_id)->schemas.tasks.Task | None:
         con = scoped_session(conection)
@@ -359,14 +358,15 @@ Returns: list of `Task`s matching the query within the specified `page` and `pag
                     return response_tasks, len(target)
 
 
-    async def create_task_results_file(self, id: int) -> str:
+    async def create_task_results_file(self, task_id: int) -> pathlib.Path | str:
         '''
         id: ID of the task
         Create the ZIP file containing the results of the task with ID `id`
-        Returns the filename of the zip file
+        Returns the filename of the zip file as a pathlib.Path object if successful
+        Returns a str detailing the error if it failed
         '''
 
-        filename = 'results_' + id + '_' + datetime_now_str() + '.zip'
+        filename = 'results_' + task_id + '_' + datetime_now_str() + '.zip'
 
 
 

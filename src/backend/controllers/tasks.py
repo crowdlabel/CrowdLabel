@@ -150,16 +150,23 @@ task_delete_success_jdr = JSONDocumentedResponse(
     status.HTTP_200_OK,
     'Task deleted successfully',
 )
-@router.delete('/{task_id}',
-    **create_documentation([task_delete_success_jdr, forbidden_jdr, not_found_jdr])
+task_delete_failed_jdr = JSONDocumentedResponse(
+    status.HTTP_400_BAD_REQUEST,
+    'Task not deleted',
+    schemas.tasks.ErrorResponse
 )
-async def delete_task(task_id: int, current_user=Depends(get_current_user(['requester']))):
+@router.delete('/{task_id}',
+    **create_documentation([task_delete_success_jdr, task_delete_failed_jdr, forbidden_jdr, not_found_jdr])
+)
+async def delete_task(task_id: int, current_user: schemas.users.Requester=Depends(get_current_user(['requester']))):
     task = await task_service.get_task(task_id)
     if not task:
         return not_found_jdr.response()
-    response = await task_service.delete_task(task_id)
-    if response == 'forbidden':
+    if current_user.username != task.requester:
         return forbidden_jdr.response()
+    response = await task_service.delete_task(task_id)
+    if response:
+        return forbidden_jdr.response(schemas.tasks.ErrorResponse(response))
     return task_delete_success_jdr.response()
 ###############################################################################
 claim_success_jdr = JSONDocumentedResponse(
@@ -181,11 +188,31 @@ async def claim_task(task_id: int, current_user=Depends(get_current_user(['respo
         return claim_failed_jdr.response(schemas.tasks.ErrorResponse(error=task))
     return claim_success_jdr.response(task)
 ###############################################################################
-
+download_task_success_jdr = MediaDocumentedResponse(
+    status.HTTP_200_OK,
+    'Task downloaded successfully',
+    'application/zip'
+)
+download_task_failed_jdr = JSONDocumentedResponse(
+    status.HTTP_400_BAD_REQUEST,
+    'Task not downloaded',
+    schemas.tasks.ErrorResponse,
+)
+@router.get('/{task_id}/cover-image',
+    description='Get cover image',
+    **create_documentation([download_task_success_jdr, download_task_failed_jdr, forbidden_jdr, not_found_jdr]),
+)
 @router.get('/{task_id}/download',)
 async def download_task_results(task_id: int, current_user=Depends(get_current_user(['requester']))):
-    filename = await task_service.create_task_results_file(task_id)
-    return await download_file(filename)
+    task = await task_service.get_task(task_id)
+    if not task:
+        return not_found_jdr.response()
+    if current_user.username != task.requester:
+        return forbidden_jdr.response()
+    response = await task_service.create_task_results_file(task_id)
+    if not isinstance(response, pathlib.Path):
+        return download_task_failed_jdr.response(schemas.tasks.ErrorResponse(response))
+    return await download_file(response)
 ###############################################################################
 
 @router.patch('/{task_id}')
