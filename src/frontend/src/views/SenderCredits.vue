@@ -98,8 +98,14 @@ export default {
         if (error == 'Error: Unauthorized') {
           localStorage.removeItem('Authorization');
           this.$router.push('/senderlogin');
+          return;
         }
         let a = JSON.parse(response['text'])
+        if (a.user_type != 'requester'){
+          localStorage.removeItem('Authorization');
+          this.$router.push('/');
+          return;
+        }
         self.userid = a['username']
         self.usercredits = a['credits']
         console.log('credits: ')
@@ -113,6 +119,7 @@ export default {
         if (error == 'Error: Unauthorized') {
           localStorage.removeItem('Authorization');
           this.$router.push('/senderlogin');
+          return;
         }
         let a = JSON.parse(response['text'])
         self.userid = a['username']

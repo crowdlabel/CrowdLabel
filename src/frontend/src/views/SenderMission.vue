@@ -11,9 +11,9 @@
             <img src="../assets/notifications.svg" alt="label" height="24"/>
           </a>
       </div>
-      <div class="my_account" data-external="true" href="/senderaccount">
-        <img src="../assets/my_account.svg" alt="label" height="23">
-      </div>
+      <a class="my_account" data-external="true" href="/senderaccount">
+        <img src="../assets/my_account.svg" alt="label" height="24"/>
+      </a>
     </div>
     <div class="body">
         <div class="left_nav">
@@ -129,7 +129,7 @@
             
             <div class="display_projects">
               <div class="display_items" v-for="(item, index) in tasks_info" v-if="index<6">
-                <el-card :body-style="{ padding: '0px' }">
+                <el-card :body-style="{ padding: '0px' }" @click.native="seeDetails(item.task_id)">
                     <img :src=item.cover alt="" class="project_image">
                     <div style="padding: 0px;">
                       <p class="project_title">{{item.name}}</p>
@@ -245,6 +245,15 @@ export default {
     }
   },
   methods: {
+    seeDetails(task_id) {
+      console.log(task_id)
+      this.$router.push({
+        name:'sendermissiondetail',
+        params:{
+          taskid: task_id
+        }
+      })
+    },
     handleChange(file, fileList) {
       let self = this;
       if (file.size / (1024*1024)>1) {
@@ -311,7 +320,7 @@ export default {
           self.imageObject = imageObjectURL
           self.task.getTaskTasksTaskIdGet(element, (error, data, response) => {
             let b = JSON.parse(response['text'])
-            var c = { 'task_id':element, 'name':b['name'], 'cover':self.imageObject}
+            var c = { 'task_id':element, 'name':b.name, 'cover':self.imageObject, 'task_id':b.task_id}
             self.tasks_info.push(c)
           })
         })
@@ -358,18 +367,7 @@ export default {
       })
     },
     searchRadio () {
-      let self = this
-      self.user.getMeUsersMeGet((error, data, response) => {
-      if (error == 'Error: Unauthorized') {
-        localStorage.removeItem('Authorization');
-        this.$router.push('/senderlogin');
-      }
-      let a = JSON.parse(response['text'])
-      self.userid = a['username']
-      self.usercredits = a['credits']
-      self.taskslist = a['tasks_requested']
-      self.tasks_info = []
-    })
+      
     },
     createProject () {
       this.dialogVisible = true;
@@ -424,16 +422,18 @@ export default {
       if (error == 'Error: Unauthorized') {
         localStorage.removeItem('Authorization');
         this.$router.push('/senderlogin');
+        return;
       }
       let a = JSON.parse(response['text'])
       if (a.user_type != 'requester'){
         localStorage.removeItem('Authorization');
         this.$router.push('/');
+        return;
       }
-      self.userid = a['username']
-      self.usercredits = a['credits']
+      self.userid = a.username
+      self.usercredits = a.credits
       self.taskslist = []
-      self.taskslist = a['tasks_requested']
+      self.taskslist = a.tasks_requested
       self.tasks_info = []
       self.taskslist.forEach(function(element) {
         self.task.getCoverTasksTaskIdCoverImageGet(element, (error, data, response) => {
@@ -442,7 +442,8 @@ export default {
           self.imageObject = imageObjectURL
           self.task.getTaskTasksTaskIdGet(element, (error, data, response) => {
             let b = JSON.parse(response['text'])
-            var c = { 'task_id':element, 'name':b['name'], 'cover':self.imageObject}
+            console.log(b)
+            var c = { 'task_id':element, 'name':b.name, 'cover':self.imageObject, 'task_id':b.task_id}
             self.tasks_info.push(c)
           })
         })

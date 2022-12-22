@@ -189,11 +189,13 @@ export default {
       if (error == 'Error: Unauthorized') {
         localStorage.removeItem('Authorization');
         this.$router.push('/receiverlogin');
+        return;
       }
       let a = JSON.parse(response['text'])
       if (a.user_type != 'respondent'){
         localStorage.removeItem('Authorization');
         this.$router.push('/');
+        return;
       }
       self.userid = a['username']
       self.usercredits = a['credits']

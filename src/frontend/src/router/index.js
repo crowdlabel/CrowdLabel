@@ -1,8 +1,8 @@
 import Vue from 'vue'
 import VueRouter from 'vue-router'
-import HomeView from '../views/HomeView.vue'
-import ReceiverLogin from '../views/ReceiverLogin.vue'
-import SenderLogin from '../views/SenderLogin.vue'
+import HomeView from '@/views/HomeView.vue'
+import ReceiverLogin from '@/views/ReceiverLogin.vue'
+import SenderLogin from '@/views/SenderLogin.vue'
 import ProjectsHallView from '../views/ProjectsHallView.vue'
 import HistoryView from '../views/HistoryView.vue'
 import CreditsView from '../views/CreditsView.vue'
@@ -18,11 +18,12 @@ import QuestionImageIdentify from '../views/QuestionImageIdentify.vue'
 import MissionComplete from '../views/MissionComplete.vue'
 import axios from 'axios'
 import VueAxios from 'vue-axios'
-import SenderHome from '../views/SenderHome.vue'
-import SenderCredits from '../views/SenderCredits.vue'
-import SenderMission from '../views/SenderMission.vue'
-import SenderAccount from '../views/SenderAccount.vue'
-import SenderNotifications from '../views/SenderNotifications.vue'
+import SenderHome from '@/views/SenderHome.vue'
+import SenderCredits from '@/views/SenderCredits.vue'
+import SenderMission from '@/views/SenderMission.vue'
+import SenderAccount from '@/views/SenderAccount.vue'
+import SenderNotifications from '@/views/SenderNotifications.vue'
+import SenderMissionDetail from '@/views/SenderMissionDetail.vue'
 
 Vue.use(VueRouter)
 Vue.use(VueAxios, axios)
@@ -134,6 +135,11 @@ const routes = [
     name: 'sendernotice',
     component: SenderNotifications
   },
+  {
+    path: '/sendermissiondetail',
+    name: 'sendermissiondetail',
+    component: SenderMissionDetail
+  }
 ]
 
 const router = new VueRouter({

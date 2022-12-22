@@ -48,17 +48,17 @@
             <div class="user_info_row">
               <img class="profile_pic" src="../assets/image_placeholder.png"/>
               <div class="user_info_column">
-                <p class="username">用户名</p>
-                <p class="user_info_line">邮箱：example@123.com</p>
+                <p class="username">{{ userid }}</p>
+                <p class="user_info_line">邮箱：{{useremail}}</p>
                 <p class="user_info_line">密码：********</p>
-                <p class="user_info_line">积分：256</p>
+                <p class="user_info_line">积分：{{ usercredits }}</p>
               </div>
             </div>
             <div class="button_row">
-                <a href="/editmyaccount">
+                <a href="/sendermission">
                   <el-button type="primary" plain href="/editmyaccount">编辑个人信息</el-button>
                 </a>
-                <a href="/credits">
+                <a href="/sendercredits">
                   <el-button type="primary">我的积分</el-button>
                 </a>
             </div>
@@ -69,17 +69,56 @@
 
 
 <script>
-// @ is an alias to /src
-// import HelloWorld from '@/components/HelloWorld.vue'
-import axios from 'axios'
+import { ApiClient } from '@/crowdlabel-api/src';
+import { UsersApi } from '@/crowdlabel-api/src';
 export default {
   data() {
     return {
-      
+      useremail:'',
+      userid:'',
+      userpic: '',
+      usercredits: '',
     };
   },
+  mounted () {
+      let self = this
+      var apiClient  = new ApiClient('http://localhost:8000');
+      apiClient.authentications['OAuth2PasswordBearer'].accessToken = localStorage.getItem('Authorization')
+      self.client = apiClient
+      var usersApi = new UsersApi(apiClient);
+      self.user = usersApi
+      self.user.getMeUsersMeGet((error, data, response) => {
+        if (error == 'Error: Unauthorized') {
+          localStorage.removeItem('Authorization');
+          this.$router.push('/senderlogin');
+          return;
+        }
+        let a = JSON.parse(response['text'])
+        console.log(a)
+        if (a.user_type != 'requester'){
+          localStorage.removeItem('Authorization');
+          this.$router.push('/');
+          return;
+        }
+        self.userid = a.username
+        self.usercredits = a.credits
+        self.useremail = a.email
+      })
+    },
   methods: {
-
+    refresh: function() {
+      let self = this
+      self.user.getMeUsersMeGet((error, data, response) => {
+      if (error == 'Error: Unauthorized') {
+        localStorage.removeItem('Authorization');
+        this.$router.push('/senderlogin');
+        return;
+      }
+      let a = JSON.parse(response['text'])
+      self.userid = a['username']
+      self.usercredits = a['credits']
+      })
+    },
   }
 }
 </script>
