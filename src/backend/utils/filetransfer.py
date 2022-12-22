@@ -4,6 +4,10 @@ from fastapi import UploadFile
 import aiofiles
 
 async def download_file(filename: Path, media_type: str='octet-stream', chunk_size: int=1024 * 1024):
+    try:
+        filename = Path(filename)
+    except:
+        raise ValueError('Invalid filename')
     async def iterfile():
         async with aiofiles.open(filename, 'rb') as f:
             while chunk := await f.read(chunk_size):
