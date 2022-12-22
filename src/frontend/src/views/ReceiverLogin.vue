@@ -263,7 +263,6 @@ export default {
                         if (response.status == 200){
                             let token = data["access_token"]
                             _this.$store.commit('changeLogin', token);
-                            console.log(localStorage.getItem('Authorization'))
                             this.$router.push({
                                 path: '/projects',
                             });

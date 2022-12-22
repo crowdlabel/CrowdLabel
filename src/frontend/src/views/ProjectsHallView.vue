@@ -63,102 +63,36 @@
         <div class="main_body">
             <div class="search_bar">
                 <el-input v-model="input" placeholder="搜索任务"></el-input>
-                <el-button type="primary" icon="el-icon-search"></el-button>
+                <el-button type="primary" icon="el-icon-search" @click="searchWithID()"></el-button>
             </div>
             <div class="filter">
               <p class="title_filter">筛选：</p>
               <div>
-              <el-radio-group v-model="tab1" size="small">
+              <el-radio-group v-model="taskType" size="small" @change="chooseType(taskType)">
                 <el-radio-button label="all">全部</el-radio-button>
-                <el-radio-button label="text">文字任务</el-radio-button>
-                <el-radio-button label="img">图像任务</el-radio-button>
+                <el-radio-button label="text" >文字任务</el-radio-button>
+                <el-radio-button label="img" >图像任务</el-radio-button>
                 <el-radio-button label="audio">音频任务</el-radio-button>
               </el-radio-group>
               </div>
             </div>
             <div class="order_by">
               <p class="title_order_by">排序：</p>
-              <el-radio-group v-model="tab2" size="small">
+              <el-radio-group v-model="sortOrder" size="small" @change="chooseOrder(sortOrder)">
                 <el-radio-button label="time">发布时间</el-radio-button>
                 <el-radio-button label="popularity">热度</el-radio-button>
               </el-radio-group>
             </div>
             <div class="display_projects">
-              <div class="display_projects_row">
-                <div class="project">
-                  <a data-external="true" href="/project_detail">
-                    <el-card :body-style="{ padding: '0px' }">
-                      <img src="../assets/image_placeholder.png" class="project_image">
-                      <div style="padding: 0px;">
-                        <p class="project_title">任务标题</p>
-                        <div class="bottom clearfix">
-                        </div>
-                      </div>
-                    </el-card>
-                  </a>
-                </div>
-                <div class="project">
-                  <a data-external="true" href="/project_detail">
-                    <el-card :body-style="{ padding: '0px' }">
-                      <img src="../assets/image_placeholder.png" class="project_image">
-                      <div style="padding: 0px;">
-                        <p class="project_title">任务标题</p>
-                        <div class="bottom clearfix">
-                        </div>
-                      </div>
-                    </el-card>
-                  </a>
-                </div>
-                <div class="project">
-                  <a data-external="true" href="/project_detail">
-                    <el-card :body-style="{ padding: '0px' }">
-                      <img src="../assets/image_placeholder.png" class="project_image">
-                      <div style="padding: 0px;">
-                        <p class="project_title">任务标题</p>
-                        <div class="bottom clearfix">
-                        </div>
-                      </div>
-                    </el-card>
-                  </a>
-                </div>
-              </div>
-              <div class="display_projects_row">
-                <div class="project">
-                  <a data-external="true" href="/project_detail">
-                    <el-card :body-style="{ padding: '0px' }">
-                      <img src="../assets/image_placeholder.png" class="project_image">
-                      <div style="padding: 0px;">
-                        <p class="project_title">任务标题</p>
-                        <div class="bottom clearfix">
-                        </div>
-                      </div>
-                    </el-card>
-                  </a>
-                </div>
-                <div class="project">
-                  <a data-external="true" href="/project_detail">
-                    <el-card :body-style="{ padding: '0px' }">
-                      <img src="../assets/image_placeholder.png" class="project_image">
-                      <div style="padding: 0px;">
-                        <p class="project_title">任务标题</p>
-                        <div class="bottom clearfix">
-                        </div>
-                      </div>
-                    </el-card>
-                  </a>
-                </div>
-                <div class="project">
-                  <a data-external="true" href="/project_detail">
-                    <el-card :body-style="{ padding: '0px' }">
-                      <img src="../assets/image_placeholder.png" class="project_image">
-                      <div style="padding: 0px;">
-                        <p class="project_title">任务标题</p>
-                        <div class="bottom clearfix">
-                        </div>
-                      </div>
-                    </el-card>
-                  </a>
-                </div>
+              <div class="display_items" v-for="(item, index) in tasks_total" v-if="index<6">
+                <el-card :body-style="{ padding: '0px' }">
+                  <img :src=item.cover alt="" class="project_image">
+                  <div style="padding: 0px;">
+                    <p class="project_title">{{item.name}}</p>
+                    <div class="bottom clearfix">
+                    </div>
+                  </div>
+                </el-card>
               </div>
             </div>
             <div class="pagination">
@@ -190,14 +124,47 @@ export default {
       user: '',
       userid: '',
       usercredits: '',
+      imageObject: '',
+      tasks_total: [],
       page_num: 100,
       input: '',
-      tab1: 'all',
-      tab2: 'time'
+      taskType: 'all',
+      sortOrder: 'time'
     };
   },
   methods: {
-    
+    searchAll(){
+      self.tasks_total = []
+      self.task.searchTasksTasksPut({}, (error, data, response) => {
+        if (error == 'Error: Unauthorized') {
+          localStorage.removeItem('Authorization');
+          this.$router.push('/receiverlogin');
+        }
+        let res = JSON.parse(response['text'])
+        let taskslist = res['tasks']
+        console.log(taskslist)
+        taskslist.forEach(function(element) {
+          self.task.getCoverTasksTaskIdCoverImageGet(element.task_id, (error, data, response) => {
+            let imageObjectURL = window.URL.createObjectURL(response.body);
+            self.imageObject = imageObjectURL
+            var c = { 'task_id':element.task_id, 'name':element.name, 'cover': self.imageObject}
+            self.tasks_total.push(c)
+          })
+        })
+      })
+    },
+    searchText(){
+      
+    },
+    searchAudio(){
+      
+    },
+    searchImage(){
+      
+    },
+    searchWithID() {
+
+    }
   },
   directives: {
     focus: {
@@ -223,8 +190,31 @@ export default {
         localStorage.removeItem('Authorization');
         this.$router.push('/receiverlogin');
       }
-      self.userid = data['username']
-      self.usercredits = data['credits']
+      let a = JSON.parse(response['text'])
+      if (a.user_type != 'respondent'){
+        localStorage.removeItem('Authorization');
+        this.$router.push('/');
+      }
+      self.userid = a['username']
+      self.usercredits = a['credits']
+    })
+    self.tasks_total = []
+    self.task.searchTasksTasksPut({}, (error, data, response) => {
+      if (error == 'Error: Unauthorized') {
+        localStorage.removeItem('Authorization');
+        this.$router.push('/receiverlogin');
+      }
+      let res = JSON.parse(response['text'])
+      let taskslist = res['tasks']
+      console.log(taskslist)
+      taskslist.forEach(function(element) {
+        self.task.getCoverTasksTaskIdCoverImageGet(element.task_id, (error, data, response) => {
+          let imageObjectURL = window.URL.createObjectURL(response.body);
+          self.imageObject = imageObjectURL
+          var c = { 'task_id':element.task_id, 'name':element.name, 'cover': self.imageObject}
+          self.tasks_total.push(c)
+        })
+      })
     })
   }
 }
@@ -492,21 +482,30 @@ a {
 }
 
 .display_projects {
-  flex-direction: column;
-  display: flex;
-  align-items:center;
-  margin: 10px 100px;
-}
-
-.display_projects_row {
   flex-direction: row;
   display: flex;
-  margin: 8px 0px;
+  align-items:left;
+  margin: 20px 100px;
+  margin-bottom:40px;
+  flex-wrap: wrap;
+  width: 80%;
+  height: 360px !important;
 }
 
-.project {
-  margin: 0px 10px;
+.display_items{
+  width: 33.3333%;
+  float: left;
+  height:180px;
+  display: flex;
+  flex-direction: center;
+  align-items: center;
+  box-sizing: border-box;
   cursor: pointer;
+}
+
+
+.project {
+  margin: 0px 30px;
 }
 
 ::v-deep .el-pagination {
