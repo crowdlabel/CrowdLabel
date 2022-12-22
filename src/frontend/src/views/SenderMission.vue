@@ -119,10 +119,10 @@
             <div class="filter">
               <p class="title_filter">筛选：</p>
               <el-button-group>
-                <el-button round>全部</el-button>
-                <el-button round>文字任务</el-button>
-                <el-button round>图像任务</el-button>
-                <el-button round>音频任务</el-button>
+                <el-button round @click="searchAll">全部</el-button>
+                <el-button round @click="searchText">文字任务</el-button>
+                <el-button round @click="searchImage">图像任务</el-button>
+                <el-button round @click="searchRadio">音频任务</el-button>
               </el-button-group>
               <el-button type="primary" round @click="createProject" id="create">创建任务</el-button>
             </div>
@@ -130,7 +130,7 @@
             <div class="display_projects">
               <div class="display_items" v-for="(item, index) in tasks_info" v-if="index<6">
                 <el-card :body-style="{ padding: '0px' }">
-                    <img :src=imageObject alt="" class="project_image">
+                    <img :src=item.cover alt="" class="project_image">
                     <div style="padding: 0px;">
                       <p class="project_title">{{item.name}}</p>
                       <div class="bottom clearfix">
@@ -306,11 +306,15 @@ export default {
       self.taskslist = a['tasks_requested']
       self.tasks_info = []
       self.taskslist.forEach(function(element) {
-        console.log(element);
-        self.task.getTaskTasksTaskIdGet(element, (error, data, response) => {
-          let b = JSON.parse(response['text'])
-          var c = { 'task_id':element, 'name':b['name']}
-          self.tasks_info.push(c)
+        self.task.getCoverTasksTaskIdCoverImageGet(element, (error, data, response) => {
+          console.log(response.body)
+          let imageObjectURL = window.URL.createObjectURL(response.body);
+          self.imageObject = imageObjectURL
+          self.task.getTaskTasksTaskIdGet(element, (error, data, response) => {
+            let b = JSON.parse(response['text'])
+            var c = { 'task_id':element, 'name':b['name'], 'cover':self.imageObject}
+            self.tasks_info.push(c)
+          })
         })
       });
       })
@@ -325,6 +329,48 @@ export default {
     },
     backToMission() {
       this.dialogVisible = false;
+    },
+    searchAll() {
+      this.refresh();
+    },
+    searchText() {
+      this.refresh();
+    },
+    searchImage() {
+      let self = this
+      self.user.getMeUsersMeGet((error, data, response) => {
+      if (error == 'Error: Unauthorized') {
+        localStorage.removeItem('Authorization');
+        this.$router.push('/senderlogin');
+      }
+      let a = JSON.parse(response['text'])
+      self.userid = a['username']
+      self.usercredits = a['credits']
+      self.taskslist = a['tasks_requested']
+      self.tasks_info = []
+      // self.taskslist.forEach(function(element) {
+      //   console.log(element);
+      //   self.task.getTaskTasksTaskIdGet(element, (error, data, response) => {
+      //     let b = JSON.parse(response['text'])
+      //     var c = { 'task_id':element, 'name':b['name']}
+      //     self.tasks_info.push(c)
+      //   })
+      // });
+      })
+    },
+    searchRadio () {
+      let self = this
+      self.user.getMeUsersMeGet((error, data, response) => {
+      if (error == 'Error: Unauthorized') {
+        localStorage.removeItem('Authorization');
+        this.$router.push('/senderlogin');
+      }
+      let a = JSON.parse(response['text'])
+      self.userid = a['username']
+      self.usercredits = a['credits']
+      self.taskslist = a['tasks_requested']
+      self.tasks_info = []
+    })
     },
     createProject () {
       this.dialogVisible = true;
@@ -388,16 +434,20 @@ export default {
       self.tasks_info = []
       self.taskslist.forEach(function(element) {
         self.task.getCoverTasksTaskIdCoverImageGet(element, (error, data, response) => {
-          let blob = new Blob([data])
-          let imageObjectURL = window.URL.createObjectURL(blob);
+          console.log(response.body)
+          let imageObjectURL = window.URL.createObjectURL(response.body);
           self.imageObject = imageObjectURL
+          self.task.getTaskTasksTaskIdGet(element, (error, data, response) => {
+            let b = JSON.parse(response['text'])
+            var c = { 'task_id':element, 'name':b['name'], 'cover':self.imageObject}
+            self.tasks_info.push(c)
+          })
         })
         self.task.getTaskTasksTaskIdGet(element, (error, data, response) => {
           let b = JSON.parse(response['text'])
           var c = { 'task_id':element, 'name':b['name'], 'cover':self.imageObject}
           self.tasks_info.push(c)
         })
-
       });
     })
   }
@@ -678,7 +728,6 @@ export default {
   align-items:left;
   margin: 20px 100px;
   margin-bottom:40px;
-  cursor: pointer;
   flex-wrap: wrap;
   width: 80%;
   height: 360px !important;
@@ -692,6 +741,7 @@ export default {
   flex-direction: center;
   align-items: center;
   box-sizing: border-box;
+  cursor: pointer;
 }
 
 
