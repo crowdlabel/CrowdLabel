@@ -209,11 +209,6 @@ async def get_cover(task_id: int, current_user: schemas.users.User=Depends(get_c
     task = await task_service.get_task(task_id)
     if not task:
         return not_found_jdr.response()
-
-    if (current_user.username not in task.respondents_claimed and
-        current_user.username != task.requester):
-        # only allow the requester who created the task or the respondents who claimed this task see the resource
-        return forbidden_jdr.response()
     
     if not task.cover_image:
         return get_cover_failed_jdr.response()
