@@ -328,6 +328,8 @@ def test_answer():
     assert response.status_code == 200
 
     task = __get_task(reqt, task_id).json()
+    print('#'*100)
+    pprint(task)
     for question in task['questions']:
         if question['question_id'] == 1:
             assert question['answers'] == [{'choice': 1}]
@@ -347,19 +349,19 @@ def test_cover():
 
 if __name__ == '__main__':
     
-    """ 
-    test_availability()
-    test_register()
-    test_login()
-    test_get_me()
-    test_credits()
-    test_upload()
-    test_search()
-    test_claim()
-    test_cover()
-    test_get_task_question_resource() 
+    
+    # test_availability()
+    # test_register()
+    # test_login()
+    # test_get_me()
+    # test_credits()
+    # test_upload()
+    # test_search()
+    # test_claim()
+    # test_cover()
+    # test_get_task_question_resource() 
     test_answer()
-    """
+    
 
-    test_get_task()
+    #test_get_task()
     

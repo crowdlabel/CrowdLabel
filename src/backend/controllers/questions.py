@@ -30,6 +30,7 @@ get_question_success_jdr = JSONDocumentedResponse(
     **create_documentation([get_question_success_jdr, not_found_jdr])
 )
 async def get_question(question_id: int, task=Depends(controllers.tasks.get_task), current_user=Depends(get_current_user)):
+
     question = await question_service.get_question(task, question_id)
     if not question:
         return not_found_jdr.response()

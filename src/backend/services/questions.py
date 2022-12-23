@@ -28,6 +28,7 @@ from datetime import datetime
 class Questions:
     async def get_question(self, task: schemas.tasks.Task | int, question_id: int) -> schemas.questions.Question | None:
         con = scoped_session(Connection)
+        print(task)
         id = task.task_id
         result = await con.execute(select(models.question.Question).where(and_( models.question.Question.task_id == id , models.question.Question.id_in_task == question_id))
                                   .options(selectinload(models.question.Question.answer)))
