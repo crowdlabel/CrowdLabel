@@ -113,8 +113,8 @@
 
         <div class="main_body">
             <div class="search_bar">
-                <el-input placeholder="搜索任务"></el-input>
-                <el-button type="primary" icon="el-icon-search"></el-button>
+                <el-input placeholder="搜索任务" id="specific_name"></el-input>
+                <el-button type="primary" icon="el-icon-search" @click="searchSpecific"></el-button>
             </div>
             <div class="filter">
               <p class="title_filter">筛选：</p>
@@ -124,6 +124,7 @@
                 <el-button round @click="searchImage">图像任务</el-button>
                 <el-button round @click="searchRadio">音频任务</el-button>
               </el-button-group>
+              <el-button type="default" round @click="downlaodFormat" id="format_download">下载任务模板</el-button>
               <el-button type="primary" round @click="createProject" id="create">创建任务</el-button>
             </div>
             
@@ -315,12 +316,16 @@ export default {
       self.taskslist = a['tasks_requested']
       self.tasks_info = []
       self.taskslist.forEach(function(element) {
+        console.log(element)
         self.task.getCoverTasksTaskIdCoverImageGet(element, (error, data, response) => {
+          console.log(error, data, response)
           let imageObjectURL = window.URL.createObjectURL(response.body);
           self.imageObject = imageObjectURL
+          var c = { task_id:element, name:'', cover:self.imageObject, task_id:''}
           self.task.getTaskTasksTaskIdGet(element, (error, data, response) => {
             let b = JSON.parse(response['text'])
-            var c = { task_id:element, name:b.name, cover:self.imageObject, task_id:b.task_id}
+            c.name = b.name
+            c.task_id = b.task_id
             self.tasks_info.push(c)
           })
         })
@@ -342,32 +347,41 @@ export default {
       this.refresh();
     },
     searchText() {
-      this.refresh();
+      
     },
     searchImage() {
-      let self = this
-      self.user.getMeUsersMeGet((error, data, response) => {
-      if (error == 'Error: Unauthorized') {
-        localStorage.removeItem('Authorization');
-        this.$router.push('/senderlogin');
-      }
-      let a = JSON.parse(response['text'])
-      self.userid = a['username']
-      self.usercredits = a['credits']
-      self.taskslist = a['tasks_requested']
-      self.tasks_info = []
-      // self.taskslist.forEach(function(element) {
-      //   console.log(element);
-      //   self.task.getTaskTasksTaskIdGet(element, (error, data, response) => {
-      //     let b = JSON.parse(response['text'])
-      //     var c = { 'task_id':element, 'name':b['name']}
-      //     self.tasks_info.push(c)
-      //   })
-      // });
-      })
+      
     },
     searchRadio () {
       
+    },
+    searchSpecific() {
+      let self = this
+      const search_requirements = document.getElementById('specific_name').value
+      if (search_requirements === '' || search_requirements === null){
+        self.refresh();
+      } else {
+        var search_tags = []
+        search_tags.push(search_requirements)
+        self.task.searchTasksTasksPut({
+          "name": search_requirements,
+          "tags": search_tags,
+          "requesters": [],
+          "page": 1,
+          "page_size": -1,
+          "credits_min": 0,
+          "credits_max": -1,
+          "questions_min": 0,
+          "questions_max": -1,
+          "sort_criteria": "name",
+          "sort_ascending": true
+        }, (error, data, response) => {
+          console.log(error, data, response)
+        })
+      }
+    },
+    downlaodFormat() {
+      //to do
     },
     createProject () {
       this.dialogVisible = true;
@@ -398,6 +412,7 @@ export default {
               });
             });
           } else if(response.status == 200){
+            this.form.zipfile = []
             alert('upload suceed');
             this.dialogVisible = false
             this.refresh();
@@ -436,7 +451,9 @@ export default {
       self.taskslist = a.tasks_requested
       self.tasks_info = []
       self.taskslist.forEach(function(element) {
+        console.log(element)
         self.task.getCoverTasksTaskIdCoverImageGet(element, (error, data, response) => {
+          console.log(error, data, response)
           let imageObjectURL = window.URL.createObjectURL(response.body);
           self.imageObject = imageObjectURL
           var c = { task_id:element, name:'', cover:self.imageObject, task_id:''}
@@ -444,7 +461,6 @@ export default {
             let b = JSON.parse(response['text'])
             c.name = b.name
             c.task_id = b.task_id
-            console.log(c.cover)
             self.tasks_info.push(c)
           })
         })
@@ -776,10 +792,17 @@ export default {
 #create{
   position: absolute;
   float: left; 
-  top: 120px;
+  top: 115px;
   left: 800px;
   font-size: 16px;
   padding: 12px 24px;
+}
+
+#format_download{
+  position: absolute;
+  float:left;
+  top:140px;
+  left:700px;
 }
 
 .mission_name{

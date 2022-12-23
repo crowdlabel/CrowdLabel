@@ -25,7 +25,7 @@
             </div>
           </div>
           <div class="progress">
-            <p class="progress_label">任务已完成情况：</p>
+            <p class="progress_label">已完成情况：</p>
             <el-progress :percentage="percentage" :color="customColorMethod(percentage)" class="progress_bar"></el-progress>
           </div>
           <div class="row row_margin">
@@ -115,13 +115,42 @@ export default {
       }
     },
     downloadTask() {
-
+      let self = this;
+      self.$confirm('您即将删除当前任务?', '提示', {
+        confirmButtonText: '确定',
+        cancelButtonText: '取消',
+        type: 'info',
+      }).then(() => {
+        this.task.downloadTaskResultsTasksTaskIdDownloadGet(self.task_id, (error, data, response) => {
+          console.log(error, data, response)
+          if (response.data.type === 'application/octet-stream') {
+            const fileName = response.headers['content-disposition'].split('=')[1]
+            if (window.navigator && window.navigator.msSaveOrOpenBlob){
+              const blob = new Blob([response.data], { type: 'application/zip'})
+              window.navigator.msSaveOrOpenBlob(blob, fileName)
+            } else {
+              const blob = new Blob([response.data], {type:'application/zip'})
+              const url = window.URL.createObjectURL(blob)
+              const link = document.createElement('a')
+              link.href = url
+              link.download = fileName
+              link.click()
+              URL.revokeObjectURL(url)
+            }
+          }
+        })
+      }).catch(() => {
+        this.$message({
+          type: 'info',
+          message: '已取消删除操作'
+        });
+      });
     },
     deleteTask () {
       let self = this;
       self.task.deleteTaskTasksTaskIdDelete(self.task_id, (error, data, response) =>{
         console.log(error, data, response)
-        this.$router.push('/sendermission')
+        self.$router.push('/sendermission')
       })
     }
   }
