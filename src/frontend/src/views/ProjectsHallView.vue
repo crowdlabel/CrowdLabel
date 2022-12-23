@@ -85,14 +85,14 @@
             </div>
             <div class="display_projects">
               <div class="display_items" v-for="(item, index) in tasks_total" v-if="index<6">
-                <el-card :body-style="{ padding: '0px' }">
-                  <img :src=item.cover alt="" class="project_image">
-                  <div style="padding: 0px;">
-                    <p class="project_title">{{item.name}}</p>
-                    <div class="bottom clearfix">
+                <el-card :body-style="{ padding: '0px' }" @click.native="seeDetails(item.task_id)">
+                    <img :src=item.cover alt="" class="project_image" >
+                    <div style="padding: 0px;">
+                      <p class="project_title">{{item.name}}</p>
+                      <div class="bottom clearfix">
+                      </div>
                     </div>
-                  </div>
-                </el-card>
+                  </el-card>
               </div>
             </div>
             <div class="pagination">
@@ -117,7 +117,6 @@ import { TasksApi } from '@/crowdlabel-api/src';
 
 export default {
   data() {
-    
     return {
       client: '',
       task: '',
@@ -144,13 +143,28 @@ export default {
         let taskslist = res['tasks']
         console.log(taskslist)
         taskslist.forEach(function(element) {
-          self.task.getCoverTasksTaskIdCoverImageGet(element.task_id, (error, data, response) => {
+          self.task.getCoverTasksTaskIdCoverImageGet(element, (error, data, response) => {
+            console.log(error, data, response)
             let imageObjectURL = window.URL.createObjectURL(response.body);
             self.imageObject = imageObjectURL
-            var c = { 'task_id':element.task_id, 'name':element.name, 'cover': self.imageObject}
-            self.tasks_total.push(c)
+            var c = { task_id:element, name:'', cover:self.imageObject, task_id:''}
+            self.task.getTaskTasksTaskIdGet(element, (error, data, response) => {
+              let b = JSON.parse(response['text'])
+              c.name = b.name
+              c.task_id = b.task_id
+              self.tasks_total.push(c)
+            })
           })
-        })
+        });
+      })
+    },
+    seeDetails(task_id) {
+      console.log(task_id)
+      this.$router.push({
+        name:'project_detail',
+        params:{
+          taskid: task_id
+        }
       })
     },
     searchText(){

@@ -9,20 +9,19 @@
         <div class="main_body">
           <div class="row">
             <div class="title_placeholder"></div>
-            <h1 class="project_title">任务名称</h1>
+            <h1 class="project_title">{{task_name}}</h1>
           </div>
           <div class="row project_details">
-            <img class="preview_img" src="../assets/image_placeholder.png" height="320" width="450"/>
+            <img class="preview_img" :src=task_cover height="320" width="450"/>
             <div class="project_description">
               <p class="text_bold">任务简介：</p>
               <p class="text_normal">
-              软件工程是一门研究用工程化方法构建和维护有效、实用和高质量的软件的学科。它涉及程序设计语言、数据库、软件开发工具、系统平台、标准、设计件有电子邮件、嵌入式系统、人机界面、办公套件、操作系统、编译器、数据库、游戏等。同时，各个行业几乎都有计算机软件的应用，如工业、农业、银行、航空、政府部门等。这些应用促进了经济和社会的发展，也提高了工作效率和生活效率 。
-              <br />软件工程的目标是：在给定成本、进度的前提下，开发出具有适用性、有效性、可修改性、可靠性、可理解性、可维护性、可重用性、可移植性、可追踪性、可互操作性和满足用户需求的软件产品。追求这些目标有助于提高软件产品的质量和开发效率，减少维护的困难。
+                {{ task_brief }}
               </p>
               <div class="placeholder_text"></div>
-              <p class="text_bold">任务类型：</p><p class="text_normal">文字任务</p>
-              <p class="text_bold"><br />问题数量：</p><p class="text_normal">10</p>
-              <p class="text_bold"><br />积分奖励：</p><p class="text_normal">15</p>
+              <p class="text_bold">任务类型：</p><p class="text_normal">{{ task_type }}</p>
+              <p class="text_bold"><br />问题数量：</p><p class="text_normal">{{task_question_num}}</p>
+              <p class="text_bold"><br />积分奖励：</p><p class="text_normal">{{task_credit}}</p>
             </div>
           </div>
           <div class="row row_margin">
@@ -30,8 +29,9 @@
               <el-button type="primary" plain>&lt 返回</el-button>
             </a>
             <div class="button_placeholder"></div>
+            <el-button type="primary" :disabled="claim">接受任务</el-button>
             <a href="/question_text">
-              <el-button type="primary">开始答题 > </el-button>
+              <el-button type="primary" :disabled="answer">开始答题 > </el-button>
             </a>
           </div>
           
@@ -43,17 +43,61 @@
 
 
 <script>
-// @ is an alias to /src
-// import HelloWorld from '@/components/HelloWorld.vue'
-import axios from 'axios'
+import { ApiClient } from '@/crowdlabel-api/src';
+import { UsersApi } from '@/crowdlabel-api/src';
+import { TasksApi } from '@/crowdlabel-api/src';
+
 export default {
   data() {
     return {
-      
+      answer: true,
+      claim: false,
+      client: '',
+      user: '',
+      task: '',
+      task_id: '',
+      task_name: '',
+      task_type: '',
+      task_brief: '',
+      task_cover: '',
+      task_credit: '',
+      task_amount: '',
+      task_question_num: '',
     };
   },
+  mounted () {
+    let self = this;
+    self.task_id = this.$route.params.taskid;
+    var apiClient  = new ApiClient('http://localhost:8000');
+    apiClient.authentications['OAuth2PasswordBearer'].accessToken = localStorage.getItem('Authorization')
+    self.client = apiClient
+    var usersApi = new UsersApi(apiClient);
+    self.user = usersApi
+    var tasksApi = new TasksApi(apiClient);
+    self.task = tasksApi
+    self.user.getMeUsersMeGet((error, data, response) => {
+      if (error == 'Error: Unauthorized') {
+        localStorage.removeItem('Authorization');
+        this.$router.push('/senderlogin');
+        return;
+      }
+    })
+    self.task.getTaskTasksTaskIdGet(self.task_id, (error, data, response) => {
+      let res = JSON.parse(response['text'])
+      self.task_amount = res.responses_required;
+      self.task_brief = res.introduction;
+      self.task_name = res.name;
+      self.task_type = res.tags;
+      self.task_credit = res.credits
+      self.task_question_num = res.questions.length;
+    })
+    self.task.getCoverTasksTaskIdCoverImageGet(self.task_id, (error, data, response) => {
+      let imageObjectURL = window.URL.createObjectURL(response.body);
+      self.task_cover = imageObjectURL
+    })
+  },
   methods: {
-  
+    
   }
 }
 </script>
