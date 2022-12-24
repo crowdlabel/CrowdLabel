@@ -129,7 +129,7 @@
             </div>
             
             <div class="display_projects">
-              <div class="display_items" v-for="(item, index) in tasks_info.slice(0,6)">
+              <div class="display_items" v-for="(item, index) in tasks_info.slice((currentPage-1)*pageSize, currentPage*pageSize)">
                 <el-card :body-style="{ padding: '0px' }" @click.native="seeDetails(item.task_id)">
                     <img :src=item.cover alt='' class="project_image" >
                     <div style="padding: 0px;">
@@ -144,8 +144,11 @@
             <div class="pagination">
               <el-pagination
                 background
-                layout="prev, pager, next"
-                 :total=100>
+                :page-size="6"
+                :current-page="currentPage.sync"
+                @current-change="handleCurrentChange"
+                layout="total, prev, pager, next"
+                :total=taskslist.length>
               </el-pagination>
             </div>
         </div>
@@ -198,6 +201,8 @@ export default {
       }
     };
     return {
+      pageSize: 6,
+      currentPage: 1,
       search_input:'',
       dialogVisible: false,
       client: '',
@@ -246,6 +251,9 @@ export default {
     }
   },
   methods: {
+    handleCurrentChange(val) {
+      this.currentPage=val;
+    },
     seeDetails(task_id) {
       this.$router.push({
         name:'sendermissiondetail',
