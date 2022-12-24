@@ -93,7 +93,6 @@ export default {
                     callback(new Error('用户名格式错误:请输入3-64位用户名'));
                 } else {
                     let ready_username = document.getElementById('registername').value;
-                    console.log(ready_username);
                     this.user.availabilityUsersAvailabilityPut({'username': ready_username},
                     (error, data, response) => {
                         if (!data['username']){
@@ -116,7 +115,6 @@ export default {
                 } else {
                     this.disable = false;
                     let ready_email = document.getElementById('registeremail').value;
-                    console.log(ready_email);
                     this.user.availabilityUsersAvailabilityPut({'email': ready_email},
                     (error, data, response) => {
                         if (!data['email']){
