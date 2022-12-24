@@ -144,7 +144,15 @@ export default {
         console.log(taskslist)
         taskslist.forEach(function(element) {
           self.task.getCoverTasksTaskIdCoverImageGet(element, (error, data, response) => {
-            console.log(error, data, response)
+          if (response.status == 400){
+            var c = { task_id:element, name:'', cover:'../default_cover.jpeg', task_id:''}
+            self.task.getTaskTasksTaskIdGet(element, (error, data, response) => {
+              let b = JSON.parse(response['text'])
+              c.name = b.name
+              c.task_id = b.task_id
+              self.tasks_info.push(c)
+            })
+          } else {
             let imageObjectURL = window.URL.createObjectURL(response.body);
             self.imageObject = imageObjectURL
             var c = { task_id:element, name:'', cover:self.imageObject, task_id:''}
@@ -152,9 +160,10 @@ export default {
               let b = JSON.parse(response['text'])
               c.name = b.name
               c.task_id = b.task_id
-              self.tasks_total.push(c)
+              self.tasks_info.push(c)
             })
-          })
+          }
+        })
         });
       })
     },
@@ -224,11 +233,26 @@ export default {
       let taskslist = res['tasks']
       console.log(taskslist)
       taskslist.forEach(function(element) {
-        self.task.getCoverTasksTaskIdCoverImageGet(element.task_id, (error, data, response) => {
-          let imageObjectURL = window.URL.createObjectURL(response.body);
-          self.imageObject = imageObjectURL
-          var c = { 'task_id':element.task_id, 'name':element.name, 'cover': self.imageObject}
-          self.tasks_total.push(c)
+        self.task.getCoverTasksTaskIdCoverImageGet(element, (error, data, response) => {
+          if (response.status == 400){
+            var c = { task_id:element, name:'', cover:'../default_cover.jpeg', task_id:''}
+            self.task.getTaskTasksTaskIdGet(element, (error, data, response) => {
+              let b = JSON.parse(response['text'])
+              c.name = b.name
+              c.task_id = b.task_id
+              self.tasks_info.push(c)
+            })
+          } else {
+            let imageObjectURL = window.URL.createObjectURL(response.body);
+            self.imageObject = imageObjectURL
+            var c = { task_id:element, name:'', cover:self.imageObject, task_id:''}
+            self.task.getTaskTasksTaskIdGet(element, (error, data, response) => {
+              let b = JSON.parse(response['text'])
+              c.name = b.name
+              c.task_id = b.task_id
+              self.tasks_info.push(c)
+            })
+          }
         })
       })
     })

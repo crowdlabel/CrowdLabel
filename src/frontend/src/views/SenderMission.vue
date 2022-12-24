@@ -113,7 +113,7 @@
 
         <div class="main_body">
             <div class="search_bar">
-                <el-input placeholder="搜索任务" id="specific_name"></el-input>
+                <el-input placeholder="搜索任务" id="specific_name" v-model="search_input"></el-input>
                 <el-button type="primary" icon="el-icon-search" @click="searchSpecific"></el-button>
             </div>
             <div class="filter">
@@ -129,9 +129,9 @@
             </div>
             
             <div class="display_projects">
-              <div class="display_items" v-for="(item, index) in tasks_info" v-if="index<6">
+              <div class="display_items" v-for="(item, index) in tasks_info.slice(0,6)">
                 <el-card :body-style="{ padding: '0px' }" @click.native="seeDetails(item.task_id)">
-                    <img :src=item.cover alt="" class="project_image" >
+                    <img :src=item.cover alt='' class="project_image" >
                     <div style="padding: 0px;">
                       <p class="project_title">{{item.name}}</p>
                       <div class="bottom clearfix">
@@ -198,8 +198,8 @@ export default {
       }
     };
     return {
+      search_input:'',
       dialogVisible: false,
-      // 
       client: '',
       task: '',
       user: '',
@@ -247,7 +247,6 @@ export default {
   },
   methods: {
     seeDetails(task_id) {
-      console.log(task_id)
       this.$router.push({
         name:'sendermissiondetail',
         params:{
@@ -316,18 +315,26 @@ export default {
       self.taskslist = a['tasks_requested']
       self.tasks_info = []
       self.taskslist.forEach(function(element) {
-        console.log(element)
         self.task.getCoverTasksTaskIdCoverImageGet(element, (error, data, response) => {
-          console.log(error, data, response)
-          let imageObjectURL = window.URL.createObjectURL(response.body);
-          self.imageObject = imageObjectURL
-          var c = { task_id:element, name:'', cover:self.imageObject, task_id:''}
-          self.task.getTaskTasksTaskIdGet(element, (error, data, response) => {
-            let b = JSON.parse(response['text'])
-            c.name = b.name
-            c.task_id = b.task_id
-            self.tasks_info.push(c)
-          })
+          if (response.status == 400){
+            var c = { task_id:element, name:'', cover:'../default_cover.jpeg', task_id:''}
+            self.task.getTaskTasksTaskIdGet(element, (error, data, response) => {
+              let b = JSON.parse(response['text'])
+              c.name = b.name
+              c.task_id = b.task_id
+              self.tasks_info.push(c)
+            })
+          } else {
+            let imageObjectURL = window.URL.createObjectURL(response.body);
+            self.imageObject = imageObjectURL
+            var c = { task_id:element, name:'', cover:self.imageObject, task_id:''}
+            self.task.getTaskTasksTaskIdGet(element, (error, data, response) => {
+              let b = JSON.parse(response['text'])
+              c.name = b.name
+              c.task_id = b.task_id
+              self.tasks_info.push(c)
+            })
+          }
         })
       });
       })
@@ -361,23 +368,23 @@ export default {
       if (search_requirements === '' || search_requirements === null){
         self.refresh();
       } else {
-        var search_tags = []
-        search_tags.push(search_requirements)
-        self.task.searchTasksTasksPut({
-          "name": search_requirements,
-          "tags": search_tags,
-          "requesters": [],
-          "page": 1,
-          "page_size": -1,
-          "credits_min": 0,
-          "credits_max": -1,
-          "questions_min": 0,
-          "questions_max": -1,
-          "sort_criteria": "name",
-          "sort_ascending": true
-        }, (error, data, response) => {
-          console.log(error, data, response)
-        })
+        // var search_tags = []
+        // search_tags.push(search_requirements)
+        // self.task.searchTasksTasksPut({
+        //   "name": search_requirements,
+        //   "tags": search_tags,
+        //   "requesters": [],
+        //   "page": 1,
+        //   "page_size": -1,
+        //   "credits_min": 0,
+        //   "credits_max": -1,
+        //   "questions_min": 0,
+        //   "questions_max": -1,
+        //   "sort_criteria": "name",
+        //   "sort_ascending": true
+        // }, (error, data, response) => {
+        //   console.log(error, data, response)
+        // })
       }
     },
     downlaodFormat() {
@@ -398,7 +405,9 @@ export default {
         // this.multipartFile.append('missionbrief', this.form.brief);
         // this.multipartFile.append('missiondetails', this.form.details);
         this.task.uploadTaskTasksUploadPost(this.file, (error, data, response) => {
-          if (response.status == 400){
+          let a = JSON.parse(response['text'])
+          if (response.status == 400 && a.error == 'Insufficient credits'){
+            console.log(error, response)
             this.$confirm('积分不足！是否跳转到充值页面?', '提示', {
               confirmButtonText: '确定',
               cancelButtonText: '取消',
@@ -411,7 +420,9 @@ export default {
                 message: '已取消跳转'
               });
             });
-          } else if(response.status == 200){
+          } else if (response.status==400) {
+            alert(a.error)
+          } if(response.status == 200){
             this.form.zipfile = []
             alert('upload suceed');
             this.dialogVisible = false
@@ -451,18 +462,26 @@ export default {
       self.taskslist = a.tasks_requested
       self.tasks_info = []
       self.taskslist.forEach(function(element) {
-        console.log(element)
         self.task.getCoverTasksTaskIdCoverImageGet(element, (error, data, response) => {
-          console.log(error, data, response)
-          let imageObjectURL = window.URL.createObjectURL(response.body);
-          self.imageObject = imageObjectURL
-          var c = { task_id:element, name:'', cover:self.imageObject, task_id:''}
-          self.task.getTaskTasksTaskIdGet(element, (error, data, response) => {
-            let b = JSON.parse(response['text'])
-            c.name = b.name
-            c.task_id = b.task_id
-            self.tasks_info.push(c)
-          })
+          if (response.status == 400){
+            var c = { task_id:element, name:'', cover:'../default_cover.jpeg', task_id:''}
+            self.task.getTaskTasksTaskIdGet(element, (error, data, response) => {
+              let b = JSON.parse(response['text'])
+              c.name = b.name
+              c.task_id = b.task_id
+              self.tasks_info.push(c)
+            })
+          } else {
+            let imageObjectURL = window.URL.createObjectURL(response.body);
+            self.imageObject = imageObjectURL
+            var c = { task_id:element, name:'', cover:self.imageObject, task_id:''}
+            self.task.getTaskTasksTaskIdGet(element, (error, data, response) => {
+              let b = JSON.parse(response['text'])
+              c.name = b.name
+              c.task_id = b.task_id
+              self.tasks_info.push(c)
+            })
+          }
         })
       });
     })

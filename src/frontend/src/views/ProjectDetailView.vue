@@ -92,8 +92,12 @@ export default {
       self.task_question_num = res.questions.length;
     })
     self.task.getCoverTasksTaskIdCoverImageGet(self.task_id, (error, data, response) => {
-      let imageObjectURL = window.URL.createObjectURL(response.body);
-      self.task_cover = imageObjectURL
+      if (response.status == 400){
+        self.task_cover = '../default_cover.jpeg'
+      } else{
+        let imageObjectURL = window.URL.createObjectURL(response.body);
+        self.task_cover = imageObjectURL
+      }
     })
   },
   methods: {

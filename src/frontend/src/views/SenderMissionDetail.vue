@@ -98,8 +98,12 @@ export default {
       self.task_question_num = res.questions.length;
     })
     self.task.getCoverTasksTaskIdCoverImageGet(self.task_id, (error, data, response) => {
-      let imageObjectURL = window.URL.createObjectURL(response.body);
-      self.task_cover = imageObjectURL
+      if (response.status == 400){
+        self.task_cover = '../default_cover.jpeg'
+      } else{
+        let imageObjectURL = window.URL.createObjectURL(response.body);
+        self.task_cover = imageObjectURL
+      }
     })
   },
   methods: {
@@ -116,42 +120,41 @@ export default {
     },
     downloadTask() {
       let self = this;
+      this.task.downloadTaskResultsTasksTaskIdDownloadGet(self.task_id, (error, data, response) => {
+        console.log(error, data, response)
+        if (response.data.type === 'application/octet-stream') {
+          const fileName = response.headers['content-disposition'].split('=')[1]
+          if (window.navigator && window.navigator.msSaveOrOpenBlob){
+            const blob = new Blob([response.data], { type: 'application/zip'})
+            window.navigator.msSaveOrOpenBlob(blob, fileName)
+          } else {
+            const blob = new Blob([response.data], {type:'application/zip'})
+            const url = window.URL.createObjectURL(blob)
+            const link = document.createElement('a')
+            link.href = url
+            link.download = fileName
+            link.click()
+            URL.revokeObjectURL(url)
+          }
+        }
+      })
+    },
+    deleteTask () {
+      let self = this;
       self.$confirm('您即将删除当前任务?', '提示', {
         confirmButtonText: '确定',
         cancelButtonText: '取消',
         type: 'info',
       }).then(() => {
-        this.task.downloadTaskResultsTasksTaskIdDownloadGet(self.task_id, (error, data, response) => {
-          console.log(error, data, response)
-          if (response.data.type === 'application/octet-stream') {
-            const fileName = response.headers['content-disposition'].split('=')[1]
-            if (window.navigator && window.navigator.msSaveOrOpenBlob){
-              const blob = new Blob([response.data], { type: 'application/zip'})
-              window.navigator.msSaveOrOpenBlob(blob, fileName)
-            } else {
-              const blob = new Blob([response.data], {type:'application/zip'})
-              const url = window.URL.createObjectURL(blob)
-              const link = document.createElement('a')
-              link.href = url
-              link.download = fileName
-              link.click()
-              URL.revokeObjectURL(url)
-            }
-          }
+        self.task.deleteTaskTasksTaskIdDelete(self.task_id, (error, data, response) =>{
+          self.$router.push('/sendermission')
         })
       }).catch(() => {
-        this.$message({
-          type: 'info',
-          message: '已取消删除操作'
+          this.$message({
+            type: 'info',
+            message: '已取消删除操作'
+          });
         });
-      });
-    },
-    deleteTask () {
-      let self = this;
-      self.task.deleteTaskTasksTaskIdDelete(self.task_id, (error, data, response) =>{
-        console.log(error, data, response)
-        self.$router.push('/sendermission')
-      })
     }
   }
 }
