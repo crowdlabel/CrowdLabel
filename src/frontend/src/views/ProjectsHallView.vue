@@ -84,7 +84,7 @@
               </el-radio-group>
             </div>
             <div class="display_projects">
-              <div class="display_items" v-for="(item, index) in tasks_total" v-if="index<6">
+              <div class="display_items" v-for="(item, index) in tasks_total.slice((currentPage-1)*pageSize, currentPage*pageSize)">
                 <el-card :body-style="{ padding: '0px' }" @click.native="seeDetails(item.task_id)">
                     <img :src=item.cover alt="" class="project_image" >
                     <div style="padding: 0px;">
@@ -98,8 +98,11 @@
             <div class="pagination">
               <el-pagination
                 background
-                layout="prev, pager, next"
-                 :total=100>
+                :page-size="6"
+                :current-page="currentPage.sync"
+                @current-change="handleCurrentChange"
+                layout="total, prev, pager, next"
+                :total=tasks_total.length>
               </el-pagination>
             </div>
         </div>
@@ -118,6 +121,8 @@ import { TasksApi } from '@/crowdlabel-api/src';
 export default {
   data() {
     return {
+      pageSize: 6,
+      currentPage: 1,
       client: '',
       task: '',
       user: '',
@@ -132,6 +137,9 @@ export default {
     };
   },
   methods: {
+    handleCurrentChange(val) {
+      this.currentPage=val;
+    },
     searchAll(){
       self.tasks_total = []
       self.task.searchTasksTasksPut({}, (error, data, response) => {
@@ -141,30 +149,19 @@ export default {
         }
         let res = JSON.parse(response['text'])
         let taskslist = res['tasks']
-        console.log(taskslist)
         taskslist.forEach(function(element) {
-          self.task.getCoverTasksTaskIdCoverImageGet(element, (error, data, response) => {
-          if (response.status == 400){
-            var c = { task_id:element, name:'', cover:'../default_cover.jpeg', task_id:''}
-            self.task.getTaskTasksTaskIdGet(element, (error, data, response) => {
-              let b = JSON.parse(response['text'])
-              c.name = b.name
-              c.task_id = b.task_id
-              self.tasks_info.push(c)
-            })
-          } else {
-            let imageObjectURL = window.URL.createObjectURL(response.body);
-            self.imageObject = imageObjectURL
-            var c = { task_id:element, name:'', cover:self.imageObject, task_id:''}
-            self.task.getTaskTasksTaskIdGet(element, (error, data, response) => {
-              let b = JSON.parse(response['text'])
-              c.name = b.name
-              c.task_id = b.task_id
-              self.tasks_info.push(c)
-            })
-          }
+          self.task.getCoverTasksTaskIdCoverImageGet(element['task_id'], (error, data, response) => {
+            if (response.status == 400){
+              var c = { task_id:element['task_id'], name:element['name'], cover:'../default_cover.jpeg'}
+              self.tasks_total.push(c)
+            } else {
+              let imageObjectURL = window.URL.createObjectURL(response.body);
+              self.imageObject = imageObjectURL
+              var c = { task_id:element['task_id'], name:element['name'], cover:self.imageObject}
+              self.tasks_total.push(c)
+            }
+          })
         })
-        });
       })
     },
     seeDetails(task_id) {
@@ -225,33 +222,23 @@ export default {
     })
     self.tasks_total = []
     self.task.searchTasksTasksPut({}, (error, data, response) => {
+      console.log(error, data, response)
       if (error == 'Error: Unauthorized') {
         localStorage.removeItem('Authorization');
         this.$router.push('/receiverlogin');
       }
       let res = JSON.parse(response['text'])
       let taskslist = res['tasks']
-      console.log(taskslist)
       taskslist.forEach(function(element) {
-        self.task.getCoverTasksTaskIdCoverImageGet(element, (error, data, response) => {
+        self.task.getCoverTasksTaskIdCoverImageGet(element['task_id'], (error, data, response) => {
           if (response.status == 400){
-            var c = { task_id:element, name:'', cover:'../default_cover.jpeg', task_id:''}
-            self.task.getTaskTasksTaskIdGet(element, (error, data, response) => {
-              let b = JSON.parse(response['text'])
-              c.name = b.name
-              c.task_id = b.task_id
-              self.tasks_info.push(c)
-            })
+            var c = { task_id:element['task_id'], name:element['name'], cover:'../default_cover.jpeg'}
+            self.tasks_total.push(c)
           } else {
             let imageObjectURL = window.URL.createObjectURL(response.body);
             self.imageObject = imageObjectURL
-            var c = { task_id:element, name:'', cover:self.imageObject, task_id:''}
-            self.task.getTaskTasksTaskIdGet(element, (error, data, response) => {
-              let b = JSON.parse(response['text'])
-              c.name = b.name
-              c.task_id = b.task_id
-              self.tasks_info.push(c)
-            })
+            var c = { task_id:element['task_id'], name:element['name'], cover:self.imageObject}
+            self.tasks_total.push(c)
           }
         })
       })

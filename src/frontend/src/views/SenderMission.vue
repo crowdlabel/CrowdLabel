@@ -325,21 +325,19 @@ export default {
       self.taskslist.forEach(function(element) {
         self.task.getCoverTasksTaskIdCoverImageGet(element, (error, data, response) => {
           if (response.status == 400){
-            var c = { task_id:element, name:'', cover:'../default_cover.jpeg', task_id:''}
+            var c = { task_id:element, name:'', cover:'../default_cover.jpeg'}
             self.task.getTaskTasksTaskIdGet(element, (error, data, response) => {
               let b = JSON.parse(response['text'])
               c.name = b.name
-              c.task_id = b.task_id
               self.tasks_info.push(c)
             })
           } else {
             let imageObjectURL = window.URL.createObjectURL(response.body);
             self.imageObject = imageObjectURL
-            var c = { task_id:element, name:'', cover:self.imageObject, task_id:''}
+            var c = { task_id:element, name:'', cover:self.imageObject}
             self.task.getTaskTasksTaskIdGet(element, (error, data, response) => {
               let b = JSON.parse(response['text'])
               c.name = b.name
-              c.task_id = b.task_id
               self.tasks_info.push(c)
             })
           }
@@ -470,23 +468,22 @@ export default {
       self.taskslist = a.tasks_requested
       self.tasks_info = []
       self.taskslist.forEach(function(element) {
+        console.log(element)
         self.task.getCoverTasksTaskIdCoverImageGet(element, (error, data, response) => {
           if (response.status == 400){
-            var c = { task_id:element, name:'', cover:'../default_cover.jpeg', task_id:''}
+            var c = { task_id:element, name:'', cover:'../default_cover.jpeg'}
             self.task.getTaskTasksTaskIdGet(element, (error, data, response) => {
               let b = JSON.parse(response['text'])
               c.name = b.name
-              c.task_id = b.task_id
               self.tasks_info.push(c)
             })
           } else {
             let imageObjectURL = window.URL.createObjectURL(response.body);
             self.imageObject = imageObjectURL
-            var c = { task_id:element, name:'', cover:self.imageObject, task_id:''}
+            var c = { task_id:element, name:'', cover:self.imageObject}
             self.task.getTaskTasksTaskIdGet(element, (error, data, response) => {
               let b = JSON.parse(response['text'])
               c.name = b.name
-              c.task_id = b.task_id
               self.tasks_info.push(c)
             })
           }
