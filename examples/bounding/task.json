@@ -3,7 +3,7 @@
     "credits": 2,
     "introduction": "Bounding box",
     "description": "Bounding box",
-    "tags": ["object-bounding"],
+    "tags": ["图片打标", "人体识别"],
     "responses_required": 2,
     "cover_image": "1.jpg",
     "questions": [
@@ -23,7 +23,7 @@
             "question_id": 3,
             "question_type": "bounding_box",
             "prompt": "Draw a box around the person",
-            "resource": "2.jpg"
+            "resource": "1.jpg"
         }
     ]
 }

@@ -174,7 +174,6 @@ def test_get_me():
     
 def test_register():
     init_models_sync()
-    now = datetime.utcnow()
     response = __register(admin)
     assert response.status_code == 201
     json = response.json()
@@ -220,8 +219,7 @@ def test_availability():
     response = __availability(req1['username'], resp1['email'])
     assert response.status_code == 200 and response.json() == {'username': False, 'email': False}
 
-@pytest.mark.anyio
-async def test_upload():
+def test_upload():
     init_models_sync()
     __register(req1)
     token = __login(req1)
@@ -239,7 +237,6 @@ async def test_upload():
     compare_tasks(expected, json)
 
     response = __get_me(token)
-    pprint(response.json())
     assert response.status_code == 200
     assert json['task_id'] in response.json()['tasks_requested']
 
@@ -269,7 +266,6 @@ def test_claim():
     cresp = __claim(johnt, task_id)
     assert cresp.status_code == 200
     assert johndoe['username'] in __get_task(reqt, task_id).json()['respondents_claimed']
-    pprint( __get_me(johnt).json())
     assert task_id in __get_me(johnt).json()['tasks_claimed']
 def test_credits():
     init_models_sync()
@@ -297,7 +293,6 @@ def test_get_task():
     response = __get_task(token, task['task_id'])
     assert response.status_code == 200
     json = response.json()
-    pprint(json)
     compare_tasks(task, json)
 def test_get_task_question_resource():
     init_models_sync()
@@ -344,10 +339,9 @@ def test_cover():
     assert response.status_code == 200
     with open('../../examples/example_task/cover.jpg', 'rb') as f:
         assert f.read() == response.content
-
 if __name__ == '__main__':
     
-    """ 
+    
     test_availability()
     test_register()
     test_login()
@@ -355,11 +349,11 @@ if __name__ == '__main__':
     test_credits()
     test_upload()
     test_search()
+    test_get_task()
     test_claim()
-    test_cover()
     test_get_task_question_resource() 
     test_answer()
-    """
+   
 
-    test_get_task()
+    test_cover()
     

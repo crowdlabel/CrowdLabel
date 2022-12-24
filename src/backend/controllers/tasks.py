@@ -198,11 +198,10 @@ download_task_failed_jdr = JSONDocumentedResponse(
     'Task not downloaded',
     schemas.tasks.ErrorResponse,
 )
-@router.get('/{task_id}/cover-image',
-    description='Get cover image',
+@router.get('/{task_id}/download',
+    description='Download results',
     **create_documentation([download_task_success_jdr, download_task_failed_jdr, forbidden_jdr, not_found_jdr]),
 )
-@router.get('/{task_id}/download',)
 async def download_task_results(task_id: int, current_user=Depends(get_current_user(['requester']))):
     task = await task_service.get_task(task_id)
     if not task:
@@ -215,9 +214,9 @@ async def download_task_results(task_id: int, current_user=Depends(get_current_u
     return await download_file(response)
 ###############################################################################
 
-@router.patch('/{task_id}')
+""" @router.patch('/{task_id}')
 async def edit_task(task_id: int, current_user=Depends(get_current_user)):
-    return 'editing task ' + str(task_id)
+    return 'editing task ' + str(task_id) """
 ###############################################################################
 get_cover_success_jdr = MediaDocumentedResponse(
     status.HTTP_200_OK,
@@ -232,7 +231,7 @@ get_cover_failed_jdr = JSONDocumentedResponse(
     description='Get cover image',
     **create_documentation([get_cover_success_jdr, get_cover_failed_jdr, forbidden_jdr, not_found_jdr]),
 )
-async def get_cover(task_id: int, current_user: schemas.users.User=Depends(get_current_user([]))):
+async def get_cover(task_id: int, current_user: schemas.users.User=Depends(get_current_user())):
     task = await task_service.get_task(task_id)
     if not task:
         return not_found_jdr.response()

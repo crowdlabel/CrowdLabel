@@ -364,7 +364,7 @@ Returns: list of `Task`s matching the query within the specified `page` and `pag
         Returns a str detailing the error if it failed
         '''
 
-        filename = 'results_' + task_id + '_' + datetime_now_str() + '.zip'
+        filename = 'results_' + str(task_id) + '_' + datetime_now_str() + '.zip'
 
 
 
