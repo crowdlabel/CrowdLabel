@@ -430,6 +430,7 @@ export default {
             alert(a.error)
           } if(response.status == 200){
             this.form.zipfile = []
+            this.form.cover = []
             alert('upload suceed');
             this.dialogVisible = false
             this.refresh();
