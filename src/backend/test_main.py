@@ -43,7 +43,7 @@ resp1 = {
     'verification_code': '123456'
 }
 
-example_task = Path('D:/example_task.zip')
+example_task = Path('D:/tsinghua/se 软件工程/CrowdLabel/examples/bounding.zip')
 expected = {'cover_image': 'cover.jpg',
     'credits': 2.0,
     'description': 'This task is an example of a valid task',
@@ -227,6 +227,8 @@ def test_upload():
 
     file = example_task
     response = __upload_task(token, file)
+    print(response.status_code)
+    print(response.json())
     assert response.status_code == 200
     json = response.json()
     assert 'date_created' in json
@@ -255,6 +257,10 @@ def test_search():
     json = response.json()
     assert 'tasks' in json and 'total' in json
     assert json['total'] == 1 and len(json['tasks']) == 1
+    response = client.put('/tasks/', headers=jd, json={'credits_min': 0, 'credits_max': 10})
+    assert response.status_code == 200
+    json = response.json()
+    assert len(json['tasks']) == 1
 def test_claim():
     init_models_sync()
     __register(johndoe)
@@ -342,18 +348,18 @@ def test_cover():
 if __name__ == '__main__':
     
     
-    test_availability()
+    """ test_availability()
     test_register()
     test_login()
     test_get_me()
     test_credits()
     test_upload()
-    test_search()
     test_get_task()
     test_claim()
     test_get_task_question_resource() 
     test_answer()
    
 
-    test_cover()
+    test_cover() """
     
+    test_search()
