@@ -84,6 +84,7 @@ export default {
     })
     self.task.getTaskTasksTaskIdGet(self.task_id, (error, data, response) => {
       let res = JSON.parse(response['text'])
+      console.log(res)
       self.task_amount = res.responses_required;
       self.task_brief = res.introduction;
       self.task_name = res.name;

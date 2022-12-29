@@ -428,6 +428,7 @@ export default {
             });
           } else if (response.status==400) {
             alert(a.error)
+            this.form.zipfile = [];
           } if(response.status == 200){
             this.form.zipfile = []
             this.form.cover = []
