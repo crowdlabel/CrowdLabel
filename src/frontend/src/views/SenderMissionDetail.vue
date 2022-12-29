@@ -18,8 +18,8 @@
               <p class="text_normal">
                 {{ task_brief }}
               </p>
-              <div class="placeholder_text"></div>
-              <p class="text_bold">任务类型：</p><p class="text_normal">{{ task_type }}</p>
+              <!--div class="placeholder_text"></div>-->
+              <p class="text_bold"><br />任务类型：</p><p class="text_normal">{{ task_type }}</p>
               <p class="text_bold"><br />问题数量：</p><p class="text_normal">{{ task_question_num }}</p>
               <p class="text_bold"><br />积分总额：</p><p class="text_normal">{{ task_credit }}</p>
             </div>
@@ -34,7 +34,7 @@
             </a>
             <div class="button_placeholder"></div>
             <el-button type="primary" @click="downloadTask">下载数据</el-button>
-            <el-button type="primary" @click="deleteTask">删除任务 > </el-button>
+            <el-button type="primary" @click="deleteTask">删除任务</el-button>
           </div>
           
         </div>
@@ -85,6 +85,7 @@ export default {
     })
     self.task.getTaskTasksTaskIdGet(self.task_id, (error, data, response) => {
       let res = JSON.parse(response['text'])
+      console.log(res);
       self.task_amount = res.responses_required;
       var task_completed = 0;
       res.respondents_completed.forEach(function(element) {
@@ -101,7 +102,11 @@ export default {
       if (response.status == 400){
         self.task_cover = '../default_cover.jpeg'
       } else{
-        let imageObjectURL = window.URL.createObjectURL(response.body);
+        let binaryData = [];
+            binaryData.push(response.body);
+            let imageObjectURL = window.URL.createObjectURL(new Blob(binaryData));
+            console.log(imageObjectURL);
+        // let imageObjectURL = window.URL.createObjectURL(response.body);
         self.task_cover = imageObjectURL
       }
     })

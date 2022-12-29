@@ -21,14 +21,11 @@
         </ul>
         <div class="project_description">
           <p class="text_bold">任务简介：</p>
-           <p class="text_normal">
-            软件工程是一门研究用工程化方法构建和维护有效、实用和高质量的软件的学科。它涉及程序设计语言、数据库、软件开发工具、系统平台、标准、设计件有电子邮件、嵌入式系统、人机界面、办公套件、操作系统、编译器、数据库、游戏等。同时，各个行业几乎都有计算机软件的应用，如工业、农业、银行、航空、政府部门等。这些应用促进了经济和社会的发展，也提高了工作效率和生活效率 。
-            <br />软件工程的目标是：在给定成本、进度的前提下，开发出具有适用性、有效性、可修改性、可靠性、可理解性、可维护性、可重用性、可移植性、可追踪性、可互操作性和满足用户需求的软件产品。追求这些目标有助于提高软件产品的质量和开发效率，减少维护的困难。
-           </p>
-           <div class="placeholder_text"></div>
-            <p class="text_bold">任务类型：</p><p class="text_normal">文字任务</p>
-            <p class="text_bold"><br />问题数量：</p><p class="text_normal">10</p>
-            <p class="text_bold"><br />积分奖励：</p><p class="text_normal">15</p>
+           <p id="task_intro" class="text_normal">{{ task_brief }}</p>
+           <!-- div class="placeholder_text"></div> -->
+            <p class="text_bold"><br />任务类型：</p><p class="text_normal">{{ task_type }}</p>
+            <p class="text_bold"><br />问题数量：</p><p class="text_normal">{{ task_question_num }}</p>
+            <p class="text_bold"><br />积分奖励：</p><p class="text_normal">{{ task_credit }}</p>
             <div class="placeholder_border"></div>
         </div>
       </div>
@@ -99,24 +96,73 @@
 
 
 <script>
-// @ is an alias to /src
-// import HelloWorld from '@/components/HelloWorld.vue'
-import axios from 'axios'
-// import { MessageBox } from 'element-ui';
-//Vue.prototype.$msgbox = MessageBox;
-// Vue.prototype.$confirm= MessageBox.confirm;
-// Vue.prototype.$message= Message
+import { ApiClient } from '@/crowdlabel-api/src';
+import { UsersApi } from '@/crowdlabel-api/src';
+import { TasksApi } from '@/crowdlabel-api/src';
 export default {
   data() {
     return {
+      user: '',
+      client: '',
+      task_id: '',
+      task_name: '',
+      task_type: '',
+      task_brief: '',
+      task_cover: '',
+      task_credit: '',
+      task_question_num: '',
       percentage: 20,
       customColor: '#5D3BE6',
       radio: -1,
       choicesGiven: [
-        { label: "是", value: 0 },
-        { label: "否", value: 1 }
+        { label: "", value: 0 },
+        { label: "", value: 1 }
       ],
     };
+  },
+  mounted() {
+    let self = this;
+    console.log(self);
+    self.task_id = this.$route.params.taskid;
+    console.log(this.$route.params.taskid);
+    var apiClient  = new ApiClient('http://localhost:8000');
+    apiClient.authentications['OAuth2PasswordBearer'].accessToken = localStorage.getItem('Authorization');
+    self.client = apiClient;
+    var usersApi = new UsersApi(apiClient);
+    self.user = usersApi;
+    var tasksApi = new TasksApi(apiClient);
+    self.task = tasksApi
+    var my_username = "";
+    self.user.getMeUsersMeGet((error, data, response) => {
+      let res = JSON.parse(response['text']);
+      my_username = res.username;
+      if (error == 'Error: Unauthorized') {
+        localStorage.removeItem('Authorization');
+        this.$router.push('/senderlogin');
+        return;
+      }
+    })
+    console.log(self.task_id);
+    self.task.getTaskTasksTaskIdGet(self.task_id, (error, data, response) => {
+      let res = JSON.parse(response['text'])
+      console.log(res)
+      self.task_amount = res.responses_required;
+      self.task_brief = res.introduction;
+      self.task_name = res.name;
+      self.task_type = eval(res.tags)[0];
+      self.task_credit = res.credits;
+      self.task_question_num = res.questions.length;
+      // 判断是否已领取该任务 // 笨方法遍历
+      var list_claimed = eval(res.respondents_claimed);
+      for (var i = 0; i < list_claimed.length; i++) {
+        if (list_claimed[i] == my_username) {
+          self.claim = true;
+          self.answer = false;
+          document.getElementById("claim_button").innerHTML = "已接受任务";
+          document.getElementById("start_button").innerHTML = "继续答题 > ";
+        }
+      }
+    })
   },
   methods: {
     alertMessage() {

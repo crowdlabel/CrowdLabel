@@ -119,10 +119,11 @@
             <div class="filter">
               <p class="title_filter">筛选：</p>
               <el-button-group>
-                <el-button round @click="searchAll">全部</el-button>
-                <el-button round @click="searchText">文字任务</el-button>
-                <el-button round @click="searchImage">图像任务</el-button>
-                <el-button round @click="searchRadio">音频任务</el-button>
+                <el-button round @click="searchAll" :autofocus="true">全部</el-button>
+                <el-button round @click="searchText">文字分类</el-button>
+                <el-button round @click="searchImage">图片分类</el-button>
+                <el-button round @click="searchImage">图片打标</el-button>
+                <el-button round @click="searchRadio">音频分类</el-button>
               </el-button-group>
               <el-button type="default" round @click="downlaodFormat" id="format_download">下载任务模板</el-button>
               <el-button type="primary" round @click="createProject" id="create">创建任务</el-button>
@@ -332,7 +333,12 @@ export default {
               self.tasks_info.push(c)
             })
           } else {
-            let imageObjectURL = window.URL.createObjectURL(response.body);
+            let binaryData = [];
+            binaryData.push(response.body);
+            let imageObjectURL = window.URL.createObjectURL(new Blob(binaryData));
+            console.log(imageObjectURL);
+
+            //let imageObjectURL = window.URL.createObjectURL(response.body);
             self.imageObject = imageObjectURL
             var c = { task_id:element, name:'', cover:self.imageObject}
             self.task.getTaskTasksTaskIdGet(element, (error, data, response) => {
@@ -478,7 +484,13 @@ export default {
               self.tasks_info.push(c)
             })
           } else {
-            let imageObjectURL = window.URL.createObjectURL(response.body);
+            let binaryData = [];
+            binaryData.push(response.body);
+            let imageObjectURL = window.URL.createObjectURL(new Blob(binaryData));
+            console.log(imageObjectURL);
+            console.log(response);
+            console.log(binaryData);
+            // let imageObjectURL = window.URL.createObjectURL(response.body);
             self.imageObject = imageObjectURL
             var c = { task_id:element, name:'', cover:self.imageObject}
             self.task.getTaskTasksTaskIdGet(element, (error, data, response) => {
@@ -766,7 +778,7 @@ export default {
   display: flex;
   align-items:left;
   margin: 20px 100px;
-  margin-bottom:40px;
+  margin-bottom:20px;
   flex-wrap: wrap;
   width: 80%;
   height: 360px !important;
@@ -827,6 +839,8 @@ export default {
   float:left;
   top:140px;
   left:700px;
+  width:90px;
+  padding: 0px 15px;
 }
 
 .mission_name{
