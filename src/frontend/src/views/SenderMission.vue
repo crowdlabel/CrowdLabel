@@ -433,9 +433,19 @@ export default {
               });
             });
           } else if (response.status==400) {
-            alert(a.error)
+            this.$confirm(a.error, '提示', {
+              confirmButtonText: '确定',
+              cancelButtonText: '取消',
+              type: 'info',
+            }).then(() => {
+              
+            }).catch(() => {
+              
+            });
+            this.form.zipfile = [];
           } if(response.status == 200){
             this.form.zipfile = []
+            this.form.cover = []
             alert('upload suceed');
             this.dialogVisible = false
             this.refresh();
@@ -484,6 +494,7 @@ export default {
               self.tasks_info.push(c)
             })
           } else {
+
             let binaryData = [];
             binaryData.push(response.body);
             let imageObjectURL = window.URL.createObjectURL(new Blob(binaryData));
