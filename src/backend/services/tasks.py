@@ -365,7 +365,7 @@ Returns: list of `Task`s matching the query within the specified `page` and `pag
         '''
 
         filename = 'results_' + str(task_id) + '_' + datetime_now_str() + '.zip'
-        task = self.get_task(task_id)
+        task = await self.get_task(task_id)
 
 
         return filename
