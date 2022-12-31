@@ -15,11 +15,8 @@
             <img class="preview_img" :src=task_cover height="320" width="450"/>
             <div class="project_description">
               <p class="text_bold">任务简介：</p>
-              <p class="text_normal">
-                {{ task_brief }}
-              </p>
-              <div class="placeholder_text"></div>
-              <p class="text_bold">任务类型：</p><p class="text_normal">{{ task_type }}</p>
+              <p class="text_normal">{{task_brief}}</p>
+              <p class="text_bold"><br />任务类型：</p><p class="text_normal" id="tags">{{task_type}}</p>
               <p class="text_bold"><br />问题数量：</p><p class="text_normal">{{task_question_num}}</p>
               <p class="text_bold"><br />积分奖励：</p><p class="text_normal">{{task_credit}}</p>
             </div>
@@ -29,12 +26,9 @@
               <el-button type="primary" plain>&lt 返回</el-button>
             </a>
             <div class="button_placeholder"></div>
-            <el-button type="primary" :disabled="claim">接受任务</el-button>
-            <a href="/question_text">
-              <el-button type="primary" :disabled="answer">开始答题 > </el-button>
-            </a>
+            <el-button id="claim_button" type="primary" v-on:click="claim_task()" :disabled="claim">接受任务</el-button>
+            <el-button id="start_button" type="primary" v-on:click="start_task()" :disabled="answer">开始答题 > </el-button>
           </div>
-          
         </div>
         
     </div>
@@ -67,6 +61,7 @@ export default {
   },
   mounted () {
     let self = this;
+    console.log(self);
     self.task_id = this.$route.params.taskid;
     var apiClient  = new ApiClient('http://localhost:8000');
     apiClient.authentications['OAuth2PasswordBearer'].accessToken = localStorage.getItem('Authorization')
@@ -75,7 +70,10 @@ export default {
     self.user = usersApi
     var tasksApi = new TasksApi(apiClient);
     self.task = tasksApi
+    var my_username = "";
     self.user.getMeUsersMeGet((error, data, response) => {
+      let res = JSON.parse(response['text']);
+      my_username = res.username;
       if (error == 'Error: Unauthorized') {
         localStorage.removeItem('Authorization');
         this.$router.push('/senderlogin');
@@ -84,25 +82,86 @@ export default {
     })
     self.task.getTaskTasksTaskIdGet(self.task_id, (error, data, response) => {
       let res = JSON.parse(response['text'])
+
       console.log(res)
+
       self.task_amount = res.responses_required;
       self.task_brief = res.introduction;
       self.task_name = res.name;
-      self.task_type = res.tags;
-      self.task_credit = res.credits
+      self.task_type = eval(res.tags)[0];
+      self.task_credit = res.credits;
       self.task_question_num = res.questions.length;
+      // 判断是否已领取该任务 // 笨方法遍历
+      var list_claimed = eval(res.respondents_claimed);
+      for (var i = 0; i < list_claimed.length; i++) {
+        if (list_claimed[i] == my_username) {
+          self.claim = true;
+          self.answer = false;
+          document.getElementById("claim_button").innerHTML = "已接受任务";
+          document.getElementById("start_button").innerHTML = "继续答题 > ";
+        }
+      }
     })
     self.task.getCoverTasksTaskIdCoverImageGet(self.task_id, (error, data, response) => {
       if (response.status == 400){
         self.task_cover = '../default_cover.jpeg'
       } else{
-        let imageObjectURL = window.URL.createObjectURL(response.body);
+        let binaryData = [];
+        binaryData.push(response.body);
+        let imageObjectURL = window.URL.createObjectURL(new Blob(binaryData));
+        // let imageObjectURL = window.URL.createObjectURL(response.body);
         self.task_cover = imageObjectURL
       }
     })
+    
+    
+    
   },
   methods: {
-    
+    claim_task() {
+      this.task.claimTaskTasksTaskIdClaimPost(this.task_id, (error, data, response) => {
+        let res = JSON.parse(response['text'])
+        // console.log(res)
+      })
+      this.claim = true;
+      this.answer = false;
+      this.$message({
+          message: '你已成功接收该任务，开始答题吧！',
+          type: 'success'
+        });
+      document.getElementById("claim_button").innerHTML = "已接受任务";
+    },
+    start_task() {
+      if (this.task_type == "文字分类") {
+        this.$router.push({
+        name:'question_text',
+        params:{
+          taskid: this.task_id
+        }
+      })
+      } else if (this.task_type == "图片分类") {
+        this.$router.push({
+        name:'question_image_classify',
+        params:{
+          taskid: this.task_id
+        }
+      })
+      }  else if (this.task_type == "图片打标") {
+        this.$router.push({
+        name:'question_image_identify',
+        params:{
+          taskid: this.task_id
+        }
+      })
+      }  else if (this.task_type == "音频分类") {
+        this.$router.push({
+        name:'question_audio',
+        params:{
+          taskid: this.task_id
+        }
+      })
+      } 
+    }
   }
 }
 </script>
@@ -206,6 +265,7 @@ export default {
 .text_normal {
   font-weight: normal;
   margin: 0px;
+  padding: 0px;
   line-height: 1.5;
   display:inline;
 }
@@ -293,7 +353,25 @@ export default {
   color: #5D3BE6;
   background-color: #fff;
 }
+::v-deep .el-button--primary.is-disabled {
+  border-color: #d7d0f0ef;
+  background-color: #d7d0f0ef;
+  border-radius: 8px;
+  border-width: 0;
+  margin-right: 10px;
+}
+::v-deep .el-button--primary.is-disabled:hover {
+  border-color: #d7d0f0ef;
+  background-color: #d7d0f0ef;
+  border-radius: 8px;
+  border-width: 0;
+  margin-right: 10px;
+}
 .button_placeholder {
   width: 30px;
+}
+
+#claim_button {
+  margin-right: 10px;
 }
 </style>
