@@ -119,11 +119,12 @@
             <div class="filter">
               <p class="title_filter">筛选：</p>
               <el-button-group>
-                <el-button round @click="searchAll" :autofocus="true">全部</el-button>
-                <el-button round @click="searchText">文字分类</el-button>
-                <el-button round @click="searchImage">图片分类</el-button>
-                <el-button round @click="searchImage">图片打标</el-button>
-                <el-button round @click="searchRadio">音频分类</el-button>
+                <!-- disabled sorting and searching for requesters -->
+                <el-button round @click="searchAll" :autofocus="true" disabled>全部</el-button>
+                <el-button round @click="searchText" disabled>文字分类</el-button>
+                <el-button round @click="searchImage" disabled>图片分类</el-button>
+                <el-button round @click="searchImage" disabled>图片打标</el-button>
+                <el-button round @click="searchRadio" disabled>音频分类</el-button>
               </el-button-group>
               <el-button type="default" round @click="downlaodFormat" id="format_download">下载任务模板</el-button>
               <el-button type="primary" round @click="createProject" id="create">创建任务</el-button>
@@ -256,11 +257,9 @@ export default {
       this.currentPage=val;
     },
     seeDetails(task_id) {
+      this.$store.commit('changeTaskID', task_id);
       this.$router.push({
         name:'sendermissiondetail',
-        params:{
-          taskid: task_id
-        }
       })
     },
     handleChange(file, fileList) {
@@ -375,29 +374,7 @@ export default {
       
     },
     searchSpecific() {
-      let self = this
-      const search_requirements = document.getElementById('specific_name').value
-      if (search_requirements === '' || search_requirements === null){
-        self.refresh();
-      } else {
-        // var search_tags = []
-        // search_tags.push(search_requirements)
-        // self.task.searchTasksTasksPut({
-        //   "name": search_requirements,
-        //   "tags": search_tags,
-        //   "requesters": [],
-        //   "page": 1,
-        //   "page_size": -1,
-        //   "credits_min": 0,
-        //   "credits_max": -1,
-        //   "questions_min": 0,
-        //   "questions_max": -1,
-        //   "sort_criteria": "name",
-        //   "sort_ascending": true
-        // }, (error, data, response) => {
-        //   console.log(error, data, response)
-        // })
-      }
+
     },
     downlaodFormat() {
       //to do
