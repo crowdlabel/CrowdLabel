@@ -169,12 +169,9 @@ export default {
       })
     },
     seeDetails(task_id) {
-      console.log(task_id)
+      this.$store.commit('changeTaskID', task_id);
       this.$router.push({
         name:'project_detail',
-        params:{
-          taskid: task_id
-        }
       })
     },
     searchText(){
