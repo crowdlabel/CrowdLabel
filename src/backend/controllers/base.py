@@ -3,7 +3,7 @@ from starlette.middleware.cors import CORSMiddleware
 
 
 origins = [
-    "*"
+    'http://localhost:8082'
 ]
 
 app = FastAPI(
