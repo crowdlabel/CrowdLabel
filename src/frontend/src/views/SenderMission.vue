@@ -427,7 +427,15 @@ export default {
               });
             });
           } else if (response.status==400) {
-            alert(a.error)
+            this.$confirm(a.error, '提示', {
+              confirmButtonText: '确定',
+              cancelButtonText: '取消',
+              type: 'info',
+            }).then(() => {
+              
+            }).catch(() => {
+              
+            });
             this.form.zipfile = [];
           } if(response.status == 200){
             this.form.zipfile = []
@@ -480,6 +488,7 @@ export default {
               self.tasks_info.push(c)
             })
           } else {
+            console.log(response)
             let imageObjectURL = window.URL.createObjectURL(response.body);
             self.imageObject = imageObjectURL
             var c = { task_id:element, name:'', cover:self.imageObject}

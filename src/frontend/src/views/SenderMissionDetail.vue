@@ -83,8 +83,12 @@ export default {
         return;
       }
     })
+    if(self.task_id === '' || self.task_id === null){
+      this.$router.push('/sendermission');
+    }
     self.task.getTaskTasksTaskIdGet(self.task_id, (error, data, response) => {
       let res = JSON.parse(response['text'])
+      console.log(res)
       self.task_amount = res.responses_required;
       var task_completed = 0;
       res.respondents_completed.forEach(function(element) {
