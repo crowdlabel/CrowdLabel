@@ -34,7 +34,7 @@
             </a>
             <div class="button_placeholder"></div>
             <el-button type="primary" @click="downloadTask">下载数据</el-button>
-            <el-button type="primary" @click="deleteTask">删除任务</el-button>
+            <el-button type="primary" icon="el-icon-delete" @click="deleteTask">删除任务</el-button>
           </div>
           
         </div>

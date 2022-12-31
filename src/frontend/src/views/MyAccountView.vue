@@ -61,6 +61,7 @@
                 <a href="/credits">
                   <el-button type="primary">我的积分</el-button>
                 </a>
+                <el-button type="primary" plain icon="el-icon-close" @click="logout">退出登录</el-button>
             </div>
         </div>
     </div>
@@ -101,7 +102,10 @@ export default {
     })
   },
   methods: {
-
+    logout () {
+      localStorage.removeItem('Authorization');
+      this.$router.push('/');
+    },
   }
 }
 </script>
