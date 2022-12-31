@@ -249,3 +249,11 @@ async def get_cover(task_id: int, current_user: schemas.users.User=Depends(get_c
     resource_path = task.resource_path / task.cover_image
 
     return await download_file(resource_path, media_type='image/jpeg')
+###############################################################################
+@router.get('/{task_id}/progress',
+    description='Respondent\'s progress within a task, equal to the number of questions completed, and if the questions must be answered in order, the last question that was completed'
+)
+async def get_progress(task_id, current_user: schemas.users.User=Depends(get_current_user(['respondent']))):
+    task = await task_service.get_task(task_id)
+    if not task:
+        return not_found_jdr.response()
