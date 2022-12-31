@@ -314,6 +314,7 @@ body{
   float:left;
   top: 30px;
   left: 30px;
+  min-width: 40px;
   width: 40%;
   position: absolute;
 }
@@ -360,7 +361,7 @@ body{
 }
 .login_btn{
   position: relative;
-  width: 37%;
+  width: 40%;
   height: 320px;
   background: transparent;
   color: transparent;
