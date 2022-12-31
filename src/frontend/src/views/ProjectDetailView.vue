@@ -166,45 +166,23 @@ export default {
       document.getElementById("claim_button").innerHTML = "已接受任务";
     },
     start_task() {
+      this.$store.commit('changeQuestionIndex', 0)
+      this.$store.commit('changeTaskType', this.task_type)
       if (this.task_type == "文字分类") {
         this.$router.push({
         name:'question_text',
-        params:{
-          task_map: this.task_map,
-          taskid: this.task_id,
-          task_type: this.task_type,
-          which_question: 0
-        }
       })
       } else if (this.task_type == "图片分类") {
         this.$router.push({
         name:'question_image_classify',
-        params:{
-          task_map: this.task_map,
-          taskid: this.task_id,
-          task_type: this.task_type,
-          which_question: 0
-        }
       })
       }  else if (this.task_type == "图片打标") {
         this.$router.push({
         name:'question_image_identify',
-        params:{
-          task_map: this.task_map,
-          taskid: this.task_id,
-          task_type: this.task_type,
-          which_question: 0
-        }
       })
       }  else if (this.task_type == "音频分类") {
         this.$router.push({
         name:'question_audio',
-        params:{
-          task_map: this.task_map,
-          taskid: this.task_id,
-          task_type: this.task_type,
-          which_question: 0
-        } 
       })
       }  else {
         console.log("TASK TYPE ERROR");
