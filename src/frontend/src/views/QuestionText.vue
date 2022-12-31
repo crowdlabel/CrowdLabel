@@ -33,11 +33,13 @@
       <div class="main_body">
         <div class="instruction">
           <p class="text_bold" id="question_title">问题{{cur_question + 1}}：</p>
+          
           <p class="text_normal" id="question_prompt"></p>
         </div>
         <div class="scroll_view">
           <el-scrollbar style="height: 100%">
-            <p class="text_normal" id="question_text"></p>
+            <p class="text_normal" id="question_text">
+            </p>
           </el-scrollbar>
         </div>
         <!-- div class="question">
@@ -107,11 +109,8 @@ export default {
     self.task_type = localStorage.getItem('TaskType')
     var questionsApi = new QuestionsApi(apiClient);
     self.question = questionsApi;
-    self.cur_question = localStorage.getItem('QuestionIndex')
+    self.cur_question = parseInt(localStorage.getItem('QuestionIndex'))
     self.question_id = self.task_map[this.cur_question];
-    // console.log(self.task_map);
-    // console.log(self.cur_question);
-    // console.log(self.question_id);
     var my_username = "";
     self.user.getMeUsersMeGet((error, data, response) => {
       let res = JSON.parse(response['text']);
@@ -124,8 +123,6 @@ export default {
     })
     self.task.getTaskTasksTaskIdGet(self.task_id, (error, data, response) => {
       let res = JSON.parse(response['text'])
-      // console.log("TASK: ")
-      // console.log(res)
       self.task_amount = res.responses_required;
       self.task_brief = res.introduction;
       self.task_name = res.name;
@@ -153,19 +150,26 @@ export default {
     self.question.getQuestionTasksTaskIdQuestionsQuestionIdGet(self.task_id, self.question_id, null, (error, data, response) => {
       console.log(response)
       let res = JSON.parse(response['text']);
-      // 解析问题
+      // 填充问题
       self.prompt = res.prompt;
       document.getElementById("question_prompt").innerHTML = self.prompt;
+      // 填充答题选项
       var list_choices = res.options;
       for (var i = 0; i < list_choices.length; i++) {
         var k = { label: list_choices[i], value: i };
         self.choicesGiven.push(k);
       }
-      
-      // let res = JSON.parse(response['text']);
-      // console.log("QUESTION: ")
-      // console.log(res)
+      console.log(res.answers)
+      // 如已回答过该题，填充答案
+      if (res.answers.length > 0)
+        self.radio = res.answers[0];
     })
+    self.question.getQuestionResourceTasksTaskIdQuestionsQuestionIdResourceGet(self.task_id, self.question_id, (error, data, response) => {
+      console.log(response)
+      console.log(response['text'])
+      document.getElementById("question_text").innerHTML = response['text'];
+    })
+    
   },
   methods: {
     alertMessage() {
@@ -181,13 +185,17 @@ export default {
       if (_radio == -1) {
         this.alertMessage();
       } else {
-        document.location.href = '/question_image_classify';
+        /*
+        var answer = {"choice": _radio};
+        this.question.createAnswerTasksTaskIdQuestionsQuestionIdAnswerPut(this.task_id, this.question_id, answer, (error, data, response) => {
+          console.log(response);
+        })
+        */
+        document.location.href = '/question_text';
       }
     },
     handleChange(val) {
-      // console.log(val);
       this.radio = val;
-      // console.log(this.radio);
     },
     quit() {
         this.$confirm('是否要保存当前的答题进度?', '退出任务', {
@@ -359,11 +367,11 @@ export default {
 
 .instruction {
   text-align:left;
-  padding: 30px 40px 0px 40px;
+  padding: 35px 40px 0px 40px;
 }
 .scroll_view {
   border: 1.2px solid rgba(0,0,0,.1);
-  margin: 20px 80px 30px 70px;
+  margin: 30px 80px 30px 70px;
   padding: 15px 15px;
   height: calc(100vh - 390px);
   min-height: 300px;
@@ -457,11 +465,11 @@ export default {
 }
 
 #question_title {
-  font-size: 16px;
+  font-size: 17px;
 }
 
 #question_prompt {
-  font-size: 16px;
+  font-size: 17px;
 }
 
 </style>
