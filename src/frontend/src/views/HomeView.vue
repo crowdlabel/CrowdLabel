@@ -9,8 +9,7 @@
 
       <el-dialog
           :visible.sync="dialogVisible"
-          width="50%"
-          min-width="800px"
+          width="800px"
           class="dialogClass"
           border-radius="12px">
           <div class="type_page">
@@ -99,7 +98,7 @@ export default {
     receiverType: function () {
       this.$router.push('/receiverlogin')
     },
-  }
+  },
 }
 </script>
 
@@ -314,15 +313,14 @@ body{
   float:left;
   top: 30px;
   left: 30px;
-  min-width: 40px;
-  width: 40%;
+  width: 300px;
   position: absolute;
 }
 #image_receiver{
   top: 30px;
   right: 30px;
   float:right;
-  width: 40%;
+  width: 300px;
   position:absolute;
 }
 .type_page{
@@ -346,7 +344,7 @@ body{
 }
 .type_select{
   width:100%;
-  height: 350px;
+  height: 400px;
 }
 #chinese_sender{
   position:absolute;
@@ -361,7 +359,7 @@ body{
 }
 .login_btn{
   position: relative;
-  width: 40%;
+  width: 300px;
   height: 320px;
   background: transparent;
   color: transparent;

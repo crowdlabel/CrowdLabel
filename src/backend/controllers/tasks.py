@@ -217,7 +217,7 @@ async def download_task_results(task_id: int, current_user=Depends(get_current_u
         return forbidden_jdr.response()
     response = await task_service.create_task_results_file(task_id)
     if not isinstance(response, pathlib.Path):
-        return download_task_failed_jdr.response(schemas.tasks.ErrorResponse(response))
+        return download_task_failed_jdr.response(schemas.tasks.ErrorResponse(error=response))
     return await download_file(response)
 ###############################################################################
 

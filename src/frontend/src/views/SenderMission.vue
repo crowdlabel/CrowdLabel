@@ -498,9 +498,6 @@ export default {
             let binaryData = [];
             binaryData.push(response.body);
             let imageObjectURL = window.URL.createObjectURL(new Blob(binaryData));
-            console.log(imageObjectURL);
-            console.log(response);
-            console.log(binaryData);
             // let imageObjectURL = window.URL.createObjectURL(response.body);
             self.imageObject = imageObjectURL
             var c = { task_id:element, name:'', cover:self.imageObject}
