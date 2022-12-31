@@ -29,7 +29,8 @@ get_question_success_jdr = JSONDocumentedResponse(
 @router.get('/{question_id}',
     **create_documentation([get_question_success_jdr, not_found_jdr])
 )
-async def get_question(question_id: int, task=Depends(controllers.tasks.get_task), current_user=Depends(get_current_user)):
+async def get_question(task_id: int=fastapi.Path(), question_id: int=fastapi.Path(), current_user=Depends(get_current_user())):
+    task = await task_service.get_task(task_id)
     question = await question_service.get_question(task, question_id)
     if not question:
         return not_found_jdr.response()

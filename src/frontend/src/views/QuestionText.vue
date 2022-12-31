@@ -21,9 +21,10 @@
         </ul>
         <div class="project_description">
           <p class="text_bold">任务简介：</p>
-           <p id="task_intro" class="text_normal">{{ task_brief }}</p>
+           <p id="task_brief" class="text_normal"></p>
            <!-- div class="placeholder_text"></div> -->
             <p class="text_bold"><br />任务类型：</p><p class="text_normal">{{ task_type }}</p>
+            <p class="text_bold"><br />任务标签：</p><p class="text_normal" id="tags"></p>
             <p class="text_bold"><br />问题数量：</p><p class="text_normal">{{ task_question_num }}</p>
             <p class="text_bold"><br />积分奖励：</p><p class="text_normal">{{ task_credit }}</p>
             <div class="placeholder_border"></div>
@@ -31,8 +32,8 @@
       </div>
       <div class="main_body">
         <div class="instruction">
-          <p class="text_bold">问题1：</p>
-          <p class="text_normal">仔细阅读下方邮件，并判断其是否是广告邮件。</p>
+          <p class="text_bold">问题{{cur_question + 1}}：</p>
+          <p class="text_normal" id="question"></p>
         </div>
         <div class="scroll_view">
           <el-scrollbar style="height: 100%">
@@ -99,6 +100,7 @@
 import { ApiClient } from '@/crowdlabel-api/src';
 import { UsersApi } from '@/crowdlabel-api/src';
 import { TasksApi } from '@/crowdlabel-api/src';
+import { QuestionsApi } from '@/crowdlabel-api/src';
 export default {
   data() {
     return {
@@ -107,11 +109,16 @@ export default {
       task_id: '',
       task_name: '',
       task_type: '',
+      task_tags: [],
       task_brief: '',
       task_cover: '',
       task_credit: '',
       task_question_num: '',
-      percentage: 20,
+      task_map: [],
+      question: '',
+      cur_question: 0,
+      question_id: 0,
+      percentage: 0,
       customColor: '#5D3BE6',
       radio: -1,
       choicesGiven: [
@@ -122,16 +129,25 @@ export default {
   },
   mounted() {
     let self = this;
-    console.log(self);
+    // console.log(self);
     self.task_id = this.$route.params.taskid;
-    console.log(this.$route.params.taskid);
+    // console.log(this.$route.params.taskid);
     var apiClient  = new ApiClient('http://localhost:8000');
     apiClient.authentications['OAuth2PasswordBearer'].accessToken = localStorage.getItem('Authorization');
     self.client = apiClient;
     var usersApi = new UsersApi(apiClient);
     self.user = usersApi;
     var tasksApi = new TasksApi(apiClient);
-    self.task = tasksApi
+    self.task = tasksApi;
+    self.task_map = this.$route.params.task_map;
+    self.task_type = this.$route.params.task_type;
+    var questionsApi = new QuestionsApi(apiClient);
+    self.question = questionsApi;
+    self.cur_question = this.$route.params.which_question;
+    self.question_id = self.task_map[this.cur_question];
+    // console.log(self.task_map);
+    // console.log(self.cur_question);
+    // console.log(self.question_id);
     var my_username = "";
     self.user.getMeUsersMeGet((error, data, response) => {
       let res = JSON.parse(response['text']);
@@ -142,26 +158,39 @@ export default {
         return;
       }
     })
-    console.log(self.task_id);
     self.task.getTaskTasksTaskIdGet(self.task_id, (error, data, response) => {
       let res = JSON.parse(response['text'])
-      console.log(res)
+      // console.log("TASK: ")
+      // console.log(res)
       self.task_amount = res.responses_required;
       self.task_brief = res.introduction;
       self.task_name = res.name;
-      self.task_type = eval(res.tags)[0];
+      self.task_tags = eval(res.tags);
       self.task_credit = res.credits;
       self.task_question_num = res.questions.length;
-      // 判断是否已领取该任务 // 笨方法遍历
-      var list_claimed = eval(res.respondents_claimed);
-      for (var i = 0; i < list_claimed.length; i++) {
-        if (list_claimed[i] == my_username) {
-          self.claim = true;
-          self.answer = false;
-          document.getElementById("claim_button").innerHTML = "已接受任务";
-          document.getElementById("start_button").innerHTML = "继续答题 > ";
+      // 填充任务简介
+      if (res.introduction == "")
+        document.getElementById("task_brief").innerHTML = "该发布者暂未提供简介";
+      else
+        document.getElementById("task_brief").innerHTML = self.task_brief;
+      // 填充任务标签
+      var tags_str = "";
+      for (var i = 0; i < self.task_tags.length; i++) {
+        tags_str += self.task_tags[i];
+        if (i != self.task_tags.length - 1) {
+          tags_str += ", ";
         }
       }
+      document.getElementById("tags").innerHTML = tags_str;
+      // 计算任务进度条
+      self.percentage = ((self.cur_question) / self.task_question_num) * 100;
+    })
+    console.log(self.question_id, self.task_id)
+    self.question.getQuestionTasksTaskIdQuestionsQuestionIdGet(self.question_id, self.task_id, null, (error, data, response) => {
+      console.log(response)
+      // let res = JSON.parse(response['text']);
+      // console.log("QUESTION: ")
+      // console.log(res)
     })
   },
   methods: {
@@ -174,7 +203,7 @@ export default {
     },
     nextQuestion() {
       let _radio = this.radio;
-      console.log(_radio);
+      // console.log(_radio);
       if (_radio == -1) {
         this.alertMessage();
       } else {
@@ -182,9 +211,9 @@ export default {
       }
     },
     handleChange(val) {
-      console.log(val);
+      // console.log(val);
       this.radio = val;
-      console.log(this.radio);
+      // console.log(this.radio);
     },
     quit() {
         this.$confirm('是否要保存当前的答题进度?', '退出任务', {
