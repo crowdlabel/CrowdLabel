@@ -15,8 +15,9 @@
             <img class="preview_img" :src=task_cover height="320" width="450"/>
             <div class="project_description">
               <p class="text_bold">任务简介：</p>
-              <p class="text_normal">{{task_brief}}</p>
-              <p class="text_bold"><br />任务类型：</p><p class="text_normal" id="tags">{{task_type}}</p>
+              <p class="text_normal" id="task_brief"></p>
+              <p class="text_bold"><br />任务类型：</p><p class="text_normal">{{task_type}}</p>
+              <p class="text_bold"><br />任务标签：</p><p class="text_normal" id="tags"></p>
               <p class="text_bold"><br />问题数量：</p><p class="text_normal">{{task_question_num}}</p>
               <p class="text_bold"><br />积分奖励：</p><p class="text_normal">{{task_credit}}</p>
             </div>
@@ -52,11 +53,13 @@ export default {
       task_id: '',
       task_name: '',
       task_type: '',
+      task_tags: [],
       task_brief: '',
       task_cover: '',
       task_credit: '',
       task_amount: '',
       task_question_num: '',
+      task_map: []
     };
   },
   mounted () {
@@ -79,6 +82,16 @@ export default {
         this.$router.push('/senderlogin');
         return;
       }
+      // 判断是否已领取该任务 // 笨方法遍历
+      var list_tasks_claimed = eval(res.tasks_claimed);
+      for (var i = 0; i < list_tasks_claimed.length; i++) {
+        if (list_tasks_claimed[i] == self.task_id) {
+          self.claim = true;
+          self.answer = false;
+          document.getElementById("claim_button").innerHTML = "已接受任务";
+          document.getElementById("start_button").innerHTML = "继续答题 > ";
+        }
+      }
     })
     self.task.getTaskTasksTaskIdGet(self.task_id, (error, data, response) => {
       let res = JSON.parse(response['text'])
@@ -88,18 +101,37 @@ export default {
       self.task_amount = res.responses_required;
       self.task_brief = res.introduction;
       self.task_name = res.name;
-      self.task_type = eval(res.tags)[0];
+      self.task_tags = eval(res.tags);
+      console.log(self.task_tags);
       self.task_credit = res.credits;
       self.task_question_num = res.questions.length;
-      // 判断是否已领取该任务 // 笨方法遍历
-      var list_claimed = eval(res.respondents_claimed);
-      for (var i = 0; i < list_claimed.length; i++) {
-        if (list_claimed[i] == my_username) {
-          self.claim = true;
-          self.answer = false;
-          document.getElementById("claim_button").innerHTML = "已接受任务";
-          document.getElementById("start_button").innerHTML = "继续答题 > ";
+      // 识别任务类型
+      for (var i = 0; i < self.task_tags.length; i++) {
+        var cur_tag = self.task_tags[i];
+        if (cur_tag == "文字分类" || cur_tag == "图片分类" || cur_tag == "音频分类" || cur_tag == "图片打标") {
+          self.task_type = cur_tag;
         }
+      }
+      // 未知任务类型
+      if (self.task_type == '')
+        self.task_type = "未知类型";
+      // 填充任务简介
+      if (res.introduction == "")
+        document.getElementById("task_brief").innerHTML = "该发布者暂未提供简介";
+      else
+        document.getElementById("task_brief").innerHTML = self.task_brief;
+      // 填充任务标签
+      var tags_str = "";
+      for (var i = 0; i < self.task_tags.length; i++) {
+        tags_str += self.task_tags[i];
+        if (i != self.task_tags.length - 1) {
+          tags_str += ", ";
+        }
+      }
+      document.getElementById("tags").innerHTML = tags_str;
+      // 生成question顺序序号与question_id的map
+      for (var i = 0; i < self.task_question_num; i++) {
+        self.task_map[i] = res.questions[i].question_id;
       }
     })
     self.task.getCoverTasksTaskIdCoverImageGet(self.task_id, (error, data, response) => {
@@ -136,31 +168,45 @@ export default {
         this.$router.push({
         name:'question_text',
         params:{
-          taskid: this.task_id
+          task_map: this.task_map,
+          taskid: this.task_id,
+          task_type: this.task_type,
+          which_question: 0
         }
       })
       } else if (this.task_type == "图片分类") {
         this.$router.push({
         name:'question_image_classify',
         params:{
-          taskid: this.task_id
+          task_map: this.task_map,
+          taskid: this.task_id,
+          task_type: this.task_type,
+          which_question: 0
         }
       })
       }  else if (this.task_type == "图片打标") {
         this.$router.push({
         name:'question_image_identify',
         params:{
-          taskid: this.task_id
+          task_map: this.task_map,
+          taskid: this.task_id,
+          task_type: this.task_type,
+          which_question: 0
         }
       })
       }  else if (this.task_type == "音频分类") {
         this.$router.push({
         name:'question_audio',
         params:{
-          taskid: this.task_id
-        }
+          task_map: this.task_map,
+          taskid: this.task_id,
+          task_type: this.task_type,
+          which_question: 0
+        } 
       })
-      } 
+      }  else {
+        console.log("TASK TYPE ERROR");
+      }
     }
   }
 }
