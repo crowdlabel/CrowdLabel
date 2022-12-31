@@ -129,9 +129,12 @@ export default {
       }
       document.getElementById("tags").innerHTML = tags_str;
       // 生成question顺序序号与question_id的map
+      var map = [];
       for (var i = 0; i < self.task_question_num; i++) {
-        self.task_map[i] = res.questions[i].question_id;
+        map.push(res.questions[i].question_id) 
       }
+      self.$store.commit('changeQuestionList', map)
+      self.task_map = JSON.parse(localStorage.getItem('QuestionList'))
     })
     self.task.getCoverTasksTaskIdCoverImageGet(self.task_id, (error, data, response) => {
       if (response.status == 400){
@@ -163,45 +166,23 @@ export default {
       document.getElementById("claim_button").innerHTML = "已接受任务";
     },
     start_task() {
+      this.$store.commit('changeQuestionIndex', 0)
+      this.$store.commit('changeTaskType', this.task_type)
       if (this.task_type == "文字分类") {
         this.$router.push({
         name:'question_text',
-        params:{
-          task_map: this.task_map,
-          taskid: this.task_id,
-          task_type: this.task_type,
-          which_question: 0
-        }
       })
       } else if (this.task_type == "图片分类") {
         this.$router.push({
         name:'question_image_classify',
-        params:{
-          task_map: this.task_map,
-          taskid: this.task_id,
-          task_type: this.task_type,
-          which_question: 0
-        }
       })
       }  else if (this.task_type == "图片打标") {
         this.$router.push({
         name:'question_image_identify',
-        params:{
-          task_map: this.task_map,
-          taskid: this.task_id,
-          task_type: this.task_type,
-          which_question: 0
-        }
       })
       }  else if (this.task_type == "音频分类") {
         this.$router.push({
         name:'question_audio',
-        params:{
-          task_map: this.task_map,
-          taskid: this.task_id,
-          task_type: this.task_type,
-          which_question: 0
-        } 
       })
       }  else {
         console.log("TASK TYPE ERROR");

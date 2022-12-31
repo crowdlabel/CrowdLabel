@@ -8,6 +8,9 @@ export default new Vuex.Store({
   state: {
     Authorization: localStorage.getItem('Authorization') ? localStorage.getItem('Authorization') : '',
     TaskID: localStorage.getItem('TaskID') ? localStorage.getItem('TaskID'): '',
+    QuestionIndex: localStorage.getItem('QuestionIndex') ? localStorage.getItem('QuestionIndex') : '',
+    QuestionList: localStorage.getItem('QuestionList') ? localStorage.getItem('QuestionList') : '',
+    TaskType: localStorage.getItem('TaskType') ? localStorage.getItem('TaskType') : '',
   },
   getters: {
   },
@@ -20,9 +23,21 @@ export default new Vuex.Store({
         state.TaskID = value;
         localStorage.setItem('TaskID', value)
       },
+      changeQuestionIndex (state, value) {
+        state.QuestionIndex = value;
+        localStorage.setItem('QuestionIndex', value)
+      },
+      changeQuestionList (state, value) {
+        state.QuestionList = JSON.stringify(value)
+        localStorage.setItem('QuestionList', JSON.stringify(value))
+      },
+      changeTaskType (state, value) {
+        state.TaskType = value
+        localStorage.setItem('TaskType', value)
+      },
       removeStorage (state) {
         localStorage.removeItem('Authorization');
-      }
+      },
   },
   actions: {
   },
