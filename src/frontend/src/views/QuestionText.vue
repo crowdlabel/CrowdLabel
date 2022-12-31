@@ -94,7 +94,7 @@ export default {
   mounted() {
     let self = this;
     // console.log(self);
-    self.task_id = this.$route.params.taskid;
+    self.task_id = localStorage.getItem('TaskID')
     // console.log(this.$route.params.taskid);
     var apiClient  = new ApiClient('http://localhost:8000');
     apiClient.authentications['OAuth2PasswordBearer'].accessToken = localStorage.getItem('Authorization');
@@ -103,11 +103,11 @@ export default {
     self.user = usersApi;
     var tasksApi = new TasksApi(apiClient);
     self.task = tasksApi;
-    self.task_map = this.$route.params.task_map;
-    self.task_type = this.$route.params.task_type;
+    self.task_map = JSON.parse(localStorage.getItem('QuestionList'))
+    self.task_type = localStorage.getItem('TaskType')
     var questionsApi = new QuestionsApi(apiClient);
     self.question = questionsApi;
-    self.cur_question = this.$route.params.which_question;
+    self.cur_question = localStorage.getItem('QuestionIndex')
     self.question_id = self.task_map[this.cur_question];
     // console.log(self.task_map);
     // console.log(self.cur_question);
