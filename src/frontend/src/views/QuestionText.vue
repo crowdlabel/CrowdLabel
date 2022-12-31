@@ -186,7 +186,7 @@ export default {
       self.percentage = ((self.cur_question) / self.task_question_num) * 100;
     })
     console.log(self.question_id, self.task_id)
-    self.question.getQuestionTasksTaskIdQuestionsQuestionIdGet(self.question_id, self.task_id, null, (error, data, response) => {
+    self.question.getQuestionTasksTaskIdQuestionsQuestionIdGet(self.task_id, self.question_id, null, (error, data, response) => {
       console.log(response)
       // let res = JSON.parse(response['text']);
       // console.log("QUESTION: ")
