@@ -257,7 +257,7 @@ progress_jdr = JSONDocumentedResponse(
     schemas.tasks.TaskProgress,
 )
 @router.get('/{task_id}/progress',
-    description='Respondent\'s progress within a task, equal to the number of questions completed, and if the questions must be answered in order, the last question that was completed',
+    description='Respondent\'s progress within a task, which is the highest index answered question. -1 if no questions have been answered yet.',
     **create_documentation([not_found_jdr, forbidden_jdr])
 )
 async def get_progress(task_id, current_user: schemas.users.User=Depends(get_current_user(['respondent']))):
@@ -277,7 +277,6 @@ async def get_progress(task_id, current_user: schemas.users.User=Depends(get_cur
                 break
         if progress_index != -1:
             break
-
 
     return progress_jdr.response(schemas.tasks.TaskProgress(progress=progress_index))
     
