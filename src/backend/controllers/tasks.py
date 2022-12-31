@@ -134,21 +134,21 @@ async def get_task(task_id: int, current_user: schemas.users.User=Depends(get_cu
     task = await task_service.get_task(task_id=task_id)
     if not task:
         return not_found_jdr.response()
-    if current_user.username == task.requester:
-        return get_task_success_jdr.response(task, exclude={'resource_path'})
-    elif current_user.username in task.respondents_claimed:
-        for i in range(len(task.questions)):
-            current_user_answer = None
-            for j in range(len(task.questions[i].answers)):
-                if task.questions[i].answers[j].respondent == current_user.username:
-                    current_user_answer = task.questions[i].answers[j]
-                    break
-            task.questions[i].answers = [current_user_answer] if current_user_answer else []
-        return get_task_success_jdr.response(task, exclude={'resource_path'})
-    elif current_user.user_type == 'respondent':
-        return get_task_success_jdr.response(task, exclude={'resource_path', 'questions'})
 
-    return forbidden_jdr.response()
+    if current_user.username in task.respondents_claimed:
+        for i in range(len(task.questions)):
+            answers = []
+            for answer in task.questions[i].answers:
+                if answer.respondent == current_user.username:
+                    answers = [answer]
+                    break
+            task.questions[i].answers = answers
+
+    elif current_user.user_type == 'respondent':
+        for i in range(len(task.questions)):
+            task.questions[i].answers = []
+    return get_task_success_jdr.response(task, exclude={'resource_path'})
+
 
 
 
