@@ -129,9 +129,12 @@ export default {
       }
       document.getElementById("tags").innerHTML = tags_str;
       // 生成question顺序序号与question_id的map
+      var map = [];
       for (var i = 0; i < self.task_question_num; i++) {
-        self.task_map[i] = res.questions[i].question_id;
+        map.push(res.questions[i].question_id) 
       }
+      self.$store.commit('changeQuestionList', map)
+      self.task_map = JSON.parse(localStorage.getItem('QuestionList'))
     })
     self.task.getCoverTasksTaskIdCoverImageGet(self.task_id, (error, data, response) => {
       if (response.status == 400){
