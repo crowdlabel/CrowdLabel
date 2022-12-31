@@ -70,9 +70,10 @@
               <div>
               <el-radio-group v-model="taskType" size="small" @change="chooseType(taskType)">
                 <el-radio-button label="all">全部</el-radio-button>
-                <el-radio-button label="text" >文字任务</el-radio-button>
-                <el-radio-button label="img" >图像任务</el-radio-button>
-                <el-radio-button label="audio">音频任务</el-radio-button>
+                <el-radio-button label="text" >文字分类</el-radio-button>
+                <el-radio-button label="img" >图片分类</el-radio-button>
+                <el-radio-button label="img" >图片打标</el-radio-button>
+                <el-radio-button label="audio">音频分类</el-radio-button>
               </el-radio-group>
               </div>
             </div>
@@ -80,7 +81,7 @@
               <p class="title_order_by">排序：</p>
               <el-radio-group v-model="sortOrder" size="small" @change="chooseOrder(sortOrder)">
                 <el-radio-button label="time">发布时间</el-radio-button>
-                <el-radio-button label="popularity">热度</el-radio-button>
+                <el-radio-button label="credits">积分数量</el-radio-button>
               </el-radio-group>
             </div>
             <div class="display_projects">
@@ -155,7 +156,10 @@ export default {
               var c = { task_id:element['task_id'], name:element['name'], cover:'../default_cover.jpeg'}
               self.tasks_total.push(c)
             } else {
-              let imageObjectURL = window.URL.createObjectURL(response.body);
+              let binaryData = [];
+              binaryData.push(response.body);
+              let imageObjectURL = window.URL.createObjectURL(new Blob(binaryData));
+              // let imageObjectURL = window.URL.createObjectURL(response.body);
               self.imageObject = imageObjectURL
               var c = { task_id:element['task_id'], name:element['name'], cover:self.imageObject}
               self.tasks_total.push(c)
@@ -235,7 +239,10 @@ export default {
             var c = { task_id:element['task_id'], name:element['name'], cover:'../default_cover.jpeg'}
             self.tasks_total.push(c)
           } else {
-            let imageObjectURL = window.URL.createObjectURL(response.body);
+            let binaryData = [];
+            binaryData.push(response.body);
+            let imageObjectURL = window.URL.createObjectURL(new Blob(binaryData));
+            // let imageObjectURL = window.URL.createObjectURL(response.body);
             self.imageObject = imageObjectURL
             var c = { task_id:element['task_id'], name:element['name'], cover:self.imageObject}
             self.tasks_total.push(c)
@@ -513,7 +520,6 @@ a {
   display: flex;
   align-items:left;
   margin: 20px 100px;
-  margin-bottom:40px;
   flex-wrap: wrap;
   width: 80%;
   height: 360px !important;
