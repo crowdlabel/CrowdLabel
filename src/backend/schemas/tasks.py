@@ -54,6 +54,8 @@ class Tag(BaseModel):
         return tag
 
         
+class TaskProgress(BaseModel):
+    progress: int
 
 class CreateTaskRequest(BaseModel):
     name: str=''
