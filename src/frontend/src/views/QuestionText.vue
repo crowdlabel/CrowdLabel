@@ -32,51 +32,19 @@
       </div>
       <div class="main_body">
         <div class="instruction">
-          <p class="text_bold">问题{{cur_question + 1}}：</p>
-          <p class="text_normal" id="question"></p>
+          <p class="text_bold" id="question_title">问题{{cur_question + 1}}：</p>
+          
+          <p class="text_normal" id="question_prompt"></p>
         </div>
         <div class="scroll_view">
           <el-scrollbar style="height: 100%">
-                  尊敬的托福考生，你好！
-
-                  <br/>To view this in English, click here. 
-
-                  <br/>如果你近期面临线下考点暂无托福iBT考位，或考试因故取消的情况，我们推荐你可以选择 “家庭版托福iBT考试”尽快取得理想成绩。
-
-                  <br/>为了帮助更多急需语言成绩用于院校申请的中国考生， ETS托福® 考试团队特别推出“托福双12”限时优惠活动：
-                  <br/>自中国时间2022年12月1日上午10点至中国时间2022年12月30日下午4点， 中国内地考生通过ETS授权的香港考试及评核局（HKEAA）网站购买家庭版托福 iBT 考试兑换券，即可获得立减150港元（约合137元人民币）的优惠。
-
-                  <br/>为什么选择家庭版托福iBT 考试？
-                  <br/>家庭版托福iBT考试提供：
-                  <br/>考位充足，考试时间每周4天、每天24小时可选
-                  <br/>在舒适、私密的家中使用你自己的电脑参加考试
-                  <br/>和线下考试具备同样的安全性：除了一流的人工智能技术外，还安排真人监考官实时远程监考
-
-                  <br/>家庭版托福iBT 考试认可度如何？
-                  <br/>家庭版托福iBT 考试的考试内容、形式与评分标准与传统的在考试中心进行的托福iBT考试一致。因为它们是同样的考试，所以家庭版托福iBT考试同样被全球范围内的大学所信赖和认可。
-                  <br/>你可以通过下面的文章链接了解更多关于托福在家考认可度的信息。你也可以直接访问目标院校官方网站获取院校对托福iBT考试的最新要求。
-                  <br/>美国综合类TOP100院校的托福在家考认可度名单
-                  <br/>英国综合类TOP50院校的托福在家考认可度名单
-
-                  <br/>如何报名家庭版托福iBT 考试？
-                  <br/>计划在中国内地报名参加家庭版托福 iBT 考试的考生需：
-                  <br/>首先检查确认你用于在家考试的设备和环境是否符合要求；
-                  <br/>接着访问 ETS 授权的香港考试及评核局（HKEAA）官方网站；成功购买考试兑换券之后，你将收到一封含有考试兑换券号码的电子邮件确认信。
-                  <br/>接下来，注册或登录你的ETS帐户，选择报名参加家庭版托福 iBT 考试，在付款时使用你的考试兑换券号码
-                  <br/>如需了解更多有关报名的详细说明，可 点击此处前往了解。
-
-                  <br/>如果你已经考过托福，再次参加托福考试很有可能取得更好成绩。我们的数据显示，托福iBT考生第二次考试成绩能够比第一次成绩平均提高6分，第三次考试成绩能够比第一次考试成绩提高近10分。正因如此，我们建议你抓住这次特别优惠活动的机会，报名家庭版托福iBT考试以取得更好的成绩，帮助你取得更大的领先优势，在同辈之中脱颖而出。
-
-                  <br/>最后再次提醒您，本次托福在家考限时优惠活动仅在中国时间2022 年12 月 1 日上午10点 至 12 月 30日下午4点之间提供，马上开始行动吧！如需详细了解更多家庭版托福 iBT 考试和立减150港币优惠活动信息，请访问托福在家考中文官方网站： toefl.cn/at-home。
-
-                  <br/>此致，
-
-                  <br/>ETS 托福团队
+            <p class="text_normal" id="question_text">
+            </p>
           </el-scrollbar>
         </div>
-        <div class="question">
+        <!-- div class="question">
           这是否是一封广告邮件？
-        </div>
+        </div> -->
         <div class="answers">
           <el-radio-group v-model="radio">
             <el-radio :label="item.value" @change="handleChange" v-for="(item,index) in choicesGiven">{{item.label}}</el-radio>
@@ -118,13 +86,11 @@ export default {
       question: '',
       cur_question: 0,
       question_id: 0,
+      prompt: '',
       percentage: 0,
       customColor: '#5D3BE6',
       radio: -1,
-      choicesGiven: [
-        { label: "", value: 0 },
-        { label: "", value: 1 }
-      ],
+      choicesGiven: [],
     };
   },
   mounted() {
@@ -143,11 +109,8 @@ export default {
     self.task_type = localStorage.getItem('TaskType')
     var questionsApi = new QuestionsApi(apiClient);
     self.question = questionsApi;
-    self.cur_question = localStorage.getItem('QuestionIndex')
+    self.cur_question = parseInt(localStorage.getItem('QuestionIndex'))
     self.question_id = self.task_map[this.cur_question];
-    // console.log(self.task_map);
-    // console.log(self.cur_question);
-    // console.log(self.question_id);
     var my_username = "";
     self.user.getMeUsersMeGet((error, data, response) => {
       let res = JSON.parse(response['text']);
@@ -160,8 +123,6 @@ export default {
     })
     self.task.getTaskTasksTaskIdGet(self.task_id, (error, data, response) => {
       let res = JSON.parse(response['text'])
-      // console.log("TASK: ")
-      // console.log(res)
       self.task_amount = res.responses_required;
       self.task_brief = res.introduction;
       self.task_name = res.name;
@@ -186,12 +147,29 @@ export default {
       self.percentage = ((self.cur_question) / self.task_question_num) * 100;
     })
     console.log(self.question_id, self.task_id)
-    self.question.getQuestionTasksTaskIdQuestionsQuestionIdGet(self.question_id, self.task_id, null, (error, data, response) => {
+    self.question.getQuestionTasksTaskIdQuestionsQuestionIdGet(self.task_id, self.question_id, null, (error, data, response) => {
       console.log(response)
-      // let res = JSON.parse(response['text']);
-      // console.log("QUESTION: ")
-      // console.log(res)
+      let res = JSON.parse(response['text']);
+      // 填充问题
+      self.prompt = res.prompt;
+      document.getElementById("question_prompt").innerHTML = self.prompt;
+      // 填充答题选项
+      var list_choices = res.options;
+      for (var i = 0; i < list_choices.length; i++) {
+        var k = { label: list_choices[i], value: i };
+        self.choicesGiven.push(k);
+      }
+      console.log(res.answers)
+      // 如已回答过该题，填充答案
+      if (res.answers.length > 0)
+        self.radio = res.answers[0];
     })
+    self.question.getQuestionResourceTasksTaskIdQuestionsQuestionIdResourceGet(self.task_id, self.question_id, (error, data, response) => {
+      console.log(response)
+      console.log(response['text'])
+      document.getElementById("question_text").innerHTML = response['text'];
+    })
+    
   },
   methods: {
     alertMessage() {
@@ -207,13 +185,17 @@ export default {
       if (_radio == -1) {
         this.alertMessage();
       } else {
-        document.location.href = '/question_image_classify';
+        /*
+        var answer = {"choice": _radio};
+        this.question.createAnswerTasksTaskIdQuestionsQuestionIdAnswerPut(this.task_id, this.question_id, answer, (error, data, response) => {
+          console.log(response);
+        })
+        */
+        document.location.href = '/question_text';
       }
     },
     handleChange(val) {
-      // console.log(val);
       this.radio = val;
-      // console.log(this.radio);
     },
     quit() {
         this.$confirm('是否要保存当前的答题进度?', '退出任务', {
@@ -385,11 +367,11 @@ export default {
 
 .instruction {
   text-align:left;
-  padding: 30px 40px 0px 40px;
+  padding: 35px 40px 0px 40px;
 }
 .scroll_view {
   border: 1.2px solid rgba(0,0,0,.1);
-  margin: 20px 80px 30px 70px;
+  margin: 30px 80px 30px 70px;
   padding: 15px 15px;
   height: calc(100vh - 390px);
   min-height: 300px;
@@ -482,5 +464,12 @@ export default {
   margin-top:auto;
 }
 
+#question_title {
+  font-size: 17px;
+}
+
+#question_prompt {
+  font-size: 17px;
+}
 
 </style>
