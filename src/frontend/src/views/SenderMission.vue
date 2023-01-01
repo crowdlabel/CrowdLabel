@@ -487,8 +487,6 @@ export default {
           }
         })
       });
-      console.log(self.tasks_info)
-      console.log(25)
     })
   }
 }
