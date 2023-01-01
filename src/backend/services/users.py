@@ -258,29 +258,37 @@ class Users:
         returns error message, or none if successful
         """
         con = scoped_session(Connection)
-        res = await con.execute(select(models.user.User).where(models.user.User.name == username))
-        target = res.scalar().first()
-        if target == None:
-            await asyncio.shield(con.close())
-            return 'user not found'
-        else :
-            if isinstance(new_info,schemas.users.EditEmailRequest):
-                if utils.hasher.verify(target.password_hashed,new_info.password):
-                    await asyncio.shield(con.close())
-                    return 'wrong password'
-                if self.check_verification_code(new_info.new_email,new_info.verification_code):
-                    target.email = new_info.new_email
-                else:
-                    await asyncio.shield(con.close())
-                    return 'verification code mismatch'
-            elif isinstance(new_info,schemas.users.EditPasswordRequest):
-                if utils.hasher.verify(target.password_hashed,new_info.old_password):
-                    target.password_hashed = utils.hasher.hash(new_info.new_password)
-                else:
-                    await asyncio.shield(con.close())
-                    return 'wrong password'
-            await asyncio.shield(con.close())
-            return None
+        async with con.begin():
+            res = await con.execute(select(models.user.User).where(models.user.User.username == username))
+            target = res.scalars().first()
+            if target == None:
+                await asyncio.shield(con.close())
+                return 'user not found'
+            else :
+                if isinstance(new_info,schemas.users.EditEmailRequest):
+                    if not utils.hasher.verify(target.password_hashed,new_info.password):
+
+                        await asyncio.shield(con.close())
+                        print(f'wrong password')
+                        return 'wrong password'
+                    if await self.check_verification_code(new_info.new_email,new_info.verification_code):
+                        print(f'new email {new_info.new_email}')
+                        target.email = new_info.new_email
+                    else:
+                        await asyncio.shield(con.close())
+                        print(f'verification code mismatch')
+                        return 'verification code mismatch'
+                elif isinstance(new_info,schemas.users.EditPasswordRequest):
+                    if utils.hasher.verify(target.password_hashed,new_info.old_password):
+                        target.password_hashed = utils.hasher.hash(new_info.new_password)
+                    else:
+                        await asyncio.shield(con.close())
+                        return 'wrong password'
+                await con.flush()
+                con.expunge(target)
+                await asyncio.shield(con.close())
+                print(target.email,'success')
+        return None
 
     async def handle_transaction(self, request: schemas.users.TransactionRequest, user: schemas.users.User) -> float | str:
         '''

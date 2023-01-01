@@ -89,7 +89,7 @@ async def edit_me(new_info : schemas.users.EditEmailRequest | schemas.users.Edit
 ):
     # edit user's own details
     # TODO
-    await user_service.edit_user(current_user.username,new_info)
+    await user_service.edit_user_info(current_user.username,new_info)
     
 ###############################################################################
 username_success_jdr = JSONDocumentedResponse(
