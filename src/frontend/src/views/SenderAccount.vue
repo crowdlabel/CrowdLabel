@@ -55,8 +55,8 @@
               </div>
             </div>
             <div class="button_row">
-                <a href="/sendermission">
-                  <el-button type="primary" plain href="/editmyaccount">编辑个人信息</el-button>
+                <a href="/editmyaccount">
+                  <el-button type="primary" plain>编辑个人信息</el-button>
                 </a>
                 <a href="/sendercredits">
                   <el-button type="primary">我的积分</el-button>
