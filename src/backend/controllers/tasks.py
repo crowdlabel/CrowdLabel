@@ -134,16 +134,23 @@ async def get_task(task_id: int, current_user: schemas.users.User=Depends(get_cu
     task = await task_service.get_task(task_id=task_id)
     if not task:
         return not_found_jdr.response()
-    if (current_user.username != task.requester and
-        current_user.username not in task.respondents_claimed):
 
-        return forbidden_jdr.response()
+    if current_user.username in task.respondents_claimed:
+        for i in range(len(task.questions)):
+            answers = []
+            for answer in task.questions[i].answers:
+                if answer.respondent == current_user.username:
+                    answers = [answer]
+                    break
+            task.questions[i].answers = answers
 
-    """ for i in range(len(task.questions)):
-        for j in range(len(task.questions[i].answers)):
-             """
-
+    elif current_user.user_type == 'respondent':
+        for i in range(len(task.questions)):
+            task.questions[i].answers = []
     return get_task_success_jdr.response(task, exclude={'resource_path'})
+
+
+
 
 ###############################################################################
 task_delete_success_jdr = JSONDocumentedResponse(
@@ -198,11 +205,10 @@ download_task_failed_jdr = JSONDocumentedResponse(
     'Task not downloaded',
     schemas.tasks.ErrorResponse,
 )
-@router.get('/{task_id}/cover-image',
-    description='Get cover image',
+@router.get('/{task_id}/download',
+    description='Download results',
     **create_documentation([download_task_success_jdr, download_task_failed_jdr, forbidden_jdr, not_found_jdr]),
 )
-@router.get('/{task_id}/download',)
 async def download_task_results(task_id: int, current_user=Depends(get_current_user(['requester']))):
     task = await task_service.get_task(task_id)
     if not task:
@@ -211,13 +217,13 @@ async def download_task_results(task_id: int, current_user=Depends(get_current_u
         return forbidden_jdr.response()
     response = await task_service.create_task_results_file(task_id)
     if not isinstance(response, pathlib.Path):
-        return download_task_failed_jdr.response(schemas.tasks.ErrorResponse(response))
+        return download_task_failed_jdr.response(schemas.tasks.ErrorResponse(error=response))
     return await download_file(response)
 ###############################################################################
 
-@router.patch('/{task_id}')
+""" @router.patch('/{task_id}')
 async def edit_task(task_id: int, current_user=Depends(get_current_user)):
-    return 'editing task ' + str(task_id)
+    return 'editing task ' + str(task_id) """
 ###############################################################################
 get_cover_success_jdr = MediaDocumentedResponse(
     status.HTTP_200_OK,
@@ -232,7 +238,7 @@ get_cover_failed_jdr = JSONDocumentedResponse(
     description='Get cover image',
     **create_documentation([get_cover_success_jdr, get_cover_failed_jdr, forbidden_jdr, not_found_jdr]),
 )
-async def get_cover(task_id: int, current_user: schemas.users.User=Depends(get_current_user([]))):
+async def get_cover(task_id: int, current_user: schemas.users.User=Depends(get_current_user())):
     task = await task_service.get_task(task_id)
     if not task:
         return not_found_jdr.response()
@@ -243,3 +249,35 @@ async def get_cover(task_id: int, current_user: schemas.users.User=Depends(get_c
     resource_path = task.resource_path / task.cover_image
 
     return await download_file(resource_path, media_type='image/jpeg')
+###############################################################################
+
+progress_jdr = JSONDocumentedResponse(
+    status.HTTP_200_OK,
+    'Index of the last completed question',
+    schemas.tasks.TaskProgress,
+)
+@router.get('/{task_id}/progress',
+    description='Respondent\'s progress within a task, which is the highest index answered question. -1 if no questions have been answered yet.',
+    **create_documentation([not_found_jdr, forbidden_jdr])
+)
+async def get_progress(task_id, current_user: schemas.users.User=Depends(get_current_user(['respondent']))):
+    task = await task_service.get_task(task_id)
+    if not task:
+        return not_found_jdr.response()
+
+    if current_user.username not in task.respondents_claimed:
+        return forbidden_jdr.response()
+
+    progress_index = -1
+
+    for i in range(len(task.questions) - 1, -1, -1):
+        for answer in task.questions[i].answers:
+            if answer.respondent == current_user.username:
+                progress_index = i
+                break
+        if progress_index != -1:
+            break
+
+    return progress_jdr.response(schemas.tasks.TaskProgress(progress=progress_index))
+    
+

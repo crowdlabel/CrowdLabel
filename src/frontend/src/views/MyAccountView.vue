@@ -61,6 +61,7 @@
                 <a href="/credits">
                   <el-button type="primary">我的积分</el-button>
                 </a>
+                <el-button type="primary" plain icon="el-icon-close" @click="logout">退出登录</el-button>
             </div>
         </div>
     </div>
@@ -69,8 +70,6 @@
 
 
 <script>
-// @ is an alias to /src
-// import HelloWorld from '@/components/HelloWorld.vue'
 import { ApiClient } from '@/crowdlabel-api/src';
 import { UsersApi } from '@/crowdlabel-api/src';
 export default {
@@ -85,27 +84,28 @@ export default {
     };
   },
   mounted() {
-      let self = this;
-      var apiClient  = new ApiClient('http://localhost:8000');
-      apiClient.authentications['OAuth2PasswordBearer'].accessToken = localStorage.getItem('Authorization')
-      self.client = apiClient
-      var usersApi = new UsersApi(apiClient);
-      self.user = usersApi
-      self.user.getMeUsersMeGet((error, data, response) => {
-        if (error == 'Error: Unauthorized') {
-          localStorage.removeItem('Authorization');
-          this.$router.push('/receiverlogin');
-        }
-        self.username = data['username']
-        self.email = data['email']
-        self.credits = data['credits']
-        console.log('username: ' + self.username)
-        console.log('email: ' + self.email)
-        console.log('credits: ' + self.credits)
-      })
+    let self = this;
+    var apiClient  = new ApiClient('http://localhost:8000');
+    apiClient.authentications['OAuth2PasswordBearer'].accessToken = localStorage.getItem('Authorization')
+    self.client = apiClient
+    var usersApi = new UsersApi(apiClient);
+    self.user = usersApi
+    self.user.getMeUsersMeGet((error, data, response) => {
+      if (error == 'Error: Unauthorized') {
+        localStorage.removeItem('Authorization');
+        this.$router.push('/receiverlogin');
+      }
+      let a = JSON.parse(response['text'])
+      self.username = a.username
+      self.email = a.email
+      self.credits = a.credits
+    })
   },
   methods: {
-
+    logout () {
+      localStorage.removeItem('Authorization');
+      this.$router.push('/');
+    },
   }
 }
 </script>

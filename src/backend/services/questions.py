@@ -21,12 +21,11 @@ import schemas.questions
 import schemas.tasks
 import schemas.users
 
-import services.tasks
 
 from datetime import datetime
 
 class Questions:
-    async def get_question(self, task: schemas.tasks.Task | int, question_id: int) -> schemas.questions.Question | None:
+    async def get_question(self, task: schemas.tasks.Task, question_id: int) -> schemas.questions.Question | None:
         con = scoped_session(Connection)
         print(task)
         id = task.task_id
@@ -164,67 +163,6 @@ class Questions:
             return None
         await asyncio.shield(con.close())
         return response_questions
-
-    # async def get_question(self, task_id: int, question_id: int) -> schemas.questions.Question | None:
-
-    #     async with con.begin():
-    #         result = await con.execute(select(models.question.Question).where(models.question.Question.id==id))
-    #         target = result.scalars().first()
-    #         if target is None:
-    #             return{
-    #                 "status":"not found",
-    #             },400
-    #     return {
-    #         "status":"ok",
-    #         "type" :target.type,
-    #         "prompt":target.prompt,
-    #         "resource":target.resource,
-    #         "options":target.options,
-    #         "task_id":target.task_id
-    #     },200
-
-
-
-    # async def edit_question(id,type,prompt,resource,options,task_id):
-    #     async with con.begin():
-    #         result = await con.execute(select(models.question.Question).where(models.question.Question.id==id))
-    #         target = result.scalars().first()
-    #         if target is None:
-    #             return{
-    #                 "status":"not found",
-    #             },400
-    #         target.type= type
-    #         target.prompt =prompt
-    #         target.resource = resource
-    #         target.options = options
-    #         target.task_id = task_id
-    #         await con.flush()
-    #         con.expunge(target)
-    #     return {
-    #         "status":"ok",
-    #         "type" :target.type,
-    #         "prompt":target.prompt,
-    #         "resource":target.resource,
-    #         "options":target.options,
-    #         "task_id":target.task_id
-    #     },200
-        
-
-    # async def delete_question(task_id, question_id):
-    #     async with con.begin():
-    #         result = await con.execute(select(models.question.Question).where(models.question.Question.id==id))
-    #         target = result.scalars().first()
-    #         if target == None:
-    #             return {
-    #                 "status": 'not found'
-    #             },400
-    #         await con.delete(target)
-    #         # for item in result:
-    #         #     await con.delete(item)
-    #     await con.commit()
-    #     return {
-    #         'status':'ok'
-    #     },200
 
 
 question_service = Questions()

@@ -70,9 +70,10 @@
               <div>
               <el-radio-group v-model="taskType" size="small" @change="chooseType(taskType)">
                 <el-radio-button label="all">全部</el-radio-button>
-                <el-radio-button label="text" >文字任务</el-radio-button>
-                <el-radio-button label="img" >图像任务</el-radio-button>
-                <el-radio-button label="audio">音频任务</el-radio-button>
+                <el-radio-button label="text" >文字分类</el-radio-button>
+                <el-radio-button label="img" >图片分类</el-radio-button>
+                <el-radio-button label="img" >图片打标</el-radio-button>
+                <el-radio-button label="audio">音频分类</el-radio-button>
               </el-radio-group>
               </div>
             </div>
@@ -80,26 +81,29 @@
               <p class="title_order_by">排序：</p>
               <el-radio-group v-model="sortOrder" size="small" @change="chooseOrder(sortOrder)">
                 <el-radio-button label="time">发布时间</el-radio-button>
-                <el-radio-button label="popularity">热度</el-radio-button>
+                <el-radio-button label="credits">积分数量</el-radio-button>
               </el-radio-group>
             </div>
             <div class="display_projects">
-              <div class="display_items" v-for="(item, index) in tasks_total" v-if="index<6">
-                <el-card :body-style="{ padding: '0px' }">
-                  <img :src=item.cover alt="" class="project_image">
-                  <div style="padding: 0px;">
-                    <p class="project_title">{{item.name}}</p>
-                    <div class="bottom clearfix">
+              <div class="display_items" v-for="(item, index) in tasks_total.slice((currentPage-1)*pageSize, currentPage*pageSize)">
+                <el-card :body-style="{ padding: '0px' }" @click.native="seeDetails(item.task_id)">
+                    <img :src=item.cover alt="" class="project_image" >
+                    <div style="padding: 0px;">
+                      <p class="project_title">{{item.name}}</p>
+                      <div class="bottom clearfix">
+                      </div>
                     </div>
-                  </div>
-                </el-card>
+                  </el-card>
               </div>
             </div>
             <div class="pagination">
               <el-pagination
                 background
-                layout="prev, pager, next"
-                 :total=100>
+                :page-size="6"
+                :current-page="currentPage.sync"
+                @current-change="handleCurrentChange"
+                layout="total, prev, pager, next"
+                :total=tasks_total.length>
               </el-pagination>
             </div>
         </div>
@@ -117,8 +121,9 @@ import { TasksApi } from '@/crowdlabel-api/src';
 
 export default {
   data() {
-    
     return {
+      pageSize: 6,
+      currentPage: 1,
       client: '',
       task: '',
       user: '',
@@ -133,6 +138,9 @@ export default {
     };
   },
   methods: {
+    handleCurrentChange(val) {
+      this.currentPage=val;
+    },
     searchAll(){
       self.tasks_total = []
       self.task.searchTasksTasksPut({}, (error, data, response) => {
@@ -142,15 +150,28 @@ export default {
         }
         let res = JSON.parse(response['text'])
         let taskslist = res['tasks']
-        console.log(taskslist)
         taskslist.forEach(function(element) {
-          self.task.getCoverTasksTaskIdCoverImageGet(element.task_id, (error, data, response) => {
-            let imageObjectURL = window.URL.createObjectURL(response.body);
-            self.imageObject = imageObjectURL
-            var c = { 'task_id':element.task_id, 'name':element.name, 'cover': self.imageObject}
-            self.tasks_total.push(c)
+          self.task.getCoverTasksTaskIdCoverImageGet(element['task_id'], (error, data, response) => {
+            if (response.status == 400){
+              var c = { task_id:element['task_id'], name:element['name'], cover:'../default_cover.jpeg'}
+              self.tasks_total.push(c)
+            } else {
+              let binaryData = [];
+              binaryData.push(response.body);
+              let imageObjectURL = window.URL.createObjectURL(new Blob(binaryData));
+              // let imageObjectURL = window.URL.createObjectURL(response.body);
+              self.imageObject = imageObjectURL
+              var c = { task_id:element['task_id'], name:element['name'], cover:self.imageObject}
+              self.tasks_total.push(c)
+            }
           })
         })
+      })
+    },
+    seeDetails(task_id) {
+      this.$store.commit('changeTaskID', task_id);
+      this.$router.push({
+        name:'project_detail',
       })
     },
     searchText(){
@@ -202,19 +223,27 @@ export default {
     })
     self.tasks_total = []
     self.task.searchTasksTasksPut({}, (error, data, response) => {
+      console.log(error, data, response)
       if (error == 'Error: Unauthorized') {
         localStorage.removeItem('Authorization');
         this.$router.push('/receiverlogin');
       }
       let res = JSON.parse(response['text'])
       let taskslist = res['tasks']
-      console.log(taskslist)
       taskslist.forEach(function(element) {
-        self.task.getCoverTasksTaskIdCoverImageGet(element.task_id, (error, data, response) => {
-          let imageObjectURL = window.URL.createObjectURL(response.body);
-          self.imageObject = imageObjectURL
-          var c = { 'task_id':element.task_id, 'name':element.name, 'cover': self.imageObject}
-          self.tasks_total.push(c)
+        self.task.getCoverTasksTaskIdCoverImageGet(element['task_id'], (error, data, response) => {
+          if (response.status == 400){
+            var c = { task_id:element['task_id'], name:element['name'], cover:'../default_cover.jpeg'}
+            self.tasks_total.push(c)
+          } else {
+            let binaryData = [];
+            binaryData.push(response.body);
+            let imageObjectURL = window.URL.createObjectURL(new Blob(binaryData));
+            // let imageObjectURL = window.URL.createObjectURL(response.body);
+            self.imageObject = imageObjectURL
+            var c = { task_id:element['task_id'], name:element['name'], cover:self.imageObject}
+            self.tasks_total.push(c)
+          }
         })
       })
     })
@@ -488,7 +517,6 @@ a {
   display: flex;
   align-items:left;
   margin: 20px 100px;
-  margin-bottom:40px;
   flex-wrap: wrap;
   width: 80%;
   height: 360px !important;

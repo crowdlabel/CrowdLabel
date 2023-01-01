@@ -18,14 +18,14 @@
               <p class="text_normal">
                 {{ task_brief }}
               </p>
-              <div class="placeholder_text"></div>
-              <p class="text_bold">任务类型：</p><p class="text_normal">文字任务</p>
+              <!--div class="placeholder_text"></div>-->
+              <p class="text_bold"><br />任务类型：</p><p class="text_normal">{{ task_type }}</p>
               <p class="text_bold"><br />问题数量：</p><p class="text_normal">{{ task_question_num }}</p>
               <p class="text_bold"><br />积分总额：</p><p class="text_normal">{{ task_credit }}</p>
             </div>
           </div>
           <div class="progress">
-            <p class="progress_label">任务已完成情况：</p>
+            <p class="progress_label">已完成情况：</p>
             <el-progress :percentage="percentage" :color="customColorMethod(percentage)" class="progress_bar"></el-progress>
           </div>
           <div class="row row_margin">
@@ -34,7 +34,7 @@
             </a>
             <div class="button_placeholder"></div>
             <el-button type="primary" @click="downloadTask">下载数据</el-button>
-            <el-button type="primary" @click="deleteTask">删除任务 > </el-button>
+            <el-button type="primary" icon="el-icon-delete" @click="deleteTask">删除任务</el-button>
           </div>
           
         </div>
@@ -68,7 +68,7 @@ export default {
   },
   mounted () {
     let self = this;
-    self.task_id = this.$route.params.taskid;
+    self.task_id = localStorage.getItem('TaskID');
     var apiClient  = new ApiClient('http://localhost:8000');
     apiClient.authentications['OAuth2PasswordBearer'].accessToken = localStorage.getItem('Authorization')
     self.client = apiClient
@@ -83,8 +83,14 @@ export default {
         return;
       }
     })
+    if(self.task_id === '' || self.task_id === null){
+      this.$router.push('/sendermission');
+    }
     self.task.getTaskTasksTaskIdGet(self.task_id, (error, data, response) => {
       let res = JSON.parse(response['text'])
+
+      console.log(res)
+
       self.task_amount = res.responses_required;
       var task_completed = 0;
       res.respondents_completed.forEach(function(element) {
@@ -98,8 +104,16 @@ export default {
       self.task_question_num = res.questions.length;
     })
     self.task.getCoverTasksTaskIdCoverImageGet(self.task_id, (error, data, response) => {
-      let imageObjectURL = window.URL.createObjectURL(response.body);
-      self.task_cover = imageObjectURL
+      if (response.status == 400){
+        self.task_cover = '../default_cover.jpeg'
+      } else{
+        let binaryData = [];
+            binaryData.push(response.body);
+            let imageObjectURL = window.URL.createObjectURL(new Blob(binaryData));
+            console.log(imageObjectURL);
+        // let imageObjectURL = window.URL.createObjectURL(response.body);
+        self.task_cover = imageObjectURL
+      }
     })
   },
   methods: {
@@ -115,14 +129,42 @@ export default {
       }
     },
     downloadTask() {
-
+      let self = this;
+      this.task.downloadTaskResultsTasksTaskIdDownloadGet(self.task_id, (error, data, response) => {
+        console.log(error, data, response)
+        if (response.data.type === 'application/octet-stream') {
+          const fileName = response.headers['content-disposition'].split('=')[1]
+          if (window.navigator && window.navigator.msSaveOrOpenBlob){
+            const blob = new Blob([response.data], { type: 'application/zip'})
+            window.navigator.msSaveOrOpenBlob(blob, fileName)
+          } else {
+            const blob = new Blob([response.data], {type:'application/zip'})
+            const url = window.URL.createObjectURL(blob)
+            const link = document.createElement('a')
+            link.href = url
+            link.download = fileName
+            link.click()
+            URL.revokeObjectURL(url)
+          }
+        }
+      })
     },
     deleteTask () {
       let self = this;
-      self.task.deleteTaskTasksTaskIdDelete(self.task_id, (error, data, response) =>{
-        console.log(error, data, response)
-        this.$router.push('/sendermission')
-      })
+      self.$confirm('您即将删除当前任务?', '提示', {
+        confirmButtonText: '确定',
+        cancelButtonText: '取消',
+        type: 'info',
+      }).then(() => {
+        self.task.deleteTaskTasksTaskIdDelete(self.task_id, (error, data, response) =>{
+          self.$router.push('/sendermission')
+        })
+      }).catch(() => {
+          this.$message({
+            type: 'info',
+            message: '已取消删除操作'
+          });
+        });
     }
   }
 }
