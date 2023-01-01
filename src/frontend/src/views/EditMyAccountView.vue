@@ -237,11 +237,11 @@ export default {
     goBack(){
       if (this.usertype == "respondent"){
         this.$router.push({
-          path: '/projects',
+          path: '/myaccount',
         })
       } else {
         this.$router.push({
-          path: '/sendermission',
+          path: '/senderaccount',
         })
       }
     },
