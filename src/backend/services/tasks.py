@@ -160,13 +160,19 @@ class Tasks:
                 q = schemas.questions.SingleChoiceQuestion(**di)
                 answers = await con.execute(select(models.answer.SingleChoiceAnswer).where(models.answer.SingleChoiceAnswer.question_id==q.question_id))
                 answers = answers.scalars().all()
-                q.answers = list(map(lambda A:schemas.answers.SingleChoiceAnswer(choice = A.choice),answers))
+                q.answers = list(map(lambda A:schemas.answers.Answer(date_created=A.date_answered,
+                                                                     respondent=A.respondent_name,
+                                                                     answer = schemas.answers.SingleChoiceAnswer(choice =A.choice)),
+                                                                     answers))
             elif qtype == 'multi_choice':
                 di['options'] = question.options.split('|')
                 q = schemas.questions.MultiChoiceQuestion(**di)
                 answers = await con.execute(select(models.answer.MultiChoiceAnswer).where(models.answer.MultiChoiceAnswer.question_id==q.question_id))
                 answers = answers.scalars().all()
-                q.answers = list(map(lambda A:schemas.answers.MultiChoiceAnswer(choices = A.choices),answers))
+                q.answers = list(map(lambda A:schemas.answers.Answer(date_created=A.date_answered,
+                                                                     respondent=A.respondent_name,
+                                                                     answer = schemas.answers.MultiChoiceAnswer(choices = A.choices)),
+                                                                     answers))
             elif qtype == 'bounding_box':
                 q = schemas.questions.BoundingBoxQuestion(**di)
                 answers = await con.execute(select(models.answer.BoundingBoxAnswer).where(models.answer.BoundingBoxAnswer.question_id==q.question_id))
@@ -174,12 +180,17 @@ class Tasks:
                 for target in answers:
                     p1 = schemas.answers.Point(x = target.top_left_x, y= target.top_left_y)
                     p2 = schemas.answers.Point(x = target.bottom_right_x, y= target.bottom_right_y)
-                    q.answers.append(schemas.answers.BoundingBoxAnswer(top_left=p1,bottom_right=p2))
+                    q.answers.append(schemas.answers.Answer(date_created=target.date_answered,
+                                                            respondent=target.respondent_name,
+                                                            answer = schemas.answers.BoundingBoxAnswer(top_left=p1,bottom_right=p2)))
             elif qtype == 'open':
                 q = schemas.questions.OpenQuestion(**di)
                 answers = await con.execute(select(models.answer.OpenAnswer).where(models.answer.OpenAnswer.question_id==q.question_id))
                 answers = answers.scalars().all()
-                q.answers = list(map(lambda A:schemas.answers.OpenAnswer(text = A.text),answers))
+                q.answers = list(map(lambda A:schemas.answers.Answer(date_created=A.date_answered,
+                                                                     respondent=A.respondent_name,
+                                                                     answer = schemas.answers.OpenAnswer(text = A.text)),
+                                                                     answers))
             else : 
                 continue
             response_task.questions.append(q)
