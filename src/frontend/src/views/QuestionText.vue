@@ -104,7 +104,7 @@ export default {
     var tasksApi = new TasksApi(apiClient);
     self.task = tasksApi;
     self.task_map = JSON.parse(localStorage.getItem('QuestionList'))
-    self.task_type = localStorage.getItem('TaskType')
+    self.task_type = localStorage.getItem('TaskType');
     var questionsApi = new QuestionsApi(apiClient);
     self.question = questionsApi;
     self.cur_question = parseInt(localStorage.getItem('QuestionIndex'))
@@ -120,6 +120,7 @@ export default {
       }
     })
     self.task.getTaskTasksTaskIdGet(self.task_id, (error, data, response) => {
+      console.log("get task");
       let res = JSON.parse(response['text'])
       self.task_amount = res.responses_required;
       self.task_brief = res.introduction;
@@ -146,8 +147,10 @@ export default {
     })
     console.log(self.question_id, self.task_id)
     self.question.getQuestionTasksTaskIdQuestionsQuestionIdGet(self.task_id, self.question_id, null, (error, data, response) => {
+      console.log("get question")
       console.log(response)
       let res = JSON.parse(response['text']);
+      console.log(res)
       // 填充问题
       self.prompt = res.prompt;
       document.getElementById("question_prompt").innerHTML = self.prompt;
@@ -163,8 +166,7 @@ export default {
         self.radio = res.answers[0];
     })
     self.question.getQuestionResourceTasksTaskIdQuestionsQuestionIdResourceGet(self.task_id, self.question_id, (error, data, response) => {
-      console.log(response)
-      console.log(response['text'])
+      console.log("get resource")
       document.getElementById("question_text").innerHTML = response['text'];
     })
     
