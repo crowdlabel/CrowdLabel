@@ -203,6 +203,7 @@ export default {
       }
     };
     return {
+      tasks_orignal_order: [],
       pageSize: 6,
       currentPage: 1,
       search_input:'',
@@ -461,7 +462,8 @@ export default {
       self.taskslist = a.tasks_requested
       self.tasks_info = []
       self.taskslist.forEach(function(element) {
-        console.log(element)
+        self.tasks_orignal_order.push(element)
+        console.log(self.tasks_orignal_order)
         self.task.getCoverTasksTaskIdCoverImageGet(element, (error, data, response) => {
           if (response.status == 400){
             var c = { task_id:element, name:'', cover:'../default_cover.jpeg'}
@@ -471,7 +473,6 @@ export default {
               self.tasks_info.push(c)
             })
           } else {
-
             let binaryData = [];
             binaryData.push(response.body);
             let imageObjectURL = window.URL.createObjectURL(new Blob(binaryData));
@@ -486,6 +487,8 @@ export default {
           }
         })
       });
+      console.log(self.tasks_info)
+      console.log(25)
     })
   }
 }
