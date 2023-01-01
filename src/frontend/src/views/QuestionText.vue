@@ -53,7 +53,7 @@
         <div class="footer">
           <el-button id="quit_button" type="primary" v-on:click="quit()" plain>退出答题</el-button>
           <a>
-            <el-button id="prev_button" type="primary" disabled>&lt 上一题</el-button>
+            <el-button id="prev_button" type="primary" :disabled="isFirstQuestion">&lt 上一题</el-button>
           </a>
           <el-button id="next_button" type="primary" v-on:click="nextQuestion()">下一题 ></el-button>
         </div>
@@ -91,6 +91,7 @@ export default {
       customColor: '#5D3BE6',
       radio: -1,
       choicesGiven: [],
+      isFirstQuestion: false
     };
   },
   mounted() {
@@ -104,12 +105,16 @@ export default {
     var tasksApi = new TasksApi(apiClient);
     self.task = tasksApi;
     self.task_map = JSON.parse(localStorage.getItem('QuestionList'))
-    self.task_type = localStorage.getItem('TaskType')
+    self.task_type = localStorage.getItem('TaskType');
     var questionsApi = new QuestionsApi(apiClient);
     self.question = questionsApi;
     self.cur_question = parseInt(localStorage.getItem('QuestionIndex'))
+    console.log("QUESTION INDEX: " + self.cur_question);
     self.question_id = self.task_map[this.cur_question];
     var my_username = "";
+    // 判断是否是第一题，如是则disable“上一题”按钮
+    if (self.cur_question == 0)
+      self.isFirstQuestion = true;
     self.user.getMeUsersMeGet((error, data, response) => {
       let res = JSON.parse(response['text']);
       my_username = res.username;
@@ -120,6 +125,7 @@ export default {
       }
     })
     self.task.getTaskTasksTaskIdGet(self.task_id, (error, data, response) => {
+      console.log("successfully get task");
       let res = JSON.parse(response['text'])
       self.task_amount = res.responses_required;
       self.task_brief = res.introduction;
@@ -144,9 +150,10 @@ export default {
       // 计算任务进度条
       self.percentage = ((self.cur_question) / self.task_question_num) * 100;
     })
-    console.log(self.question_id, self.task_id)
-    self.question.getQuestionTasksTaskIdQuestionsQuestionIdGet(self.task_id, self.question_id, null, (error, data, response) => {
-      console.log(response)
+    console.log("QUESTION ID: " + self.question_id)
+    console.log("TASK ID: " + self.task_id)
+    self.question.getQuestionTasksTaskIdQuestionsQuestionIdGet(self.task_id, self.question_id, (error, data, response) => {
+      console.log("successfully get question")
       let res = JSON.parse(response['text']);
       // 填充问题
       self.prompt = res.prompt;
@@ -157,16 +164,22 @@ export default {
         var k = { label: list_choices[i], value: i };
         self.choicesGiven.push(k);
       }
+      console.log("PREVIOUS ANSWERS:")
       console.log(res.answers)
       // 如已回答过该题，填充答案
       if (res.answers.length > 0)
         self.radio = res.answers[0];
     })
     self.question.getQuestionResourceTasksTaskIdQuestionsQuestionIdResourceGet(self.task_id, self.question_id, (error, data, response) => {
-      console.log(response)
-      console.log(response['text'])
+      console.log("successfully get resource")
       document.getElementById("question_text").innerHTML = response['text'];
     })
+    self.task.getProgressTasksTaskIdProgressGet(self.task_id, (error, data, response) => {
+      let res = JSON.parse(response['text']);
+      var progress = res.progress;
+      console.log("TASK PROGRESS: " + progress)
+    })
+    
     
   },
   methods: {
@@ -183,12 +196,12 @@ export default {
       if (_radio == -1) {
         this.alertMessage();
       } else {
-        /*
         var answer = {"choice": _radio};
         this.question.createAnswerTasksTaskIdQuestionsQuestionIdAnswerPut(this.task_id, this.question_id, answer, (error, data, response) => {
-          console.log(response);
+          // console.log(response);
+          this.$store.commit('changeQuestionIndex', this.cur_question + 1);
         })
-        */
+        
         document.location.href = '/question_text';
       }
     },
