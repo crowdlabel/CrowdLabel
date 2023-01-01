@@ -131,7 +131,8 @@ export default {
     downloadTask() {
       let self = this;
       this.task.downloadTaskResultsTasksTaskIdDownloadGet(self.task_id, (error, data, response) => {
-        console.log(error, data, response)
+        console.log(error, data, response);
+        console.log(response.body);
         if (response.data.type === 'application/octet-stream') {
           const fileName = response.headers['content-disposition'].split('=')[1]
           if (window.navigator && window.navigator.msSaveOrOpenBlob){

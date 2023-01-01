@@ -365,10 +365,10 @@ Returns: list of `Task`s matching the query within the specified `page` and `pag
         '''
         
         filename = 'results_' + str(task_id) + '_' + datetime_now_str() + '.json'
-        path = pathlib.Path(TASK_UPLOAD_DIR , filename)
+        path = TASK_UPLOAD_DIR / filename
         task = await self.get_task(task_id)
-        print(path.name)
-        json.dump(task.json(),open(path.resolve(),'w'))
+        with open(path, 'w', encoding='utf8') as f:
+            f.write(task.json())
         return path
 
 
