@@ -36,7 +36,6 @@
             <el-button type="primary" @click="downloadTask">下载数据</el-button>
             <el-button type="primary" icon="el-icon-delete" @click="deleteTask">删除任务</el-button>
           </div>
-          
         </div>
         
     </div>
@@ -88,9 +87,6 @@ export default {
     }
     self.task.getTaskTasksTaskIdGet(self.task_id, (error, data, response) => {
       let res = JSON.parse(response['text'])
-
-      console.log(res)
-
       self.task_amount = res.responses_required;
       var task_completed = 0;
       res.respondents_completed.forEach(function(element) {
@@ -130,24 +126,18 @@ export default {
     },
     downloadTask() {
       let self = this;
+      console.log("in")
       this.task.downloadTaskResultsTasksTaskIdDownloadGet(self.task_id, (error, data, response) => {
-        console.log(error, data, response);
-        console.log(response.body);
-        if (response.data.type === 'application/octet-stream') {
-          const fileName = response.headers['content-disposition'].split('=')[1]
-          if (window.navigator && window.navigator.msSaveOrOpenBlob){
-            const blob = new Blob([response.data], { type: 'application/zip'})
-            window.navigator.msSaveOrOpenBlob(blob, fileName)
-          } else {
-            const blob = new Blob([response.data], {type:'application/zip'})
-            const url = window.URL.createObjectURL(blob)
-            const link = document.createElement('a')
-            link.href = url
-            link.download = fileName
-            link.click()
-            URL.revokeObjectURL(url)
-          }
-        }
+        const url = window.URL.createObjectURL(response.body)
+        console.log(url)
+        const link = document.createElement('a')
+        link.style.display = 'none'
+        link.href = url
+        link.setAttribute('download', this.task_name + ".json")
+        document.body.appendChild(link)
+        link.click()
+        document.body.removeChild(link)
+        window.URL.revokeObjectURL(url)
       })
     },
     deleteTask () {
