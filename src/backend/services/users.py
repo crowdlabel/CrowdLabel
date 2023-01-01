@@ -143,7 +143,6 @@ class Users:
 
     async def authenticate(self, username: str, password: str) -> bool:
 
-        con = scoped_session(Connection)    
         # TODO: check?
         con = scoped_session(Connection)
         res= await con.execute(select(models.user.User).where(models.user.User.username==username))
@@ -252,22 +251,36 @@ class Users:
             con.commit()
             await asyncio.shield(con.close())
         return True
-    async def edit_user_info(userid:int,new_info: dict) -> str | None:
+    async def edit_user_info(self,username:str,new_info:  schemas.users.EditEmailRequest | schemas.users.EditPasswordRequest) -> str | None:
         """
         TODO:
         Edits self using the new info
         returns error message, or none if successful
         """
         con = scoped_session(Connection)
-        res = await con.execute(select(models.user.User).where(models.user.User.id == userid))
+        res = await con.execute(select(models.user.User).where(models.user.User.name == username))
         target = res.scalar().first()
         if target == None:
             await asyncio.shield(con.close())
-            return False
+            return 'user not found'
         else :
-            target.password_hashed = utils.hasher.hash(new_info['password'])
+            if isinstance(new_info,schemas.users.EditEmailRequest):
+                if utils.hasher.verify(target.password_hashed,new_info.password):
+                    await asyncio.shield(con.close())
+                    return 'wrong password'
+                if self.check_verification_code(new_info.new_email,new_info.verification_code):
+                    target.email = new_info.new_email
+                else:
+                    await asyncio.shield(con.close())
+                    return 'verification code mismatch'
+            elif isinstance(new_info,schemas.users.EditPasswordRequest):
+                if utils.hasher.verify(target.password_hashed,new_info.old_password):
+                    target.password_hashed = utils.hasher.hash(new_info.new_password)
+                else:
+                    await asyncio.shield(con.close())
+                    return 'wrong password'
             await asyncio.shield(con.close())
-            return True
+            return None
 
     async def handle_transaction(self, request: schemas.users.TransactionRequest, user: schemas.users.User) -> float | str:
         '''

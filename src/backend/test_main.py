@@ -360,8 +360,6 @@ if __name__ == '__main__':
     test_claim()
     test_get_task_question_resource() 
     test_answer()
-   
-
     test_cover() """
     
     test_search()

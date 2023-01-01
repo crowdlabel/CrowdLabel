@@ -89,10 +89,8 @@ async def edit_me(new_info : schemas.users.EditEmailRequest | schemas.users.Edit
 ):
     # edit user's own details
     # TODO
-    if isinstance(new_info, schemas.users.EditEmailRequest):
-        await user_service.edit_user(email=new_info.new_email, password=new_info.password)
-    elif isinstance(new_info, schemas.users.EditPasswordRequest):
-        await user_service.edit_user(new_password=new_info.new_password, password=new_info.old_password)
+    await user_service.edit_user(current_user.username,new_info)
+    
 ###############################################################################
 username_success_jdr = JSONDocumentedResponse(
     status.HTTP_200_OK,
