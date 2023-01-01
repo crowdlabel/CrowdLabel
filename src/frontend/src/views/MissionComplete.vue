@@ -98,7 +98,6 @@ export default {
     self.question_id = self.task_map[this.cur_question];
     var my_username = "";
     self.task.getTaskTasksTaskIdGet(self.task_id, (error, data, response) => {
-      console.log("successfully get task");
       let res = JSON.parse(response['text'])
       self.task_amount = res.responses_required;
       self.task_brief = res.introduction;
