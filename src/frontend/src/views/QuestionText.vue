@@ -112,7 +112,7 @@ export default {
     console.log("QUESTION INDEX: " + self.cur_question);
     self.question_id = self.task_map[this.cur_question];
     var my_username = "";
-    // 判断是否是第一题，如是则disable“上一题”按钮
+    // 判断当前是否是第一题，如是则disable“上一题”按钮
     if (self.cur_question == 0)
       self.isFirstQuestion = true;
     self.user.getMeUsersMeGet((error, data, response) => {
@@ -149,6 +149,11 @@ export default {
       document.getElementById("tags").innerHTML = tags_str;
       // 计算任务进度条
       self.percentage = ((self.cur_question) / self.task_question_num) * 100;
+      // 判断当前是否是最后一题，如是则将“下一题”按钮更改为“完成任务”按钮
+      if (self.cur_question == self.task_question_num - 1) {
+        document.getElementById("next_button").innerHTML = "完成任务";
+      }
+
     })
     console.log("QUESTION ID: " + self.question_id)
     console.log("TASK ID: " + self.task_id)
@@ -173,6 +178,8 @@ export default {
     self.question.getQuestionResourceTasksTaskIdQuestionsQuestionIdResourceGet(self.task_id, self.question_id, (error, data, response) => {
       console.log("successfully get resource")
       document.getElementById("question_text").innerHTML = response['text'];
+      console.log(response)
+      console.log(response['text']);
     })
     self.task.getProgressTasksTaskIdProgressGet(self.task_id, (error, data, response) => {
       let res = JSON.parse(response['text']);
@@ -196,14 +203,19 @@ export default {
       if (_radio == -1) {
         this.alertMessage();
       } else {
-        var answer = {"choice": _radio};
-        this.question.createAnswerTasksTaskIdQuestionsQuestionIdAnswerPut(this.task_id, this.question_id, answer, (error, data, response) => {
-          // console.log(response);
-          this.$store.commit('changeQuestionIndex', this.cur_question + 1);
-        })
-        
-        document.location.href = '/question_text';
-      }
+          // 上传答案
+          var answer = {"choice": _radio};
+          this.question.createAnswerTasksTaskIdQuestionsQuestionIdAnswerPut(this.task_id, this.question_id, answer, (error, data, response) => {
+            // console.log(response);
+            this.$store.commit('changeQuestionIndex', this.cur_question + 1);
+          })
+          // 判断跳转到什么页面
+          if (this.cur_question + 1 == this.task_question_num) { // 最后一题
+            document.location.href = '/mission_complete';
+          } else {
+            document.location.href = '/question_text';
+          }
+        }
     },
     handleChange(val) {
       this.radio = val;

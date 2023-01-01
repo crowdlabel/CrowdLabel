@@ -94,7 +94,7 @@ export default {
       }
     })
     self.task.getTaskTasksTaskIdGet(self.task_id, (error, data, response) => {
-      let res = JSON.parse(response['text'])
+      let res = JSON.parse(response['text']);
 
       console.log(res)
 
@@ -138,14 +138,16 @@ export default {
       this.$store.commit('changeQuestionList', self.task_map);
     })
     self.task.getCoverTasksTaskIdCoverImageGet(self.task_id, (error, data, response) => {
+      console.log(response)
+
       if (response.status == 400){
         self.task_cover = '../default_cover.jpeg'
       } else {
         let binaryData = [];
         binaryData.push(response.body);
         let imageObjectURL = window.URL.createObjectURL(new Blob(binaryData));
-        // let imageObjectURL = window.URL.createObjectURL(response.body);
-        self.task_cover = imageObjectURL
+        self.task_cover = imageObjectURL;
+        console.log(imageObjectURL)
       }
     })
     self.task.getProgressTasksTaskIdProgressGet(self.task_id, (error, data, response) => {
@@ -165,7 +167,7 @@ export default {
   methods: {
     claim_task() {
       this.task.claimTaskTasksTaskIdClaimPost(this.task_id, (error, data, response) => {
-        let res = JSON.parse(response['text'])
+        let res = JSON.parse(response['text']);
         // console.log(res)
       })
       this.claim = true;
