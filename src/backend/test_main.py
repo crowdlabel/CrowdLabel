@@ -329,6 +329,8 @@ def test_answer():
     assert response.status_code == 200
 
     task = __get_task(reqt, task_id).json()
+    print('#'*100)
+    pprint(task)
     for question in task['questions']:
         if question['question_id'] == 1:
             assert question['answers'] == [{'choice': 1}]
