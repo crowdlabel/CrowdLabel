@@ -143,6 +143,7 @@ export default {
       if (response.status == 400){
         self.task_cover = '../default_cover.jpeg'
       } else {
+        console.log(response);
         let binaryData = [];
         binaryData.push(response.body);
         let imageObjectURL = window.URL.createObjectURL(new Blob(binaryData));

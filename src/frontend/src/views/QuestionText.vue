@@ -176,10 +176,9 @@ export default {
         self.radio = res.answers[0];
     })
     self.question.getQuestionResourceTasksTaskIdQuestionsQuestionIdResourceGet(self.task_id, self.question_id, (error, data, response) => {
-      console.log("successfully get resource")
-      document.getElementById("question_text").innerHTML = response['text'];
-      console.log(response)
-      console.log(response['text']);
+        response.body.text().then((text) => {
+            document.getElementById("question_text").innerHTML = text;
+        });
     })
     self.task.getProgressTasksTaskIdProgressGet(self.task_id, (error, data, response) => {
       let res = JSON.parse(response['text']);
