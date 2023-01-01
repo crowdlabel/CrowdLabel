@@ -363,13 +363,12 @@ Returns: list of `Task`s matching the query within the specified `page` and `pag
         Returns the filename of the zip file as a pathlib.Path object if successful
         Returns a str detailing the error if it failed
         '''
-
-        filename = 'results_' + str(task_id) + '_' + datetime_now_str() + '.zip'
-        task = self.get_task(task_id)
-        print(task)
-
-
-        return filename
+        
+        filename = 'results_' + str(task_id) + '_' + datetime_now_str() + '.json'
+        task = await self.get_task(task_id)
+        json.dump(task,open(filename,'w'))
+        path = pathlib.Path(TASK_UPLOAD_DIR+filename)
+        return path
 
 
 task_service = Tasks()
