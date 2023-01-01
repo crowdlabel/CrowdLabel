@@ -1,10 +1,13 @@
-from fastapi import status
+from fastapi import status, UploadFile
 from fastapi.routing import APIRouter
 from .auth import Depends, get_current_user
 from .documentedresponse import JSONDocumentedResponse, create_documentation
 import schemas.users
 import schemas.tasks
 from services.users import user_service
+from utils.config import get_config
+from utils.filetransfer import upload_file, download_file
+import pathlib
 
 
 router = APIRouter()
@@ -134,3 +137,40 @@ async def edit_credits(
             schemas.tasks.ErrorResponse(error=response)
         )
     return transaction_succeeded_hdr.response()
+
+###############################################################################
+
+PROFILE_PICTURE_DIR = pathlib.Path(get_config('file_locations.profile_pictures'))
+
+upload_pfp_success_hdr = JSONDocumentedResponse(
+    status.HTTP_200_OK,
+    'Profile picture successfully uploaded'
+)
+@router.post('/me/profile-picture',
+    **create_documentation([upload_pfp_success_hdr])
+)
+async def upload_pfp(profile_picture: UploadFile, current_user=Depends(get_current_user())):
+    out_path = PROFILE_PICTURE_DIR / current_user.username
+    await upload_file(profile_picture, out_path)
+
+###############################################################################
+
+get_pfp_success_hdr = JSONDocumentedResponse(
+    status.HTTP_200_OK,
+    'Profile picture successfully retrieved, returns a file'
+)
+get_pfp_missing_hdr = JSONDocumentedResponse(
+    status.HTTP_404_NOT_FOUND,
+    'No profile picture was uploaded'
+)
+@router.get('/me/profile-picture',
+    **create_documentation([get_pfp_success_hdr, get_pfp_missing_hdr])
+)
+async def get_pfp(current_user=Depends(get_current_user())):
+    filename = PROFILE_PICTURE_DIR / current_user.username
+    if not filename.is_file():
+        return get_pfp_missing_hdr.response()
+    return await download_file(filename, 'image/*')
+    
+
+###############################################################################
