@@ -94,10 +94,8 @@ export default {
     };
   },
   mounted() {
-    let self = this;
-    // console.log(self);
+    let self = this
     self.task_id = localStorage.getItem('TaskID')
-    // console.log(this.$route.params.taskid);
     var apiClient  = new ApiClient('http://localhost:8000');
     apiClient.authentications['OAuth2PasswordBearer'].accessToken = localStorage.getItem('Authorization');
     self.client = apiClient;
