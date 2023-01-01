@@ -106,7 +106,9 @@ export default {
     var tasksApi = new TasksApi(apiClient);
     self.task = tasksApi;
     self.task_map = JSON.parse(localStorage.getItem('QuestionList'))
-    self.task_type = localStorage.getItem('TaskType')
+    self.task_type = localStorage.getItem('TaskType');
+    console.log(self.task_type);
+    console.log(localStorage.getItem('TaskType'));
     var questionsApi = new QuestionsApi(apiClient);
     self.question = questionsApi;
     self.cur_question = parseInt(localStorage.getItem('QuestionIndex'))

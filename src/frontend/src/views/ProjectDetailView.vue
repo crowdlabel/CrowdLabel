@@ -115,6 +115,7 @@ export default {
       // 未知任务类型
       if (self.task_type == '')
         self.task_type = "未知类型";
+      
       // 填充任务简介
       if (res.introduction == "")
         document.getElementById("task_brief").innerHTML = "该发布者暂未提供简介";
