@@ -134,17 +134,29 @@ export default {
       for (var i = 0; i < self.task_question_num; i++) {
         self.task_map[i] = res.questions[i].question_id;
       }
+      // 存储task_map
+      this.$store.commit('changeQuestionList', self.task_map);
     })
     self.task.getCoverTasksTaskIdCoverImageGet(self.task_id, (error, data, response) => {
       if (response.status == 400){
         self.task_cover = '../default_cover.jpeg'
-      } else{
+      } else {
         let binaryData = [];
         binaryData.push(response.body);
         let imageObjectURL = window.URL.createObjectURL(new Blob(binaryData));
         // let imageObjectURL = window.URL.createObjectURL(response.body);
         self.task_cover = imageObjectURL
       }
+    })
+    self.task.getProgressTasksTaskIdProgressGet(self.task_id, (error, data, response) => {
+      let res = JSON.parse(response['text']);
+      var progress = res.progress;
+      // 根据用户答题进度决定跳转到哪题，默认跳转到第一题
+      if (progress == -1)
+        this.$store.commit('changeQuestionIndex', 0);
+      else
+        this.$store.commit('changeQuestionIndex', progress);
+      console.log("TASK PROGRESS: " + progress)
     })
     
     
@@ -170,8 +182,8 @@ export default {
         name:'question_text',
         params:{
           task_map: this.task_map,
-          taskid: this.task_id,
-          task_type: this.task_type,
+          // taskid: this.task_id,
+          // task_type: this.task_type,
           which_question: 0
         }
       })

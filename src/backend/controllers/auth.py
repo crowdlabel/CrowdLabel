@@ -35,6 +35,9 @@ def create_access_token(data: dict) -> str:
     return encoded_jwt
 
 
+blacklist = {}
+
+
 def get_current_user(user_types: list=[]) -> schemas.users.User:
     """
     Returns a function to be used by API endpoints
@@ -56,6 +59,20 @@ def get_current_user(user_types: list=[]) -> schemas.users.User:
             detail='Forbidden',
             headers={'WWW-Authenticate': 'Bearer'},
         )
+        blacklisted = False
+        to_delete = []
+        for blacklisted_token in blacklist:
+            if (datetime.utcnow() - blacklist[blacklisted_token]) > ACCESS_TOKEN_EXPIRE_MINUTES:
+                to_delete.append(token)
+            elif not blacklisted and blacklisted_token == token:
+                blacklisted = True
+        for token_to_delete in to_delete:
+            del blacklist[token_to_delete]
+
+        if blacklisted:
+            raise forbidden_exception
+
+
         try:
             payload = jwt.decode(token, SECRET_KEY, algorithms=[ALGORITHM])
             username: str = payload.get('sub')
@@ -109,3 +126,18 @@ async def login(form_data: OAuth2PasswordRequestForm = Depends()):
 async def token(form_data: OAuth2PasswordRequestForm = Depends()):
     # same function as the `login` endpoint
     return await login(form_data)
+
+
+
+
+logout_sucess_jdr = JSONDocumentedResponse(
+    status.HTTP_200_OK,
+    'Logout successful',
+)
+
+@router.post('/logout',
+    **create_documentation([logout_sucess_jdr])
+)
+async def logout(token: str = Depends(oauth2_scheme)):
+    # same function as the `login` endpoint
+    blacklist[token] = datetime.utcnow()
