@@ -158,39 +158,39 @@ export default {
             }
         };
     return {
-            text: "发送验证码",
-            time: 5,
-            timer: null,
-            disable: true,
-            activeName: 'second',
-            client: '',
-            auth: '',
-            user: '',
-            ruleForm: {
-                name: '',
-                pass: '',
-                checkPass: '',
-                email: '',
-                verif: ''
-            },
-            rules: {
-                name: [
-                    { validator: validateName, trigger: 'blur'}
-                ],
-                pass: [
-                    { validator: validatePass, trigger: 'blur'}
-                ],
-                checkPass: [
-                    { validator: validatePass2, trigger: 'blur' }
-                ],
-                email : [
-                    { validator: validateEmail, trigger: 'change'}
-                ],
-                verif: [
-                    { validator: validateVerif, trigger: 'blur' }
+      text: "发送验证码",
+      time: 5,
+      timer: null,
+      disable: true,
+      activeName: 'second',
+      client: '',
+      auth: '',
+      user: '',
+      ruleForm: {
+          name: '',
+          pass: '',
+          checkPass: '',
+          email: '',
+          verif: ''
+      },
+      rules: {
+          name: [
+              { validator: validateName, trigger: 'blur'}
+          ],
+          pass: [
+              { validator: validatePass, trigger: 'blur'}
+          ],
+          checkPass: [
+              { validator: validatePass2, trigger: 'blur' }
+          ],
+          email : [
+              { validator: validateEmail, trigger: 'change'}
+          ],
+          verif: [
+              { validator: validateVerif, trigger: 'blur' }
 
-                ]
-            }
+          ]
+      }
     };
   },
   created () {
@@ -227,27 +227,27 @@ export default {
   },
   methods: {
     verifyEmailbtn () {
-            this.disable=true
-            let ready_email = document.getElementById('registeremail').value
-            console.log(ready_email);
-            this.user.verifyEmailUsersVerifyEmailPost({
-                "email": ready_email
-            });
-            this.text = this.time + "s后重新发送"
-            localStorage.setItem('time', this.time)
-            this.timer = setInterval(() => {
-                if (this.time > 0) {
-                    this.time--
-                    localStorage.setItem('time', this.time)
-                    this.text = this.time + "s后重新发送"
-                } else {
-                    clearInterval(this.timer);
-                    this.time = 5
-                    this.disable = false
-                    this.text = '发送验证码'
-                }
-            }, 1000)
-        },
+      this.disable=true
+      let ready_email = document.getElementById('registeremail').value
+      console.log(ready_email);
+      this.user.verifyEmailUsersVerifyEmailPost({
+          "email": ready_email
+      });
+      this.text = this.time + "s后重新发送"
+      localStorage.setItem('time', this.time)
+      this.timer = setInterval(() => {
+          if (this.time > 0) {
+              this.time--
+              localStorage.setItem('time', this.time)
+              this.text = this.time + "s后重新发送"
+          } else {
+              clearInterval(this.timer);
+              this.time = 5
+              this.disable = false
+              this.text = '发送验证码'
+          }
+      }, 1000)
+    },
   }
 }
 </script>
