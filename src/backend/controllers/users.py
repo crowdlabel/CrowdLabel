@@ -5,7 +5,7 @@ from .documentedresponse import JSONDocumentedResponse, create_documentation
 import schemas.users
 import schemas.tasks
 from services.users import user_service
-from utils.config import get_config
+import utils.config
 from utils.filetransfer import upload_file, download_file
 import pathlib
 
@@ -138,7 +138,9 @@ async def edit_credits(
 
 ###############################################################################
 
-PROFILE_PICTURE_DIR = pathlib.Path(get_config('file_locations.profile_pictures'))
+PROFILE_PICTURE_DIR = pathlib.Path(
+    utils.config.config['file_locations']['profile_pictures']
+)
 
 upload_pfp_success_hdr = JSONDocumentedResponse(
     status.HTTP_200_OK,

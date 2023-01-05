@@ -8,7 +8,7 @@ from models.task import *
 from models.user import *
 from models.answer import *
 
-database_filename = utils.config.get_config('file_locations.database')
+database_filename = utils.config.config['file_locations']['database']
 
 
 db_params = 'sqlite+aiosqlite:///' + database_filename

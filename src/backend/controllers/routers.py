@@ -1,3 +1,5 @@
+import json
+from fastapi.openapi.utils import get_openapi
 from fastapi.routing import APIRouter
 from .base import app
 
@@ -15,3 +17,12 @@ app_router.include_router(questions.router, prefix='', tags=['questions'])
 app.include_router(app_router)
 
 
+def generate_docs():
+    with open('openapi.json', 'w') as f:
+        json.dump(get_openapi(
+            title=app.title,
+            version=app.version,
+            openapi_version=app.openapi_version,
+            description=app.description,
+            routes=app.routes,
+        ), f)

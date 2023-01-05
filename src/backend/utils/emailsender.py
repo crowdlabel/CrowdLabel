@@ -2,16 +2,16 @@ from flask import Flask
 import flask_mail
 import threading
 from datetime import datetime
-from utils.config import get_config
+import utils.config
 
 # 异步发送邮件
 class EmailSender:
     def __init__(self):
         self.app = Flask(__name__)
-        self.app.config['MAIL_SERVER'] = get_config('email.server')
-        self.app.config['MAIL_PORT'] = get_config('email.port')
-        self.app.config['MAIL_USERNAME'] = get_config('email.username')
-        self.app.config['MAIL_PASSWORD'] = get_config('email.password')
+        self.app.config['MAIL_SERVER'] = utils.config.config['email']['server']
+        self.app.config['MAIL_PORT'] = utils.config.config['email']['port']
+        self.app.config['MAIL_USERNAME'] = utils.config.config['email']['username']
+        self.app.config['MAIL_PASSWORD'] = utils.config.config['email']['password']
         self.app.config['MAIL_USE_SSL'] = False
         self.app.config['MAIL_USE_TLS'] = True
         self.mail_obj = flask_mail.Mail(self.app)
