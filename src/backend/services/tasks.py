@@ -215,6 +215,7 @@ class Tasks:
             await con.commit()
             await asyncio.shield(con.close())
 
+
     async def claim_task(self,user_name,task_id)->schemas.tasks.Task | None:
         con = scoped_session(conection)
         async with con.begin():
@@ -231,6 +232,9 @@ class Tasks:
             ))
             task = task.scalars().first()
             if task == None:
+                await asyncio.shield(con.close())
+                return None
+            if len(task.respondents_claimed) + len(task.respondents_complete) >= task.responses_required:
                 await asyncio.shield(con.close())
                 return None
             user.task_claimed.append(task)
@@ -397,11 +401,13 @@ Returns: list of `Task`s matching the query within the specified `page` and `pag
               selectinload(models.task.Task.questions),selectinload(models.task.Task.respondents_claimed),selectinload(models.task.Task.respondents_complete)))
         task = res.scalars().first()
         if task == None:
+            await asyncio.shield(con.close())
             return 'task not found'
         for question in task.questions:
             res = await con.execute(select(models.answer.Answer).where(and_(models.answer.Answer.question_id == question.id,models.answer.Answer.respondent_name == username)))
             answer = res.scalars().first()
             if answer == None:
+                await asyncio.shield(con.close())
                 return f'answer not complete'
 
 
