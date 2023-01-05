@@ -195,6 +195,12 @@ export default {
         });
     },
     prevQuestion() {
+      // 上传答案
+      let _radio = this.radio;
+      var answer = {"choice": _radio};
+      this.question.createAnswerTasksTaskIdQuestionsQuestionIdAnswerPut(this.task_id, this.question_id, answer, (error, data, response) => {
+          // console.log(response);
+      })
       this.$store.commit('changeQuestionIndex', this.cur_question - 1);
       document.location.href = '/question_text';
     },
@@ -220,6 +226,7 @@ export default {
     },
     handleChange(val) {
       this.radio = val;
+      console.log(this.radio);
     },
     quit() {
         this.$confirm('是否要保存当前的答题进度?', '退出任务', {
