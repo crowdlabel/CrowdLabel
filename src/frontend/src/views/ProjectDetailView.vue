@@ -158,6 +158,7 @@ export default {
     })
     self.task.getProgressTasksTaskIdProgressGet(self.task_id, (error, data, response) => {
       let res = JSON.parse(response['text']);
+      console.log(res)
       var progress = res.progress;
       // 根据用户答题进度决定跳转到哪题，默认跳转到第一题
       if (progress == -1)
@@ -180,6 +181,18 @@ export default {
           type: 'success'
         });
         document.getElementById("claim_button").innerHTML = "已接受任务";
+        // 接收任务后更新一下progress（接收任务前是get不到progress的）
+        this.task.getProgressTasksTaskIdProgressGet(this.task_id, (error, data, response) => {
+          let res = JSON.parse(response['text']);
+          console.log(res)
+          var progress = res.progress;
+          // 根据用户答题进度决定跳转到哪题，默认跳转到第一题
+          if (progress == -1)
+            this.$store.commit('changeQuestionIndex', 0);
+          else
+            this.$store.commit('changeQuestionIndex', progress);
+          console.log("TASK PROGRESS: " + progress)
+        })
       })
     },
     start_task() {

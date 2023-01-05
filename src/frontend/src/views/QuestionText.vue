@@ -199,10 +199,10 @@ export default {
       let _radio = this.radio;
       var answer = {"choice": _radio};
       this.question.createAnswerTasksTaskIdQuestionsQuestionIdAnswerPut(this.task_id, this.question_id, answer, (error, data, response) => {
-          // console.log(response);
+        this.$store.commit('changeQuestionIndex', this.cur_question - 1);
+        document.location.href = '/question_text';
       })
-      this.$store.commit('changeQuestionIndex', this.cur_question - 1);
-      document.location.href = '/question_text';
+      
     },
     nextQuestion() {
       let _radio = this.radio;
