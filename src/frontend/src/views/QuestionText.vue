@@ -213,15 +213,15 @@ export default {
           // 上传答案
           var answer = {"choice": _radio};
           this.question.createAnswerTasksTaskIdQuestionsQuestionIdAnswerPut(this.task_id, this.question_id, answer, (error, data, response) => {
-            // console.log(response);
+            this.$store.commit('changeQuestionIndex', this.cur_question + 1);
+            // 判断跳转到什么页面
+            if (this.cur_question + 1 == this.task_question_num) { // 最后一题
+              this.task.completeTasksTaskIdCompletePost(this.task_id, (error, data, response) => {});
+              document.location.href = '/mission_complete';
+            } else {
+              document.location.href = '/question_text';
+            }
           })
-          this.$store.commit('changeQuestionIndex', this.cur_question + 1);
-          // 判断跳转到什么页面
-          if (this.cur_question + 1 == this.task_question_num) { // 最后一题
-            document.location.href = '/mission_complete';
-          } else {
-            document.location.href = '/question_text';
-          }
         }
     },
     handleChange(val) {

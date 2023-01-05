@@ -254,10 +254,9 @@ export default {
       var y_1 = this.markList[0].y + this.markList[0].h;
       var answer = {top_left: {x: x_0, y: y_0}, bottom_right: {x: x_1, y: y_1}}
       this.question.createAnswerTasksTaskIdQuestionsQuestionIdAnswerPut(this.task_id, this.question_id, answer, (error, data, response) => {
-          // console.log(response);
+          this.$store.commit('changeQuestionIndex', this.cur_question - 1);
+          document.location.href = '/question_image_identify';
       })
-      this.$store.commit('changeQuestionIndex', this.cur_question - 1);
-      document.location.href = '/question_image_identify';
     },
     nextQuestion() {
       let list = this.markList;
@@ -272,15 +271,15 @@ export default {
           var y_1 = this.markList[0].y + this.markList[0].h;
           var answer = {top_left: {x: x_0, y: y_0}, bottom_right: {x: x_1, y: y_1}}
           this.question.createAnswerTasksTaskIdQuestionsQuestionIdAnswerPut(this.task_id, this.question_id, answer, (error, data, response) => {
-              // console.log(response);
+              this.$store.commit('changeQuestionIndex', this.cur_question + 1);
+              // 判断跳转到什么页面
+              if (this.cur_question + 1 == this.task_question_num) { // 最后一题
+                document.location.href = '/mission_complete';
+              } else {
+                document.location.href = '/question_image_identify';
+              }
           })
-          this.$store.commit('changeQuestionIndex', this.cur_question + 1);
-          // 判断跳转到什么页面
-          if (this.cur_question + 1 == this.task_question_num) { // 最后一题
-            document.location.href = '/mission_complete';
-          } else {
-            document.location.href = '/question_image_identify';
-          }
+          
       }
     },
     handleChange(val) {
