@@ -41,7 +41,6 @@ class Users:
         verification_code = str(random.randint(0, 999999)).rjust(6, '0')
 
         verification_code = '123456'
-        # TODO: check?
         
         res= await con.execute(select(models.email.Email).where(models.email.Email.email==email))
         target = res.scalars().first()

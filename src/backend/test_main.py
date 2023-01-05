@@ -43,7 +43,7 @@ resp1 = {
     'verification_code': '123456'
 }
 
-example_task = Path('D:/tsinghua/se 软件工程/CrowdLabel/examples/bounding.zip')
+example_task = Path('D:/CrowdLabel/bounding.zip')
 expected = {'cover_image': 'cover.jpg',
     'credits': 2.0,
     'description': 'This task is an example of a valid task',
