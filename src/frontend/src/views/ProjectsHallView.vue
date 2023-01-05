@@ -71,8 +71,8 @@
               <el-radio-group v-model="taskType" size="small" @change="chooseType(taskType)">
                 <el-radio-button label="all">全部</el-radio-button>
                 <el-radio-button label="text" >文字分类</el-radio-button>
-                <el-radio-button label="img" >图片分类</el-radio-button>
-                <el-radio-button label="img" >图片打标</el-radio-button>
+                <el-radio-button label="img_classify" >图片分类</el-radio-button>
+                <el-radio-button label="img_borderbox" >图片打标</el-radio-button>
                 <el-radio-button label="audio">音频分类</el-radio-button>
               </el-radio-group>
               </div>

@@ -123,6 +123,7 @@ export function draw(cav, list, i) {
                 // 初始化
                 draw(cav, list, i);
             }
+            console.log(list);
         };
     }
 };
