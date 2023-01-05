@@ -21,14 +21,12 @@
         </ul>
         <div class="project_description">
           <p class="text_bold">任务简介：</p>
-           <p class="text_normal">
-            软件工程是一门研究用工程化方法构建和维护有效、实用和高质量的软件的学科。它涉及程序设计语言、数据库、软件开发工具、系统平台、标准、设计件有电子邮件、嵌入式系统、人机界面、办公套件、操作系统、编译器、数据库、游戏等。同时，各个行业几乎都有计算机软件的应用，如工业、农业、银行、航空、政府部门等。这些应用促进了经济和社会的发展，也提高了工作效率和生活效率 。
-            <br />软件工程的目标是：在给定成本、进度的前提下，开发出具有适用性、有效性、可修改性、可靠性、可理解性、可维护性、可重用性、可移植性、可追踪性、可互操作性和满足用户需求的软件产品。追求这些目标有助于提高软件产品的质量和开发效率，减少维护的困难。
-           </p>
-           <div class="placeholder_text"></div>
-            <p class="text_bold">任务类型：</p><p class="text_normal">文字任务</p>
-            <p class="text_bold"><br />问题数量：</p><p class="text_normal">10</p>
-            <p class="text_bold"><br />积分奖励：</p><p class="text_normal">15</p>
+           <p id="task_brief" class="text_normal"></p>
+           <!-- div class="placeholder_text"></div> -->
+            <p class="text_bold"><br />任务类型：</p><p class="text_normal">{{ task_type }}</p>
+            <p class="text_bold"><br />任务标签：</p><p class="text_normal" id="tags"></p>
+            <p class="text_bold"><br />问题数量：</p><p class="text_normal">{{ task_question_num }}</p>
+            <p class="text_bold"><br />积分奖励：</p><p class="text_normal">{{ task_credit }}</p>
             <div class="placeholder_border"></div>
         </div>
       </div>
@@ -57,14 +55,71 @@
 <script>
 // @ is an alias to /src
 // import HelloWorld from '@/components/HelloWorld.vue'
-import axios from 'axios'
+import { ApiClient } from '@/crowdlabel-api/src';
+import { UsersApi } from '@/crowdlabel-api/src';
+import { TasksApi } from '@/crowdlabel-api/src';
+import { QuestionsApi } from '@/crowdlabel-api/src';
 export default {
   data() {
     return {
       percentage: 100,
       customColor: '#5D3BE6',
-      dialogVisible: false
+      user: '',
+      client: '',
+      task_id: '',
+      task_name: '',
+      task_type: '',
+      task_tags: [],
+      task_brief: '',
+      task_cover: '',
+      task_credit: '',
+      task_question_num: '',
+      task_map: [],
+      cur_question: 0,
+      question_id: 0
     };
+  },
+  mounted() {
+    let self = this
+    self.task_id = localStorage.getItem('TaskID')
+    var apiClient  = new ApiClient('http://localhost:8000');
+    apiClient.authentications['OAuth2PasswordBearer'].accessToken = localStorage.getItem('Authorization');
+    self.client = apiClient;
+    var usersApi = new UsersApi(apiClient);
+    self.user = usersApi;
+    var tasksApi = new TasksApi(apiClient);
+    self.task = tasksApi;
+    self.task_map = JSON.parse(localStorage.getItem('QuestionList'))
+    self.task_type = localStorage.getItem('TaskType');
+    var questionsApi = new QuestionsApi(apiClient);
+    self.question = questionsApi;
+    self.cur_question = parseInt(localStorage.getItem('QuestionIndex'))
+    console.log("QUESTION INDEX: " + self.cur_question);
+    self.question_id = self.task_map[this.cur_question];
+    var my_username = "";
+    self.task.getTaskTasksTaskIdGet(self.task_id, (error, data, response) => {
+      let res = JSON.parse(response['text'])
+      self.task_amount = res.responses_required;
+      self.task_brief = res.introduction;
+      self.task_name = res.name;
+      self.task_tags = eval(res.tags);
+      self.task_credit = res.credits;
+      self.task_question_num = res.questions.length;
+      // 填充任务简介
+      if (res.introduction == "")
+        document.getElementById("task_brief").innerHTML = "该发布者暂未提供简介";
+      else
+        document.getElementById("task_brief").innerHTML = self.task_brief;
+      // 填充任务标签
+      var tags_str = "";
+      for (var i = 0; i < self.task_tags.length; i++) {
+        tags_str += self.task_tags[i];
+        if (i != self.task_tags.length - 1) {
+          tags_str += ", ";
+        }
+      }
+      document.getElementById("tags").innerHTML = tags_str;
+    })
   },
   methods: {
     

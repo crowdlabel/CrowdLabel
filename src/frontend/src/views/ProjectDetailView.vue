@@ -64,7 +64,6 @@ export default {
   },
   mounted () {
     let self = this;
-    console.log(self);
     self.task_id = localStorage.getItem('TaskID')
     var apiClient  = new ApiClient('http://localhost:8000');
     apiClient.authentications['OAuth2PasswordBearer'].accessToken = localStorage.getItem('Authorization')
@@ -94,7 +93,7 @@ export default {
       }
     })
     self.task.getTaskTasksTaskIdGet(self.task_id, (error, data, response) => {
-      let res = JSON.parse(response['text'])
+      let res = JSON.parse(response['text']);
 
       console.log(res)
 
@@ -102,7 +101,6 @@ export default {
       self.task_brief = res.introduction;
       self.task_name = res.name;
       self.task_tags = eval(res.tags);
-      console.log(self.task_tags);
       self.task_credit = res.credits;
       self.task_question_num = res.questions.length;
       // 识别任务类型
@@ -138,15 +136,14 @@ export default {
       this.$store.commit('changeQuestionList', self.task_map);
     })
     self.task.getCoverTasksTaskIdCoverImageGet(self.task_id, (error, data, response) => {
+
       if (response.status == 400){
         self.task_cover = '../default_cover.jpeg'
       } else {
-        console.log(response);
         let binaryData = [];
         binaryData.push(response.body);
         let imageObjectURL = window.URL.createObjectURL(new Blob(binaryData));
-        // let imageObjectURL = window.URL.createObjectURL(response.body);
-        self.task_cover = imageObjectURL
+        self.task_cover = imageObjectURL;
       }
     })
     self.task.getProgressTasksTaskIdProgressGet(self.task_id, (error, data, response) => {
@@ -166,7 +163,7 @@ export default {
   methods: {
     claim_task() {
       this.task.claimTaskTasksTaskIdClaimPost(this.task_id, (error, data, response) => {
-        let res = JSON.parse(response['text'])
+        let res = JSON.parse(response['text']);
         // console.log(res)
       })
       this.claim = true;

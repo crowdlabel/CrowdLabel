@@ -53,7 +53,7 @@
         <div class="footer">
           <el-button id="quit_button" type="primary" v-on:click="quit()" plain>退出答题</el-button>
           <a>
-            <el-button id="prev_button" type="primary" :disabled="isFirstQuestion">&lt 上一题</el-button>
+            <el-button id="prev_button" type="primary" :disabled="isFirstQuestion" v-on:click="prevQuestion()">&lt 上一题</el-button>
           </a>
           <el-button id="next_button" type="primary" v-on:click="nextQuestion()">下一题 ></el-button>
         </div>
@@ -112,7 +112,7 @@ export default {
     console.log("QUESTION INDEX: " + self.cur_question);
     self.question_id = self.task_map[this.cur_question];
     var my_username = "";
-    // 判断是否是第一题，如是则disable“上一题”按钮
+    // 判断当前是否是第一题，如是则disable“上一题”按钮
     if (self.cur_question == 0)
       self.isFirstQuestion = true;
     self.user.getMeUsersMeGet((error, data, response) => {
@@ -125,7 +125,6 @@ export default {
       }
     })
     self.task.getTaskTasksTaskIdGet(self.task_id, (error, data, response) => {
-      console.log("successfully get task");
       let res = JSON.parse(response['text'])
       self.task_amount = res.responses_required;
       self.task_brief = res.introduction;
@@ -149,11 +148,15 @@ export default {
       document.getElementById("tags").innerHTML = tags_str;
       // 计算任务进度条
       self.percentage = ((self.cur_question) / self.task_question_num) * 100;
+      // 判断当前是否是最后一题，如是则将“下一题”按钮更改为“完成任务”按钮
+      if (self.cur_question == self.task_question_num - 1) {
+        document.getElementById("next_button").innerHTML = "完成任务";
+      }
+
     })
     console.log("QUESTION ID: " + self.question_id)
     console.log("TASK ID: " + self.task_id)
     self.question.getQuestionTasksTaskIdQuestionsQuestionIdGet(self.task_id, self.question_id, (error, data, response) => {
-      console.log("successfully get question")
       let res = JSON.parse(response['text']);
       // 填充问题
       self.prompt = res.prompt;
@@ -168,7 +171,7 @@ export default {
       console.log(res.answers)
       // 如已回答过该题，填充答案
       if (res.answers.length > 0)
-        self.radio = res.answers[0];
+        self.radio = res.answers[0].choice;
     })
     self.question.getQuestionResourceTasksTaskIdQuestionsQuestionIdResourceGet(self.task_id, self.question_id, (error, data, response) => {
         response.body.text().then((text) => {
@@ -191,20 +194,29 @@ export default {
           type: 'warning'
         });
     },
+    prevQuestion() {
+      this.$store.commit('changeQuestionIndex', this.cur_question - 1);
+      document.location.href = '/question_text';
+    },
     nextQuestion() {
       let _radio = this.radio;
       // console.log(_radio);
       if (_radio == -1) {
         this.alertMessage();
       } else {
-        var answer = {"choice": _radio};
-        this.question.createAnswerTasksTaskIdQuestionsQuestionIdAnswerPut(this.task_id, this.question_id, answer, (error, data, response) => {
-          // console.log(response);
+          // 上传答案
+          var answer = {"choice": _radio};
+          this.question.createAnswerTasksTaskIdQuestionsQuestionIdAnswerPut(this.task_id, this.question_id, answer, (error, data, response) => {
+            // console.log(response);
+          })
           this.$store.commit('changeQuestionIndex', this.cur_question + 1);
-        })
-        
-        document.location.href = '/question_text';
-      }
+          // 判断跳转到什么页面
+          if (this.cur_question + 1 == this.task_question_num) { // 最后一题
+            document.location.href = '/mission_complete';
+          } else {
+            document.location.href = '/question_text';
+          }
+        }
     },
     handleChange(val) {
       this.radio = val;
