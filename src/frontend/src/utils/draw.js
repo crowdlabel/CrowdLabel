@@ -379,7 +379,8 @@ function reDraw(cav, ctx, list, i) {
     list.forEach(function (value, index, array) {
         if (i === undefined || index != i) {
             ctx.beginPath();
-            ctx.strokeColor = 'blue';
+            // ctx.strokeColor = 'blue';
+            ctx.strokeStyle = '#5D3BE6';
             ctx.rect(value.x, value.y, value.w, value.h);
             ctx.stroke();
         }
@@ -396,7 +397,8 @@ function reDraw(cav, ctx, list, i) {
             ctx.stroke();
             // 绘制四个角的圆圈
             ctx.beginPath();
-            ctx.strokeStyle = 'rgba(84,47,238,0.7)';
+            // ctx.strokeStyle = 'rgba(84,47,238,0.7)';
+            ctx.strokeStyle = '#5D3BE6';
             ctx.arc(value.x, value.y, 4, 0, Math.PI * 2)
             ctx.fillStyle = "#5D3BE6";
             ctx.fill();// 画起点实心圆

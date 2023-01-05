@@ -96,7 +96,7 @@ export default {
     };
   },
   mounted() {
-    // this.initCanvas(); // 画布初始化
+    this.initCanvas(); // 画布初始化
     let self = this
     self.task_id = localStorage.getItem('TaskID')
     var apiClient  = new ApiClient('http://localhost:8000');
@@ -149,7 +149,7 @@ export default {
       }
       document.getElementById("tags").innerHTML = tags_str;
       // 计算任务进度条
-      self.percentage = ((self.cur_question) / self.task_question_num) * 100;
+      self.percentage = parseInt((((self.cur_question) / self.task_question_num) * 100).toFixed(0));
       // 判断当前是否是最后一题，如是则将“下一题”按钮更改为“完成任务”按钮
       if (self.cur_question == self.task_question_num - 1) {
         document.getElementById("next_button").innerHTML = "完成任务";
@@ -165,27 +165,20 @@ export default {
       document.getElementById("question_prompt").innerHTML = self.prompt;
       console.log("PREVIOUS ANSWERS:")
       console.log(res.answers)
-      console.log(res.answers[0]);
+      console.log("Original MARKLIST")
+      console.log(self.markList)
       // 如已回答过该题，填充答案
       if (res.answers.length > 0) {
         // 待修改：暂时只展示画的第一个框，之后改成整个marklist
-        for (var i = 0; i < 0 /*res.answers.boxes.length*/; i++) {
+        for (var i = 0; i < res.answers[0].boxes.length; i++) {
           self.markList.push({
-            x: res.answers.boxes[i].top_left.x,
-            y: res.answers.boxes[i].top_left.y,
-            w: res.answers.boxes[i].bottom_right.x - res.answers.boxes[i].top_left.x,
-            h: res.answers.boxes[i].bottom_right.y - res.answers.boxes[i].top_left.y
+            x: res.answers[0].boxes[i].top_left.x,
+            y: res.answers[0].boxes[i].top_left.y,
+            w: res.answers[0].boxes[i].bottom_right.x - res.answers[0].boxes[i].top_left.x,
+            h: res.answers[0].boxes[i].bottom_right.y - res.answers[0].boxes[i].top_left.y
           });
         }
-        // 测试test
-        console.log("画框TEST")
-        self.markList.push({
-            x: 10,
-            y: 10,
-            w: 50,
-            h: 50
-          });
-        console.log("MARKLIST")
+        console.log(res.answers[0].boxes[0].top_left.x);
         console.log(self.markList)
         /*
         self.markList[0].x = res.answers[0].top_left.x;
@@ -222,13 +215,13 @@ export default {
                 cav.width = '520';
                 cav.height = '390';
                 let ctx = cav.getContext('2d');
-                ctx.strokeStyle = 'blue'
+                ctx.strokeStyle = '#5D3BE6'
                 cav.style.cursor = 'crosshair'
                 
                 // 计算使用变量
                 let list = this.markList; // 画框数据集合, 用于服务端返回的数据显示和绘制的矩形保存
                 // 若服务端保存的为百分比则 此处需计算实际座标, 直接使用实际座标可省略
-                list.forEach(function (value, index, array) {
+                /*list.forEach(function (value, index, array) {
                     let newValue = {
                         x: value.x * cav.width,
                         y: value.y * cav.height,
@@ -236,7 +229,7 @@ export default {
                         h: value.h * cav.height,
                     }
                     list.splice(index, 1, newValue)
-                })
+                })*/
                 
                 // 若list长度不为0, 则显示已标记框
                 if (list.length !== 0) {
@@ -314,7 +307,9 @@ export default {
               this.$store.commit('changeQuestionIndex', this.cur_question + 1);
               // 判断跳转到什么页面
               if (this.cur_question + 1 == this.task_question_num) { // 最后一题
-                document.location.href = '/mission_complete';
+                this.task.completeTasksTaskIdCompletePost(this.task_id, (error, data, response) => {
+                  document.location.href = '/mission_complete';
+                });
               } else {
                 document.location.href = '/question_image_identify';
               }
