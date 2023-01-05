@@ -24,9 +24,9 @@ class Task(Base):
     resource_path = Column(String(MAX_PATH_LENGTH))
     requester_id = Column(Integer ,ForeignKey('requester.id'))
 
-    questions = relationship('Question',cascade = 'delete, delete-orphan')    
-    respondents_claimed = relationship('Respondent',secondary='respondent2claim',cascade="delete, delete-orphan",single_parent = True, overlaps="task_complete, task_claimed")
-    respondents_complete = relationship('Respondent',secondary = 'respondent2complete',cascade="delete, delete-orphan",single_parent = True, overlaps="task_complete")
+    questions = relationship('Question')    
+    respondents_claimed = relationship('Respondent',secondary='respondent2claim',single_parent = True,passive_deletes = True, overlaps="task_complete, task_claimed")
+    respondents_complete = relationship('Respondent',secondary = 'respondent2complete',single_parent = True,passive_deletes = True, overlaps="task_complete")
    
     def __init__(self,task_schema:schemas.tasks.Task,resource_path):
         self.requester = task_schema.requester
