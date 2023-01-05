@@ -383,10 +383,13 @@ Returns: list of `Task`s matching the query within the specified `page` and `pag
             json.dump(task_dict, f, ensure_ascii=False, indent=4) 
         return path
 
-    async def complete(self, task_id: int, username: str) -> None:
-        # TODO: 1. move username from tasks.respondents_claimed to tasks.respondents_compelted
+    async def complete(self, task_id: int, username: str) -> None | str:
+        # TODO:
+        # 0. check that the user has answered all the questions
+        # 1. move username from tasks.respondents_claimed to tasks.respondents_compelted
         # 2. move task_id from user.tasks_claimed to user.tasks_completed
         # 3. Add credits to user
+        # Returns `None` if no error occurred, or `str` which describes the error
         pass
 
 
