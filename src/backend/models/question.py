@@ -24,7 +24,7 @@ class Question(Base):
     options = Column(String(MAX_OPT_LENGTH))
     id_in_task = Column(Integer)
     task_id = Column(Integer,ForeignKey('task.task_id'))
-    answer = relationship('Answer')
+    answer = relationship('Answer',cascade = 'delete, delete-orphan')
     
     __mapper_args__ = {
         'polymorphic_on':question_type

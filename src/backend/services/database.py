@@ -4,7 +4,6 @@ import asyncio
 import utils.config
 from models.email import *
 from models.question import *
-from models.results import *
 from models.task import *
 from models.user import *
 from models.answer import *
