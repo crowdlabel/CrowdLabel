@@ -262,13 +262,15 @@ progress_jdr = JSONDocumentedResponse(
 )
 async def get_progress(task_id, current_user: schemas.users.User=Depends(get_current_user(['respondent']))):
     task = await task_service.get_task(task_id)
-    if not task:
+    if not isinstance(task, schemas.tasks.Task):
         return not_found_jdr.response()
 
     if current_user.username not in task.respondents_claimed:
         return forbidden_jdr.response()
 
     progress_index = -1
+
+    print(task.questions)
 
     for i in range(len(task.questions) - 1, -1, -1):
         for answer in task.questions[i].answers:
@@ -279,5 +281,30 @@ async def get_progress(task_id, current_user: schemas.users.User=Depends(get_cur
             break
 
     return progress_jdr.response(schemas.tasks.TaskProgress(progress=progress_index))
+###############################################################################
+complete_success_jdr = JSONDocumentedResponse(
+    status.HTTP_200_OK,
+    'Task completed successfully'
+)
+complete_failed_jdr = JSONDocumentedResponse(
+    status.HTTP_400_BAD_REQUEST,
+    'Task not completed successfully as there remains unanswered questions',
+    schemas.tasks.ErrorResponse
+)
+@router.post('/{task_id}/complete',
+    description='For the respondent to mark the task as completed',
+    **create_documentation([complete_success_jdr, complete_failed_jdr, not_found_jdr, forbidden_jdr])
+)
+async def complete(task_id: int, current_user: schemas.users.User=Depends(get_current_user(['respondent']))):
+    task = task_service.get_task(task_id)
+    if not isinstance(task, schemas.tasks.Task):
+        return not_found_jdr.response()
+    if current_user.username not in task.respondents_claimed:
+        return forbidden_jdr.response()
     
+    response = await task_service.complete(task_id, current_user.username)
+    if response:
+        return complete_failed_jdr.response(schemas.tasks.ErrorResponse(response=response))
+
+    return complete_success_jdr()
 

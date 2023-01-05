@@ -213,7 +213,10 @@ class Tasks:
             await con.commit()
             await asyncio.shield(con.close())
 
-    async def claim_task(self,user_name,task_id)->schemas.tasks.Task | None:
+    async def claim_task(self,user_name,task_id)->schemas.tasks.Task | str:
+        """
+        Returns a `Task` if the claim was successful, otherwise `str` describing the error
+        """
         con = scoped_session(conection)
         async with con.begin():
             user = await con.execute(select(models.user.Respondent).where(models.user.Respondent.username == user_name).options(
@@ -378,9 +381,19 @@ Returns: list of `Task`s matching the query within the specified `page` and `pag
         filename = 'results_' + str(task_id) + '_' + datetime_now_str() + '.json'
         path = TASK_UPLOAD_DIR / filename
         task = await self.get_task(task_id)
+        task_dict = json.loads(task.json(exclude={'resource_path'}))
         with open(path, 'w', encoding='utf8') as f:
-            f.write(task.json())
+            json.dump(task_dict, f, ensure_ascii=False, indent=4) 
         return path
+
+    async def complete(self, task_id: int, username: str) -> None | str:
+        # TODO:
+        # 0. check that the user `username` has answered all the questions in task `task_id`
+        # 1. move username from tasks.respondents_claimed to tasks.respondents_compelted
+        # 2. move task_id from user.tasks_claimed to user.tasks_completed
+        # 3. Add credits to user
+        # Returns `None` if no error occurred, or `str` which describes the error
+        pass
 
 
 task_service = Tasks()
