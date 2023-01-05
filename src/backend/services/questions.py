@@ -60,11 +60,15 @@ class Questions:
         elif  type == 'bounding_box':
             new_question = schemas.questions.BoundingBoxQuestion(**di)
             for answer in target.answer:
-                res = await con.execute(select(models.answer.BoundingBoxAnswer).where(models.answer.BoundingBoxAnswer.id == answer.id))
+                res = await con.execute(select(models.answer.BoundingBoxAnswer).where(models.answer.BoundingBoxAnswer.id == answer.id).options(selectinload(models.answer.BoundingBoxAnswer.corner)))
                 ans = res.scalars().first()
-                p1 = schemas.answers.Point(x = ans.top_left_x, y =ans.top_left_y)
-                p2 = schemas.answers.Point(x = ans.bottom_right_x, y =ans.bottom_right_y)
-                new_answer = schemas.answers.BoundingBoxAnswer(top_left=p1,bottom_right = p2)
+                boxes = []
+                for corner in ans.corner:
+                    p1 = schemas.answers.Point(x = corner.top_left_x, y =corner.top_left_y)
+                    p2 = schemas.answers.Point(x = corner.bottom_right_x, y =corner.bottom_right_y)
+                    new_corner = schemas.answers.Corners(top_left=p1,bottom_right = p2)
+                    boxes.append(new_corner)
+                new_answer = schemas.answers.BoundingBoxAnswer(boxes = boxes)
                 new_question.answers.append(new_answer)
         elif  type == 'open':
             new_question = schemas.questions.OpenQuestion(**di)
@@ -105,10 +109,13 @@ class Questions:
                 new_answer.choice = answer.choice
             elif  isinstance(answer,schemas.answers.BoundingBoxAnswer):
                 new_answer = models.answer.BoundingBoxAnswer()
-                new_answer.top_left_x = answer.top_left.x
-                new_answer.top_left_y = answer.top_left.y
-                new_answer.bottom_right_x = answer.bottom_right.x
-                new_answer.bottom_right_y = answer.bottom_right.y
+                for corner in answer.boxes:
+                    new_corner = models.answer.Corner()
+                    new_corner.top_left_x = corner.top_left.x
+                    new_corner.top_left_y = corner.top_left.y
+                    new_corner.bottom_right_x = corner.bottom_right.x
+                    new_corner.bottom_right_y = corner.bottom_right.y
+                    new_answer.corner.append(new_corner)
             elif  isinstance(answer,schemas.answers.OpenAnswer):
                 new_answer = models.answer.OpenAnswer()
                 new_answer.text = answer.text
@@ -132,10 +139,14 @@ class Questions:
             elif  isinstance(answer,schemas.answers.BoundingBoxAnswer):
                 res = await con.execute(select(models.answer.BoundingBoxAnswer).where(and_(models.answer.BoundingBoxAnswer.respondent_name == respondent.username,models.answer.BoundingBoxAnswer.question_id == target.id)))
                 target = res.scalars().first()
-                target.top_left_x = answer.top_left.x
-                target.top_left_y = answer.top_left.y
-                target.bottom_right_x = answer.bottom_right.x
-                target.bottom_right_y = answer.bottom_right.y
+                target.corner = []
+                for corner in answer.boxes:
+                    new_corner = models.answer.Corner()
+                    new_corner.top_left_x = corner.top_left.x
+                    new_corner.top_left_y = corner.top_left.y
+                    new_corner.bottom_right_x = corner.bottom_right.x
+                    new_corner.bottom_right_y = corner.bottom_right.y
+                    new_answer.corner.append(new_corner)
             elif  isinstance(answer,schemas.answers.OpenAnswer):
                 res = await con.execute(select(models.answer.OpenAnswer).where(and_(models.answer.OpenAnswer.respondent_name == respondent.username,models.answer.OpenAnswer.question_id == target.id)))
                 target = res.scalars().first()

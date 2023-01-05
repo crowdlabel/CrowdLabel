@@ -177,14 +177,17 @@ class Tasks:
                                                                      answers))
             elif qtype == 'bounding_box':
                 q = schemas.questions.BoundingBoxQuestion(**di)
-                answers = await con.execute(select(models.answer.BoundingBoxAnswer).where(models.answer.BoundingBoxAnswer.question_id==question.id))
+                answers = await con.execute(select(models.answer.BoundingBoxAnswer).where(models.answer.BoundingBoxAnswer.question_id==question.id).options(selectinload(models.answer.BoundingBoxAnswer.corner)))
                 answers = answers.scalars().all()
-                for target in answers:
-                    p1 = schemas.answers.Point(x = target.top_left_x, y= target.top_left_y)
-                    p2 = schemas.answers.Point(x = target.bottom_right_x, y= target.bottom_right_y)
-                    q.answers.append(schemas.answers.Answer(date_created=target.date_answered,
-                                                            respondent=target.respondent_name,
-                                                            answer = schemas.answers.BoundingBoxAnswer(top_left=p1,bottom_right=p2)))
+                for single in answers:
+                    boxes = []
+                    for box in single.corner:
+                        p1 = schemas.answers.Point(x = box.top_left_x, y= box.top_left_y)
+                        p2 = schemas.answers.Point(x = box.bottom_right_x, y= box.bottom_right_y)
+                        boxes.append(schemas.answers.Corners(top_left=p1,bottom_right=p2))
+                    q.answers.append(schemas.answers.Answer(date_created=single.date_answered,
+                                                            respondent=single.respondent_name,
+                                                            answer = schemas.answers.BoundingBoxAnswer(boxes = boxes)))
             elif qtype == 'open':
                 q = schemas.questions.OpenQuestion(**di)
                 answers = await con.execute(select(models.answer.OpenAnswer).where(models.answer.OpenAnswer.question_id==question.id))

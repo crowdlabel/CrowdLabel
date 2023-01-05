@@ -56,10 +56,15 @@ class OpenAnswer(Answer):
 class BoundingBoxAnswer(Answer):
     __tablename__ = 'boundingboxanswer'
     id =Column(Integer,ForeignKey('answer.id'),primary_key = True)
+    corner = relationship('Corner')
+    __mapper_args__ = {
+        'polymorphic_identity':'boundingboxanswer'
+    }
+class Corner(Base):
+    __tablename__ = 'corner'
+    id = Column(Integer,primary_key=True,autoincrement=True)
+    answer_id = Column(Integer,ForeignKey('boundingboxanswer.id'))
     top_left_x =  Column(Integer)
     top_left_y = Column(Integer)
     bottom_right_x = Column(Integer)
     bottom_right_y = Column(Integer)
-    __mapper_args__ = {
-        'polymorphic_identity':'boundingboxanswer'
-    }
