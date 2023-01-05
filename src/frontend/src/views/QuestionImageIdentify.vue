@@ -162,17 +162,17 @@ export default {
       // 填充问题
       self.prompt = res.prompt;
       document.getElementById("question_prompt").innerHTML = self.prompt;
-      // 填充答题选项
-      var list_choices = res.options;
-      for (var i = 0; i < list_choices.length; i++) {
-        var k = { label: list_choices[i], value: i };
-        self.choicesGiven.push(k);
-      }
       console.log("PREVIOUS ANSWERS:")
       console.log(res.answers)
       // 如已回答过该题，填充答案
-      if (res.answers.length > 0)
-        self.radio = res.answers[0].choice;
+      if (res.answers.length > 0) {
+        // 待修改：暂时只展示画的第一个框，之后改成整个marklist
+        markList[0].x = res.answers[0].top_left.x;
+        markList[0].y = res.answers[0].top_left.y;
+        markList[0].w = res.answers[0].bottom_right.x - top_left.x;
+        markList[0].h = res.answers[0].bottom_right.y - top_left.y;
+      }
+        
     })
     self.question.getQuestionResourceTasksTaskIdQuestionsQuestionIdResourceGet(self.task_id, self.question_id, (error, data, response) => {
         console.log(response);
@@ -246,6 +246,17 @@ export default {
         });
     },
     prevQuestion() {
+      // 传答案
+      // 待修改：暂时只传画的第一个框，之后改成传整个markList
+      var x_0 = this.markList[0].x;
+      var y_0 = this.markList[0].y;
+      var x_1 = this.markList[0].x + this.markList[0].w;
+      var y_1 = this.markList[0].y + this.markList[0].h;
+      var answer = {top_left: {x: x_0, y: y_0}, bottom_right: {x: x_1, y: y_1}}
+      this.question.createAnswerTasksTaskIdQuestionsQuestionIdAnswerPut(this.task_id, this.question_id, answer, (error, data, response) => {
+          // console.log(response);
+      })
+      this.$store.commit('changeQuestionIndex', this.cur_question - 1);
       document.location.href = '/question_image_identify';
     },
     nextQuestion() {
@@ -253,7 +264,23 @@ export default {
       if (list.length == 0) {
         this.alertMessage();
       } else {
-        document.location.href = '/question_image_identify';
+          // 传答案
+          // 待修改：暂时只传画的第一个框，之后改成传整个markList
+          var x_0 = this.markList[0].x;
+          var y_0 = this.markList[0].y;
+          var x_1 = this.markList[0].x + this.markList[0].w;
+          var y_1 = this.markList[0].y + this.markList[0].h;
+          var answer = {top_left: {x: x_0, y: y_0}, bottom_right: {x: x_1, y: y_1}}
+          this.question.createAnswerTasksTaskIdQuestionsQuestionIdAnswerPut(this.task_id, this.question_id, answer, (error, data, response) => {
+              // console.log(response);
+          })
+          this.$store.commit('changeQuestionIndex', this.cur_question + 1);
+          // 判断跳转到什么页面
+          if (this.cur_question + 1 == this.task_question_num) { // 最后一题
+            document.location.href = '/mission_complete';
+          } else {
+            document.location.href = '/question_image_identify';
+          }
       }
     },
     handleChange(val) {
