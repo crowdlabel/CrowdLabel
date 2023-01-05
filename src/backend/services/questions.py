@@ -90,33 +90,61 @@ class Questions:
         if target == None:
             await asyncio.shield(con.close())
             return 'question not found'
-        if isinstance(answer,schemas.answers.MultiChoiceAnswer):
-            new_answer = models.answer.MultiChoiceAnswer()
-            new_answer.choices = '|'.join(answer.choices)
-        elif isinstance(answer,schemas.answers.SingleChoiceAnswer):
-            new_answer = models.answer.SingleChoiceAnswer()
-            new_answer.choice = answer.choice
-        elif  isinstance(answer,schemas.answers.BoundingBoxAnswer):
-            new_answer = models.answer.BoundingBoxAnswer()
-            new_answer.top_left_x = answer.top_left.x
-            new_answer.top_left_y = answer.top_left.y
-            new_answer.bottom_right_x = answer.bottom_right.x
-            new_answer.bottom_right_y = answer.bottom_right.y
-        elif  isinstance(answer,schemas.answers.OpenAnswer):
-            new_answer = models.answer.OpenAnswer()
-            new_answer.text = answer.text
-        new_answer.date_answered = datetime.utcnow()
-        new_answer.question_id = target.id
-        new_answer.task_id = task_id
         res= await con.execute(select(models.user.Respondent).where(models.user.Respondent.username == current_user.username))
         respondent = res.scalars().first()
         if respondent == None:
             await asyncio.shield(con.close())
             return 'respondent not found'
-        new_answer.respondent_id = respondent.id
-        new_answer.respondent_name = respondent.username
-        con.add(new_answer)
-        await con.commit()
+        res = await con.execute(select(models.answer.Answer).where(and_(models.answer.Answer.respondent_name == respondent.username,models.answer.Answer.question_id == target.id)))
+        target_answer = res.scalars().first()
+        if target_answer == None:
+            if isinstance(answer,schemas.answers.MultiChoiceAnswer):
+                new_answer = models.answer.MultiChoiceAnswer()
+                new_answer.choices = '|'.join(answer.choices)
+            elif isinstance(answer,schemas.answers.SingleChoiceAnswer):
+                new_answer = models.answer.SingleChoiceAnswer()
+                new_answer.choice = answer.choice
+            elif  isinstance(answer,schemas.answers.BoundingBoxAnswer):
+                new_answer = models.answer.BoundingBoxAnswer()
+                new_answer.top_left_x = answer.top_left.x
+                new_answer.top_left_y = answer.top_left.y
+                new_answer.bottom_right_x = answer.bottom_right.x
+                new_answer.bottom_right_y = answer.bottom_right.y
+            elif  isinstance(answer,schemas.answers.OpenAnswer):
+                new_answer = models.answer.OpenAnswer()
+                new_answer.text = answer.text
+            new_answer.date_answered = datetime.utcnow()
+            new_answer.question_id = target.id
+            new_answer.task_id = task_id
+
+            new_answer.respondent_id = respondent.id
+            new_answer.respondent_name = respondent.username
+            con.add(new_answer)
+            await con.commit()
+        else:
+            if isinstance(answer,schemas.answers.MultiChoiceAnswer):
+                res = await con.execute(select(models.answer.MultiChoiceAnswer).where(and_(models.answer.MultiChoiceAnswer.respondent_name == respondent.username,models.answer.MultiChoiceAnswer.question_id == target.id)))
+                target = res.scalars().first()
+                target.choices = '|'.join(answer.choices)
+            elif isinstance(answer,schemas.answers.SingleChoiceAnswer):
+                res = await con.execute(select(models.answer.SingleChoiceAnswer).where(and_(models.answer.SingleChoiceAnswer.respondent_name == respondent.username,models.answer.SingleChoiceAnswer.question_id == target.id)))
+                target = res.scalars().first()
+                target.choice = answer.choice
+            elif  isinstance(answer,schemas.answers.BoundingBoxAnswer):
+                res = await con.execute(select(models.answer.BoundingBoxAnswer).where(and_(models.answer.BoundingBoxAnswer.respondent_name == respondent.username,models.answer.BoundingBoxAnswer.question_id == target.id)))
+                target = res.scalars().first()
+                target.top_left_x = answer.top_left.x
+                target.top_left_y = answer.top_left.y
+                target.bottom_right_x = answer.bottom_right.x
+                target.bottom_right_y = answer.bottom_right.y
+            elif  isinstance(answer,schemas.answers.OpenAnswer):
+                res = await con.execute(select(models.answer.OpenAnswer).where(and_(models.answer.OpenAnswer.respondent_name == respondent.username,models.answer.OpenAnswer.question_id == target.id)))
+                target = res.scalars().first()
+                target.text = answer.text
+            target.date_answered = datetime.utcnow()
+            await con.flush() 
+            con.expunge(target)
+            await con.commit()
         await asyncio.shield(con.close())
         return None
         
