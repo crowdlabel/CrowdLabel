@@ -238,7 +238,7 @@ class Tasks:
                 return None
             if len(task.respondents_claimed) + len(task.respondents_complete) >= task.responses_required:
                 await asyncio.shield(con.close())
-                return None
+                return 'Enough respondents have claimed this task'
             user.task_claimed.append(task)
             info = {
                 'task_id' :task_id,
