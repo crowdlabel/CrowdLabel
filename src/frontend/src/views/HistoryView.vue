@@ -61,18 +61,18 @@
             </ul>
         </div>
         <div class="main_body">
-            <div class="filter">
+          <div class="filter">
               <p class="title_filter">筛选：</p>
-              <el-button type="success" round>全部</el-button>
-              <el-button round>文字任务</el-button>
-              <el-button round>图像任务</el-button>
-              <el-button round>音频任务</el-button>
-            </div>
-            <div class="order_by">
-              <p class="title_order_by">排序：</p>
-              <el-button type="success" round>发布时间</el-button>
-              <el-button round>热度</el-button>
-            </div>
+              <div>
+              <el-radio-group v-model="taskType" size="small" @change="chooseType(taskType)">
+                <el-radio-button label="all">全部</el-radio-button>
+                <el-radio-button label="text" >文字分类</el-radio-button>
+                <el-radio-button label="img_classify" >图片分类</el-radio-button>
+                <el-radio-button label="img_borderbox" >图片打标</el-radio-button>
+                <el-radio-button label="audio">音频分类</el-radio-button>
+              </el-radio-group>
+              </div>
+          </div>
             <div class="scroll_view">
               <el-scrollbar style="height: 100%">
                 <!-- 用于展示下拉，填充的内容 -->
@@ -201,7 +201,7 @@ import axios from 'axios'
 export default {
   data() {
     return {
-      
+      taskType: 'all'
     };
   },
   methods: {
@@ -378,49 +378,36 @@ export default {
   flex-direction: row;
   display: flex;
   align-items:center;
-  margin: 20px 60px 0px 60px;
+  margin: 30px 60px 10px 40px;
 }
 .title_filter {
   padding: 0px;
   font-size: 14px;
   color:rgba(0,0,0,.6);
 }
-::v-deep .el-button--success {
-  margin: 0px 0px 0px 10px;
-  height: 30px;
-  padding: 0px 0px !important;
-  border-width: 0.5px;
-  background-color: #5D3BE6;
-  font-size: 12.5px;
-  min-width: 80px;
+::v-deep .el-radio-group {
+  border-color: #5D3BE6;
+  margin-left: 10px;
 }
-::v-deep .el-button--success:hover{
-  background-color: #5D3BE6;
-}
-
-::v-deep .el-button--success:focus {
-  background-color: #5D3BE6;
-}
-
-::v-deep .el-button--default.is-round {
-  margin: 0px 0px 0px 10px;
-  height: 30px;
-  border-width: 0.5px;
-  padding: 0px 0px !important;
+::v-deep .el-radio-button__inner {
+  background: #fff;
   border-color: #5D3BE6;
   color:#5D3BE6;
   font-size: 12.5px;
   min-width: 80px;
+  align-items:center;
+  box-shadow:none;
+  outline: none;
 }
-::v-deep .el-button--default.is-round:hover{
-  background-color: #5D3BE6;
-  border-width: 0.5px;
+::v-deep .el-radio-button__orig-radio:hover + .el-radio-button__inner {
+  background: #5D3BE6;
+  border-color: #5D3BE6;
   color: #fff;
 }
-
-::v-deep .el-button--default.is-round:focus {
-  background-color: #5D3BE6;
-  border-width: 0.5px;
+::v-deep .el-radio-button__orig-radio:checked + .el-radio-button__inner{
+  background: #5D3BE6;
+  border-color: #5D3BE6;
+  box-shadow:none;
   color: #fff;
 }
 
@@ -439,7 +426,7 @@ export default {
 .scroll_view {
   border-top: 1.2px solid rgba(0,0,0,.1);
   margin-top: 20px;
-  height: calc(100vh - 187px);
+  height: calc(100vh - 160px);
   min-height: 225px;
 }
 

@@ -81,7 +81,7 @@ export default {
       cur_question: 0,
       question_id: 0,
       prompt: '',
-      percentage: 0,
+      percentage: 0.00,
       customColor: '#5D3BE6',
       radio: -1,
       choicesGiven: [],

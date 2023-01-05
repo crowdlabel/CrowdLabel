@@ -227,7 +227,7 @@ export default {
 @import '@/assets/font/font.css';
 
 .all {
-  min-width: 1200px;
+  min-width: 1000px;
 }
 
 .top_nav {

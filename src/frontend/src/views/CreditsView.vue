@@ -125,13 +125,14 @@ export default {
       var usersApi = new UsersApi(apiClient);
       self.user = usersApi
       self.user.getMeUsersMeGet((error, data, response) => {
+        console.log(response)
         if (error == 'Error: Unauthorized') {
           localStorage.removeItem('Authorization');
           this.$router.push('/receiverlogin');
         }
-        self.username = data['username']
-        self.credits_last_week = data['credits']
-        self.credits_total = data['credits']
+        self.username = response.body['username']
+        self.credits_last_week = response.body['credits']
+        self.credits_total = response.body['credits']
         console.log('credits_total: ' + self.credits_total)
       })
   },
