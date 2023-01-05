@@ -56,7 +56,7 @@ class OpenAnswer(Answer):
 class BoundingBoxAnswer(Answer):
     __tablename__ = 'boundingboxanswer'
     id =Column(Integer,ForeignKey('answer.id'),primary_key = True)
-    corner = relationship('Corner')
+    corner = relationship('Corner',cascade = 'delete, delete-orphan')
     __mapper_args__ = {
         'polymorphic_identity':'boundingboxanswer'
     }
