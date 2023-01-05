@@ -17,9 +17,12 @@ class Point(BaseModel):
     x: int
     y: int
 
-class BoundingBoxAnswer(BaseModel):
+class Corners(BaseModel):
     top_left: Point
     bottom_right: Point
+
+class BoundingBoxAnswer(BaseModel):
+    boxes: list[Corners]
 
 class AnswerRequest(BaseModel):
     answer: SingleChoiceAnswer | MultiChoiceAnswer | RankingAnswer | BoundingBoxAnswer | OpenAnswer
