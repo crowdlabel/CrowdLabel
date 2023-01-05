@@ -115,6 +115,8 @@ class Questions:
                     new_corner.top_left_y = corner.top_left.y
                     new_corner.bottom_right_x = corner.bottom_right.x
                     new_corner.bottom_right_y = corner.bottom_right.y
+                    new_corner.answer_id = target.id
+                    con.add(new_corner)
                     new_answer.corner.append(new_corner)
             elif  isinstance(answer,schemas.answers.OpenAnswer):
                 new_answer = models.answer.OpenAnswer()
@@ -137,7 +139,7 @@ class Questions:
                 target = res.scalars().first()
                 target.choice = answer.choice
             elif  isinstance(answer,schemas.answers.BoundingBoxAnswer):
-                res = await con.execute(select(models.answer.BoundingBoxAnswer).where(and_(models.answer.BoundingBoxAnswer.respondent_name == respondent.username,models.answer.BoundingBoxAnswer.question_id == target.id)))
+                res = await con.execute(select(models.answer.BoundingBoxAnswer).where(and_(models.answer.BoundingBoxAnswer.respondent_name == respondent.username,models.answer.BoundingBoxAnswer.question_id == target.id)).options(selectinload(models.answer.BoundingBoxAnswer.corner)))
                 target = res.scalars().first()
                 target.corner = []
                 for corner in answer.boxes:
@@ -146,7 +148,9 @@ class Questions:
                     new_corner.top_left_y = corner.top_left.y
                     new_corner.bottom_right_x = corner.bottom_right.x
                     new_corner.bottom_right_y = corner.bottom_right.y
-                    new_answer.corner.append(new_corner)
+                    new_corner.answer_id = target.id
+                    con.add(new_corner)
+                    target.corner.append(new_corner)
             elif  isinstance(answer,schemas.answers.OpenAnswer):
                 res = await con.execute(select(models.answer.OpenAnswer).where(and_(models.answer.OpenAnswer.respondent_name == respondent.username,models.answer.OpenAnswer.question_id == target.id)))
                 target = res.scalars().first()
