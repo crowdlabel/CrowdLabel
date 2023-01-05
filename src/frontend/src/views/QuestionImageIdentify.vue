@@ -67,6 +67,7 @@ import { ApiClient } from '@/crowdlabel-api/src';
 import { UsersApi } from '@/crowdlabel-api/src';
 import { TasksApi } from '@/crowdlabel-api/src';
 import { QuestionsApi } from '@/crowdlabel-api/src';
+import { BoundingBoxAnswer } from '@/crowdlabel-api/src';
 import {draw} from "../utils/draw"; // 矩形绘制方法
 export default {
   data() {
@@ -95,7 +96,7 @@ export default {
     };
   },
   mounted() {
-    this.initCanvas(); // 画布初始化
+    // this.initCanvas(); // 画布初始化
     let self = this
     self.task_id = localStorage.getItem('TaskID')
     var apiClient  = new ApiClient('http://localhost:8000');
@@ -164,13 +165,35 @@ export default {
       document.getElementById("question_prompt").innerHTML = self.prompt;
       console.log("PREVIOUS ANSWERS:")
       console.log(res.answers)
+      console.log(res.answers[0]);
       // 如已回答过该题，填充答案
       if (res.answers.length > 0) {
         // 待修改：暂时只展示画的第一个框，之后改成整个marklist
-        markList[0].x = res.answers[0].top_left.x;
-        markList[0].y = res.answers[0].top_left.y;
-        markList[0].w = res.answers[0].bottom_right.x - top_left.x;
-        markList[0].h = res.answers[0].bottom_right.y - top_left.y;
+        for (var i = 0; i < 0 /*res.answers.boxes.length*/; i++) {
+          self.markList.push({
+            x: res.answers.boxes[i].top_left.x,
+            y: res.answers.boxes[i].top_left.y,
+            w: res.answers.boxes[i].bottom_right.x - res.answers.boxes[i].top_left.x,
+            h: res.answers.boxes[i].bottom_right.y - res.answers.boxes[i].top_left.y
+          });
+        }
+        // 测试test
+        console.log("画框TEST")
+        self.markList.push({
+            x: 10,
+            y: 10,
+            w: 50,
+            h: 50
+          });
+        console.log("MARKLIST")
+        console.log(self.markList)
+        /*
+        self.markList[0].x = res.answers[0].top_left.x;
+        self.markList[0].y = res.answers[0].top_left.y;
+        self.markList[0].w = res.answers[0].bottom_right.x - res.answers[0].top_left.x;
+        self.markList[0].h = res.answers[0].bottom_right.y - res.answers[0].top_left.y;
+        */
+        this.initCanvas(); // 画布初始化
       }
         
     })
@@ -186,6 +209,8 @@ export default {
       var progress = res.progress;
       console.log("TASK PROGRESS: " + progress)
     })
+
+    
   },
   methods: {
     /* 画布初始化 */
@@ -247,13 +272,24 @@ export default {
     },
     prevQuestion() {
       // 传答案
-      // 待修改：暂时只传画的第一个框，之后改成传整个markList
-      var x_0 = this.markList[0].x;
-      var y_0 = this.markList[0].y;
-      var x_1 = this.markList[0].x + this.markList[0].w;
-      var y_1 = this.markList[0].y + this.markList[0].h;
-      var answer = {top_left: {x: x_0, y: y_0}, bottom_right: {x: x_1, y: y_1}}
-      this.question.createAnswerTasksTaskIdQuestionsQuestionIdAnswerPut(this.task_id, this.question_id, answer, (error, data, response) => {
+      // 传答案
+      var answer_list = [];
+          for (var i = 0; i < this.markList.length; i++) {
+            var x_0 = this.markList[i].x;
+            var y_0 = this.markList[i].y;
+            var x_1 = this.markList[i].x + this.markList[i].w;
+            var y_1 = this.markList[i].y + this.markList[i].h;
+            console.log("x0: " + x_0);
+            console.log("x1: " + x_1);
+            console.log("y0: " + y_0);
+            console.log("y1: " + y_1);
+            var answer = {top_left: {x: x_0, y: y_0}, bottom_right: {x: x_1, y: y_1}};
+            answer_list.push(answer);
+          }
+      var answer_dict = { boxes: answer_list };
+      console.log(answer_dict);
+      this.question.createAnswerTasksTaskIdQuestionsQuestionIdAnswerPut(this.task_id, this.question_id, answer_dict, (error, data, response) => {
+          // console.log(response);
           this.$store.commit('changeQuestionIndex', this.cur_question - 1);
           document.location.href = '/question_image_identify';
       })
@@ -264,13 +300,17 @@ export default {
         this.alertMessage();
       } else {
           // 传答案
-          // 待修改：暂时只传画的第一个框，之后改成传整个markList
-          var x_0 = this.markList[0].x;
-          var y_0 = this.markList[0].y;
-          var x_1 = this.markList[0].x + this.markList[0].w;
-          var y_1 = this.markList[0].y + this.markList[0].h;
-          var answer = {top_left: {x: x_0, y: y_0}, bottom_right: {x: x_1, y: y_1}}
-          this.question.createAnswerTasksTaskIdQuestionsQuestionIdAnswerPut(this.task_id, this.question_id, answer, (error, data, response) => {
+          var answer_list = [];
+          for (var i = 0; i < this.markList.length; i++) {
+            var x_0 = this.markList[i].x;
+            var y_0 = this.markList[i].y;
+            var x_1 = this.markList[i].x + this.markList[i].w;
+            var y_1 = this.markList[i].y + this.markList[i].h;
+            var answer = {top_left: {x: x_0, y: y_0}, bottom_right: {x: x_1, y: y_1}};
+            answer_list.push(answer);
+          }
+          var answer_dict = { boxes: answer_list };
+          this.question.createAnswerTasksTaskIdQuestionsQuestionIdAnswerPut(this.task_id, this.question_id, answer_dict, (error, data, response) => {
               this.$store.commit('changeQuestionIndex', this.cur_question + 1);
               // 判断跳转到什么页面
               if (this.cur_question + 1 == this.task_question_num) { // 最后一题
