@@ -296,7 +296,7 @@ complete_failed_jdr = JSONDocumentedResponse(
     **create_documentation([complete_success_jdr, complete_failed_jdr, not_found_jdr, forbidden_jdr])
 )
 async def complete(task_id: int, current_user: schemas.users.User=Depends(get_current_user(['respondent']))):
-    task = task_service.get_task(task_id)
+    task = await task_service.get_task(task_id)
     if not isinstance(task, schemas.tasks.Task):
         return not_found_jdr.response()
     if current_user.username not in task.respondents_claimed:
@@ -304,7 +304,7 @@ async def complete(task_id: int, current_user: schemas.users.User=Depends(get_cu
     
     response = await task_service.complete(task_id, current_user.username)
     if response:
-        return complete_failed_jdr.response(schemas.tasks.ErrorResponse(response=response))
+        return complete_failed_jdr.response(schemas.tasks.ErrorResponse(error=response))
 
-    return complete_success_jdr()
+    return complete_success_jdr
 

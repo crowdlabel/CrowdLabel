@@ -392,8 +392,31 @@ Returns: list of `Task`s matching the query within the specified `page` and `pag
         # 2. move task_id from user.tasks_claimed to user.tasks_completed
         # 3. Add credits to user
         # Returns `None` if no error occurred, or `str` which describes the error
-        pass
+        con = scoped_session(conection)
+        res = await con.execute(select(models.task.Task).where(models.task.Task.task_id == task_id).options(
+              selectinload(models.task.Task.questions),selectinload(models.task.Task.respondents_claimed),selectinload(models.task.Task.respondents_complete)))
+        task = res.scalars().first()
+        if task == None:
+            return 'task not found'
+        for question in task.questions:
+            res = await con.execute(select(models.answer.Answer).where(and_(models.answer.Answer.question_id == question.id,models.answer.Answer.respondent_name == username)))
+            answer = res.scalars().first()
+            if answer == None:
+                return f'answer not complete'
 
+
+        res = await con.execute(select(models.user.Respondent).where(models.user.Respondent.username == username ))
+        user = res.scalars().first()
+        user.credits += task.credits
+        task.respondents_complete.append(user)
+        task.respondents_claimed.remove(user)
+        await con.flush() 
+        con.expunge(user)
+        con.expunge(task)
+        await con.commit()
+        await asyncio.shield(con.close())
+        return None
+        
 
 task_service = Tasks()
 
