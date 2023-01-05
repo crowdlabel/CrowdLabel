@@ -115,6 +115,8 @@ class Questions:
                     new_corner.top_left_y = corner.top_left.y
                     new_corner.bottom_right_x = corner.bottom_right.x
                     new_corner.bottom_right_y = corner.bottom_right.y
+                    new_corner.answer_id = target.id
+                    con.add(new_corner)
                     new_answer.corner.append(new_corner)
             elif  isinstance(answer,schemas.answers.OpenAnswer):
                 new_answer = models.answer.OpenAnswer()
@@ -146,7 +148,9 @@ class Questions:
                     new_corner.top_left_y = corner.top_left.y
                     new_corner.bottom_right_x = corner.bottom_right.x
                     new_corner.bottom_right_y = corner.bottom_right.y
-                    new_answer.corner.append(new_corner)
+                    new_corner.answer_id = target.id
+                    con.add(new_corner)
+                    target.corner.append(new_corner)
             elif  isinstance(answer,schemas.answers.OpenAnswer):
                 res = await con.execute(select(models.answer.OpenAnswer).where(and_(models.answer.OpenAnswer.respondent_name == respondent.username,models.answer.OpenAnswer.question_id == target.id)))
                 target = res.scalars().first()
