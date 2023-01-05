@@ -139,7 +139,7 @@ class Questions:
                 target = res.scalars().first()
                 target.choice = answer.choice
             elif  isinstance(answer,schemas.answers.BoundingBoxAnswer):
-                res = await con.execute(select(models.answer.BoundingBoxAnswer).where(and_(models.answer.BoundingBoxAnswer.respondent_name == respondent.username,models.answer.BoundingBoxAnswer.question_id == target.id)).options(selectinload(models.answer.BoundingBoxAnswer.corner)))
+                res = await con.execute(select(models.answer.BoundingBoxAnswer).where(and_(models.answer.BoundingBoxAnswer.respondent_name == respondent.username,models.answer.BoundingBoxAnswer.question_id == target.id)).options(selectinload(models.answer.BoundingBoxAnswer.corner)).options(selectinload(models.answer.BoundingBoxAnswer.corner)))
                 target = res.scalars().first()
                 target.corner = []
                 for corner in answer.boxes:

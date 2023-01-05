@@ -91,6 +91,16 @@ export default {
           document.getElementById("start_button").innerHTML = "继续答题 > ";
         }
       }
+      // 判断是否已完成该任务 // 笨方法遍历
+      var list_tasks_completed = eval(res.tasks_completed);
+      for (var i = 0; i < list_tasks_completed.length; i++) {
+        if (list_tasks_completed[i] == self.task_id) {
+          self.claim = true;
+          self.answer = true;
+          document.getElementById("claim_button").innerHTML = "已完成任务";
+          document.getElementById("start_button").innerHTML = "继续答题 > ";
+        }
+      }
     })
     self.task.getTaskTasksTaskIdGet(self.task_id, (error, data, response) => {
       let res = JSON.parse(response['text']);
@@ -148,6 +158,7 @@ export default {
     })
     self.task.getProgressTasksTaskIdProgressGet(self.task_id, (error, data, response) => {
       let res = JSON.parse(response['text']);
+      console.log(res)
       var progress = res.progress;
       // 根据用户答题进度决定跳转到哪题，默认跳转到第一题
       if (progress == -1)
@@ -163,57 +174,43 @@ export default {
   methods: {
     claim_task() {
       this.task.claimTaskTasksTaskIdClaimPost(this.task_id, (error, data, response) => {
-        let res = JSON.parse(response['text']);
-        // console.log(res)
-      })
-      this.claim = true;
-      this.answer = false;
-      this.$message({
+        this.claim = true;
+        this.answer = false;
+        this.$message({
           message: '你已成功接收该任务，开始答题吧！',
           type: 'success'
         });
-      document.getElementById("claim_button").innerHTML = "已接受任务";
+        document.getElementById("claim_button").innerHTML = "已接受任务";
+        // 接收任务后更新一下progress（接收任务前是get不到progress的）
+        this.task.getProgressTasksTaskIdProgressGet(this.task_id, (error, data, response) => {
+          let res = JSON.parse(response['text']);
+          console.log(res)
+          var progress = res.progress;
+          // 根据用户答题进度决定跳转到哪题，默认跳转到第一题
+          if (progress == -1)
+            this.$store.commit('changeQuestionIndex', 0);
+          else
+            this.$store.commit('changeQuestionIndex', progress);
+          console.log("TASK PROGRESS: " + progress)
+        })
+      })
     },
     start_task() {
       if (this.task_type == "文字分类") {
         this.$router.push({
         name:'question_text',
-        params:{
-          task_map: this.task_map,
-          // taskid: this.task_id,
-          // task_type: this.task_type,
-          which_question: 0
-        }
       })
       } else if (this.task_type == "图片分类") {
         this.$router.push({
         name:'question_image_classify',
-        params:{
-          task_map: this.task_map,
-          taskid: this.task_id,
-          task_type: this.task_type,
-          which_question: 0
-        }
       })
       }  else if (this.task_type == "图片打标") {
         this.$router.push({
         name:'question_image_identify',
-        params:{
-          task_map: this.task_map,
-          taskid: this.task_id,
-          task_type: this.task_type,
-          which_question: 0
-        }
       })
       }  else if (this.task_type == "音频分类") {
         this.$router.push({
         name:'question_audio',
-        params:{
-          task_map: this.task_map,
-          taskid: this.task_id,
-          task_type: this.task_type,
-          which_question: 0
-        } 
       })
       }  else {
         console.log("TASK TYPE ERROR");

@@ -141,7 +141,7 @@ export default {
       }
       document.getElementById("tags").innerHTML = tags_str;
       // 计算任务进度条
-      self.percentage = ((self.cur_question) / self.task_question_num) * 100;
+      self.percentage = parseInt((((self.cur_question) / self.task_question_num) * 100).toFixed(0));
       // 判断当前是否是最后一题，如是则将“下一题”按钮更改为“完成任务”按钮
       if (self.cur_question == self.task_question_num - 1) {
         document.getElementById("next_button").innerHTML = "完成任务";
@@ -193,10 +193,10 @@ export default {
       let _radio = this.radio;
       var answer = {"choice": _radio};
       this.question.createAnswerTasksTaskIdQuestionsQuestionIdAnswerPut(this.task_id, this.question_id, answer, (error, data, response) => {
-          // console.log(response);
+        this.$store.commit('changeQuestionIndex', this.cur_question - 1);
+        document.location.href = '/question_image_classify';
       })
-      this.$store.commit('changeQuestionIndex', this.cur_question - 1);
-      document.location.href = '/question_image_classify';
+      
     },
     nextQuestion() {
       let _radio = this.radio;
@@ -207,15 +207,16 @@ export default {
           // 上传答案
           var answer = {"choice": _radio};
           this.question.createAnswerTasksTaskIdQuestionsQuestionIdAnswerPut(this.task_id, this.question_id, answer, (error, data, response) => {
-            // console.log(response);
+            this.$store.commit('changeQuestionIndex', this.cur_question + 1);
+            // 判断跳转到什么页面
+            if (this.cur_question + 1 == this.task_question_num) { // 最后一题
+                this.task.completeTasksTaskIdCompletePost(this.task_id, (error, data, response) => {
+                  document.location.href = '/mission_complete';
+                });
+              } else {
+                document.location.href = '/question_audio';
+              }
           })
-          this.$store.commit('changeQuestionIndex', this.cur_question + 1);
-          // 判断跳转到什么页面
-          if (this.cur_question + 1 == this.task_question_num) { // 最后一题
-            document.location.href = '/mission_complete';
-          } else {
-            document.location.href = '/question_image_classify';
-          }
         }
     },
     handleChange(val) {
