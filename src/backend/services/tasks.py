@@ -378,8 +378,9 @@ Returns: list of `Task`s matching the query within the specified `page` and `pag
         filename = 'results_' + str(task_id) + '_' + datetime_now_str() + '.json'
         path = TASK_UPLOAD_DIR / filename
         task = await self.get_task(task_id)
+        task_dict = json.loads(task.json(exclude={'resource_path'}))
         with open(path, 'w', encoding='utf8') as f:
-            f.write(task.json())
+            json.dump(task_dict, f, ensure_ascii=False, indent=4) 
         return path
 
 
