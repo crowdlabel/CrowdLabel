@@ -385,7 +385,7 @@ Returns: list of `Task`s matching the query within the specified `page` and `pag
 
     async def complete(self, task_id: int, username: str) -> None | str:
         # TODO:
-        # 0. check that the user has answered all the questions
+        # 0. check that the user `username` has answered all the questions in task `task_id`
         # 1. move username from tasks.respondents_claimed to tasks.respondents_compelted
         # 2. move task_id from user.tasks_claimed to user.tasks_completed
         # 3. Add credits to user
