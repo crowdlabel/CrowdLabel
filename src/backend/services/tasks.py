@@ -213,7 +213,10 @@ class Tasks:
             await con.commit()
             await asyncio.shield(con.close())
 
-    async def claim_task(self,user_name,task_id)->schemas.tasks.Task | None:
+    async def claim_task(self,user_name,task_id)->schemas.tasks.Task | str:
+        """
+        Returns a `Task` if the claim was successful, otherwise `str` describing the error
+        """
         con = scoped_session(conection)
         async with con.begin():
             user = await con.execute(select(models.user.Respondent).where(models.user.Respondent.username == user_name).options(
