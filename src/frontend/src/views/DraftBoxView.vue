@@ -64,12 +64,12 @@
             <div class="scroll_view">
               <el-scrollbar style="height: 100%">
                 <!-- 用于展示下拉，填充的内容 -->
-                <div class="scroll_element" v-for="(item, index) in projectsList" :key="index">
-                  <img src="../assets/image_placeholder.png" class="project_image">
+                <div class="scroll_element" v-for="(item, index) in projectsList" :key="index" @click="seeDetails(item.task_id)">
+                  <img :src=item.cover class="project_image">
                   <div class="scroll_element_text">
-                    <h4 class="project_title">{{ item.project_name }}</h4>
-                    <p class="project_detail">任务类型: {{ item.project_type }}</p>
-                    <p class="project_detail">保存时间: {{ item.last_saved }}</p>
+                    <h4 class="project_title">{{ item.name }}</h4>
+                    <p class="project_detail">任务类型: {{ item.type }}</p>
+                    <p class="project_detail">任务标签: {{ item.tags }}</p>
                     <p class="project_detail">答题进度: {{ item.progress }}</p>
                   </div>
                 </div>
@@ -87,11 +87,13 @@
 import { ApiClient } from '@/crowdlabel-api/src';
 import { UsersApi } from '@/crowdlabel-api/src';
 import { AuthApi } from '@/crowdlabel-api/src';
+import { TasksApi } from '@/crowdlabel-api/src';
 export default {
   data() {
     return {
       client:'',
       user:'',
+      task:'',
       auth:'',
       projectsList: []
     };
@@ -105,20 +107,72 @@ export default {
     self.user = usersApi
     var authApi = new AuthApi(apiClient);
     this.auth = authApi
+    var tasksApi = new TasksApi(apiClient);
+    self.task = tasksApi;
     self.user.getMeUsersMeGet((error, data, response) => {
       if (error == 'Error: Unauthorized') {
         localStorage.removeItem('Authorization');
         this.$router.push('/receiverlogin');
       }
-      let a = JSON.parse(response['text'])
-      self.username = a.username
-      self.email = a.email
-      self.credits = a.credits
+      let res = JSON.parse(response["text"]);
+      let tasks_claimed = res["tasks_claimed"];
+      console.log(tasks_claimed)
+      for (let i = 0; i < tasks_claimed.length; i++) {
+        let _task_id = tasks_claimed[i];
+        // console.log(tasks_claimed[i])
+        // console.log(_task_id)
+        self.task.getTaskTasksTaskIdGet(_task_id, (error, data, response) => {
+          let res = response.body;
+          let _name = res.name;
+          let _tags = '';
+          let _type = '';
+          let _total_question_num = res.questions.length;
+          let task_tags = res.tags;
+          for (var k = 0; k < task_tags.length; k++) {
+            _tags += task_tags[k];
+            if (k != task_tags.length - 1) {
+              _tags += ", ";
+            }
+            if (task_tags[k] == "文字分类" || task_tags[k] == "图片分类" || task_tags[k] == "图片打标" || task_tags[k] == "音频分类")
+              _type = task_tags[k];
+          }
+          var cur_task = {task_id: _task_id, name: _name, type: _type, tags: _tags, progress: _total_question_num, cover: ''};
+          self.projectsList.push(cur_task);
+          let index_p = i;
+          self.task.getProgressTasksTaskIdProgressGet(res.task_id, (error, data, response) => {
+            let res2 = JSON.parse(response['text']);
+            // console.log(res.task_id);
+            console.log(res2)
+            let total_questions = self.projectsList[i].progress;
+            let _progress = "" + parseInt(res.progress + 1) + " / " + total_questions;
+            console.log(parseInt(res.progress + 1))
+            self.projectsList[i].progress = _progress;
+            self.task.getCoverTasksTaskIdCoverImageGet(_task_id, (error, data, response) => {
+              let _cover = '';
+              if (response.status == 400){
+                _cover = '../default_cover.jpeg'
+              } else {
+                let binaryData = [];
+                binaryData.push(response.body);
+                let imageObjectURL = window.URL.createObjectURL(new Blob(binaryData));
+                _cover = imageObjectURL;
+              }
+              self.projectsList[i].cover = _cover;
+            });
+          });
+        });
+      }
     })
   },
   methods: {
-
-  }
+    seeDetails(task_id) {
+      console.log("CLICKED")
+      this.$store.commit('changeTaskID', task_id);
+      this.$router.push({
+        name:'project_detail',
+      })
+    }
+  } 
 }
 </script>
 
@@ -357,6 +411,7 @@ export default {
   height: fit-content;
   border-bottom: 1.2px solid rgba(0,0,0,.1);
   flex-direction: row;
+  cursor: pointer;
   display: flex;
   padding: 20px 25px;
 }
