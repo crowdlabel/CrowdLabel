@@ -99,7 +99,7 @@ async def edit_me(new_info : schemas.users.EditEmailRequest | schemas.users.Edit
 ):
     response = await user_service.edit_user_info(current_user.username,new_info)
     if response:
-        return edit_me_failed_jdr.response(schemas.tasks.ErrorResponse(response=response))
+        return edit_me_failed_jdr.response(schemas.tasks.ErrorResponse(error=response))
     return edit_me_success_jdr.response()
     
 ###############################################################################

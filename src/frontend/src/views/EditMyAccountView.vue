@@ -255,6 +255,7 @@ export default {
           "new_password": newpas
         }, (error,data, response)=> {
           console.log(error, data, response)
+          console.log(response.body)
         });
       } else {
         var newmail = document.getElementById("newemail").value
@@ -267,6 +268,7 @@ export default {
           "password": passforemail,
         }, (error,data, response)=> {
           console.log(error, data, response)
+          console.log(response.body)
         });
       }
       
