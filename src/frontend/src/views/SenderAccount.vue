@@ -72,6 +72,7 @@
 <script>
 import { ApiClient } from '@/crowdlabel-api/src';
 import { UsersApi } from '@/crowdlabel-api/src';
+import { AuthApi } from '@/crowdlabel-api/src';
 export default {
   data() {
     return {
@@ -79,33 +80,38 @@ export default {
       userid:'',
       userpic: '',
       usercredits: '',
+      user:'',
+      client: '',
+      auth: '',
     };
   },
   mounted () {
-      let self = this
-      var apiClient  = new ApiClient('http://localhost:8000');
-      apiClient.authentications['OAuth2PasswordBearer'].accessToken = localStorage.getItem('Authorization')
-      self.client = apiClient
-      var usersApi = new UsersApi(apiClient);
-      self.user = usersApi
-      self.user.getMeUsersMeGet((error, data, response) => {
-        if (error == 'Error: Unauthorized') {
-          localStorage.removeItem('Authorization');
-          this.$router.push('/senderlogin');
-          return;
-        }
-        let a = JSON.parse(response['text'])
-        console.log(a)
-        if (a.user_type != 'requester'){
-          localStorage.removeItem('Authorization');
-          this.$router.push('/');
-          return;
-        }
-        self.userid = a.username
-        self.usercredits = a.credits
-        self.useremail = a.email
-      })
-    },
+    let self = this
+    var apiClient  = new ApiClient('http://localhost:8000');
+    apiClient.authentications['OAuth2PasswordBearer'].accessToken = localStorage.getItem('Authorization')
+    self.client = apiClient
+    var usersApi = new UsersApi(apiClient);
+    self.user = usersApi
+    var authApi = new AuthApi(apiClient);
+    this.auth = authApi
+    self.user.getMeUsersMeGet((error, data, response) => {
+      if (error == 'Error: Unauthorized') {
+        localStorage.removeItem('Authorization');
+        this.$router.push('/senderlogin');
+        return;
+      }
+      let a = JSON.parse(response['text'])
+      console.log(a)
+      if (a.user_type != 'requester'){
+        localStorage.removeItem('Authorization');
+        this.$router.push('/');
+        return;
+      }
+      self.userid = a.username
+      self.usercredits = a.credits
+      self.useremail = a.email
+    })
+  },
   methods: {
     refresh: function() {
       let self = this
@@ -121,8 +127,23 @@ export default {
       })
     },
     logout () {
-      localStorage.removeItem('Authorization');
-      this.$router.push('/');
+      let self = this
+      self.$confirm('您即将退出当前登录?', '提示', {
+        confirmButtonText: '确定',
+        cancelButtonText: '取消',
+        type: 'info',
+      }).then(() => {
+        self.auth.logoutLogoutPost((error, data, response) => {
+          console.log("succesfully logout")
+          localStorage.removeItem('Authorization');
+          self.$router.push('/');
+        })
+      }).catch(() => {
+        this.$message({
+          type: 'info',
+          message: '已取消退出登录'
+        });
+      });
     },
   }
 }
