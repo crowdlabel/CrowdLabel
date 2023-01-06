@@ -344,6 +344,7 @@ Returns: list of `Task`s matching the query within the specified `page` and `pag
         con = scoped_session(conection)
 
         if parameters.sort_ascending is True:
+            
             result = await con.execute(select(models.task.Task).where(and_(
                         or_ (parameters.credits_min == 0  , models.task.Task.credits >= parameters.credits_min),
                         or_ (parameters.credits_max == -1 , models.task.Task.credits <= parameters.credits_max),
