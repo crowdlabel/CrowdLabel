@@ -64,13 +64,10 @@ async def create_answer(
     if not question:
         return not_found_jdr.response()
 
-    print('Answer:', answer)
-
     response = await question_service.create_answer(task_id, question_id, current_user, answer)
 
     if response:
-
-        return create_answer_failed.response(schemas.tasks.ErrorResponse(response))    
+        return create_answer_failed.response(schemas.tasks.ErrorResponse(error=response))    
     return create_answer_success.response(answer)
 ###############################################################################
 get_answer_resource_success_jdr = JSONDocumentedResponse(
