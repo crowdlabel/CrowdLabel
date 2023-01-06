@@ -34,11 +34,12 @@ async def get_question(task_id: int=fastapi.Path(), question_id: int=fastapi.Pat
     if not isinstance(task, schemas.tasks.Task):
         return not_found_jdr.response()
     await task_service.remove_answers(current_user, task)
-    question = await question_service.get_question(task, question_id)
-    if not question:
-        return not_found_jdr.response()
-    
-    return get_question_success_jdr.response(question)
+
+    for question in task.questions:
+        if question.question_id == question_id:
+            return get_question_success_jdr.response(question)
+
+    return not_found_jdr.response()
 ###############################################################################
 create_answer_success = JSONDocumentedResponse(
     status.HTTP_200_OK,

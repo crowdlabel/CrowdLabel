@@ -170,5 +170,8 @@ def test_answer_visibility():
         assert len(question['answers']) <= 1
         if len(question['answers']) == 1:
             assert question['answers'][0]['respondent'] == res1['username']
-    #pprint(task1)
-    #pprint(task2)
+    questions = [get_question(res1t, task_id, i).json() for i in (1, 5)]
+    for question in questions:
+        assert len(question['answers']) <= 1
+        if len(question['answers']) == 1:
+            assert question['answers'][0]['respondent'] == res1['username']
