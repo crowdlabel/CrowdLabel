@@ -59,7 +59,7 @@ upload_failed_jdr = JSONDocumentedResponse(
     schemas.tasks.ErrorResponse
 )
 @router.post('/upload',
-    **create_documentation([upload_success_jdr, upload_failed_jdr])
+    **create_documentation([upload_success_jdr, upload_failed_jdr, forbidden_jdr])
 )
 async def upload_task(task_file: UploadFile, current_user=Depends(get_current_user(['requester']))):
     out_path = TASK_UPLOAD_DIR / ('upload_' + current_user.username + '_' + datetime_now_str() + '.zip')
@@ -132,19 +132,9 @@ async def get_task(task_id: int, current_user: schemas.users.User=Depends(get_cu
     task = await task_service.get_task(task_id=task_id)
     if not task:
         return not_found_jdr.response()
+    from pprint import pprint
+    await task_service.remove_answers(current_user, task)
 
-    if current_user.username in task.respondents_claimed:
-        for i in range(len(task.questions)):
-            answers = []
-            for answer in task.questions[i].answers:
-                if answer.respondent == current_user.username:
-                    answers = [answer]
-                    break
-            task.questions[i].answers = answers
-
-    elif current_user.user_type == 'respondent':
-        for i in range(len(task.questions)):
-            task.questions[i].answers = []
     return get_task_success_jdr.response(task, exclude={'resource_path'})
 
 
@@ -267,8 +257,6 @@ async def get_progress(task_id, current_user: schemas.users.User=Depends(get_cur
         return forbidden_jdr.response()
 
     progress_index = -1
-
-    print(task.questions)
 
     for i in range(len(task.questions) - 1, -1, -1):
         for answer in task.questions[i].answers:

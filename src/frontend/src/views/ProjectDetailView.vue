@@ -24,7 +24,7 @@
           </div>
           <div class="row row_margin">
             <a href="/projects">
-              <el-button type="primary" plain>&lt 返回</el-button>
+              <el-button type="primary" plain>&lt 返回任务大厅</el-button>
             </a>
             <div class="button_placeholder"></div>
             <el-button id="claim_button" type="primary" v-on:click="claim_task()" :disabled="claim">接受任务</el-button>

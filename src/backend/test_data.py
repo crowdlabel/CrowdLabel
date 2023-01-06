@@ -32,33 +32,28 @@ res2 = {
     'verification_code': '123456'
 }
 
-example_task = pathlib.Path('D:/bounding.zip')
+example_task = pathlib.Path('D:/text_all.zip')
 expected_task = {
-    "name": "Bounding box",
+    "name": "Text",
     "credits": 2,
-    "introduction": "Bounding box",
-    "description": "Bounding box",
-    "tags": ["图片打标", "人体识别"],
+    "introduction": "",
+    "description": "text",
+    "tags": ["文字分类", "语言"],
     "responses_required": 2,
-    "cover_image": "1.jpg",
     "questions": [
         {
             "question_id": 1,
-            "question_type": "bounding_box",
-            "prompt": "Draw a box around the person",
-            "resource": "2.jpg"
+            "question_type": "single_choice",
+            "prompt": "What language is this?",
+            "resource": "chinese.txt",
+            "options": ["Chinese", "English"]
         },
         {
             "question_id": 5,
-            "question_type": "bounding_box",
-            "prompt": "Draw a box around the person",
-            "resource": "3.jpg"
-        },
-        {
-            "question_id": 3,
-            "question_type": "bounding_box",
-            "prompt": "Draw a box around the person",
-            "resource": "1.jpg"
+            "question_type": "single_choice",
+            "prompt": "What language is this",
+            "resource": "english.txt",
+            "options": ["Chinese", "English"]
         }
     ]
 }

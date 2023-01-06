@@ -97,7 +97,9 @@ edit_me_failed_jdr = JSONDocumentedResponse(
 async def edit_me(new_info : schemas.users.EditEmailRequest | schemas.users.EditPasswordRequest,
     current_user: schemas.users.User = Depends(get_current_user())
 ):
+    print('patch me')
     response = await user_service.edit_user_info(current_user.username,new_info)
+    print('edi me response', response)
     if response:
         return edit_me_failed_jdr.response(schemas.tasks.ErrorResponse(error=response))
     return edit_me_success_jdr.response()

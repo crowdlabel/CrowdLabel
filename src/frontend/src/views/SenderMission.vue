@@ -111,6 +111,17 @@
           </div>
         </el-dialog>
 
+        <el-dialog
+          :visible.sync="UploadMissionInfo"
+          width="50%"
+          min-width="800px"
+          class="UploadInfoClass"
+          border-radius="12px">
+          <div>
+
+          </div>
+        </el-dialog>
+
         <div class="main_body">
             <div class="search_bar">
                 <el-input placeholder="搜索任务" id="specific_name" v-model="search_input"></el-input>
@@ -126,7 +137,7 @@
                 <el-button round @click="searchImage" disabled>图片打标</el-button>
                 <el-button round @click="searchRadio" disabled>音频分类</el-button>
               </el-button-group>
-              <el-button type="default" round @click="downlaodFormat" id="format_download">下载任务模板</el-button>
+              <el-button type="default" round @click="uploadInfo" id="format_download">任务上传说明</el-button>
               <el-button type="primary" round @click="createProject" id="create">创建任务</el-button>
             </div>
             
@@ -203,10 +214,10 @@ export default {
       }
     };
     return {
-      tasks_orignal_order: [],
       pageSize: 6,
       currentPage: 1,
       search_input:'',
+      UploadMissionInfo: false,
       dialogVisible: false,
       client: '',
       task: '',
@@ -289,8 +300,8 @@ export default {
     },
     handleZip(file, fileList) {
       let self = this;
-      if (file.size / (1024*1024)>20) {
-        self.$message.warning("当前限制文件大小不能大于20M");
+      if (file.size / (1024*1024)>500) {
+        self.$message.warning("当前限制文件大小不能大于500M");
         self.file = '';
         self.form.zipfile= [];
         return false;
@@ -323,28 +334,36 @@ export default {
       self.usercredits = a['credits']
       self.taskslist = a['tasks_requested']
       self.tasks_info = []
+      var counter = 0
       self.taskslist.forEach(function(element) {
+        var c = { task_id:element, name:'', cover:''}
+        self.tasks_info.push(c)
+        var index = counter;
+        counter++;
         self.task.getCoverTasksTaskIdCoverImageGet(element, (error, data, response) => {
           if (response.status == 400){
-            var c = { task_id:element, name:'', cover:'../default_cover.jpeg'}
+            self.tasks_info[index].cover = '../default_cover.jpeg'
+            // var c = { task_id:element, name:'', cover:'../default_cover.jpeg'}
             self.task.getTaskTasksTaskIdGet(element, (error, data, response) => {
               let b = JSON.parse(response['text'])
-              c.name = b.name
-              self.tasks_info.push(c)
+              // c.name = b.name
+              // self.tasks_info.push(c)
+              self.tasks_info[index].name = b.name
             })
           } else {
             let binaryData = [];
             binaryData.push(response.body);
             let imageObjectURL = window.URL.createObjectURL(new Blob(binaryData));
-            console.log(imageObjectURL);
 
             //let imageObjectURL = window.URL.createObjectURL(response.body);
             self.imageObject = imageObjectURL
-            var c = { task_id:element, name:'', cover:self.imageObject}
+            self.tasks_info[index].cover = self.imageObject
+            // var c = { task_id:element, name:'', cover:self.imageObject}
             self.task.getTaskTasksTaskIdGet(element, (error, data, response) => {
               let b = JSON.parse(response['text'])
-              c.name = b.name
-              self.tasks_info.push(c)
+              // c.name = b.name
+              // self.tasks_info.push(c)
+              self.tasks_info[index].name = b.name
             })
           }
         })
@@ -377,8 +396,8 @@ export default {
     searchSpecific() {
 
     },
-    downlaodFormat() {
-      //to do
+    uploadInfo () {
+      this.UploadMissionInfo = true;
     },
     createProject () {
       this.dialogVisible = true;
@@ -424,7 +443,7 @@ export default {
           } if(response.status == 200){
             this.form.zipfile = []
             this.form.cover = []
-            alert('upload suceed');
+            alert('上传成功');
             this.dialogVisible = false
             this.refresh();
           }
@@ -461,28 +480,28 @@ export default {
       self.taskslist = []
       self.taskslist = a.tasks_requested
       self.tasks_info = []
+      var counter = 0
       self.taskslist.forEach(function(element) {
-        self.tasks_orignal_order.push(element)
-        console.log(self.tasks_orignal_order)
+        var c = { task_id:element, name:'', cover:''}
+        self.tasks_info.push(c)
+        var index = counter;
+        counter++;
         self.task.getCoverTasksTaskIdCoverImageGet(element, (error, data, response) => {
           if (response.status == 400){
-            var c = { task_id:element, name:'', cover:'../default_cover.jpeg'}
+            self.tasks_info[index].cover = '../default_cover.jpeg'
             self.task.getTaskTasksTaskIdGet(element, (error, data, response) => {
               let b = JSON.parse(response['text'])
-              c.name = b.name
-              self.tasks_info.push(c)
+              self.tasks_info[index].name = b.name
             })
           } else {
             let binaryData = [];
             binaryData.push(response.body);
             let imageObjectURL = window.URL.createObjectURL(new Blob(binaryData));
-            // let imageObjectURL = window.URL.createObjectURL(response.body);
             self.imageObject = imageObjectURL
-            var c = { task_id:element, name:'', cover:self.imageObject}
+            self.tasks_info[index].cover = self.imageObject
             self.task.getTaskTasksTaskIdGet(element, (error, data, response) => {
               let b = JSON.parse(response['text'])
-              c.name = b.name
-              self.tasks_info.push(c)
+              self.tasks_info[index].name = b.name
             })
           }
         })
@@ -501,6 +520,12 @@ export default {
 ::v-deep .dialogClass .el-dialog{
   width: 50% !important;
   min-width: 700px;
+  border-radius: 12px;
+}
+
+::v-deep .UploadInfoClass .el-dialog{
+  width: 50% !important;
+  min-width: 800px;
   border-radius: 12px;
 }
 ::v-deep .el-dialog__body{

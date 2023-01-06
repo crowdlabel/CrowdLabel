@@ -1,31 +1,33 @@
-version: "3"
+# https://github.com/testdrivenio/fastapi-docker-traefik/blob/master/docker-compose.prod.yml
+
+version: '3.8'
 
 services:
-  api:
-    build: .
-    restart: always
-    labels:
-      - traefik.enable=true
-      - traefik.http.routers.app-http.rule=Host(`crowdlabel.org/api`)
-      - traefik.http.routers.app-http.tls=true
-      - traefik.http.routers.app-http.tls.certresolver=letsencrypt
+  web:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    environment:
+      - "MODULE_NAME=src/backend/controllers/routers"
     expose:
-      - 8000
+      - 80
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.fastapi.rule=Host(`crowdlabel.org`)"
+      - "traefik.http.routers.fastapi.tls=true"
+      - "traefik.http.routers.fastapi.tls.certresolver=letsencrypt"
   traefik:
-    image: traefik:v2.9
+    build:
+      context: .
+      dockerfile: Dockerfile.traefik
     ports:
       - 80:80
       - 443:443
-    restart: always
     volumes:
-      - /var/run/docker.sock:/var/run/docker.sock:ro
-      - $PWD/services/traefik/traefik.toml:/etc/traefik/traefik.toml
-      - traefik-public-certificates:/certificates
+      - "/var/run/docker.sock:/var/run/docker.sock:ro"
+      - "./traefik-certificates:/certificates"
     labels:
-      - traefik.enable=true
-      - traefik.http.routers.dashboard.rule=Host(`dashboard.crowdlabel.org`)
-      - traefik.http.routers.dashboard.tls=true
-      - traefik.http.routers.dashboard.tls.certresolver=letsencrypt
-      - traefik.http.routers.dashboard.service=api@internal
-      - traefik.http.routers.dashboard.middlewares=auth
-      - traefik.http.middlewares.auth.basicauth.users=testuser:$$apr1$$jIKW.bdS$$eKXe4Lxjgy/rH65wP1iQe1
+      - "traefik.enable=true"
+volumes:
+  db_file:
+  traefik-certificates:

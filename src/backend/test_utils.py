@@ -1,4 +1,4 @@
-
+from pprint import pprint
 from fastapi.testclient import TestClient
 from controllers.routers import app
 from datetime import datetime
@@ -51,6 +51,8 @@ def credits(token, amount):
     return client.post('/users/me/credits', headers=token, json={'amount': amount})
 def get_task_question_resource(token, task_id, question_id):
     return client.get(f'/tasks/{task_id}/questions/{question_id}/resource', headers=token)
+def get_question(token, task_id, question_id):
+    return client.get(f'/tasks/{task_id}/questions/{question_id}', headers=token)
 def answer(token, task_id, question_id, answer):
     return client.put(f'/tasks/{task_id}/questions/{question_id}/answer', headers=token, json=answer)
 def get_cover(token, task_id):

@@ -11,11 +11,34 @@
             <p id="userid"> {{  username }}</p>
           </div>
           <div class="row row_center">
-            <img class="profile_pic" src="../assets/image_placeholder.png"/>
+            <img class="profile_pic" :src="mainProfile"/>
             <div class="button_change_profile">
-              <el-button type="primary" plain>更换头像</el-button>
-            </div>
+              <el-button type="primary" plain @click="openUploadDialog">更换头像</el-button>
+            </div>       
           </div>
+
+          <el-dialog title="上传头像" :visible.sync="UploadProfilePage"
+            width="50%"
+            min-width="420px"
+            class="UploadProfileClass"
+            border-radius="12px"
+            :before-close="beforeDialogClose">
+            <div>
+              <el-upload class="upload_file" action="none"
+                :headers="{ 'Content-Type': 'multipart/form-data'}"
+                accept=".jpg,.jpeg,.png,.JPG,.JPEG"
+                :auto-upload="false"
+                ref="upload"
+                :on-change="handleChange"
+                :limit="1">
+                <img v-if="piclist" :src="piclist" class="avatar">
+                <i v-else class="el-icon-plus"></i>
+                <p>点击上传</p>
+              </el-upload>
+              <el-button type="primary" plain class="fileSelectConfirm" @click="changeProfile">确定</el-button>
+            </div>
+          </el-dialog>
+
             <div class="row row_center">
               <el-tabs stretch v-model="activeName" @tab-click="handleTabClick" class="tabs">
                 <el-tab-pane label="修改密码" name="changePassword">
@@ -139,6 +162,8 @@ export default {
       }
     }
     return {
+      mainProfile:'',
+      UploadProfilePage:false,
       username: '',
       usertype: '',
       text: "发送验证码",
@@ -149,6 +174,8 @@ export default {
       client: '',
       auth: '',
       user: '',
+      profile: '',
+      piclist: [],
       ruleForm: {
         oldpass: '',
         pass: '',
@@ -204,11 +231,77 @@ export default {
         this.$router.push('/');
       }
       let a = JSON.parse(response['text'])
+      console.log(a)
       self.username = a.username
       self.usertype = a.user_type
     })
+    self.user.getPfpUsersMeProfilePictureGet((error, data, response) => {
+      if (response.status == 404){
+        self.mainProfile = '../image_placeholder.png'
+      } else {
+        let binaryData = [];
+        binaryData.push(response.body);
+        let imageObjectURL = window.URL.createObjectURL(new Blob(binaryData));
+        self.mainProfile = imageObjectURL
+      }
+    })
   },
   methods: {
+    changeProfile () {
+      console.log(this.profile)
+      this.user.uploadPfpUsersMeProfilePicturePost({
+        "profile_picture": this.profile,
+      },(error, data, response) => {
+        console.log(error, data, response)
+        this.UploadProfilePage = false;
+      })
+    },
+    beforeDialogClose (done) {
+      this.piclist = []
+      done()
+    },
+    getFileType(name){
+      let startIndex = name.lastIndexOf(".");
+      if (startIndex !== -1) {
+        return name.slice(startIndex+1).toLowerCase();
+      } else {
+        return ""; 
+      }
+    },
+    handleChange(file, fileList) {
+      let self = this;
+      if (file.size / (1024*1024)>20) {
+        self.$message.warning("当前限制文件大小不能大于20M");
+        self.profile = "";
+        self.piclist= [];
+        return false;
+      }
+      let suffix = self.getFileType(file.name);
+      let suffixArray = ["jpg", "jpeg", "png"];
+      if (suffixArray.indexOf(suffix) === -1) {
+        self.$message({
+          message: "文件格式错误",
+          type: "error",
+          duration: 2000
+        });
+        self.profile = "";
+        self.piclist =[];
+      }else{
+        self.profile = file.raw;
+        let binaryData = [];
+        binaryData.push(file.raw);
+        let imageObjectURL = window.URL.createObjectURL(new Blob(binaryData))
+        self.piclist = imageObjectURL;
+      }
+    },
+    openUploadDialog () {
+      this.UploadProfilePage = true;
+      if(this.piclist == ''){
+        this.piclist = '../image_placeholder.png'
+      } else{
+        this.piclist = this.mainProfile
+      }
+    },
     handleTabClick(tab, event){
       console.log(tab, event)
     },
@@ -254,18 +347,44 @@ export default {
           "old_password": oldpas,
           "new_password": newpas
         }, (error,data, response)=> {
-          console.log(error, data, response)
+          if(response.status==400){
+            this.$confirm("密码错误", '提示', {
+              confirmButtonText: '确定',
+              cancelButtonText: '取消',
+              type: 'info',
+            }).then(() => {
+              
+            }).catch(() => {
+              
+            });
+          }else if(response.status==200){
+            alert('成功修改密码');
+            goBack();
+          }
         });
       } else {
         var newmail = document.getElementById("newemail").value
         var passforemail = document.getElementById("oldpasswordforemail").value
         var verification = document.getElementById("registerverification").value
+        console.log(verification)
         self.user.editMeUsersMePatch({
           "new_email": newmail,
-          "verification_code": passforemail,
-          "password": verification
+          "verification_code": verification,
+          "password": passforemail,
         }, (error,data, response)=> {
-          console.log(error, data, response)
+          if(response.status==400){
+            this.$confirm("密码或验证码错误", '提示', {
+              confirmButtonText: '确定',
+              cancelButtonText: '取消',
+              type: 'info',
+            }).then(() => {
+              
+            }).catch(() => {
+              
+            });
+          }else if(response.status==200){
+            alert("成功修改邮箱")
+          }
         });
       }
       
@@ -461,5 +580,21 @@ export default {
 #userid{
   margin-top:0px;
   font-size: 30px;
+}
+
+.profile_preview{
+  height:200px;
+  width:200px;
+  border-radius: 50%;
+}
+
+.fileSelectConfirm{
+  margin-top:20px;
+}
+
+.avatar {
+  width: 178px;
+  height: 178px;
+  display: block;
 }
 </style>

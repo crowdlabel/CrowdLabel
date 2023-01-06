@@ -230,19 +230,22 @@ export default {
       }
       let res = JSON.parse(response['text'])
       let taskslist = res['tasks']
+      var counter = 0
       taskslist.forEach(function(element) {
+        var c = { task_id:element['task_id'], name:element['name'], cover:''}
+        self.tasks_total.push(c)
+        var index = counter;
+        counter++;
         self.task.getCoverTasksTaskIdCoverImageGet(element['task_id'], (error, data, response) => {
           if (response.status == 400){
-            var c = { task_id:element['task_id'], name:element['name'], cover:'../default_cover.jpeg'}
-            self.tasks_total.push(c)
+            self.tasks_total[index].cover = '../default_cover.jpeg'
           } else {
             let binaryData = [];
             binaryData.push(response.body);
             let imageObjectURL = window.URL.createObjectURL(new Blob(binaryData));
             // let imageObjectURL = window.URL.createObjectURL(response.body);
             self.imageObject = imageObjectURL
-            var c = { task_id:element['task_id'], name:element['name'], cover:self.imageObject}
-            self.tasks_total.push(c)
+            self.tasks_total[index].cover = self.imageObject
           }
         })
       })
