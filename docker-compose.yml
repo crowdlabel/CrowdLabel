@@ -16,12 +16,6 @@ services:
       - "traefik.http.routers.fastapi.rule=Host(`crowdlabel.org`)"
       - "traefik.http.routers.fastapi.tls=true"
       - "traefik.http.routers.fastapi.tls.certresolver=letsencrypt"
-  db:
-    image: postgres:13-alpine
-    volumes:
-      - postgres_data_prod:/var/lib/postgresql/data/
-    expose:
-      - 5432
   traefik:
     build:
       context: .
@@ -34,7 +28,6 @@ services:
       - "./traefik-certificates:/certificates"
     labels:
       - "traefik.enable=true"
-
 volumes:
-  postgres_data_prod:
+  db_file:
   traefik-certificates:
