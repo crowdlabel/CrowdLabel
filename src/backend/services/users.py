@@ -285,6 +285,7 @@ class Users:
                         return 'wrong password'
                 await con.flush()
                 con.expunge(target)
+                await con.commit()
                 await asyncio.shield(con.close())
                 print(target.email,'success')
         return None

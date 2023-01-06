@@ -55,9 +55,10 @@ export default {
       client: '',
       user: '',
       task: '',
+      task_type: '',
       task_id: '',
       task_name: '',
-      task_type: '',
+      task_tags: '',
       task_brief: '',
       task_cover: '',
       task_credit: '',
@@ -95,9 +96,18 @@ export default {
       self.percentage = (task_completed / self.task_amount) * 100;
       self.task_brief = res.introduction;
       self.task_name = res.name;
-      self.task_type = res.tags;
+      self.task_tags = eval(res.tags)
       self.task_credit = res.credits * self.task_amount;
       self.task_question_num = res.questions.length;
+      for (var i = 0; i < self.task_tags.length; i++) {
+        var cur_tag = self.task_tags[i];
+        if (cur_tag == "文字分类" || cur_tag == "图片分类" || cur_tag == "音频分类" || cur_tag == "图片打标") {
+          self.task_type = cur_tag;
+        }
+      }
+      // 未知任务类型
+      if (self.task_type == '')
+        self.task_type = "未知类型";
     })
     self.task.getCoverTasksTaskIdCoverImageGet(self.task_id, (error, data, response) => {
       if (response.status == 400){
@@ -151,11 +161,11 @@ export default {
           self.$router.push('/sendermission')
         })
       }).catch(() => {
-          this.$message({
-            type: 'info',
-            message: '已取消删除操作'
-          });
+        this.$message({
+          type: 'info',
+          message: '已取消删除操作'
         });
+      });
     }
   }
 }

@@ -260,10 +260,11 @@ export default {
         var newmail = document.getElementById("newemail").value
         var passforemail = document.getElementById("oldpasswordforemail").value
         var verification = document.getElementById("registerverification").value
+        console.log(verification)
         self.user.editMeUsersMePatch({
           "new_email": newmail,
-          "verification_code": passforemail,
-          "password": verification
+          "verification_code": verification,
+          "password": passforemail,
         }, (error,data, response)=> {
           console.log(error, data, response)
         });
