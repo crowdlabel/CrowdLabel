@@ -1,10 +1,11 @@
 import pytest
-
+import main
 from services.database import init_models_sync
 from test_utils import client
 
 import pathlib
 
+from test_tasks import *
 
 
 
@@ -26,4 +27,4 @@ if __name__ == '__main__':
     test_answer()
     test_cover()
     """
-    
+    test_answer_visibility()
