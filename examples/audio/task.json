@@ -1,0 +1,33 @@
+{
+    "name": "Audio",
+    "credits": 2,
+    "introduction": "This is an example",
+    "description": "This task is an example of a valid task",
+    "tags": ["音频分类", "乐器"],
+    "responses_required": 2,
+    "cover_image": "nature.jpg",
+    "questions": [
+        {
+            "question_id": 1,
+            "question_type": "single_choice",
+            "prompt": "What instrument is this?",
+            "resource": "flute.mp4",
+            "options": ["Flute", "Strings", "Piano", "Other"]
+        },
+        {
+            "question_id": 2,
+            "question_type": "single_choice",
+            "prompt": "What instrument is this?",
+            "resource": "piano.mp3",
+            "options": ["Other", "Strings", "Piano"]
+        },
+        {
+            "question_id": 3,
+            "question_type": "single_choice",
+            "prompt": "What instrument is this?",
+            "resource": "strings.mp3",
+            "options": ["Strings", "Piano"]
+        }
+
+    ]
+}

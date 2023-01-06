@@ -1,20 +1,18 @@
+import pathlib
 from fastapi import Depends, UploadFile, status
-from fastapi.responses import FileResponse
 from fastapi.routing import APIRouter
-from utils.filetransfer import download_file, upload_file
 from .auth import get_current_user
-import services.tasks
-import services.users
 from .documentedresponse import JSONDocumentedResponse, MediaDocumentedResponse, create_documentation, forbidden_jdr, not_found_jdr
 import schemas.tasks
 import schemas.questions
 import schemas.users
+import services.tasks
+import services.users
+import utils.config
 from utils.datetime_str import datetime_now_str
-from typing import Optional
-from utils.config import get_config
-import pathlib
+from utils.filetransfer import download_file, upload_file
 
-TASK_UPLOAD_DIR = pathlib.Path(get_config('file_locations.tasks'))
+TASK_UPLOAD_DIR = pathlib.Path(utils.config.config['file_locations']['tasks'])
 router = APIRouter()
 task_service = services.tasks.Tasks()
 

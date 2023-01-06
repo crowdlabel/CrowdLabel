@@ -19,8 +19,8 @@ import schemas.users
 import schemas.answers
 import json
 import patoolib
-from utils.config import get_config
-TASK_UPLOAD_DIR = pathlib.Path(get_config('file_locations.tasks'))
+import utils.config
+TASK_UPLOAD_DIR = pathlib.Path(utils.config.config['file_locations']['tasks'])
 
 from services.users import user_service
 from services.questions import question_service
@@ -65,8 +65,24 @@ class Tasks:
             resource_path=resource_path
         )
 
-        for question in task_request.questions:
-            task_schema.questions.append(question)
+        types = ['文字分类','图片分类','图片打标','音频分类']
+        task_type = None
+        for tag in task_request.tags:
+            if tag in types:
+                task_type = tag
+        if task_type == None:
+            await asyncio.shield(con.close())
+            return 'Task without type'
+        if task_type == '图片打标':
+            for question in task_request.questions:
+                if not isinstance(question,schemas.questions.BoundingBoxQuestion):
+                    return 'Wrong question type'
+                task_schema.questions.append(question)
+        else:
+            for question in task_request.questions:
+                if isinstance(question,schemas.questions.BoundingBoxQuestion):
+                    return 'Wrong question type'
+                task_schema.questions.append(question)
         missing = []
         for question in task_schema.questions:
             if not question.resource:
@@ -173,7 +189,7 @@ class Tasks:
                 answers = answers.scalars().all()
                 q.answers = list(map(lambda A:schemas.answers.Answer(date_created=A.date_answered,
                                                                      respondent=A.respondent_name,
-                                                                     answer = schemas.answers.MultiChoiceAnswer(choices = A.choices.split('|'))),
+                                                                     answer = schemas.answers.MultiChoiceAnswer(choices = [int(choice) for choice in A.choices.split('|')])),
                                                                      answers))
             elif qtype == 'bounding_box':
                 q = schemas.questions.BoundingBoxQuestion(**di)

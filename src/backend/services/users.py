@@ -256,6 +256,7 @@ class Users:
         Edits self using the new info
         returns error message, or none if successful
         """
+        print(type(new_info))
         con = scoped_session(Connection)
         async with con.begin():
             res = await con.execute(select(models.user.User).where(models.user.User.username == username))
@@ -285,8 +286,8 @@ class Users:
                         return 'wrong password'
                 await con.flush()
                 con.expunge(target)
+                await con.commit()
                 await asyncio.shield(con.close())
-                print(target.email,'success')
         return None
 
     async def handle_transaction(self, request: schemas.users.TransactionRequest, user: schemas.users.User) -> float | str:
