@@ -4,7 +4,7 @@ from fastapi.routing import APIRouter
 from fastapi.security import OAuth2PasswordBearer, OAuth2PasswordRequestForm
 from jose import JWTError, jwt
 
-from utils.config import get_config
+import utils.config
 from .documentedresponse import JSONDocumentedResponse, create_documentation
 
 import schemas.auth
@@ -18,10 +18,12 @@ router = APIRouter()
 
 
 
-SECRET_KEY = get_config('auth.key')
-ALGORITHM = get_config('auth.algorithm')
-ACCESS_TOKEN_EXPIRE_MINUTES = timedelta(minutes=get_config('auth.access_token_expire_minutes'))
 
+SECRET_KEY = utils.config.config['auth']['key']
+ALGORITHM = utils.config.config['auth']['algorithm']
+ACCESS_TOKEN_EXPIRE_MINUTES = timedelta(
+    minutes=utils.config.config['auth']['access_token_expire_minutes']
+)
 
 
 oauth2_scheme = OAuth2PasswordBearer(tokenUrl='token')

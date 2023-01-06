@@ -1,11 +1,11 @@
 from fastapi import status, UploadFile
 from fastapi.routing import APIRouter
 from .auth import Depends, get_current_user
-from .documentedresponse import JSONDocumentedResponse, create_documentation
+from .documentedresponse import JSONDocumentedResponse, create_documentation, forbidden_jdr
 import schemas.users
 import schemas.tasks
 from services.users import user_service
-from utils.config import get_config
+import utils.config
 from utils.filetransfer import upload_file, download_file
 import pathlib
 
@@ -81,15 +81,26 @@ me_jdr = JSONDocumentedResponse(
 async def get_me(current_user: schemas.users.User = Depends(get_current_user())):
     return me_jdr.response(current_user, exclude={'password_hashed'})
 ###############################################################################
+edit_me_success_jdr = JSONDocumentedResponse(
+    status.HTTP_200_OK,
+    'User detail edit success'
+)
+edit_me_failed_jdr = JSONDocumentedResponse(
+    status.HTTP_400_BAD_REQUEST,
+    'User detail edit failed',
+    schemas.tasks.ErrorResponse
+)
 @router.patch('/me',
-    description='Updates user info'
+    description='Updates user info',
+    **create_documentation([edit_me_success_jdr, edit_me_failed_jdr, forbidden_jdr])
 )
 async def edit_me(new_info : schemas.users.EditEmailRequest | schemas.users.EditPasswordRequest,
     current_user: schemas.users.User = Depends(get_current_user())
 ):
-    # edit user's own details
-    # TODO
-    await user_service.edit_user_info(current_user.username,new_info)
+    response = await user_service.edit_user_info(current_user.username,new_info)
+    if response:
+        return edit_me_failed_jdr.response(schemas.tasks.ErrorResponse(response=response))
+    return edit_me_success_jdr.response()
     
 ###############################################################################
 username_success_jdr = JSONDocumentedResponse(
@@ -138,7 +149,9 @@ async def edit_credits(
 
 ###############################################################################
 
-PROFILE_PICTURE_DIR = pathlib.Path(get_config('file_locations.profile_pictures'))
+PROFILE_PICTURE_DIR = pathlib.Path(
+    utils.config.config['file_locations']['profile_pictures']
+)
 
 upload_pfp_success_hdr = JSONDocumentedResponse(
     status.HTTP_200_OK,
