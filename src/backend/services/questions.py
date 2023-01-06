@@ -100,12 +100,15 @@ class Questions:
             return 'respondent not found'
         res = await con.execute(select(models.answer.Answer).where(and_(models.answer.Answer.respondent_name == respondent.username,models.answer.Answer.question_id == target.id)))
         target_answer = res.scalars().first()
+        print(target.answer)
         if target_answer == None:
             if isinstance(answer,schemas.answers.MultiChoiceAnswer):
                 if target.question_type != 'multi_choice':
                     return f'type mismatch , question type {target.question_type} ,answer type multi_choice'
                 new_answer = models.answer.MultiChoiceAnswer()
-                new_answer.choices = '|'.join(answer.choices)
+                print(answer)
+                print(1)
+                new_answer.choices = '|'.join([str(choice) for choice in answer.choices])
             elif isinstance(answer,schemas.answers.SingleChoiceAnswer):
                 if target.question_type != 'single_choice':
                     return f'type mismatch , question type {target.question_type} ,answer type single_choice'
@@ -141,7 +144,9 @@ class Questions:
             if isinstance(answer,schemas.answers.MultiChoiceAnswer):
                 res = await con.execute(select(models.answer.MultiChoiceAnswer).where(and_(models.answer.MultiChoiceAnswer.respondent_name == respondent.username,models.answer.MultiChoiceAnswer.question_id == target.id)))
                 target = res.scalars().first()
-                target.choices = '|'.join(answer.choices)
+                print(answer)
+                print(2)
+                target.choices = '|'.join([str(choice) for choice in answer.choices])
             elif isinstance(answer,schemas.answers.SingleChoiceAnswer):
                 res = await con.execute(select(models.answer.SingleChoiceAnswer).where(and_(models.answer.SingleChoiceAnswer.respondent_name == respondent.username,models.answer.SingleChoiceAnswer.question_id == target.id)))
                 target = res.scalars().first()
