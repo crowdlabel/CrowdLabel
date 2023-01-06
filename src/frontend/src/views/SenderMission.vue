@@ -480,12 +480,12 @@ export default {
       self.taskslist = []
       self.taskslist = a.tasks_requested
       self.tasks_info = []
-      var counter = 0
+      var counter = self.taskslist.length - 1
       self.taskslist.forEach(function(element) {
         var c = { task_id:element, name:'', cover:''}
-        self.tasks_info.push(c)
+        self.tasks_info.unshift(c)
         var index = counter;
-        counter++;
+        counter--;
         self.task.getCoverTasksTaskIdCoverImageGet(element, (error, data, response) => {
           if (response.status == 400){
             self.tasks_info[index].cover = '../default_cover.jpeg'
