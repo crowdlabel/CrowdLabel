@@ -65,8 +65,24 @@ class Tasks:
             resource_path=resource_path
         )
 
-        for question in task_request.questions:
-            task_schema.questions.append(question)
+        types = ['文字分类','图片分类','图片打标','音频分类']
+        task_type = None
+        for tag in task_request.tags:
+            if tag in types:
+                task_type = tag
+        if task_type == None:
+            await asyncio.shield(con.close())
+            return 'Task without type'
+        if task_type == '图片打标':
+            for question in task_request.questions:
+                if not isinstance(question,schemas.questions.BoundingBoxQuestion):
+                    return 'Wrong question type'
+                task_schema.questions.append(question)
+        else:
+            for question in task_request.questions:
+                if isinstance(question,schemas.questions.BoundingBoxQuestion):
+                    return 'Wrong question type'
+                task_schema.questions.append(question)
         missing = []
         for question in task_schema.questions:
             if not question.resource:

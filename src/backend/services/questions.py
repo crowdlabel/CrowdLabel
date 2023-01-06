@@ -102,12 +102,18 @@ class Questions:
         target_answer = res.scalars().first()
         if target_answer == None:
             if isinstance(answer,schemas.answers.MultiChoiceAnswer):
+                if target.question_type != 'multi_choice':
+                    return f'type mismatch , question type {target.question_type} ,answer type multi_choice'
                 new_answer = models.answer.MultiChoiceAnswer()
                 new_answer.choices = '|'.join(answer.choices)
             elif isinstance(answer,schemas.answers.SingleChoiceAnswer):
+                if target.question_type != 'single_choice':
+                    return f'type mismatch , question type {target.question_type} ,answer type single_choice'
                 new_answer = models.answer.SingleChoiceAnswer()
                 new_answer.choice = answer.choice
             elif  isinstance(answer,schemas.answers.BoundingBoxAnswer):
+                if target.question_type != 'bounding_box':
+                    return f'type mismatch , question type {target.question_type} ,answer type bounding_box'
                 new_answer = models.answer.BoundingBoxAnswer()
                 for corner in answer.boxes:
                     new_corner = models.answer.Corner()
@@ -119,6 +125,8 @@ class Questions:
                     con.add(new_corner)
                     new_answer.corner.append(new_corner)
             elif  isinstance(answer,schemas.answers.OpenAnswer):
+                if target.question_type != 'open':
+                    return f'type mismatch , question type {target.question_type} ,answer type open'
                 new_answer = models.answer.OpenAnswer()
                 new_answer.text = answer.text
             new_answer.date_answered = datetime.utcnow()
