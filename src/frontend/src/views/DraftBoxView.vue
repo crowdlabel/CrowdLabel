@@ -64,103 +64,13 @@
             <div class="scroll_view">
               <el-scrollbar style="height: 100%">
                 <!-- 用于展示下拉，填充的内容 -->
-                <div class="scroll_element">
+                <div class="scroll_element" v-for="(item, index) in projectsList" :key="index">
                   <img src="../assets/image_placeholder.png" class="project_image">
                   <div class="scroll_element_text">
-                    <h4 class="project_title">任务名称</h4>
-                    <p class="project_detail">任务类型: 文字</p>
-                    <p class="project_detail">保存时间: 2022年11月27日</p>
-                    <p class="project_detail">答题进度: 11/60</p>
-                  </div>
-                </div>
-                <div class="scroll_element">
-                  <img src="../assets/image_placeholder.png" class="project_image">
-                  <div class="scroll_element_text">
-                    <h4 class="project_title">任务名称</h4>
-                    <p class="project_detail">任务类型: 文字</p>
-                    <p class="project_detail">保存时间: 2022年11月27日</p>
-                    <p class="project_detail">答题进度: 11/60</p>
-                  </div>
-                </div>
-                <div class="scroll_element">
-                  <img src="../assets/image_placeholder.png" class="project_image">
-                  <div class="scroll_element_text">
-                    <h4 class="project_title">任务名称</h4>
-                    <p class="project_detail">任务类型: 文字</p>
-                    <p class="project_detail">保存时间: 2022年11月27日</p>
-                    <p class="project_detail">答题进度: 11/60</p>
-                  </div>
-                </div>
-                <div class="scroll_element">
-                  <img src="../assets/image_placeholder.png" class="project_image">
-                  <div class="scroll_element_text">
-                    <h4 class="project_title">任务名称</h4>
-                    <p class="project_detail">任务类型: 文字</p>
-                    <p class="project_detail">保存时间: 2022年11月27日</p>
-                    <p class="project_detail">答题进度: 11/60</p>
-                  </div>
-                </div>
-                <div class="scroll_element">
-                  <img src="../assets/image_placeholder.png" class="project_image">
-                  <div class="scroll_element_text">
-                    <h4 class="project_title">任务名称</h4>
-                    <p class="project_detail">任务类型: 文字</p>
-                    <p class="project_detail">保存时间: 2022年11月27日</p>
-                    <p class="project_detail">答题进度: 11/60</p>
-                  </div>
-                </div>
-                <div class="scroll_element">
-                  <img src="../assets/image_placeholder.png" class="project_image">
-                  <div class="scroll_element_text">
-                    <h4 class="project_title">任务名称</h4>
-                    <p class="project_detail">任务类型: 文字</p>
-                    <p class="project_detail">保存时间: 2022年11月27日</p>
-                    <p class="project_detail">答题进度: 11/60</p>
-                  </div>
-                </div>
-                <div class="scroll_element">
-                  <img src="../assets/image_placeholder.png" class="project_image">
-                  <div class="scroll_element_text">
-                    <h4 class="project_title">任务名称</h4>
-                    <p class="project_detail">任务类型: 文字</p>
-                    <p class="project_detail">保存时间: 2022年11月27日</p>
-                    <p class="project_detail">答题进度: 11/60</p>
-                  </div>
-                </div>
-                <div class="scroll_element">
-                  <img src="../assets/image_placeholder.png" class="project_image">
-                  <div class="scroll_element_text">
-                    <h4 class="project_title">任务名称</h4>
-                    <p class="project_detail">任务类型: 文字</p>
-                    <p class="project_detail">保存时间: 2022年11月27日</p>
-                    <p class="project_detail">答题进度: 11/60</p>
-                  </div>
-                </div>
-                <div class="scroll_element">
-                  <img src="../assets/image_placeholder.png" class="project_image">
-                  <div class="scroll_element_text">
-                    <h4 class="project_title">任务名称</h4>
-                    <p class="project_detail">任务类型: 文字</p>
-                    <p class="project_detail">保存时间: 2022年11月27日</p>
-                    <p class="project_detail">答题进度: 11/60</p>
-                  </div>
-                </div>
-                <div class="scroll_element">
-                  <img src="../assets/image_placeholder.png" class="project_image">
-                  <div class="scroll_element_text">
-                    <h4 class="project_title">任务名称</h4>
-                    <p class="project_detail">任务类型: 文字</p>
-                    <p class="project_detail">保存时间: 2022年11月27日</p>
-                    <p class="project_detail">答题进度: 11/60</p>
-                  </div>
-                </div>
-                <div class="scroll_element">
-                  <img src="../assets/image_placeholder.png" class="project_image">
-                  <div class="scroll_element_text">
-                    <h4 class="project_title">任务名称</h4>
-                    <p class="project_detail">任务类型: 文字</p>
-                    <p class="project_detail">保存时间: 2022年11月27日</p>
-                    <p class="project_detail">答题进度: 11/60</p>
+                    <h4 class="project_title">{{ item.project_name }}</h4>
+                    <p class="project_detail">任务类型: {{ item.project_type }}</p>
+                    <p class="project_detail">保存时间: {{ item.last_saved }}</p>
+                    <p class="project_detail">答题进度: {{ item.progress }}</p>
                   </div>
                 </div>
               </el-scrollbar>
@@ -174,12 +84,37 @@
 <script>
 // @ is an alias to /src
 // import HelloWorld from '@/components/HelloWorld.vue'
-import axios from 'axios'
+import { ApiClient } from '@/crowdlabel-api/src';
+import { UsersApi } from '@/crowdlabel-api/src';
+import { AuthApi } from '@/crowdlabel-api/src';
 export default {
   data() {
     return {
-      
+      client:'',
+      user:'',
+      auth:'',
+      projectsList: []
     };
+  },
+  mounted() {
+    let self = this;
+    var apiClient  = new ApiClient('http://localhost:8000');
+    apiClient.authentications['OAuth2PasswordBearer'].accessToken = localStorage.getItem('Authorization')
+    self.client = apiClient
+    var usersApi = new UsersApi(apiClient);
+    self.user = usersApi
+    var authApi = new AuthApi(apiClient);
+    this.auth = authApi
+    self.user.getMeUsersMeGet((error, data, response) => {
+      if (error == 'Error: Unauthorized') {
+        localStorage.removeItem('Authorization');
+        this.$router.push('/receiverlogin');
+      }
+      let a = JSON.parse(response['text'])
+      self.username = a.username
+      self.email = a.email
+      self.credits = a.credits
+    })
   },
   methods: {
 
