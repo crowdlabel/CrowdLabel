@@ -25,4 +25,5 @@ if __name__ == '__main__':
     test_answer()
     test_cover()
     """
-    test_answer_type()
+    #test_answer_type()
+    test_answer_visibility()

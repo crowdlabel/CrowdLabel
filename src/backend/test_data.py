@@ -32,7 +32,7 @@ res2 = {
     'verification_code': '123456'
 }
 
-example_task = pathlib.Path('D:/text.zip')
+example_task = pathlib.Path('D:/text_all.zip')
 expected_task = {
     "name": "Text",
     "credits": 2,

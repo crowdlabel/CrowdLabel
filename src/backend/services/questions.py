@@ -221,5 +221,4 @@ class Questions:
         await asyncio.shield(con.close())
         return response_questions
 
-
 question_service = Questions()

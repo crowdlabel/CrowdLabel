@@ -27,10 +27,13 @@ get_question_success_jdr = JSONDocumentedResponse(
     schemas.questions.Question
 )
 @router.get('/{question_id}',
-    **create_documentation([get_question_success_jdr, not_found_jdr])
+    **create_documentation([get_question_success_jdr, not_found_jdr, forbidden_jdr])
 )
 async def get_question(task_id: int=fastapi.Path(), question_id: int=fastapi.Path(), current_user=Depends(get_current_user())):
     task = await task_service.get_task(task_id)
+    if not isinstance(task, schemas.tasks.Task):
+        return not_found_jdr.response()
+    await task_service.remove_answers(current_user, task)
     question = await question_service.get_question(task, question_id)
     if not question:
         return not_found_jdr.response()
