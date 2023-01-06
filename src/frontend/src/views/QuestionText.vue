@@ -42,13 +42,23 @@
             </p>
           </el-scrollbar>
         </div>
-        <!-- div class="question">
-          这是否是一封广告邮件？
-        </div> -->
         <div class="answers">
-          <el-radio-group v-model="radio">
-            <el-radio :label="item.value" @change="handleChange" v-for="(item,index) in choicesGiven">{{item.label}}</el-radio>
+          <!--单选题-->
+          <el-radio-group v-model="radio" id="singleChoiceOptions">
+            <el-radio :label="item.value" @change="handleChange_singleChoice" v-for="(item,index) in choicesGiven">{{item.label}}</el-radio>
           </el-radio-group>
+          <!--多选题-->
+          <el-checkbox-group v-model="checkList" id="multiChoiceOptions">
+            <el-checkbox :label="item.value" :key="index" @change="handleChange_multiChoice" v-for="(item,index) in choicesGiven">{{item.label}}</el-checkbox>
+          </el-checkbox-group>
+          <!--开放题-->
+          <el-input
+            id="openAnswerBox"
+            type="textarea"
+            :autosize="{ minRows: 2, maxRows: 5}"
+            placeholder="请输入内容"
+            v-model="textarea">
+          </el-input>
         </div>
         <div class="footer">
           <el-button id="quit_button" type="primary" v-on:click="quit()" plain>退出答题</el-button>
@@ -86,10 +96,13 @@ export default {
       question: '',
       cur_question: 0,
       question_id: 0,
+      question_type: '',
       prompt: '',
       percentage: 0,
       customColor: '#5D3BE6',
       radio: -1,
+      checkList: [],
+      textarea: '',
       choicesGiven: [],
       isFirstQuestion: false
     };
@@ -162,11 +175,35 @@ export default {
       self.prompt = res.prompt;
       document.getElementById("question_prompt").innerHTML = self.prompt;
       // 填充答题选项
-      var list_choices = res.options;
-      for (var i = 0; i < list_choices.length; i++) {
-        var k = { label: list_choices[i], value: i };
-        self.choicesGiven.push(k);
+      console.log(res);
+      self.question_type = res.question_type;
+      if (self.question_type == "single_choice") { // 单选题
+        console.log("QUESTION TYPE: single_choice")
+        var list_choices = res.options;
+        for (var i = 0; i < list_choices.length; i++) {
+          var k = { label: list_choices[i], value: i };
+          self.choicesGiven.push(k);
+        }
+        document.getElementById("multiChoiceOptions").remove();
+        document.getElementById("openAnswerBox").remove();
+      } else if (self.question_type == "multi_choice") { // 多选题
+        console.log("QUESTION TYPE: multi_choice")
+        var list_choices = res.options;
+        for (var i = 0; i < list_choices.length; i++) {
+          var k = { label: list_choices[i], value: i };
+          self.choicesGiven.push(k);
+        }
+        document.getElementById("singleChoiceOptions").remove();
+        document.getElementById("openAnswerBox").remove();
+      } else if (self.question_type == "open") { // 开放题
+        console.log("QUESTION TYPE: open")
+
+        document.getElementById("singleChoiceOptions").remove();
+        document.getElementById("multiChoiceOptions").remove();
+      } else {
+        console.log("QUESTION TYPE ERROR");
       }
+      
       console.log("PREVIOUS ANSWERS:")
       console.log(res.answers)
       // 如已回答过该题，填充答案
@@ -196,8 +233,18 @@ export default {
     },
     prevQuestion() {
       // 上传答案
-      let _radio = this.radio;
-      var answer = {"choice": _radio};
+      var answer;
+      if (this.question_type == "single_choice") {
+        let _radio = this.radio;
+        answer = {"choice": _radio};
+      }
+      else if (this.question_type == "multi_choice") {
+        let _checkList = this.checkList;
+        answer = {"choices": _checkList};
+      }
+      else if (this.question_type == "open") {
+        // TO COMPLETE
+      }
       this.question.createAnswerTasksTaskIdQuestionsQuestionIdAnswerPut(this.task_id, this.question_id, answer, (error, data, response) => {
         this.$store.commit('changeQuestionIndex', this.cur_question - 1);
         document.location.href = '/question_text';
@@ -206,12 +253,26 @@ export default {
     },
     nextQuestion() {
       let _radio = this.radio;
-      // console.log(_radio);
-      if (_radio == -1) {
+      let _checkList = this.checkList;
+      let _textarea = this.textarea;
+      if (this.question_type == "single_choice" && _radio == -1) {
         this.alertMessage();
+      } else if (this.question_type == "multi_choice" && _checkList.length == 0){
+        this.alertMessage();
+      } else if (this.question_type == "open" && _textarea == "") {
+        // TO COMPLETE
       } else {
           // 上传答案
-          var answer = {"choice": _radio};
+          var answer;
+          if (this.question_type == "single_choice") {
+            answer = {"choice": _radio};
+          }
+          else if (this.question_type == "multi_choice") {
+            answer = {"choices": _checkList};
+          }
+          else if (this.question_type == "open") {
+            // TO COMPLETE
+          }
           this.question.createAnswerTasksTaskIdQuestionsQuestionIdAnswerPut(this.task_id, this.question_id, answer, (error, data, response) => {
             this.$store.commit('changeQuestionIndex', this.cur_question + 1);
             // 判断跳转到什么页面
@@ -225,9 +286,12 @@ export default {
           })
         }
     },
-    handleChange(val) {
+    handleChange_singleChoice(val) {
       this.radio = val;
       console.log(this.radio);
+    },
+    handleChange_multiChoice() {
+      console.log(this.checkList);
     },
     quit() {
         this.$confirm('是否要保存当前的答题进度?', '退出任务', {
@@ -486,6 +550,33 @@ export default {
   border-color: #5D3BE6;
 }
 
+::v-deep .el-checkbox-group {
+  transform:scale(1.1);
+}
+::v-deep .el-checkbox__label {
+  color: black;
+}
+/* 选中后radio文本的颜色 */
+::v-deep .el-checkbox__input.is-checked + .el-checkbox__label {
+  color: #5D3BE6;
+}
+/* radio选中后小圆点的颜色 */
+::v-deep .el-checkbox__input.is-checked .el-checkbox__inner {
+  background: #5D3BE6 !important;
+  border-color: #5D3BE6 !important;
+}
+/* hover时颜色 */
+::v-deep .el-checkbox__inner:hover {
+  border-color: #5D3BE6;
+}
+
+::v-deep .el-textarea {
+  margin: 0px 50px;
+  width: 80%;
+}
+::v-deep .el-textarea__inner {
+  width: 100%;
+}
 ::v-deep .el-progress {
   margin: 25px 0px;
   width: 80% !important;
