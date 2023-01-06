@@ -1,5 +1,5 @@
-# Dockerfile.traefik
+# https://github.com/testdrivenio/fastapi-docker-traefik/blob/master/Dockerfile.traefik
 
 FROM traefik:v2.9.6
 
-COPY ./traefik.prod.toml ./etc/traefik/traefik.toml
+COPY ./traefik.toml ./etc/traefik/traefik.toml

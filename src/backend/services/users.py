@@ -287,7 +287,6 @@ class Users:
                 con.expunge(target)
                 await con.commit()
                 await asyncio.shield(con.close())
-                print(target.email,'success')
         return None
 
     async def handle_transaction(self, request: schemas.users.TransactionRequest, user: schemas.users.User) -> float | str:

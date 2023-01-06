@@ -285,7 +285,7 @@ body{
 .infotext{
   position: relative;
   top: 10px;
-  font-family: 'SourceHanSansSC';
+  /* font-family: 'SourceHanSansSC'; */
   font-size: 18px;
 }
 ::v-deep .dialogClass .el-dialog{

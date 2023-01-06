@@ -15,3 +15,5 @@ rarfile==4.0
 patool
 aiosqlite
 frozendict
+httpx
+pytest

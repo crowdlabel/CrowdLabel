@@ -11,8 +11,6 @@ from test_tasks import *
 
 
 if __name__ == '__main__':
-    
-    
     """
     test_availability()
     test_register()
@@ -27,4 +25,4 @@ if __name__ == '__main__':
     test_answer()
     test_cover()
     """
-    test_answer_visibility()
+    test_answer_type()
