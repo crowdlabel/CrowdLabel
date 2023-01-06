@@ -123,6 +123,7 @@ def test_answer_type():
     claim(res1t, task_id)
     response = answer(res1t, task_id, 1, {'choices': [0, 1]})
     assert response.status_code == 400
+    print(response.json())
 
 def test_answer_visibility():
     init_models_sync()
