@@ -129,14 +129,13 @@
             </div>
             <div class="filter">
               <p class="title_filter">筛选：</p>
-              <el-button-group>
-                <!-- disabled sorting and searching for requesters -->
-                <el-button round @click="searchAll" :autofocus="true" disabled>全部</el-button>
-                <el-button round @click="searchText" disabled>文字分类</el-button>
-                <el-button round @click="searchImage" disabled>图片分类</el-button>
-                <el-button round @click="searchImage" disabled>图片打标</el-button>
-                <el-button round @click="searchRadio" disabled>音频分类</el-button>
-              </el-button-group>
+              <el-radio-group v-model="taskType" size="small" @change="chooseType()">
+                <el-radio-button label="all">全部</el-radio-button>
+                <el-radio-button label="text" >文字分类</el-radio-button>
+                <el-radio-button label="img_classify" >图片分类</el-radio-button>
+                <el-radio-button label="img_borderbox" >图片打标</el-radio-button>
+                <el-radio-button label="audio">音频分类</el-radio-button>
+              </el-radio-group>
               <el-button type="default" round @click="uploadInfo" id="format_download">任务上传说明</el-button>
               <el-button type="primary" round @click="createProject" id="create">创建任务</el-button>
             </div>
@@ -227,6 +226,7 @@ export default {
       tasks_info: [],
       taskslist: '',
       task_name: [],
+      taskType: 'all',
       task_cover_image: [],
       tasksinfo: {
         responses_required: '',
@@ -265,6 +265,104 @@ export default {
     }
   },
   methods: {
+    searchSpecific () {
+      let self = this
+      self.tasks_info = []
+      var taglist = []
+      if(self.taskType=='text'){
+        taglist.push("文字分类")
+      }else if(self.taskType=='img_classify'){
+        taglist.push("图片分类")
+      }else if(self.taskType=='img_borderbox'){
+        taglist.push("图片打标")
+      }else if(self.taskType=='audio'){
+        taglist.push("音频分类")
+      }
+      let requesterlist = []
+      requesterlist.push(self.userid)
+      self.task.searchTasksTasksPut({
+        "name": self.search_input,
+        "requester": requesterlist, 
+        "tags" : taglist,
+        "sort_ascending": false,
+      }, (error, data, response) => {
+        if (error == 'Error: Unauthorized') {
+          localStorage.removeItem('Authorization');
+          this.$router.push('/receiverlogin');
+        }
+        let res = JSON.parse(response['text'])
+        console.log(res)
+        let taskslist = res['tasks']
+        var counter = 0
+        taskslist.forEach(function(element) {
+          var c = { task_id:element['task_id'], name:element['name'], cover:''}
+          self.tasks_info.push(c)
+          var index = counter;
+          counter++;
+          self.task.getCoverTasksTaskIdCoverImageGet(element['task_id'], (error, data, response) => {
+            if (response.status == 400){
+              self.tasks_info[index].cover = '../default_cover.jpeg'
+            } else {
+              let binaryData = [];
+              binaryData.push(response.body);
+              let imageObjectURL = window.URL.createObjectURL(new Blob(binaryData));
+              // let imageObjectURL = window.URL.createObjectURL(response.body);
+              self.imageObject = imageObjectURL
+              self.tasks_info[index].cover = self.imageObject
+            }
+          })
+        })
+      })
+    },
+    chooseType() {
+      let self = this
+      self.tasks_info = []
+      var taglist = []
+      if(self.taskType=='text'){
+        taglist.push("文字分类")
+      }else if(self.taskType=='img_classify'){
+        taglist.push("图片分类")
+      }else if(self.taskType=='img_borderbox'){
+        taglist.push("图片打标")
+      }else if(self.taskType=='audio'){
+        taglist.push("音频分类")
+      }
+      let requesterlist = []
+      requesterlist.push(self.userid)
+      self.task.searchTasksTasksPut({
+        "name": self.search_input,
+        "requester": requesterlist, 
+        "tags" : taglist,
+        "sort_ascending": false,
+      }, (error, data, response) => {
+        if (error == 'Error: Unauthorized') {
+          localStorage.removeItem('Authorization');
+          this.$router.push('/receiverlogin');
+        }
+        let res = JSON.parse(response['text'])
+        console.log(res)
+        let taskslist = res['tasks']
+        var counter = 0
+        taskslist.forEach(function(element) {
+          var c = { task_id:element['task_id'], name:element['name'], cover:''}
+          self.tasks_info.push(c)
+          var index = counter;
+          counter++;
+          self.task.getCoverTasksTaskIdCoverImageGet(element['task_id'], (error, data, response) => {
+            if (response.status == 400){
+              self.tasks_info[index].cover = '../default_cover.jpeg'
+            } else {
+              let binaryData = [];
+              binaryData.push(response.body);
+              let imageObjectURL = window.URL.createObjectURL(new Blob(binaryData));
+              // let imageObjectURL = window.URL.createObjectURL(response.body);
+              self.imageObject = imageObjectURL
+              self.tasks_info[index].cover = self.imageObject
+            }
+          })
+        })
+      })
+    },
     handleCurrentChange(val) {
       this.currentPage=val;
     },
@@ -382,19 +480,7 @@ export default {
       this.dialogVisible = false;
     },
     searchAll() {
-      this.refresh();
-    },
-    searchText() {
       
-    },
-    searchImage() {
-      
-    },
-    searchRadio () {
-      
-    },
-    searchSpecific() {
-
     },
     uploadInfo () {
       this.UploadMissionInfo = true;
@@ -480,12 +566,12 @@ export default {
       self.taskslist = []
       self.taskslist = a.tasks_requested
       self.tasks_info = []
-      var counter = 0
+      var counter = self.taskslist.length - 1
       self.taskslist.forEach(function(element) {
         var c = { task_id:element, name:'', cover:''}
-        self.tasks_info.push(c)
+        self.tasks_info.unshift(c)
         var index = counter;
-        counter++;
+        counter--;
         self.task.getCoverTasksTaskIdCoverImageGet(element, (error, data, response) => {
           if (response.status == 400){
             self.tasks_info[index].cover = '../default_cover.jpeg'
@@ -928,7 +1014,6 @@ export default {
 ::v-deep .el-radio-group{
   position: relative;
   float: left;
-  top: 14px !important;
 }
 .mission_name{
   font-size: 14px !important;
@@ -992,7 +1077,29 @@ export default {
   margin-right:30px;
 }
 
-
-
+::v-deep .el-radio-group {
+  border-color: #5D3BE6;
+}
+::v-deep .el-radio-button__inner {
+  background: #fff;
+  border-color: #5D3BE6;
+  color:#5D3BE6;
+  font-size: 12.5px;
+  min-width: 80px;
+  align-items:center;
+  box-shadow:none;
+  outline: none;
+}
+::v-deep .el-radio-button__orig-radio:hover + .el-radio-button__inner {
+  background: #5D3BE6;
+  border-color: #5D3BE6;
+  color: #fff;
+}
+::v-deep .el-radio-button__orig-radio:checked + .el-radio-button__inner{
+  background: #5D3BE6;
+  border-color: #5D3BE6;
+  box-shadow:none;
+  color: #fff;
+}
 
 </style>

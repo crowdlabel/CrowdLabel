@@ -342,29 +342,44 @@ Returns: list of `Task`s matching the query within the specified `page` and `pag
         con = scoped_session(conection)
 
         if parameters.sort_ascending is True:
-            result = await con.execute(select(models.task.Task).where(and_(
-                        or_ (parameters.credits_min == 0  , models.task.Task.credits >= parameters.credits_min),
-                        or_ (parameters.credits_max == -1 , models.task.Task.credits <= parameters.credits_max),
-                        )).order_by(models.task.Task.task_id.asc())
-                        .options(selectinload(models.task.Task.questions),selectinload(models.task.Task.respondents_claimed),
-                                 selectinload(models.task.Task.respondents_complete)))
+            if parameters.sort_criteria == '' or parameters.sort_criteria == 'date':
+                result = await con.execute(select(models.task.Task).where(and_(
+                            or_ (parameters.credits_min == 0  , models.task.Task.credits >= parameters.credits_min),
+                            or_ (parameters.credits_max == -1 , models.task.Task.credits <= parameters.credits_max),
+                            )).order_by(models.task.Task.date_created.asc())
+                            .options(selectinload(models.task.Task.questions),selectinload(models.task.Task.respondents_claimed),
+                                    selectinload(models.task.Task.respondents_complete)))
+            else:
+                result = await con.execute(select(models.task.Task).where(and_(
+                            or_ (parameters.credits_min == 0  , models.task.Task.credits >= parameters.credits_min),
+                            or_ (parameters.credits_max == -1 , models.task.Task.credits <= parameters.credits_max),
+                            )).order_by(models.task.Task.credits.asc())
+                            .options(selectinload(models.task.Task.questions),selectinload(models.task.Task.respondents_claimed),
+                                    selectinload(models.task.Task.respondents_complete)))
                     
         else:           
-            result = await con.execute(select(models.task.Task).where(and_(
-                        or_ (parameters.credits_min == 0  , models.task.Task.credits >= parameters.credits_min),
-                        or_ (parameters.credits_max == -1 , models.task.Task.credits <= parameters.credits_max),
-                        )).order_by(models.task.Task.task_id.desc()) 
-                        .options(selectinload(models.task.Task.questions),selectinload(models.task.Task.respondents_claimed),
-                                 selectinload(models.task.Task.respondents_complete)))
+            if parameters.sort_criteria == '' or parameters.sort_criteria == 'date':
+                result = await con.execute(select(models.task.Task).where(and_(
+                            or_ (parameters.credits_min == 0  , models.task.Task.credits >= parameters.credits_min),
+                            or_ (parameters.credits_max == -1 , models.task.Task.credits <= parameters.credits_max),
+                            )).order_by(models.task.Task.date_created.desc())
+                            .options(selectinload(models.task.Task.questions),selectinload(models.task.Task.respondents_claimed),
+                                    selectinload(models.task.Task.respondents_complete)))
+            else:
+                result = await con.execute(select(models.task.Task).where(and_(
+                            or_ (parameters.credits_min == 0  , models.task.Task.credits >= parameters.credits_min),
+                            or_ (parameters.credits_max == -1 , models.task.Task.credits <= parameters.credits_max),
+                            )).order_by(models.task.Task.credits.desc())
+                            .options(selectinload(models.task.Task.questions),selectinload(models.task.Task.respondents_claimed),
+                                    selectinload(models.task.Task.respondents_complete)))
                     
                         
         old_tasks = result.scalars().all()
         tasks = []
 
         for task in old_tasks:
-            print(parameters.name)
-            print(task.name)
-            if (parameters.name == '' or parameters.name in task.name ) and (len(parameters.tags) == 0 or list(parameters.tags)[0] in task.tags.split('|')):
+
+            if (parameters.name == '' or parameters.name in task.name ) and (len(parameters.tags) == 0 or list(parameters.tags)[0] in task.tags.split('|')) and (len(parameters.tags)==0 or list(parameters.requesters)[0] == user.username):
                 tasks.append(task)
         response_tasks = []
         if parameters.page_size == -1:

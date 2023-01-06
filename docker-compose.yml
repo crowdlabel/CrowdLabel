@@ -29,5 +29,4 @@ services:
     labels:
       - "traefik.enable=true"
 volumes:
-  db_file:
   traefik-certificates:

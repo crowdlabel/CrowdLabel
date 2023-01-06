@@ -32,7 +32,7 @@ search_tasks_failed_hdr = JSONDocumentedResponse(
     description=task_service.search.__doc__ + schemas.tasks.TaskSearchRequest.__doc__,
     **create_documentation([search_tasks_success_jdr, search_tasks_failed_hdr])
 )
-async def search_tasks(query: schemas.tasks.TaskSearchRequest, current_user=Depends(get_current_user(['respondent']))):
+async def search_tasks(query: schemas.tasks.TaskSearchRequest, current_user=Depends(get_current_user())):
     """
     Task search
     """
