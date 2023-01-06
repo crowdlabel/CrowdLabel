@@ -47,8 +47,8 @@ class Questions:
             for answer in target.answer:
                 res = await con.execute(select(models.answer.MultiChoiceAnswer).where(models.answer.MultiChoiceAnswer.id == answer.id))
                 ans = res.scalars().first()
-                new_answer = schemas.answers.MultiChoiceAnswer(choices = ans.choices.split('|'))
-                new_question.answers.append(new_answer)
+                new_answer = schemas.answers.MultiChoiceAnswer(choices = [] if ans.choices == '' else [int(choice) for choice in ans.choices.split('|')])
+                new_question.answers.append(new_answer) 
         elif  type == 'single_choice':
             di['options'] = target.options.split('|')
             new_question = schemas.questions.SingleChoiceQuestion(**di)
@@ -100,14 +100,23 @@ class Questions:
             return 'respondent not found'
         res = await con.execute(select(models.answer.Answer).where(and_(models.answer.Answer.respondent_name == respondent.username,models.answer.Answer.question_id == target.id)))
         target_answer = res.scalars().first()
+        print(target.answer)
         if target_answer == None:
             if isinstance(answer,schemas.answers.MultiChoiceAnswer):
+                if target.question_type != 'multi_choice':
+                    return f'type mismatch , question type {target.question_type} ,answer type multi_choice'
                 new_answer = models.answer.MultiChoiceAnswer()
-                new_answer.choices = '|'.join(answer.choices)
+                print(answer)
+                print(1)
+                new_answer.choices = '|'.join([str(choice) for choice in answer.choices])
             elif isinstance(answer,schemas.answers.SingleChoiceAnswer):
+                if target.question_type != 'single_choice':
+                    return f'type mismatch , question type {target.question_type} ,answer type single_choice'
                 new_answer = models.answer.SingleChoiceAnswer()
                 new_answer.choice = answer.choice
             elif  isinstance(answer,schemas.answers.BoundingBoxAnswer):
+                if target.question_type != 'bounding_box':
+                    return f'type mismatch , question type {target.question_type} ,answer type bounding_box'
                 new_answer = models.answer.BoundingBoxAnswer()
                 for corner in answer.boxes:
                     new_corner = models.answer.Corner()
@@ -119,6 +128,8 @@ class Questions:
                     con.add(new_corner)
                     new_answer.corner.append(new_corner)
             elif  isinstance(answer,schemas.answers.OpenAnswer):
+                if target.question_type != 'open':
+                    return f'type mismatch , question type {target.question_type} ,answer type open'
                 new_answer = models.answer.OpenAnswer()
                 new_answer.text = answer.text
             new_answer.date_answered = datetime.utcnow()
@@ -133,7 +144,9 @@ class Questions:
             if isinstance(answer,schemas.answers.MultiChoiceAnswer):
                 res = await con.execute(select(models.answer.MultiChoiceAnswer).where(and_(models.answer.MultiChoiceAnswer.respondent_name == respondent.username,models.answer.MultiChoiceAnswer.question_id == target.id)))
                 target = res.scalars().first()
-                target.choices = '|'.join(answer.choices)
+                print(answer)
+                print(2)
+                target.choices = '|'.join([str(choice) for choice in answer.choices])
             elif isinstance(answer,schemas.answers.SingleChoiceAnswer):
                 res = await con.execute(select(models.answer.SingleChoiceAnswer).where(and_(models.answer.SingleChoiceAnswer.respondent_name == respondent.username,models.answer.SingleChoiceAnswer.question_id == target.id)))
                 target = res.scalars().first()

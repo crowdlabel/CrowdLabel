@@ -256,6 +256,7 @@ class Users:
         Edits self using the new info
         returns error message, or none if successful
         """
+        print(type(new_info))
         con = scoped_session(Connection)
         async with con.begin():
             res = await con.execute(select(models.user.User).where(models.user.User.username == username))
