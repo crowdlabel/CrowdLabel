@@ -7,13 +7,11 @@
       </div>
       <div class="page_title">
         <h3 class="title">草稿箱</h3>
-          <a class="notifications" data-external="true" href="/notifications">
-            <img src="../assets/notifications.svg" alt="label" height="24"/>
-          </a>
-      </div>
         <a class="my_account" data-external="true" href="/myaccount">
             <img src="../assets/my_account.svg" alt="label" height="24"/>
         </a>
+      </div>
+        
     </div>
     <div class="body">
         <div class="left_nav">
@@ -47,7 +45,7 @@
             </ul>
             <ul class="left_nav_list_bottom">
                 <li>
-                    <a aria-current="page" class="left_nav_list_item" data-external="true" href="/settings">
+                    <a aria-current="page" class="left_nav_list_item" data-external="true" href="/myaccount">
                         <img src="../assets/settings.png" height="20" width="20">
                         <p class="list_item_title">设置</p>
                     </a>
@@ -119,35 +117,30 @@ export default {
       console.log(tasks_claimed)
       for (let i = 0; i < tasks_claimed.length; i++) {
         let _task_id = tasks_claimed[i];
-        // console.log(tasks_claimed[i])
-        // console.log(_task_id)
         self.task.getTaskTasksTaskIdGet(_task_id, (error, data, response) => {
           let res = response.body;
-          let _name = res.name;
-          let _tags = '';
-          let _type = '';
-          let _total_question_num = res.questions.length;
-          let task_tags = res.tags;
-          for (var k = 0; k < task_tags.length; k++) {
-            _tags += task_tags[k];
-            if (k != task_tags.length - 1) {
-              _tags += ", ";
-            }
-            if (task_tags[k] == "文字分类" || task_tags[k] == "图片分类" || task_tags[k] == "图片打标" || task_tags[k] == "音频分类")
-              _type = task_tags[k];
-          }
-          var cur_task = {task_id: _task_id, name: _name, type: _type, tags: _tags, progress: _total_question_num, cover: ''};
-          self.projectsList.push(cur_task);
-          let index_p = i;
           self.task.getProgressTasksTaskIdProgressGet(res.task_id, (error, data, response) => {
             let res2 = JSON.parse(response['text']);
-            // console.log(res.task_id);
-            console.log(res2)
-            let total_questions = self.projectsList[i].progress;
-            let _progress = "" + parseInt(res.progress + 1) + " / " + total_questions;
-            console.log(parseInt(res.progress + 1))
-            self.projectsList[i].progress = _progress;
-            self.task.getCoverTasksTaskIdCoverImageGet(_task_id, (error, data, response) => {
+            let task_id_p = res.task_id;
+            self.task.getCoverTasksTaskIdCoverImageGet(task_id_p, (error, data, response) => {
+              // 任务信息
+              let _name = res.name;
+              let _tags = '';
+              let _type = '';
+              let _total_question_num = res.questions.length;
+              let task_tags = res.tags;
+              for (var k = 0; k < task_tags.length; k++) {
+                _tags += task_tags[k];
+                if (k != task_tags.length - 1) {
+                  _tags += ", ";
+                }
+                if (task_tags[k] == "文字分类" || task_tags[k] == "图片分类" || task_tags[k] == "图片打标" || task_tags[k] == "音频分类")
+                  _type = task_tags[k];
+              }
+              // 任务进度
+              console.log(res2)
+              let _progress = "" + parseInt(res2.progress + 1) + " / " + _total_question_num;
+              // 任务封面
               let _cover = '';
               if (response.status == 400){
                 _cover = '../default_cover.jpeg'
@@ -157,7 +150,8 @@ export default {
                 let imageObjectURL = window.URL.createObjectURL(new Blob(binaryData));
                 _cover = imageObjectURL;
               }
-              self.projectsList[i].cover = _cover;
+              let cur_task = {task_id: _task_id, name: _name, type: _type, tags: _tags, progress: _progress, cover: _cover};
+              self.projectsList.push(cur_task);
             });
           });
         });
@@ -211,23 +205,14 @@ export default {
     min-width: 120px;
     flex: 1;
 }
-.notifications {
-    align-items: center;
-    align-self: center;
-    cursor: pointer;
-    display: flex;
-    justify-content: center;
-    position: relative;
-}
 .my_account {
     align-items: center;
     align-self: center;
     cursor: pointer;
     display: flex;
     justify-content: center;
-    margin-left: 10px;
-    margin-right: 20px;
     position: relative;
+    margin-right: 17px;
 }
 .logo{
   vertical-align: middle;

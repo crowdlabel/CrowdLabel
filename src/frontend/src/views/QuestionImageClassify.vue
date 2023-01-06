@@ -204,13 +204,19 @@ export default {
       console.log("PREVIOUS ANSWERS:")
       console.log(res.answers)
       // 如已回答过该题，填充答案
-      if (res.answers.length > 0) {
-        if (self.question_type == "single_choice") {
-          self.radio = res.answers[0].choice;
-        } else if (self.question_type == "multi_choice") {
-          self.checkList = res.answers[0].choices;
-        } else if (self.question_type == "open") {
-          self.textarea = res.answers[0].text;
+      for (var i = 0; i < res.answers.length; i++) {
+        let cur_answer = res.answers[i];
+        console.log(cur_answer)
+        console.log(cur_answer.answer)
+        console.log(cur_answer.respondent)
+        if (cur_answer.respondent == my_username) { // 当前用户已回答
+          if (self.question_type == "single_choice") {
+            self.radio = cur_answer.answer.choice;
+          } else if (self.question_type == "multi_choice") {
+            self.checkList = cur_answer.answer.choices;
+          } else if (self.question_type == "open") {
+            self.textarea = cur_answer.answer.text;
+          }
         }
       }
     })
@@ -321,21 +327,35 @@ export default {
             callback: action => {
               // 上传当前题的答案
               var answer;
+              var is_answered = false; // 当前题目是否已回答，答了再存
               if (this.question_type == "single_choice") {
                 let _radio = this.radio;
-                answer = {"choice": _radio};
+                if (_radio != -1) {
+                  is_answered = true;
+                  answer = {"choice": _radio};
+                }
               }
               else if (this.question_type == "multi_choice") {
                 let _checkList = this.checkList;
-                answer = {"choices": _checkList};
+                if (_checkList.length > 0) {
+                  is_answered = true;
+                  answer = {"choices": _checkList};
+                }
               }
               else if (this.question_type == "open") {
                 let _textarea = this.textarea;
-                answer = {"text": _textarea};
+                if (_textarea != "") {
+                  is_answered = true;
+                  answer = {"text": _textarea};
+                }
               }
-              this.question.createAnswerTasksTaskIdQuestionsQuestionIdAnswerPut(this.task_id, this.question_id, answer, (error, data, response) => {
+              if (is_answered) {
+                this.question.createAnswerTasksTaskIdQuestionsQuestionIdAnswerPut(this.task_id, this.question_id, answer, (error, data, response) => {
+                  document.location.href = '/projects';
+                })
+              } else {
                 document.location.href = '/projects';
-              })
+              }
             }
           });
         }).catch(() => {
