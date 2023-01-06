@@ -80,7 +80,7 @@
             <div class="order_by">
               <p class="title_order_by">排序：</p>
               <el-radio-group v-model="sortOrder" size="small" @change="chooseOrder()">
-                <el-radio-button label="time">发布时间</el-radio-button>
+                <el-radio-button label="date">发布时间</el-radio-button>
                 <el-radio-button label="credits">积分数量</el-radio-button>
               </el-radio-group>
             </div>
@@ -134,7 +134,7 @@ export default {
       page_num: 100,
       input: '',
       taskType: 'all',
-      sortOrder: 'time'
+      sortOrder: 'date'
     };
   },
   methods: {
@@ -325,7 +325,7 @@ export default {
     })
     self.tasks_total = []
     self.task.searchTasksTasksPut({
-      "sort_criteria": "time",
+      "sort_criteria": "date",
       "sort_ascending": false
     }, (error, data, response) => {
       if (error == 'Error: Unauthorized') {
