@@ -342,9 +342,9 @@ Returns: list of `Task`s matching the query within the specified `page` and `pag
 
 
         con = scoped_session(conection)
+
         if parameters.sort_ascending is True:
             result = await con.execute(select(models.task.Task).where(and_(
-                        or_ (parameters.name == '',models.task.Task.name == parameters.name),
                         or_ (parameters.credits_min == 0  , models.task.Task.credits >= parameters.credits_min),
                         or_ (parameters.credits_max == -1 , models.task.Task.credits <= parameters.credits_max),
                         )).order_by(models.task.Task.task_id.asc())
@@ -353,7 +353,6 @@ Returns: list of `Task`s matching the query within the specified `page` and `pag
                     
         else:           
             result = await con.execute(select(models.task.Task).where(and_(
-                        or_ (parameters.name == '',models.task.Task.name == parameters.name),
                         or_ (parameters.credits_min == 0  , models.task.Task.credits >= parameters.credits_min),
                         or_ (parameters.credits_max == -1 , models.task.Task.credits <= parameters.credits_max),
                         )).order_by(models.task.Task.task_id.desc()) 
@@ -361,7 +360,14 @@ Returns: list of `Task`s matching the query within the specified `page` and `pag
                                  selectinload(models.task.Task.respondents_complete)))
                     
                         
-        tasks = result.scalars().all()
+        old_tasks = result.scalars().all()
+        tasks = []
+
+        for task in old_tasks:
+            print(parameters.name)
+            print(task.name)
+            if (parameters.name == '' or parameters.name in task.name ) and (len(parameters.tags) == 0 or list(parameters.tags)[0] in task.tags.split('|')):
+                tasks.append(task)
         response_tasks = []
         if parameters.page_size == -1:
             for task in tasks :
