@@ -93,8 +93,8 @@ def test_edit_me():
 
 def test_credits():
     init_models_sync()
-    register(johndoe)
-    token = login(johndoe)
+    register(req1)
+    token = login(req1)
     assert get_me(token).json()['credits'] == 0
 
     assert credits(token, -1000).status_code == 400
