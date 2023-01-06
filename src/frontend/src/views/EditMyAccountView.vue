@@ -27,13 +27,12 @@
               <el-upload class="upload_file" action="none"
                 :headers="{ 'Content-Type': 'multipart/form-data'}"
                 accept=".jpg,.jpeg,.png,.JPG,.JPEG"
+                ref="Upload"
                 :auto-upload="false"
-                ref="upload"
                 :on-change="handleChange"
-                :limit="1">
-                <img v-if="piclist" :src="piclist" class="avatar">
-                <i v-else class="el-icon-plus"></i>
-                <p>点击上传</p>
+                :limit="1"
+                :on-exceed="handleExceed">
+                <img :src="piclist" class="avatar">
               </el-upload>
               <el-button type="primary" plain class="fileSelectConfirm" @click="changeProfile">确定</el-button>
             </div>
@@ -243,17 +242,22 @@ export default {
         binaryData.push(response.body);
         let imageObjectURL = window.URL.createObjectURL(new Blob(binaryData));
         self.mainProfile = imageObjectURL
+        self.piclist = imageObjectURL
       }
     })
   },
   methods: {
     changeProfile () {
       console.log(this.profile)
-      this.user.uploadPfpUsersMeProfilePicturePost({
-        "profile_picture": this.profile,
-      },(error, data, response) => {
-        console.log(error, data, response)
-        this.UploadProfilePage = false;
+      this.user.uploadPfpUsersMeProfilePicturePost(this.profile,(error, data, response) => {
+        if(response.status == 200){
+          this.UploadProfilePage = false;
+          let binaryData = [];
+          binaryData.push(this.profile);
+          let imageObjectURL = window.URL.createObjectURL(new Blob(binaryData));
+          this.mainProfile = imageObjectURL
+          this.piclist = imageObjectURL
+        }
       })
     },
     beforeDialogClose (done) {
@@ -268,6 +272,12 @@ export default {
         return ""; 
       }
     },
+    handleExceed(file, fileList){
+      this.$set(fileList[0], 'raw', file[0]);
+      this.$set(fileList[0], 'name', file[0].name);
+      this.$refs['Upload'].clearFiles();//清除文件
+      this.$refs['Upload'].handleStart(file[0]);//选择文件后的赋值方法
+    },
     handleChange(file, fileList) {
       let self = this;
       if (file.size / (1024*1024)>20) {
@@ -277,7 +287,7 @@ export default {
         return false;
       }
       let suffix = self.getFileType(file.name);
-      let suffixArray = ["jpg", "jpeg", "png"];
+      let suffixArray = ["jpg", "jpeg", "png", "JPG", "JPEG", "PNG"];
       if (suffixArray.indexOf(suffix) === -1) {
         self.$message({
           message: "文件格式错误",

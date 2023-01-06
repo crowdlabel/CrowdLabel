@@ -46,7 +46,7 @@
         </div>
         <div class="main_body">
             <div class="user_info_row">
-              <img class="profile_pic" src="../assets/image_placeholder.png"/>
+              <img class="profile_pic" :src="mainProfile"/>
               <div class="user_info_column">
                 <p class="username">{{ username }}</p>
                 <p class="user_info_line">邮箱：{{ email }}</p>
@@ -82,7 +82,8 @@ export default {
       username:'',
       email:'',
       password:'**********',
-      credits:''
+      credits:'',
+      mainProfile:'',
     };
   },
   mounted() {
@@ -103,6 +104,16 @@ export default {
       self.username = a.username
       self.email = a.email
       self.credits = a.credits
+    })
+    self.user.getPfpUsersMeProfilePictureGet((error, data, response) => {
+      if (response.status == 404){
+        self.mainProfile = '../image_placeholder.png'
+      } else {
+        let binaryData = [];
+        binaryData.push(response.body);
+        let imageObjectURL = window.URL.createObjectURL(new Blob(binaryData));
+        self.mainProfile = imageObjectURL
+      }
     })
   },
   methods: {
