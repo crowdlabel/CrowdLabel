@@ -47,8 +47,8 @@ class Questions:
             for answer in target.answer:
                 res = await con.execute(select(models.answer.MultiChoiceAnswer).where(models.answer.MultiChoiceAnswer.id == answer.id))
                 ans = res.scalars().first()
-                new_answer = schemas.answers.MultiChoiceAnswer(choices = ans.choices.split('|'))
-                new_question.answers.append(new_answer)
+                new_answer = schemas.answers.MultiChoiceAnswer(choices = [] if ans.choices == '' else [int(choice) for choice in ans.choices.split('|')])
+                new_question.answers.append(new_answer) 
         elif  type == 'single_choice':
             di['options'] = target.options.split('|')
             new_question = schemas.questions.SingleChoiceQuestion(**di)
