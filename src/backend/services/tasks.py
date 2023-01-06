@@ -174,14 +174,12 @@ class Tasks:
             if qtype == 'single_choice':
                 di['options'] = question.options.split('|')
                 q = schemas.questions.SingleChoiceQuestion(**di)
-                print(q.question_id)
                 answers = await con.execute(select(models.answer.SingleChoiceAnswer).where(models.answer.SingleChoiceAnswer.question_id==question.id))
                 answers = answers.scalars().all()
                 q.answers = list(map(lambda A:schemas.answers.Answer(date_created=A.date_answered,
                                                                      respondent=A.respondent_name,
                                                                      answer = schemas.answers.SingleChoiceAnswer(choice =A.choice)),
                                                                      answers))
-                print(answers)
             elif qtype == 'multi_choice':
                 di['options'] = question.options.split('|')
                 q = schemas.questions.MultiChoiceQuestion(**di)

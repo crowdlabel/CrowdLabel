@@ -48,7 +48,7 @@ class Questions:
                 res = await con.execute(select(models.answer.MultiChoiceAnswer).where(models.answer.MultiChoiceAnswer.id == answer.id))
                 ans = res.scalars().first()
                 new_answer = schemas.answers.MultiChoiceAnswer(choices = [] if ans.choices == '' else [int(choice) for choice in ans.choices.split('|')])
-                new_question.answers.append(new_answer)
+                new_question.answers.append(new_answer) 
         elif  type == 'single_choice':
             di['options'] = target.options.split('|')
             new_question = schemas.questions.SingleChoiceQuestion(**di)
@@ -104,18 +104,19 @@ class Questions:
         if target_answer == None:
             if isinstance(answer,schemas.answers.MultiChoiceAnswer):
                 if target.question_type != 'multi_choice':
+                    await asyncio.shield(con.close())
                     return f'type mismatch , question type {target.question_type} ,answer type multi_choice'
                 new_answer = models.answer.MultiChoiceAnswer()
-                print(answer)
-                print(1)
                 new_answer.choices = '|'.join([str(choice) for choice in answer.choices])
             elif isinstance(answer,schemas.answers.SingleChoiceAnswer):
                 if target.question_type != 'single_choice':
+                    await asyncio.shield(con.close())
                     return f'type mismatch , question type {target.question_type} ,answer type single_choice'
                 new_answer = models.answer.SingleChoiceAnswer()
                 new_answer.choice = answer.choice
             elif  isinstance(answer,schemas.answers.BoundingBoxAnswer):
                 if target.question_type != 'bounding_box':
+                    await asyncio.shield(con.close())
                     return f'type mismatch , question type {target.question_type} ,answer type bounding_box'
                 new_answer = models.answer.BoundingBoxAnswer()
                 for corner in answer.boxes:
@@ -129,6 +130,7 @@ class Questions:
                     new_answer.corner.append(new_corner)
             elif  isinstance(answer,schemas.answers.OpenAnswer):
                 if target.question_type != 'open':
+                    await asyncio.shield(con.close())
                     return f'type mismatch , question type {target.question_type} ,answer type open'
                 new_answer = models.answer.OpenAnswer()
                 new_answer.text = answer.text
