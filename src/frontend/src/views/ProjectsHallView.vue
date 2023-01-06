@@ -195,10 +195,98 @@ export default {
       })
     },
     chooseOrder(){
-      console.log(this.sortOrder)
+      let self = this
+      self.tasks_total = []
+      var taglist = []
+      if(self.taskType=='text'){
+        taglist.push("文字分类")
+      }else if(self.taskType=='img_classify'){
+        taglist.push("图片分类")
+      }else if(self.taskType=='img_borderbox'){
+        taglist.push("图片打标")
+      }else if(self.taskType=='audio'){
+        taglist.push("音频分类")
+      }
+      self.task.searchTasksTasksPut({
+        "name": self.input,
+        "tags" : taglist,
+        "sort_criteria": self.sortOrder,
+        "sort_ascending": false,
+      }, (error, data, response) => {
+        if (error == 'Error: Unauthorized') {
+          localStorage.removeItem('Authorization');
+          this.$router.push('/receiverlogin');
+        }
+        let res = JSON.parse(response['text'])
+        console.log(res)
+        let taskslist = res['tasks']
+        var counter = 0
+        taskslist.forEach(function(element) {
+          var c = { task_id:element['task_id'], name:element['name'], cover:''}
+          self.tasks_total.push(c)
+          var index = counter;
+          counter++;
+          self.task.getCoverTasksTaskIdCoverImageGet(element['task_id'], (error, data, response) => {
+            if (response.status == 400){
+              self.tasks_total[index].cover = '../default_cover.jpeg'
+            } else {
+              let binaryData = [];
+              binaryData.push(response.body);
+              let imageObjectURL = window.URL.createObjectURL(new Blob(binaryData));
+              // let imageObjectURL = window.URL.createObjectURL(response.body);
+              self.imageObject = imageObjectURL
+              self.tasks_total[index].cover = self.imageObject
+            }
+          })
+        })
+      })
     },
     searchWithID(){
-      console.log(this.input)
+      let self = this
+      self.tasks_total = []
+      var taglist = []
+      if(self.taskType=='text'){
+        taglist.push("文字分类")
+      }else if(self.taskType=='img_classify'){
+        taglist.push("图片分类")
+      }else if(self.taskType=='img_borderbox'){
+        taglist.push("图片打标")
+      }else if(self.taskType=='audio'){
+        taglist.push("音频分类")
+      }
+      self.task.searchTasksTasksPut({
+        "name": self.input,
+        "tags" : taglist,
+        "sort_criteria": self.sortOrder,
+        "sort_ascending": false,
+      }, (error, data, response) => {
+        if (error == 'Error: Unauthorized') {
+          localStorage.removeItem('Authorization');
+          this.$router.push('/receiverlogin');
+        }
+        let res = JSON.parse(response['text'])
+        console.log(res)
+        let taskslist = res['tasks']
+        var counter = 0
+        taskslist.forEach(function(element) {
+          var c = { task_id:element['task_id'], name:element['name'], cover:''}
+          self.tasks_total.push(c)
+          var index = counter;
+          counter++;
+          self.task.getCoverTasksTaskIdCoverImageGet(element['task_id'], (error, data, response) => {
+            if (response.status == 400){
+              self.tasks_total[index].cover = '../default_cover.jpeg'
+            } else {
+              let binaryData = [];
+              binaryData.push(response.body);
+              let imageObjectURL = window.URL.createObjectURL(new Blob(binaryData));
+              // let imageObjectURL = window.URL.createObjectURL(response.body);
+              self.imageObject = imageObjectURL
+              self.tasks_total[index].cover = self.imageObject
+            }
+          })
+        })
+      })
     },
   },
   directives: {
@@ -237,7 +325,8 @@ export default {
     })
     self.tasks_total = []
     self.task.searchTasksTasksPut({
-
+      "sort_criteria": "time",
+      "sort_ascending": false
     }, (error, data, response) => {
       if (error == 'Error: Unauthorized') {
         localStorage.removeItem('Authorization');
@@ -253,8 +342,6 @@ export default {
         var index = counter;
         counter++;
         self.task.getCoverTasksTaskIdCoverImageGet(element['task_id'], (error, data, response) => {
-          console.log(counter)
-          console.log(index)
           if (response.status == 400){
             self.tasks_total[index].cover = '../default_cover.jpeg'
           } else {
