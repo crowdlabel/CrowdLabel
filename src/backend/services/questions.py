@@ -43,22 +43,24 @@ class Questions:
         options = target.options.split('|')
         if type == 'multi_choice':
             di['options'] = target.options.split('|')
-            new_question= schemas.questions.MultiChoiceQuestion(**di)
+            new_question= schemas.questions.Question(**di)
             for answer in target.answer:
                 res = await con.execute(select(models.answer.MultiChoiceAnswer).where(models.answer.MultiChoiceAnswer.id == answer.id))
                 ans = res.scalars().first()
-                new_answer = schemas.answers.MultiChoiceAnswer(choices = [] if ans.choices == '' else [int(choice) for choice in ans.choices.split('|')])
+                new_answer = schemas.answers.Answer(date_created = answer.date_answered,respondent = answer.respondent_name,
+                                                    answer = schemas.answers.MultiChoiceAnswer(choices = [] if ans.choices == '' else [int(choice) for choice in ans.choices.split('|')]))
                 new_question.answers.append(new_answer) 
         elif  type == 'single_choice':
             di['options'] = target.options.split('|')
-            new_question = schemas.questions.SingleChoiceQuestion(**di)
+            new_question = schemas.questions.Question(**di)
             for answer in target.answer:
                 res = await con.execute(select(models.answer.SingleChoiceAnswer).where(models.answer.SingleChoiceAnswer.id == answer.id))
                 ans = res.scalars().first()
-                new_answer = schemas.answers.SingleChoiceAnswer(choice = ans.choice)
+                new_answer = schemas.answers.Answer(date_created = answer.date_answered,respondent = answer.respondent_name,
+                                                    answer = schemas.answers.SingleChoiceAnswer(choice = ans.choice))
                 new_question.answers.append(new_answer)
         elif  type == 'bounding_box':
-            new_question = schemas.questions.BoundingBoxQuestion(**di)
+            new_question = schemas.questions.Question(**di)
             for answer in target.answer:
                 res = await con.execute(select(models.answer.BoundingBoxAnswer).where(models.answer.BoundingBoxAnswer.id == answer.id).options(selectinload(models.answer.BoundingBoxAnswer.corner)))
                 ans = res.scalars().first()
@@ -68,14 +70,16 @@ class Questions:
                     p2 = schemas.answers.Point(x = corner.bottom_right_x, y =corner.bottom_right_y)
                     new_corner = schemas.answers.Corners(top_left=p1,bottom_right = p2)
                     boxes.append(new_corner)
-                new_answer = schemas.answers.BoundingBoxAnswer(boxes = boxes)
+                new_answer = schemas.answers.Answer(date_created = answer.date_answered,respondent = answer.respondent_name,
+                                                               answer = schemas.answers.BoundingBoxAnswer(boxes = boxes))
                 new_question.answers.append(new_answer)
         elif  type == 'open':
-            new_question = schemas.questions.OpenQuestion(**di)
+            new_question = schemas.questions.Question(**di)
             for answer in target.answer:
                 res = await con.execute(select(models.answer.OpenAnswer).where(models.answer.OpenAnswer.id == answer.id))
                 ans = res.scalars().first()
-                new_answer = schemas.answers.OpenAnswer(ans.text)
+                new_answer = schemas.answers.Answer(date_created = answer.date_answered,respondent = answer.respondent_name,
+                                                        answer =  schemas.answers.OpenAnswer(text = ans.text))
                 new_question.answers.append(new_answer)
         await asyncio.shield(con.close())
         return new_question
