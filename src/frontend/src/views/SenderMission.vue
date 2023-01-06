@@ -300,8 +300,8 @@ export default {
     },
     handleZip(file, fileList) {
       let self = this;
-      if (file.size / (1024*1024)>20) {
-        self.$message.warning("当前限制文件大小不能大于20M");
+      if (file.size / (1024*1024)>500) {
+        self.$message.warning("当前限制文件大小不能大于500M");
         self.file = '';
         self.form.zipfile= [];
         return false;
@@ -443,7 +443,7 @@ export default {
           } if(response.status == 200){
             this.form.zipfile = []
             this.form.cover = []
-            alert('upload suceed');
+            alert('上传成功');
             this.dialogVisible = false
             this.refresh();
           }
