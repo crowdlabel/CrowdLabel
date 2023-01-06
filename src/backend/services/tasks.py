@@ -42,8 +42,10 @@ class Tasks:
     ) -> schemas.tasks.Task | str:
         con = scoped_session(conection)
         if task_request.responses_required <= 0:
+            await asyncio.shield(con.close())
             return '`responses_required` must be positive'
         if task_request.credits < 0:
+            await asyncio.shield(con.close())
             return '`credits` must be positive'
 
         response = await user_service.handle_transaction(
@@ -54,7 +56,6 @@ class Tasks:
             await asyncio.shield(con.close())
             return response
 
-        # TODO: which task_id to use?
 
         info = task_request.dict()
         del info['questions']
@@ -76,11 +77,13 @@ class Tasks:
         if task_type == '图片打标':
             for question in task_request.questions:
                 if not isinstance(question,schemas.questions.BoundingBoxQuestion):
+                    await asyncio.shield(con.close())
                     return 'Wrong question type'
                 task_schema.questions.append(question)
         else:
             for question in task_request.questions:
                 if isinstance(question,schemas.questions.BoundingBoxQuestion):
+                    await asyncio.shield(con.close())
                     return 'Wrong question type'
                 task_schema.questions.append(question)
         missing = []
@@ -105,6 +108,7 @@ class Tasks:
                 .where(models.user.Requester.username==requester.username).options(selectinload(models.user.Requester.task_requested)))
             res = target.scalars().first()
             if res == None:
+                await asyncio.shield(con.close())
                 return 'requester not found'
             task.requester_id = res.id
             res.task_requested.append(task)
@@ -227,6 +231,7 @@ class Tasks:
             result = await con.execute(select(models.task.Task).where(models.task.Task.task_id==task_id).options(selectinload(models.task.Task.respondents_claimed),selectinload(models.task.Task.respondents_complete)))
             target = result.scalars().first()
             if target == None:
+                await asyncio.shield(con.close())
                 return 'not_found'
             target.respondents_claimed = []
             target.respondents_complete = []
@@ -335,9 +340,9 @@ Returns: list of `Task`s matching the query within the specified `page` and `pag
 
 
         con = scoped_session(conection)
+
         if parameters.sort_ascending is True:
             result = await con.execute(select(models.task.Task).where(and_(
-                        or_ (parameters.name == '',models.task.Task.name == parameters.name),
                         or_ (parameters.credits_min == 0  , models.task.Task.credits >= parameters.credits_min),
                         or_ (parameters.credits_max == -1 , models.task.Task.credits <= parameters.credits_max),
                         )).order_by(models.task.Task.task_id.asc())
@@ -346,7 +351,6 @@ Returns: list of `Task`s matching the query within the specified `page` and `pag
                     
         else:           
             result = await con.execute(select(models.task.Task).where(and_(
-                        or_ (parameters.name == '',models.task.Task.name == parameters.name),
                         or_ (parameters.credits_min == 0  , models.task.Task.credits >= parameters.credits_min),
                         or_ (parameters.credits_max == -1 , models.task.Task.credits <= parameters.credits_max),
                         )).order_by(models.task.Task.task_id.desc()) 
@@ -354,7 +358,14 @@ Returns: list of `Task`s matching the query within the specified `page` and `pag
                                  selectinload(models.task.Task.respondents_complete)))
                     
                         
-        tasks = result.scalars().all()
+        old_tasks = result.scalars().all()
+        tasks = []
+
+        for task in old_tasks:
+            print(parameters.name)
+            print(task.name)
+            if (parameters.name == '' or parameters.name in task.name ) and (len(parameters.tags) == 0 or list(parameters.tags)[0] in task.tags.split('|')):
+                tasks.append(task)
         response_tasks = []
         if parameters.page_size == -1:
             for task in tasks :
