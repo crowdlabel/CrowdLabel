@@ -1,7 +1,6 @@
 version: "3.3"
 
 services:
-
   traefik:
     image: "traefik:v2.9"
     container_name: "traefik"
@@ -26,19 +25,10 @@ services:
     volumes:
       - "./letsencrypt:/letsencrypt"
       - "/var/run/docker.sock:/var/run/docker.sock:ro"
-
-  whoami:
-    image: "traefik/whoami"
-    container_name: "simple-service"
-    labels:
-      - "traefik.enable=true"
-      - "traefik.http.routers.whoami.rule=Host(`whoami.crowdlabel.org`)"
-      - "traefik.http.routers.whoami.entrypoints=websecure"
-      - "traefik.http.routers.whoami.tls.certresolver=myresolver"
-
   crowdlabel:
     image:
     container_name: "crowdlabel"
+    command: "gunicorn main:app --workers 4 --worker-class uvicorn.workers.UvicornWorker --bind 0.0.0.0:8000"
     labels:
       - "traefik.enable=true"
       - "traefik.http.routers.whoami.rule=Host(`crowdlabel.org`)"

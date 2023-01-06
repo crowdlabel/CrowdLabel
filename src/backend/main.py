@@ -1,7 +1,7 @@
 import argparse
 import uvicorn
 import services.database
-
+from controllers.app import app
 
 def parse_args():
     parser = argparse.ArgumentParser()
@@ -15,7 +15,6 @@ def parse_args():
 def main():
     parser, args = parse_args()
 
-    print(parser, args)
 
     if args['reset_db']:
         services.database.reset_db()
