@@ -189,7 +189,7 @@ class Tasks:
                 answers = answers.scalars().all()
                 q.answers = list(map(lambda A:schemas.answers.Answer(date_created=A.date_answered,
                                                                      respondent=A.respondent_name,
-                                                                     answer = schemas.answers.MultiChoiceAnswer(choices = [int(choice) for choice in A.choices.split('|')])),
+                                                                     answer = schemas.answers.MultiChoiceAnswer(choices = [] if A.choices == '' else [int(choice) for choice in A.choices.split('|')])),
                                                                      answers))
             elif qtype == 'bounding_box':
                 q = schemas.questions.BoundingBoxQuestion(**di)
