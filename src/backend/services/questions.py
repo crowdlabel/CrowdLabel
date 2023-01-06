@@ -75,7 +75,7 @@ class Questions:
             for answer in target.answer:
                 res = await con.execute(select(models.answer.OpenAnswer).where(models.answer.OpenAnswer.id == answer.id))
                 ans = res.scalars().first()
-                new_answer = schemas.answers.OpenAnswer(ans.text)
+                new_answer = schemas.answers.OpenAnswer(text = ans.text)
                 new_question.answers.append(new_answer)
         await asyncio.shield(con.close())
         return new_question
