@@ -1,0 +1,32 @@
+{
+    "name": "Image",
+    "credits": 2,
+    "introduction": "",
+    "description": "Image",
+    "tags": ["图片分类"],
+    "responses_required": 2,
+    "cover_image": "2.jpg",
+    "questions": [
+        {
+            "question_id": 1,
+            "question_type": "single_choice",
+            "prompt": "What is in the image?",
+            "resource": "1.jpg",
+            "options": ["bike", "dog", "person"]
+        },
+        {
+            "question_id": 5,
+            "question_type": "single_choice",
+            "prompt": "What is in the image?",
+            "resource": "3.jpg",
+            "options": ["bike", "rock", "car", "school"]
+        },
+        {
+            "question_id": 3,
+            "question_type": "single_choice",
+            "prompt": "What is in the image?",
+            "resource": "2.jpg",
+            "options": ["bike", "dog", "car"]
+        }
+    ]
+}

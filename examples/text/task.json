@@ -1,0 +1,24 @@
+{
+    "name": "Text",
+    "credits": 2,
+    "introduction": "",
+    "description": "text",
+    "tags": ["文字分类", "语言"],
+    "responses_required": 2,
+    "questions": [
+        {
+            "question_id": 1,
+            "question_type": "single_choice",
+            "prompt": "What language is this?",
+            "resource": "chinese.txt",
+            "options": ["Chinese", "English"]
+        },
+        {
+            "question_id": 5,
+            "question_type": "single_choice",
+            "prompt": "What language is this",
+            "resource": "english.txt",
+            "options": ["Chinese", "English"]
+        }
+    ]
+}
