@@ -9,8 +9,6 @@ services:
       dockerfile: Dockerfile
     expose:
       - 80
-    depends_on:
-      - db
     labels:
       - "traefik.enable=true"
       - "traefik.http.routers.fastapi.rule=Host(`crowdlabel.org`)"

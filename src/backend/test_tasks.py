@@ -125,7 +125,7 @@ def test_answer_type():
     assert response.status_code == 400
     print(response.json())
 
-def test_answer_visibility():
+""" def test_answer_visibility():
     init_models_sync()
     register(req1)
     register(res1)
@@ -146,5 +146,29 @@ def test_answer_visibility():
     for question in task1['questions']:
         assert len(question['answers']) == 1
         assert question['answers'][0]['respondent'] == res1['username']
+    #pprint(task1)
+    #pprint(task2) """
+
+def test_answer_visibility():
+    init_models_sync()
+    register(req1)
+    register(res1)
+    register(res2)
+    req1t = login(req1)
+    res1t = login(res1)
+    res2t = login(res2)
+    top_up(req1t, 1000)
+    task_id = upload_task(req1t, example_task).json()['task_id']
+    claim(res1t, task_id)
+    claim(res2t, task_id)
+    answer(res1t, task_id, 1, {'choices': [0]})
+    answer(res1t, task_id, 5, {'choices': [0]})
+    answer(res2t, task_id, 1, {'choices': [1]})
+    answer(res2t, task_id, 5, {'choices': [1]})
+    task1 = get_task(res1t, task_id).json()
+    for question in task1['questions']:
+        assert len(question['answers']) <= 1
+        if len(question['answers']) == 1:
+            assert question['answers'][0]['respondent'] == res1['username']
     #pprint(task1)
     #pprint(task2)

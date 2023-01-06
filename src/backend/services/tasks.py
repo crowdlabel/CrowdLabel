@@ -443,6 +443,21 @@ Returns: list of `Task`s matching the query within the specified `page` and `pag
         await con.commit()
         await asyncio.shield(con.close())
         return None
+
+    async def remove_answers(self, user, task) -> schemas.tasks.Task:
+        if user.username in task.respondents_claimed:
+            for i in range(len(task.questions)):
+                answers = []
+                for answer in task.questions[i].answers:
+                    if answer.respondent == user.username:
+                        answers = [answer]
+                        break
+                task.questions[i].answers = answers
+        elif user.user_type == 'respondent':
+            for i in range(len(task.questions)):
+                task.questions[i].answers = []
+        
+
         
 
 task_service = Tasks()

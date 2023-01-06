@@ -1,4 +1,4 @@
-https://github.com/testdrivenio/fastapi-docker-traefik/blob/master/traefik.prod.toml
+# https://github.com/testdrivenio/fastapi-docker-traefik/blob/master/traefik.prod.toml
 
 [entryPoints]
   [entryPoints.web]
