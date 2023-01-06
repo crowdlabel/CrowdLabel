@@ -479,9 +479,6 @@ export default {
     backToMission() {
       this.dialogVisible = false;
     },
-    searchAll() {
-      
-    },
     uploadInfo () {
       this.UploadMissionInfo = true;
     },
@@ -499,6 +496,7 @@ export default {
         // this.multipartFile.append('missioncredits', this.form.credits_each)
         // this.multipartFile.append('missionbrief', this.form.brief);
         // this.multipartFile.append('missiondetails', this.form.details);
+        console.log(this.file)
         this.task.uploadTaskTasksUploadPost(this.file, (error, data, response) => {
           let a = JSON.parse(response['text'])
           if (response.status == 400 && a.error == 'Insufficient credits'){
