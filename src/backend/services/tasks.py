@@ -65,8 +65,24 @@ class Tasks:
             resource_path=resource_path
         )
 
-        for question in task_request.questions:
-            task_schema.questions.append(question)
+        types = ['文字分类','图片分类','图片打标','音频分类']
+        task_type = None
+        for tag in task_request.tags:
+            if tag in types:
+                task_type = tag
+        if task_type == None:
+            await asyncio.shield(con.close())
+            return 'Task without type'
+        if task_type == '图片打标':
+            for question in task_request.questions:
+                if not isinstance(question,schemas.questions.BoundingBoxQuestion):
+                    return 'Wrong question type'
+                task_schema.questions.append(question)
+        else:
+            for question in task_request.questions:
+                if isinstance(question,schemas.questions.BoundingBoxQuestion):
+                    return 'Wrong question type'
+                task_schema.questions.append(question)
         missing = []
         for question in task_schema.questions:
             if not question.resource:
@@ -158,14 +174,12 @@ class Tasks:
             if qtype == 'single_choice':
                 di['options'] = question.options.split('|')
                 q = schemas.questions.SingleChoiceQuestion(**di)
-                print(q.question_id)
                 answers = await con.execute(select(models.answer.SingleChoiceAnswer).where(models.answer.SingleChoiceAnswer.question_id==question.id))
                 answers = answers.scalars().all()
                 q.answers = list(map(lambda A:schemas.answers.Answer(date_created=A.date_answered,
                                                                      respondent=A.respondent_name,
                                                                      answer = schemas.answers.SingleChoiceAnswer(choice =A.choice)),
                                                                      answers))
-                print(answers)
             elif qtype == 'multi_choice':
                 di['options'] = question.options.split('|')
                 q = schemas.questions.MultiChoiceQuestion(**di)
@@ -173,7 +187,7 @@ class Tasks:
                 answers = answers.scalars().all()
                 q.answers = list(map(lambda A:schemas.answers.Answer(date_created=A.date_answered,
                                                                      respondent=A.respondent_name,
-                                                                     answer = schemas.answers.MultiChoiceAnswer(choices = A.choices)),
+                                                                     answer = schemas.answers.MultiChoiceAnswer(choices = [] if A.choices == '' else [int(choice) for choice in A.choices.split('|')])),
                                                                      answers))
             elif qtype == 'bounding_box':
                 q = schemas.questions.BoundingBoxQuestion(**di)
@@ -429,6 +443,21 @@ Returns: list of `Task`s matching the query within the specified `page` and `pag
         await con.commit()
         await asyncio.shield(con.close())
         return None
+
+    async def remove_answers(self, user, task) -> schemas.tasks.Task:
+        if user.username in task.respondents_claimed:
+            for i in range(len(task.questions)):
+                answers = []
+                for answer in task.questions[i].answers:
+                    if answer.respondent == user.username:
+                        answers = [answer]
+                        break
+                task.questions[i].answers = answers
+        elif user.user_type == 'respondent':
+            for i in range(len(task.questions)):
+                task.questions[i].answers = []
+        
+
         
 
 task_service = Tasks()

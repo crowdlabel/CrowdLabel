@@ -22,5 +22,5 @@ def load_config(filename=Path(__file__).parents[1] / 'config.yaml'):
     global config
     with open(filename, encoding='utf8') as f:
         config = frozendict(**yaml.load(f.read(), yaml.FullLoader))
-        print('Config:')
-        pprint(dict(config))
+        #print('Config:')
+        #pprint(dict(config))
