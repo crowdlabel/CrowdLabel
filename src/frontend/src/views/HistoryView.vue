@@ -7,13 +7,10 @@
       </div>
       <div class="page_title">
         <h3 class="title">历史记录</h3>
-          <a class="notifications" data-external="true" href="/notifications">
-            <img src="../assets/notifications.svg" alt="label" height="24"/>
+          <a class="my_account" data-external="true" href="/myaccount">
+            <img src="../assets/my_account.svg" alt="label" height="24"/>
           </a>
       </div>
-        <a class="my_account" data-external="true" href="/myaccount">
-            <img src="../assets/my_account.svg" alt="label" height="24"/>
-        </a>
     </div>
     <div class="body">
         <div class="left_nav">
@@ -47,7 +44,7 @@
             </ul>
             <ul class="left_nav_list_bottom">
                 <li>
-                    <a aria-current="page" class="left_nav_list_item" data-external="true" href="/settings">
+                    <a aria-current="page" class="left_nav_list_item" data-external="true" href="/myaccount">
                         <img src="../assets/settings.png" height="20" width="20">
                         <p class="list_item_title">设置</p>
                     </a>
@@ -64,7 +61,7 @@
           <div class="filter">
               <p class="title_filter">筛选：</p>
               <div>
-              <el-radio-group v-model="taskType" size="small" @change="chooseType(taskType)">
+              <el-radio-group v-model="taskType" size="small" @change="chooseType()">
                 <el-radio-button label="all">全部</el-radio-button>
                 <el-radio-button label="text" >文字分类</el-radio-button>
                 <el-radio-button label="img_classify" >图片分类</el-radio-button>
@@ -76,116 +73,21 @@
             <div class="scroll_view">
               <el-scrollbar style="height: 100%">
                 <!-- 用于展示下拉，填充的内容 -->
-                <div class="scroll_element">
-                  <img src="../assets/image_placeholder.png" class="project_image">
+                <div class="scroll_view">
+              <el-scrollbar style="height: 100%">
+                <!-- 用于展示下拉，填充的内容 -->
+                <div class="scroll_element" v-for="(item, index) in projectsList" :key="index" @click="seeDetails(item.task_id)">
+                  <img :src=item.cover class="project_image">
                   <div class="scroll_element_text">
-                    <h4 class="project_title">任务名称</h4>
-                    <p class="project_detail">任务类型: 文字</p>
-                    <p class="project_detail">完成时间: 2022年11月27日</p>
-                    <p class="project_detail">审核状态: 通过</p>
-                    <p class="project_detail">获得积分: 15</p>
+                    <h4 class="project_title">{{ item.name }}</h4>
+                    <p class="project_detail">任务类型: {{ item.type }}</p>
+                    <p class="project_detail">任务标签: {{ item.tags }}</p>
+                    <p class="project_detail">任务状态: 已完成 </p>
+                    <p class="project_detail">获得积分: {{ item.credits }} </p>
                   </div>
                 </div>
-                <div class="scroll_element">
-                  <img src="../assets/image_placeholder.png" class="project_image">
-                  <div class="scroll_element_text">
-                    <h4 class="project_title">任务名称</h4>
-                    <p class="project_detail">任务类型: 文字</p>
-                    <p class="project_detail">完成时间: 2022年11月27日</p>
-                    <p class="project_detail">审核状态: 通过</p>
-                    <p class="project_detail">获得积分: 15</p>
-                  </div>
-                </div>
-                <div class="scroll_element">
-                  <img src="../assets/image_placeholder.png" class="project_image">
-                  <div class="scroll_element_text">
-                    <h4 class="project_title">任务名称</h4>
-                    <p class="project_detail">任务类型: 文字</p>
-                    <p class="project_detail">完成时间: 2022年11月27日</p>
-                    <p class="project_detail">审核状态: 通过</p>
-                    <p class="project_detail">获得积分: 15</p>
-                  </div>
-                </div>
-                <div class="scroll_element">
-                  <img src="../assets/image_placeholder.png" class="project_image">
-                  <div class="scroll_element_text">
-                    <h4 class="project_title">任务名称</h4>
-                    <p class="project_detail">任务类型: 文字</p>
-                    <p class="project_detail">完成时间: 2022年11月27日</p>
-                    <p class="project_detail">审核状态: 通过</p>
-                    <p class="project_detail">获得积分: 15</p>
-                  </div>
-                </div>
-                <div class="scroll_element">
-                  <img src="../assets/image_placeholder.png" class="project_image">
-                  <div class="scroll_element_text">
-                    <h4 class="project_title">任务名称</h4>
-                    <p class="project_detail">任务类型: 文字</p>
-                    <p class="project_detail">完成时间: 2022年11月27日</p>
-                    <p class="project_detail">审核状态: 通过</p>
-                    <p class="project_detail">获得积分: 15</p>
-                  </div>
-                </div>
-                <div class="scroll_element">
-                  <img src="../assets/image_placeholder.png" class="project_image">
-                  <div class="scroll_element_text">
-                    <h4 class="project_title">任务名称</h4>
-                    <p class="project_detail">任务类型: 文字</p>
-                    <p class="project_detail">完成时间: 2022年11月27日</p>
-                    <p class="project_detail">审核状态: 通过</p>
-                    <p class="project_detail">获得积分: 15</p>
-                  </div>
-                </div>
-                <div class="scroll_element">
-                  <img src="../assets/image_placeholder.png" class="project_image">
-                  <div class="scroll_element_text">
-                    <h4 class="project_title">任务名称</h4>
-                    <p class="project_detail">任务类型: 文字</p>
-                    <p class="project_detail">完成时间: 2022年11月27日</p>
-                    <p class="project_detail">审核状态: 通过</p>
-                    <p class="project_detail">获得积分: 15</p>
-                  </div>
-                </div>
-                <div class="scroll_element">
-                  <img src="../assets/image_placeholder.png" class="project_image">
-                  <div class="scroll_element_text">
-                    <h4 class="project_title">任务名称</h4>
-                    <p class="project_detail">任务类型: 文字</p>
-                    <p class="project_detail">完成时间: 2022年11月27日</p>
-                    <p class="project_detail">审核状态: 通过</p>
-                    <p class="project_detail">获得积分: 15</p>
-                  </div>
-                </div>
-                <div class="scroll_element">
-                  <img src="../assets/image_placeholder.png" class="project_image">
-                  <div class="scroll_element_text">
-                    <h4 class="project_title">任务名称</h4>
-                    <p class="project_detail">任务类型: 文字</p>
-                    <p class="project_detail">完成时间: 2022年11月27日</p>
-                    <p class="project_detail">审核状态: 通过</p>
-                    <p class="project_detail">获得积分: 15</p>
-                  </div>
-                </div>
-                <div class="scroll_element">
-                  <img src="../assets/image_placeholder.png" class="project_image">
-                  <div class="scroll_element_text">
-                    <h4 class="project_title">任务名称</h4>
-                    <p class="project_detail">任务类型: 文字</p>
-                    <p class="project_detail">完成时间: 2022年11月27日</p>
-                    <p class="project_detail">审核状态: 通过</p>
-                    <p class="project_detail">获得积分: 15</p>
-                  </div>
-                </div>
-                <div class="scroll_element">
-                  <img src="../assets/image_placeholder.png" class="project_image">
-                  <div class="scroll_element_text">
-                    <h4 class="project_title">任务名称</h4>
-                    <p class="project_detail">任务类型: 文字</p>
-                    <p class="project_detail">完成时间: 2022年11月27日</p>
-                    <p class="project_detail">审核状态: 通过</p>
-                    <p class="project_detail">获得积分: 15</p>
-                  </div>
-                </div>
+              </el-scrollbar>
+            </div>
               </el-scrollbar>
             </div>
         </div>
@@ -197,15 +99,144 @@
 <script>
 // @ is an alias to /src
 // import HelloWorld from '@/components/HelloWorld.vue'
-import axios from 'axios'
+import { ApiClient } from '@/crowdlabel-api/src';
+import { UsersApi } from '@/crowdlabel-api/src';
+import { AuthApi } from '@/crowdlabel-api/src';
+import { TasksApi } from '@/crowdlabel-api/src';
 export default {
   data() {
     return {
-      taskType: 'all'
+      taskType: 'all',
+      client:'',
+      user:'',
+      task:'',
+      auth:'',
+      projectsList: []
     };
   },
+  mounted() {
+    let self = this;
+    var apiClient  = new ApiClient('http://localhost:8000');
+    apiClient.authentications['OAuth2PasswordBearer'].accessToken = localStorage.getItem('Authorization')
+    self.client = apiClient
+    var usersApi = new UsersApi(apiClient);
+    self.user = usersApi
+    var authApi = new AuthApi(apiClient);
+    this.auth = authApi
+    var tasksApi = new TasksApi(apiClient);
+    self.task = tasksApi;
+    self.user.getMeUsersMeGet((error, data, response) => {
+      if (error == 'Error: Unauthorized') {
+        localStorage.removeItem('Authorization');
+        this.$router.push('/receiverlogin');
+      }
+      let res = JSON.parse(response["text"]);
+      let tasks_completed = res["tasks_completed"];
+      console.log(tasks_completed)
+      for (let i = 0; i < tasks_completed.length; i++) {
+        let _task_id = tasks_completed[i];
+        self.task.getTaskTasksTaskIdGet(_task_id, (error, data, response) => {
+          let res = response.body;
+            self.task.getCoverTasksTaskIdCoverImageGet(res.task_id, (error, data, response) => {
+              // 任务信息
+              let _name = res.name;
+              let _tags = '';
+              let _type = '';
+              let _credits = res.credits;
+              let task_tags = res.tags;
+              for (var k = 0; k < task_tags.length; k++) {
+                _tags += task_tags[k];
+                if (k != task_tags.length - 1) {
+                  _tags += ", ";
+                }
+                if (task_tags[k] == "文字分类" || task_tags[k] == "图片分类" || task_tags[k] == "图片打标" || task_tags[k] == "音频分类")
+                  _type = task_tags[k];
+              }
+              // 任务封面
+              let _cover = '';
+              if (response.status == 400){
+                _cover = '../default_cover.jpeg'
+              } else {
+                let binaryData = [];
+                binaryData.push(response.body);
+                let imageObjectURL = window.URL.createObjectURL(new Blob(binaryData));
+                _cover = imageObjectURL;
+              }
+              let cur_task = {task_id: _task_id, name: _name, type: _type, tags: _tags, credits: _credits, cover: _cover};
+              self.projectsList.push(cur_task);
+            });
+          });
+      }
+    })
+  },
   methods: {
-
+    seeDetails(task_id) {
+      console.log("CLICKED")
+      this.$store.commit('changeTaskID', task_id);
+      this.$router.push({
+        name:'project_detail',
+      })
+    },
+    chooseType() {
+      let self = this
+      self.projectsList = []
+      var taglist = []
+      if(self.taskType=='text'){
+        taglist.push("文字分类")
+      }else if(self.taskType=='img_classify'){
+        taglist.push("图片分类")
+      }else if(self.taskType=='img_borderbox'){
+        taglist.push("图片打标")
+      }else if(self.taskType=='audio'){
+        taglist.push("音频分类")
+      }
+      self.task.searchTasksTasksPut({
+        "name": self.input,
+        "tags" : taglist,
+        "sort_criteria": self.sortOrder,
+        "sort_ascending": false,
+      }, (error, data, response) => {
+        if (error == 'Error: Unauthorized') {
+          localStorage.removeItem('Authorization');
+          this.$router.push('/receiverlogin');
+        }
+        let res = JSON.parse(response['text'])
+        console.log(res)
+        let taskslist = res['tasks']
+        var counter = 0
+        taskslist.forEach(function(element) {
+          let _type = '';
+          let _tags = '';
+          let _credits = element['credits'];
+          let task_tags = element['tags'];
+          console.log(element)
+          for (var k = 0; k < task_tags.length; k++) {
+            _tags += task_tags[k];
+            if (k != task_tags.length - 1) {
+              _tags += ", ";
+            }
+            if (task_tags[k] == "文字分类" || task_tags[k] == "图片分类" || task_tags[k] == "图片打标" || task_tags[k] == "音频分类")
+              _type = task_tags[k];
+          }
+          var c = { task_id:element['task_id'], name:element['name'], credits:_credits, type:_type, tags:_tags, cover:''}
+          self.projectsList.push(c)
+          var index = counter;
+          counter++;
+          self.task.getCoverTasksTaskIdCoverImageGet(element['task_id'], (error, data, response) => {
+            if (response.status == 400){
+              self.projectsList[index].cover = '../default_cover.jpeg'
+            } else {
+              let binaryData = [];
+              binaryData.push(response.body);
+              let imageObjectURL = window.URL.createObjectURL(new Blob(binaryData));
+              // let imageObjectURL = window.URL.createObjectURL(response.body);
+              self.imageObject = imageObjectURL
+              self.projectsList[index].cover = self.imageObject
+            }
+          })
+        })
+      })
+    },
   }
 }
 </script>
@@ -245,24 +276,16 @@ export default {
     min-width: 120px;
     flex: 1;
 }
-.notifications {
-    align-items: center;
-    align-self: center;
-    cursor: pointer;
-    display: flex;
-    justify-content: center;
-    position: relative;
-}
 .my_account {
     align-items: center;
     align-self: center;
     cursor: pointer;
     display: flex;
     justify-content: center;
-    margin-left: 10px;
-    margin-right: 20px;
     position: relative;
+    margin-right: 17px;
 }
+
 .logo{
   vertical-align: middle;
   text-align: left;
@@ -425,8 +448,7 @@ export default {
 
 .scroll_view {
   border-top: 1.2px solid rgba(0,0,0,.1);
-  margin-top: 20px;
-  height: calc(100vh - 160px);
+  height: calc(100vh - 140px);
   min-height: 225px;
 }
 
@@ -442,6 +464,7 @@ export default {
   margin: 0px 20px;
   flex-direction: column;
   display: flex;
+  cursor: pointer;
   align-items: flex-start;
 }
 .project_title {
