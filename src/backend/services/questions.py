@@ -104,7 +104,6 @@ class Questions:
             return 'respondent not found'
         res = await con.execute(select(models.answer.Answer).where(and_(models.answer.Answer.respondent_name == respondent.username,models.answer.Answer.question_id == target.id)))
         target_answer = res.scalars().first()
-        print(target.answer)
         if target_answer == None:
             if isinstance(answer,schemas.answers.MultiChoiceAnswer):
                 if target.question_type != 'multi_choice':
@@ -150,8 +149,6 @@ class Questions:
             if isinstance(answer,schemas.answers.MultiChoiceAnswer):
                 res = await con.execute(select(models.answer.MultiChoiceAnswer).where(and_(models.answer.MultiChoiceAnswer.respondent_name == respondent.username,models.answer.MultiChoiceAnswer.question_id == target.id)))
                 target = res.scalars().first()
-                print(answer)
-                print(2)
                 target.choices = '|'.join([str(choice) for choice in answer.choices])
             elif isinstance(answer,schemas.answers.SingleChoiceAnswer):
                 res = await con.execute(select(models.answer.SingleChoiceAnswer).where(and_(models.answer.SingleChoiceAnswer.respondent_name == respondent.username,models.answer.SingleChoiceAnswer.question_id == target.id)))
