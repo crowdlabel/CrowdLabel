@@ -30,7 +30,7 @@ search_tasks_failed_jdr = JSONDocumentedResponse(
 )
 @router.put('/',
     description=task_service.search.__doc__ + schemas.tasks.TaskSearchRequest.__doc__,
-    **create_documentation([search_tasks_success_jdr, search_tasks_failed_jdr, forbidden_jdr])
+    **create_documentation([search_tasks_success_jdr, search_tasks_failed_jdr])
 )
 async def search_tasks(query: schemas.tasks.TaskSearchRequest, current_user=Depends(get_current_user())):
     """

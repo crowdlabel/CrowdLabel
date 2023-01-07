@@ -9,9 +9,10 @@ services:
       - 443:443
     volumes:
       - ./Caddyfile:/etc/caddy/Caddyfile
-      - ./caddy/data:/data
+      # caddy config + certs
+      - ./caddy/data:/data 
       - ./caddy/config:/config
-      - ./src/frontend/dist:/var/www/html/crowdlabel
+      - ./src/frontend/dist:/var/www/html/crowdlabel # copy static frontend HTML + CSS + JS files
     networks:
       - web
 
