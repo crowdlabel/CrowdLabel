@@ -260,6 +260,8 @@ export default {
           this.mainProfile = imageObjectURL
           this.piclist = imageObjectURL
           this.goBack()
+        } else if(response.status == 422){
+          this.UploadProfilePage = false;
         }
       })
     },
@@ -611,5 +613,6 @@ export default {
   width: 178px;
   height: 178px;
   display: block;
+  border-radius: 50%;
 }
 </style>
