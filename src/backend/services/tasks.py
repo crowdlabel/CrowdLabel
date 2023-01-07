@@ -20,7 +20,7 @@ import schemas.answers
 import json
 import patoolib
 import utils.config
-TASK_UPLOAD_DIR = pathlib.Path(utils.config.config['file_locations']['tasks'])
+TASK_UPLOAD_DIR = pathlib.Path(utils.config.config['directories']['tasks'])
 
 from services.users import user_service
 from services.questions import question_service
@@ -42,19 +42,11 @@ class Tasks:
     ) -> schemas.tasks.Task | str:
         con = scoped_session(conection)
         if task_request.responses_required <= 0:
-            return '`responses_required` must be positive'
-        if task_request.credits < 0:
-            return '`credits` must be positive'
-
-        response = await user_service.handle_transaction(
-            schemas.users.TransactionRequest(amount=- task_request.credits * task_request.responses_required),
-            user=requester
-        )
-        if not isinstance(response, float):
             await asyncio.shield(con.close())
-            return response
-
-        # TODO: which task_id to use?
+            return '`responses_required` must be positive'
+        if task_request.credits <= 0:
+            await asyncio.shield(con.close())
+            return '`credits` must be positive'
 
         info = task_request.dict()
         del info['questions']
@@ -76,11 +68,13 @@ class Tasks:
         if task_type == '图片打标':
             for question in task_request.questions:
                 if not isinstance(question,schemas.questions.BoundingBoxQuestion):
+                    await asyncio.shield(con.close())
                     return 'Wrong question type'
                 task_schema.questions.append(question)
         else:
             for question in task_request.questions:
                 if isinstance(question,schemas.questions.BoundingBoxQuestion):
+                    await asyncio.shield(con.close())
                     return 'Wrong question type'
                 task_schema.questions.append(question)
         missing = []
@@ -99,12 +93,20 @@ class Tasks:
             resource_path=str(resource_path)
         )
         
+        response = await user_service.handle_transaction(
+            schemas.users.TransactionRequest(amount =- task_request.credits * task_request.responses_required),
+            user=requester
+        )
+        if not isinstance(response, float):
+            await asyncio.shield(con.close())
+            return response
        
         async with con.begin():
             target = await con.execute(select(models.user.Requester)
                 .where(models.user.Requester.username==requester.username).options(selectinload(models.user.Requester.task_requested)))
             res = target.scalars().first()
             if res == None:
+                await asyncio.shield(con.close())
                 return 'requester not found'
             task.requester_id = res.id
             res.task_requested.append(task)
@@ -227,6 +229,7 @@ class Tasks:
             result = await con.execute(select(models.task.Task).where(models.task.Task.task_id==task_id).options(selectinload(models.task.Task.respondents_claimed),selectinload(models.task.Task.respondents_complete)))
             target = result.scalars().first()
             if target == None:
+                await asyncio.shield(con.close())
                 return 'not_found'
             target.respondents_claimed = []
             target.respondents_complete = []
@@ -255,7 +258,7 @@ class Tasks:
             if task == None:
                 await asyncio.shield(con.close())
                 return None
-            if len(task.respondents_claimed) + len(task.respondents_complete) >= task.responses_required:
+            if len(task.respondents_complete) >= task.responses_required:
                 await asyncio.shield(con.close())
                 return 'Enough respondents have claimed this task'
             user.task_claimed.append(task)
@@ -335,26 +338,47 @@ Returns: list of `Task`s matching the query within the specified `page` and `pag
 
 
         con = scoped_session(conection)
+
         if parameters.sort_ascending is True:
-            result = await con.execute(select(models.task.Task).where(and_(
-                        or_ (parameters.name == '',models.task.Task.name == parameters.name),
-                        or_ (parameters.credits_min == 0  , models.task.Task.credits >= parameters.credits_min),
-                        or_ (parameters.credits_max == -1 , models.task.Task.credits <= parameters.credits_max),
-                        )).order_by(models.task.Task.task_id.asc())
-                        .options(selectinload(models.task.Task.questions),selectinload(models.task.Task.respondents_claimed),
-                                 selectinload(models.task.Task.respondents_complete)))
+            if parameters.sort_criteria == '' or parameters.sort_criteria == 'date':
+                result = await con.execute(select(models.task.Task).where(and_(
+                            or_ (parameters.credits_min == 0  , models.task.Task.credits >= parameters.credits_min),
+                            or_ (parameters.credits_max == -1 , models.task.Task.credits <= parameters.credits_max),
+                            )).order_by(models.task.Task.date_created.asc())
+                            .options(selectinload(models.task.Task.questions),selectinload(models.task.Task.respondents_claimed),
+                                    selectinload(models.task.Task.respondents_complete)))
+            else:
+                result = await con.execute(select(models.task.Task).where(and_(
+                            or_ (parameters.credits_min == 0  , models.task.Task.credits >= parameters.credits_min),
+                            or_ (parameters.credits_max == -1 , models.task.Task.credits <= parameters.credits_max),
+                            )).order_by(models.task.Task.credits.asc())
+                            .options(selectinload(models.task.Task.questions),selectinload(models.task.Task.respondents_claimed),
+                                    selectinload(models.task.Task.respondents_complete)))
                     
         else:           
-            result = await con.execute(select(models.task.Task).where(and_(
-                        or_ (parameters.name == '',models.task.Task.name == parameters.name),
-                        or_ (parameters.credits_min == 0  , models.task.Task.credits >= parameters.credits_min),
-                        or_ (parameters.credits_max == -1 , models.task.Task.credits <= parameters.credits_max),
-                        )).order_by(models.task.Task.task_id.desc()) 
-                        .options(selectinload(models.task.Task.questions),selectinload(models.task.Task.respondents_claimed),
-                                 selectinload(models.task.Task.respondents_complete)))
+            if parameters.sort_criteria == '' or parameters.sort_criteria == 'date':
+                result = await con.execute(select(models.task.Task).where(and_(
+                            or_ (parameters.credits_min == 0  , models.task.Task.credits >= parameters.credits_min),
+                            or_ (parameters.credits_max == -1 , models.task.Task.credits <= parameters.credits_max),
+                            )).order_by(models.task.Task.date_created.desc())
+                            .options(selectinload(models.task.Task.questions),selectinload(models.task.Task.respondents_claimed),
+                                    selectinload(models.task.Task.respondents_complete)))
+            else:
+                result = await con.execute(select(models.task.Task).where(and_(
+                            or_ (parameters.credits_min == 0  , models.task.Task.credits >= parameters.credits_min),
+                            or_ (parameters.credits_max == -1 , models.task.Task.credits <= parameters.credits_max),
+                            )).order_by(models.task.Task.credits.desc())
+                            .options(selectinload(models.task.Task.questions),selectinload(models.task.Task.respondents_claimed),
+                                    selectinload(models.task.Task.respondents_complete)))
                     
                         
-        tasks = result.scalars().all()
+        old_tasks = result.scalars().all()
+        tasks = []
+
+        for task in old_tasks:
+
+            if (parameters.name == '' or parameters.name.lower() in task.name.lower() ) and (len(parameters.tags) == 0 or list(parameters.tags)[0] in task.tags.split('|')) and (len(parameters.requesters)==0 or list(parameters.requesters)[0] == user.username):
+                tasks.append(task)
         response_tasks = []
         if parameters.page_size == -1:
             for task in tasks :
@@ -443,6 +467,21 @@ Returns: list of `Task`s matching the query within the specified `page` and `pag
         await con.commit()
         await asyncio.shield(con.close())
         return None
+
+    async def remove_answers(self, user, task) -> schemas.tasks.Task:
+        if user.username in task.respondents_claimed:
+            for i in range(len(task.questions)):
+                answers = []
+                for answer in task.questions[i].answers:
+                    if answer.respondent == user.username:
+                        answers = [answer]
+                        break
+                task.questions[i].answers = answers
+        elif user.user_type == 'respondent':
+            for i in range(len(task.questions)):
+                task.questions[i].answers = []
+        
+
         
 
 task_service = Tasks()

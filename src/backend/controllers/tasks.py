@@ -12,7 +12,7 @@ import utils.config
 from utils.datetime_str import datetime_now_str
 from utils.filetransfer import download_file, upload_file
 
-TASK_UPLOAD_DIR = pathlib.Path(utils.config.config['file_locations']['tasks'])
+TASK_UPLOAD_DIR = pathlib.Path(utils.config.config['directories']['tasks'])
 router = APIRouter()
 task_service = services.tasks.Tasks()
 
@@ -32,7 +32,7 @@ search_tasks_failed_hdr = JSONDocumentedResponse(
     description=task_service.search.__doc__ + schemas.tasks.TaskSearchRequest.__doc__,
     **create_documentation([search_tasks_success_jdr, search_tasks_failed_hdr])
 )
-async def search_tasks(query: schemas.tasks.TaskSearchRequest, current_user=Depends(get_current_user(['respondent']))):
+async def search_tasks(query: schemas.tasks.TaskSearchRequest, current_user=Depends(get_current_user())):
     """
     Task search
     """
@@ -132,19 +132,9 @@ async def get_task(task_id: int, current_user: schemas.users.User=Depends(get_cu
     task = await task_service.get_task(task_id=task_id)
     if not task:
         return not_found_jdr.response()
+    from pprint import pprint
+    await task_service.remove_answers(current_user, task)
 
-    if current_user.username in task.respondents_claimed:
-        for i in range(len(task.questions)):
-            answers = []
-            for answer in task.questions[i].answers:
-                if answer.respondent == current_user.username:
-                    answers = [answer]
-                    break
-            task.questions[i].answers = answers
-
-    elif current_user.user_type == 'respondent':
-        for i in range(len(task.questions)):
-            task.questions[i].answers = []
     return get_task_success_jdr.response(task, exclude={'resource_path'})
 
 

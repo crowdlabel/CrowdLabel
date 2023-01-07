@@ -1,4 +1,5 @@
 <template>
+    
   <div class="all">
     <div class="top_nav">
       <div class="top_nav_trigger">
@@ -7,13 +8,11 @@
       </div>
       <div class="page_title">
         <h3 class="title">任务大厅</h3>
-        <a class="notifications" data-external="true" href="/sendernotice">
-            <img src="../assets/notifications.svg" alt="label" height="24"/>
-          </a>
+        <a class="my_account" data-external="true" href="/senderaccount">
+          <img :src="profile_pic" class="profile" alt="label"/>
+        </a>
       </div>
-      <a class="my_account" data-external="true" href="/senderaccount">
-        <img src="../assets/my_account.svg" alt="label" height="24"/>
-      </a>
+      
     </div>
     <div class="body">
         <div class="left_nav">
@@ -35,13 +34,13 @@
             </ul>
             <ul class="left_nav_list_bottom">
                 <li>
-                    <a aria-current="page" class="left_nav_list_item" data-external="true" href="/settings">
+                    <a aria-current="page" class="left_nav_list_item" data-external="true" href="/senderaccount">
                         <img src="../assets/settings.png" height="20" width="20">
                         <p class="list_item_title">设置</p>
                     </a>
                 </li>
                 <li>
-                    <a aria-current="page" class="left_nav_list_item" data-external="true" href="/about_us">
+                    <a aria-current="page" class="left_nav_list_item" data-external="true" href="https://github.com/crowdlabel">
                         <img src="../assets/about.png" height="20" width="20">
                         <p class="list_item_title">关于我们</p>
                     </a>
@@ -51,8 +50,8 @@
 
         <el-dialog
           :visible.sync="dialogVisible"
-          width="50%"
-          min-width="800px"
+          width="40%"
+          min-width="400px"
           class="dialogClass"
           border-radius="12px">
           <div class="type_page">
@@ -61,7 +60,7 @@
             </div>
             <div class="create_main">
               <el-form label-width="80px" ref="form" :model="form" :rules="rules">
-                <el-form-item prop="name" class="name_item">
+                <!-- <el-form-item prop="name" class="name_item">
                   <el-input placeholder="请输入任务名称"  class="mission_name" v-model="form.name"></el-input>
                 </el-form-item>
                 <el-form-item label="任务简介:" class="mission_brief" prop="brief">
@@ -82,7 +81,7 @@
                     <el-button type="primary" size="small" class="click_upload_btn">点击上传</el-button>
                     <div slot="tip" class="el-upload__tip">只能上传JPG和PNG文件</div>
                   </el-upload>
-                </el-form-item>
+                </el-form-item> -->
                 <el-form-item label="上传文件:" class="mission_file" required>
                   <el-upload class="upload_file" action="none"
                     :headers="{ 'Content-Type': 'multipart/form-data'}"
@@ -96,12 +95,12 @@
                     <div slot="tip" class="el-upload__tip">只能上传zip或rar文件</div>
                   </el-upload>
                 </el-form-item>
-                <el-form-item prop="amount" label="任务份额:" class="mission_credits">
+                <!-- <el-form-item prop="amount" label="任务份额:" class="mission_credits">
                   <el-input placeholder="请输入任务总份数"  class="credits_input" v-model="form.amount"></el-input>
                 </el-form-item>
                 <el-form-item prop="credits_each" label="积分奖励:" class="mission_credits">
                   <el-input placeholder="请输入每份任务报酬积分"  class="credits_input" v-model="form.credits_each"></el-input>
-                </el-form-item>
+                </el-form-item> -->
                 <el-form-item>
                   <el-button type="primary" class="create_now" @click="create_new_project">立即创建</el-button>
                   <el-button type="default" class="cancel" @click="backToMission">取消</el-button>
@@ -117,8 +116,105 @@
           min-width="800px"
           class="UploadInfoClass"
           border-radius="12px">
-          <div>
+          <h2>任务文件上传说明</h2>
+          <div class="dabao_body">
+            <div class="dabao_title">
+              <h3 class="dabao_subtitle">一、打包格式</h3>
+              <div class="dabao_content">
+                <p class="dabao_words"> - 最终上传文件要求格式为 zip 或者 rar ，大小不超过10GB</p>
+              </div>
+            </div>
+            <div class="dabao_title">
+              <h3 class="dabao_subtitle">二、文件夹内部格式</h3>
+              <div class="dabao_content">
+                <p class="dabao_words"> - zip文件夹中包括一个 task.json 文件和若干题目资源文件</p>
+                <p class="dabao_words"> - 文字分类的每道题的题干存放在每道题单独对应的 txt 文件中</p>
+                <p class="dabao_words"> - 其他的图片资源格式要求为 jpg 或者 png</p>
+              </div>
+            </div>
+            <div class="dabao_title">
+              <h3 class="dabao_subtitle">三、task.json文件格式</h3>
+              <div class="dabao_content">
+                <p class="dabao_words"> - task.json 文件中包含整个任务的各种设置，是最重要的文件</p>
+                <p class="dabao_words"> - task.json 文件中是一个大的字典</p>
+                <p class="dabao_words"> - 字典中包括"name", "credits", "introduction", "description", "tags", "responses_required", "cover_image", "questions" 这8个不同的key</p>
+                <p class="dabao_words"> - "name"表示任务的名称，是一个字符串</p>
+                <p class="dabao_words"> - "credits"表示提供给每一个答题者的积分数量，是一个int值</p>
+                <p class="dabao_words"> - "introduction"表示任务的简介，是一个字符串</p>
+                <p class="dabao_words"> - "description"表示任务的详情，是一个字符串</p>
+                <p class="dabao_words"> - "tags"表示任务的标签，是一个字符串，但必须包含“图片分类”、“文字分类”、“图片打标”、“音频分类”这四种中的一种（且只有一种）</p>
+                <p class="dabao_words"> - "responses_required"表示任务的份数，是一个int值</p>
+                <p class="dabao_words"> - "cover_image"表示任务的封面，是一个字符串，里面是对应图片资源的完整文件名（和task.json处于同一目录下），比如"cover.jpg"</p>
+                <p class="dabao_words"> - "questions"表示任务中问题的具体信息，是一个数组，每个数组元素信息要求如下：</p>
+                <p class="dabao_subwords"> 1、每个question数组元素都是一个字典，对应一道题，其中包括5个不同的key</p>
+                <p class="dabao_subwords"> 2、每道题有唯一的"question_id"，用户可以随意设置，是一个int值</p>
+                <p class="dabao_subwords"> 3、每道题有一个"question_type"，从"open"、"single_choice"、"bounding_box"、"multi_choice"选一个</p>
+                <p class="dabao_subwords"> 4、每道题有一个"prompt"，是问题是描述，是一个字符串</p>
+                <p class="dabao_subwords"> 5、每道题可以有一个"resource"，是一个字符串，存放的是对应资源的完整名称，比如"1.jpg"</p>
+                <p class="dabao_subwords"> 6、如果这道题是一个单选或者多选题，则会有一个"options"，里面是一个字符串数组，存放各种选项，选项数为2-7个</p>
+              </div>
+            </div>
+            <div class="dabao_title">
+              <h3 class="dabao_subtitle">四、文件样例</h3>
+              <div class="dabao_content">
 
+<pre>{
+    "name": "Image",
+    "credits": 2,
+    "introduction": "",
+    "description": "Image",
+    "tags": ["图片分类"],
+    "responses_required": 2,
+    "cover_image": "2.jpg",
+    "questions": [
+        {
+            "question_id": 1,
+            "question_type": "single_choice",
+            "prompt": "What is in the image?",
+            "resource": "1.jpg",
+            "options": ["bike", "dog", "person"]
+        },
+        {
+            "question_id": 5,
+            "question_type": "single_choice",
+            "prompt": "What is in the image?",
+            "resource": "3.jpg",
+            "options": ["bike", "rock", "car", "school"]
+        },
+        {
+            "question_id": 3,
+            "question_type": "single_choice",
+            "prompt": "What is in the image?",
+            "resource": "2.jpg",
+            "options": ["bike", "dog", "car"]
+        }
+    ]
+}</pre>
+<br>
+
+            <div class="dabao_title">
+                <h3 class="dabao_subtitle">五、目录结构</h3>
+                <div class="dabao_content">
+<pre>.
+└── your-folder-name/
+    ├── 1.jpg
+    ├── 2.jpg
+    ├── 3.jpg
+    └── task.json</pre></div>
+            </div>
+
+
+              </div>
+            </div>
+            <div class="dabao_title">
+              <h3 class="dabao_subtitle">六、注意事项</h3>
+              <div class="dabao_content">
+                <p class="dabao_words"> - 一定要按照格式准备文件，然后进行上传，否则会上传失败</p>
+                <p class="dabao_words"> - 相同的资源文件可以即作为题目，也可以作为封面。</p>
+                <p class="dabao_words"> - 假如没有选择封面图片，则会使用系统默认的封面图片，不会影响上传</p>
+                <p class="dabao_words"> - 祝好！</p>
+              </div>
+            </div>
           </div>
         </el-dialog>
 
@@ -129,14 +225,13 @@
             </div>
             <div class="filter">
               <p class="title_filter">筛选：</p>
-              <el-button-group>
-                <!-- disabled sorting and searching for requesters -->
-                <el-button round @click="searchAll" :autofocus="true" disabled>全部</el-button>
-                <el-button round @click="searchText" disabled>文字分类</el-button>
-                <el-button round @click="searchImage" disabled>图片分类</el-button>
-                <el-button round @click="searchImage" disabled>图片打标</el-button>
-                <el-button round @click="searchRadio" disabled>音频分类</el-button>
-              </el-button-group>
+              <el-radio-group v-model="taskType" size="small" @change="chooseType()">
+                <el-radio-button label="all">全部</el-radio-button>
+                <el-radio-button label="text" >文字分类</el-radio-button>
+                <el-radio-button label="img_classify" >图片分类</el-radio-button>
+                <el-radio-button label="img_borderbox" >图片打标</el-radio-button>
+                <el-radio-button label="audio">音频分类</el-radio-button>
+              </el-radio-group>
               <el-button type="default" round @click="uploadInfo" id="format_download">任务上传说明</el-button>
               <el-button type="primary" round @click="createProject" id="create">创建任务</el-button>
             </div>
@@ -214,6 +309,7 @@ export default {
       }
     };
     return {
+      profile_pic:'',
       pageSize: 6,
       currentPage: 1,
       search_input:'',
@@ -227,6 +323,7 @@ export default {
       tasks_info: [],
       taskslist: '',
       task_name: [],
+      taskType: 'all',
       task_cover_image: [],
       tasksinfo: {
         responses_required: '',
@@ -265,6 +362,104 @@ export default {
     }
   },
   methods: {
+    searchSpecific () {
+      let self = this
+      self.tasks_info = []
+      var taglist = []
+      if(self.taskType=='text'){
+        taglist.push("文字分类")
+      }else if(self.taskType=='img_classify'){
+        taglist.push("图片分类")
+      }else if(self.taskType=='img_borderbox'){
+        taglist.push("图片打标")
+      }else if(self.taskType=='audio'){
+        taglist.push("音频分类")
+      }
+      let requesterlist = []
+      requesterlist.push(self.userid)
+      self.task.searchTasksTasksPut({
+        "name": self.search_input,
+        "requester": requesterlist, 
+        "tags" : taglist,
+        "sort_ascending": false,
+      }, (error, data, response) => {
+        if (error == 'Error: Unauthorized') {
+          localStorage.removeItem('Authorization');
+          this.$router.push('/receiverlogin');
+        }
+        let res = JSON.parse(response['text'])
+        console.log(res)
+        let taskslist = res['tasks']
+        var counter = 0
+        taskslist.forEach(function(element) {
+          var c = { task_id:element['task_id'], name:element['name'], cover:''}
+          self.tasks_info.push(c)
+          var index = counter;
+          counter++;
+          self.task.getCoverTasksTaskIdCoverImageGet(element['task_id'], (error, data, response) => {
+            if (response.status == 400){
+              self.tasks_info[index].cover = '../default_cover.jpeg'
+            } else {
+              let binaryData = [];
+              binaryData.push(response.body);
+              let imageObjectURL = window.URL.createObjectURL(new Blob(binaryData));
+              // let imageObjectURL = window.URL.createObjectURL(response.body);
+              self.imageObject = imageObjectURL
+              self.tasks_info[index].cover = self.imageObject
+            }
+          })
+        })
+      })
+    },
+    chooseType() {
+      let self = this
+      self.tasks_info = []
+      var taglist = []
+      if(self.taskType=='text'){
+        taglist.push("文字分类")
+      }else if(self.taskType=='img_classify'){
+        taglist.push("图片分类")
+      }else if(self.taskType=='img_borderbox'){
+        taglist.push("图片打标")
+      }else if(self.taskType=='audio'){
+        taglist.push("音频分类")
+      }
+      let requesterlist = []
+      requesterlist.push(self.userid)
+      self.task.searchTasksTasksPut({
+        "name": self.search_input,
+        "requester": requesterlist, 
+        "tags" : taglist,
+        "sort_ascending": false,
+      }, (error, data, response) => {
+        if (error == 'Error: Unauthorized') {
+          localStorage.removeItem('Authorization');
+          this.$router.push('/receiverlogin');
+        }
+        let res = JSON.parse(response['text'])
+        console.log(res)
+        let taskslist = res['tasks']
+        var counter = 0
+        taskslist.forEach(function(element) {
+          var c = { task_id:element['task_id'], name:element['name'], cover:''}
+          self.tasks_info.push(c)
+          var index = counter;
+          counter++;
+          self.task.getCoverTasksTaskIdCoverImageGet(element['task_id'], (error, data, response) => {
+            if (response.status == 400){
+              self.tasks_info[index].cover = '../default_cover.jpeg'
+            } else {
+              let binaryData = [];
+              binaryData.push(response.body);
+              let imageObjectURL = window.URL.createObjectURL(new Blob(binaryData));
+              // let imageObjectURL = window.URL.createObjectURL(response.body);
+              self.imageObject = imageObjectURL
+              self.tasks_info[index].cover = self.imageObject
+            }
+          })
+        })
+      })
+    },
     handleCurrentChange(val) {
       this.currentPage=val;
     },
@@ -276,8 +471,8 @@ export default {
     },
     handleChange(file, fileList) {
       let self = this;
-      if (file.size / (1024*1024)>1) {
-        self.$message.warning("当前限制文件大小不能大于1M");
+      if (file.size / (1024*1024)>10) {
+        self.$message.warning("当前限制文件大小不能大于10MB");
         self.file = '';
         self.form.cover= [];
         return false;
@@ -300,8 +495,8 @@ export default {
     },
     handleZip(file, fileList) {
       let self = this;
-      if (file.size / (1024*1024)>20) {
-        self.$message.warning("当前限制文件大小不能大于20M");
+      if (file.size / (1024*1024*1024)>10) {
+        self.$message.warning("当前限制文件大小不能大于10GB");
         self.file = '';
         self.form.zipfile= [];
         return false;
@@ -381,21 +576,6 @@ export default {
     backToMission() {
       this.dialogVisible = false;
     },
-    searchAll() {
-      this.refresh();
-    },
-    searchText() {
-      
-    },
-    searchImage() {
-      
-    },
-    searchRadio () {
-      
-    },
-    searchSpecific() {
-
-    },
     uploadInfo () {
       this.UploadMissionInfo = true;
     },
@@ -403,8 +583,8 @@ export default {
       this.dialogVisible = true;
     },
     create_new_project () {
-      if(this.zipfile === '' || this.zipfile === 'null'){
-        alert('You need to upload file');
+      if(this.file == [] || this.file == null){
+        alert('请上传文件');
         return false;
       } else {
         // this.multipartFile.append('username', this.userid);
@@ -413,6 +593,7 @@ export default {
         // this.multipartFile.append('missioncredits', this.form.credits_each)
         // this.multipartFile.append('missionbrief', this.form.brief);
         // this.multipartFile.append('missiondetails', this.form.details);
+        console.log(this.file)
         this.task.uploadTaskTasksUploadPost(this.file, (error, data, response) => {
           let a = JSON.parse(response['text'])
           if (response.status == 400 && a.error == 'Insufficient credits'){
@@ -440,12 +621,15 @@ export default {
               
             });
             this.form.zipfile = [];
-          } if(response.status == 200){
+          } else if(response.status == 200){
             this.form.zipfile = []
+            this.file = ''
             this.form.cover = []
-            alert('upload suceed');
+            alert('上传成功');
             this.dialogVisible = false
             this.refresh();
+          } else if(response.status == 422){
+            alert('请上传文件！')
           }
         })
       }
@@ -456,7 +640,8 @@ export default {
   },
   mounted () {
     let self = this
-    var apiClient  = new ApiClient('http://localhost:8000');
+    let base = this.$root.basePath
+    var apiClient  = new ApiClient(base);
     apiClient.authentications['OAuth2PasswordBearer'].accessToken = localStorage.getItem('Authorization')
     self.client = apiClient
     var usersApi = new UsersApi(apiClient);
@@ -480,12 +665,12 @@ export default {
       self.taskslist = []
       self.taskslist = a.tasks_requested
       self.tasks_info = []
-      var counter = 0
+      var counter = self.taskslist.length - 1
       self.taskslist.forEach(function(element) {
         var c = { task_id:element, name:'', cover:''}
-        self.tasks_info.push(c)
+        self.tasks_info.unshift(c)
         var index = counter;
-        counter++;
+        counter--;
         self.task.getCoverTasksTaskIdCoverImageGet(element, (error, data, response) => {
           if (response.status == 400){
             self.tasks_info[index].cover = '../default_cover.jpeg'
@@ -507,6 +692,16 @@ export default {
         })
       });
     })
+    self.user.getPfpUsersMeProfilePictureGet((error, data, response) => {
+      if (response.status == 404){
+        self.profile_pic = '../my_account.svg'
+      } else {
+        let binaryData = [];
+        binaryData.push(response.body);
+        let imageObjectURL = window.URL.createObjectURL(new Blob(binaryData));
+        self.profile_pic = imageObjectURL
+      }
+    })
   }
 }
 </script>
@@ -515,11 +710,11 @@ export default {
 @import '@/assets/font/font.css';
 
 .dialogClass{
-  min-width: 800px !important;
+  min-width: 400px !important;
 }
 ::v-deep .dialogClass .el-dialog{
-  width: 50% !important;
-  min-width: 700px;
+  width: 40% !important;
+  min-width: 400px;
   border-radius: 12px;
 }
 
@@ -567,14 +762,13 @@ export default {
   flex: 1;
 }
 .my_account {
-  align-items: center;
-  align-self: center;
-  cursor: pointer;
-  display: flex;
-  justify-content: center;
-  margin-left: 10px;
-  margin-right: 20px;
-  position: relative;
+    align-items: center;
+    align-self: center;
+    cursor: pointer;
+    display: flex;
+    justify-content: center;
+    position: relative;
+    margin-right: 17px;
 }
 .logo{
   vertical-align: middle;
@@ -900,7 +1094,7 @@ export default {
 
 .upload_file{
   float: left;
-  width: 80%;
+  width: 100%;
 }
 
 ::v-deep .el-form-item__label{
@@ -928,7 +1122,6 @@ export default {
 ::v-deep .el-radio-group{
   position: relative;
   float: left;
-  top: 14px !important;
 }
 .mission_name{
   font-size: 14px !important;
@@ -992,7 +1185,73 @@ export default {
   margin-right:30px;
 }
 
+::v-deep .el-radio-group {
+  border-color: #5D3BE6;
+}
+::v-deep .el-radio-button__inner {
+  background: #fff;
+  border-color: #5D3BE6;
+  color:#5D3BE6;
+  font-size: 12.5px;
+  min-width: 80px;
+  align-items:center;
+  box-shadow:none;
+  outline: none;
+}
+::v-deep .el-radio-button__orig-radio:hover + .el-radio-button__inner {
+  background: #5D3BE6;
+  border-color: #5D3BE6;
+  color: #fff;
+}
+::v-deep .el-radio-button__orig-radio:checked + .el-radio-button__inner{
+  background: #5D3BE6;
+  border-color: #5D3BE6;
+  box-shadow:none;
+  color: #fff;
+}
+
+.profile {
+  height: 28px;
+  width: 28px;
+  border-radius: 50%;
+}
+
+.dabao_body{
+  width: 100%;
+  height: 2050px;
+  padding-bottom: 50px;
+}
+
+.dabao_title{
+  width:100%;
+  float:left;
+}
+
+.dabao_subtitle{
+  width:90%;
+  text-align: left;
+  margin-left:5%;
+  margin-right:5%;
+  margin-top:12px;
+  margin-bottom: 12px;
+}
 
 
+.dabao_content{
+  width:85%;
+  float:left;
+  text-align: left;
+  margin-left:10%;
+}
 
+.dabao_words{
+  width:100%;
+  float:left;
+  margin-top: 10px;
+  margin-bottom: 10px;
+}
+
+.dabao_subwords{
+  margin-left:5%;
+}
 </style>

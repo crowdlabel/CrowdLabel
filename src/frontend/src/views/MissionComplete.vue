@@ -36,8 +36,8 @@
         </h3>
         <p class="message">
           恭喜，您已完成了该任务的所有题目！
-          <br />您的答题数据已提交，请耐心等待审核，我们会在第一时间将审核结果通过平台消息发送给您。
-          <br />您也可以前往 “首页->历史记录” 页面查看自己所有已提交任务的状态。
+          <br />您的积分奖励已到账，可以前往“首页->我的积分“查看。
+          <br />您也可以前往 “首页->历史记录” 查看自己所有已提交的任务。
         </p>
         <img class="trophy" src="../assets/trophy.svg"/>
         <div class="footer">
@@ -81,8 +81,9 @@ export default {
   },
   mounted() {
     let self = this
+    let base = this.$root.basePath
     self.task_id = localStorage.getItem('TaskID')
-    var apiClient  = new ApiClient('http://localhost:8000');
+    var apiClient  = new ApiClient(base);
     apiClient.authentications['OAuth2PasswordBearer'].accessToken = localStorage.getItem('Authorization');
     self.client = apiClient;
     var usersApi = new UsersApi(apiClient);

@@ -1,33 +1,30 @@
-# https://github.com/testdrivenio/fastapi-docker-traefik/blob/master/docker-compose.prod.yml
-
-version: '3.8'
+version: "3"
 
 services:
-  web:
-    build:
-      context: .
-      dockerfile: Dockerfile
-    expose:
-      - 80
-    depends_on:
-      - db
-    labels:
-      - "traefik.enable=true"
-      - "traefik.http.routers.fastapi.rule=Host(`crowdlabel.org`)"
-      - "traefik.http.routers.fastapi.tls=true"
-      - "traefik.http.routers.fastapi.tls.certresolver=letsencrypt"
-  traefik:
-    build:
-      context: .
-      dockerfile: Dockerfile.traefik
+  caddy:
+    image: caddy:2.6.2
+    restart: unless-stopped
     ports:
       - 80:80
       - 443:443
     volumes:
-      - "/var/run/docker.sock:/var/run/docker.sock:ro"
-      - "./traefik-certificates:/certificates"
-    labels:
-      - "traefik.enable=true"
-volumes:
-  db_file:
-  traefik-certificates:
+      - ./Caddyfile:/etc/caddy/Caddyfile
+      - ./caddy/data:/data
+      - ./caddy/config:/config
+      - ./src/frontend/dist:/var/www/html/crowdlabel
+    networks:
+        - web
+
+  api:
+    container_name: api
+    build:
+      context: .
+      dockerfile: Dockerfile
+    volumes:
+      - ./data:/data
+    networks:
+      - web
+
+networks:
+  web:
+    driver: bridge

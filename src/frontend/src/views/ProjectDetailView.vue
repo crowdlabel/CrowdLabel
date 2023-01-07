@@ -24,7 +24,7 @@
           </div>
           <div class="row row_margin">
             <a href="/projects">
-              <el-button type="primary" plain>&lt 返回</el-button>
+              <el-button type="primary" plain>&lt 返回任务大厅</el-button>
             </a>
             <div class="button_placeholder"></div>
             <el-button id="claim_button" type="primary" v-on:click="claim_task()" :disabled="claim">接受任务</el-button>
@@ -64,8 +64,9 @@ export default {
   },
   mounted () {
     let self = this;
+    let base = this.$root.basePath
     self.task_id = localStorage.getItem('TaskID')
-    var apiClient  = new ApiClient('http://localhost:8000');
+    var apiClient  = new ApiClient(base);
     apiClient.authentications['OAuth2PasswordBearer'].accessToken = localStorage.getItem('Authorization')
     self.client = apiClient
     var usersApi = new UsersApi(apiClient);

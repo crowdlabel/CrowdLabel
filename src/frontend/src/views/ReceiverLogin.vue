@@ -117,13 +117,15 @@ export default {
                     let ready_email = document.getElementById('registeremail').value;
                     this.user.availabilityUsersAvailabilityPut({'email': ready_email},
                     (error, data, response) => {
-                        if (!data['email']){
+                        if (response.status == 422){
+                            callback(new Error('邮箱格式错误'));
+                        } else if (!data['email']){
                             callback(new Error('邮箱已被占用'));
-                            } else {
-                                this.disable = false;
-                                callback();
-                            }
+                        } else  {
+                            this.disable = false;
+                            callback();
                         }
+                    }
                     );
                 }
             }
@@ -158,7 +160,7 @@ export default {
         };
         return {
             text: "发送验证码",
-            time: 5,
+            time: 60,
             timer: null,
             disable: true,
             activeName: 'second',
@@ -211,15 +213,16 @@ export default {
             this.time = time
             this.verifyEmailbtn();
         }
-        var apiClient = new ApiClient('http://localhost:8000');
+        
+    },
+    mounted () {
+        let base = this.$root.basePath
+        var apiClient = new ApiClient(base);
         this.client = apiClient
         var usersApi = new UsersApi(apiClient);
         this.user = usersApi
         var authApi = new AuthApi(apiClient);
         this.auth = authApi
-    },
-    mounted () {
-        
     },
     methods: {
         handleTabClick(tab, event){
@@ -296,7 +299,7 @@ export default {
                     this.text = this.time + "s后重新发送"
                 } else {
                     clearInterval(this.timer);
-                    this.time = 5
+                    this.time = 60
                     this.disable = false
                     this.text = '发送验证码'
                 }

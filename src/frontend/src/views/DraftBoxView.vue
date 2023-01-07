@@ -7,13 +7,11 @@
       </div>
       <div class="page_title">
         <h3 class="title">草稿箱</h3>
-          <a class="notifications" data-external="true" href="/notifications">
-            <img src="../assets/notifications.svg" alt="label" height="24"/>
-          </a>
-      </div>
         <a class="my_account" data-external="true" href="/myaccount">
-            <img src="../assets/my_account.svg" alt="label" height="24"/>
+            <img :src="profile_pic" class="profile" alt="label"/>
         </a>
+      </div>
+        
     </div>
     <div class="body">
         <div class="left_nav">
@@ -47,13 +45,13 @@
             </ul>
             <ul class="left_nav_list_bottom">
                 <li>
-                    <a aria-current="page" class="left_nav_list_item" data-external="true" href="/settings">
+                    <a aria-current="page" class="left_nav_list_item" data-external="true" href="/myaccount">
                         <img src="../assets/settings.png" height="20" width="20">
                         <p class="list_item_title">设置</p>
                     </a>
                 </li>
                 <li>
-                    <a aria-current="page" class="left_nav_list_item" data-external="true" href="/about_us">
+                    <a aria-current="page" class="left_nav_list_item" data-external="true" href="https://github.com/crowdlabel">
                         <img src="../assets/about.png" height="20" width="20">
                         <p class="list_item_title">关于我们</p>
                     </a>
@@ -63,104 +61,18 @@
         <div class="main_body">
             <div class="scroll_view">
               <el-scrollbar style="height: 100%">
+                <!-- 如果没有任务 -->
+                <div class="message" id="is_empty">
+                  <p class="message_text">这里空空如也，快去接收任务吧！</p>
+                </div>
                 <!-- 用于展示下拉，填充的内容 -->
-                <div class="scroll_element">
-                  <img src="../assets/image_placeholder.png" class="project_image">
+                <div class="scroll_element" v-for="(item, index) in projectsList" :key="index" @click="seeDetails(item.task_id)">
+                  <img :src=item.cover class="project_image">
                   <div class="scroll_element_text">
-                    <h4 class="project_title">任务名称</h4>
-                    <p class="project_detail">任务类型: 文字</p>
-                    <p class="project_detail">保存时间: 2022年11月27日</p>
-                    <p class="project_detail">答题进度: 11/60</p>
-                  </div>
-                </div>
-                <div class="scroll_element">
-                  <img src="../assets/image_placeholder.png" class="project_image">
-                  <div class="scroll_element_text">
-                    <h4 class="project_title">任务名称</h4>
-                    <p class="project_detail">任务类型: 文字</p>
-                    <p class="project_detail">保存时间: 2022年11月27日</p>
-                    <p class="project_detail">答题进度: 11/60</p>
-                  </div>
-                </div>
-                <div class="scroll_element">
-                  <img src="../assets/image_placeholder.png" class="project_image">
-                  <div class="scroll_element_text">
-                    <h4 class="project_title">任务名称</h4>
-                    <p class="project_detail">任务类型: 文字</p>
-                    <p class="project_detail">保存时间: 2022年11月27日</p>
-                    <p class="project_detail">答题进度: 11/60</p>
-                  </div>
-                </div>
-                <div class="scroll_element">
-                  <img src="../assets/image_placeholder.png" class="project_image">
-                  <div class="scroll_element_text">
-                    <h4 class="project_title">任务名称</h4>
-                    <p class="project_detail">任务类型: 文字</p>
-                    <p class="project_detail">保存时间: 2022年11月27日</p>
-                    <p class="project_detail">答题进度: 11/60</p>
-                  </div>
-                </div>
-                <div class="scroll_element">
-                  <img src="../assets/image_placeholder.png" class="project_image">
-                  <div class="scroll_element_text">
-                    <h4 class="project_title">任务名称</h4>
-                    <p class="project_detail">任务类型: 文字</p>
-                    <p class="project_detail">保存时间: 2022年11月27日</p>
-                    <p class="project_detail">答题进度: 11/60</p>
-                  </div>
-                </div>
-                <div class="scroll_element">
-                  <img src="../assets/image_placeholder.png" class="project_image">
-                  <div class="scroll_element_text">
-                    <h4 class="project_title">任务名称</h4>
-                    <p class="project_detail">任务类型: 文字</p>
-                    <p class="project_detail">保存时间: 2022年11月27日</p>
-                    <p class="project_detail">答题进度: 11/60</p>
-                  </div>
-                </div>
-                <div class="scroll_element">
-                  <img src="../assets/image_placeholder.png" class="project_image">
-                  <div class="scroll_element_text">
-                    <h4 class="project_title">任务名称</h4>
-                    <p class="project_detail">任务类型: 文字</p>
-                    <p class="project_detail">保存时间: 2022年11月27日</p>
-                    <p class="project_detail">答题进度: 11/60</p>
-                  </div>
-                </div>
-                <div class="scroll_element">
-                  <img src="../assets/image_placeholder.png" class="project_image">
-                  <div class="scroll_element_text">
-                    <h4 class="project_title">任务名称</h4>
-                    <p class="project_detail">任务类型: 文字</p>
-                    <p class="project_detail">保存时间: 2022年11月27日</p>
-                    <p class="project_detail">答题进度: 11/60</p>
-                  </div>
-                </div>
-                <div class="scroll_element">
-                  <img src="../assets/image_placeholder.png" class="project_image">
-                  <div class="scroll_element_text">
-                    <h4 class="project_title">任务名称</h4>
-                    <p class="project_detail">任务类型: 文字</p>
-                    <p class="project_detail">保存时间: 2022年11月27日</p>
-                    <p class="project_detail">答题进度: 11/60</p>
-                  </div>
-                </div>
-                <div class="scroll_element">
-                  <img src="../assets/image_placeholder.png" class="project_image">
-                  <div class="scroll_element_text">
-                    <h4 class="project_title">任务名称</h4>
-                    <p class="project_detail">任务类型: 文字</p>
-                    <p class="project_detail">保存时间: 2022年11月27日</p>
-                    <p class="project_detail">答题进度: 11/60</p>
-                  </div>
-                </div>
-                <div class="scroll_element">
-                  <img src="../assets/image_placeholder.png" class="project_image">
-                  <div class="scroll_element_text">
-                    <h4 class="project_title">任务名称</h4>
-                    <p class="project_detail">任务类型: 文字</p>
-                    <p class="project_detail">保存时间: 2022年11月27日</p>
-                    <p class="project_detail">答题进度: 11/60</p>
+                    <h4 class="project_title">{{ item.name }}</h4>
+                    <p class="project_detail">任务类型: {{ item.type }}</p>
+                    <p class="project_detail">任务标签: {{ item.tags }}</p>
+                    <p class="project_detail">答题进度: {{ item.progress }}</p>
                   </div>
                 </div>
               </el-scrollbar>
@@ -174,16 +86,106 @@
 <script>
 // @ is an alias to /src
 // import HelloWorld from '@/components/HelloWorld.vue'
-import axios from 'axios'
+import { ApiClient } from '@/crowdlabel-api/src';
+import { UsersApi } from '@/crowdlabel-api/src';
+import { AuthApi } from '@/crowdlabel-api/src';
+import { TasksApi } from '@/crowdlabel-api/src';
 export default {
   data() {
     return {
-      
+      client:'',
+      user:'',
+      task:'',
+      auth:'',
+      projectsList: [],
+      profile_pic: ''
     };
   },
+  mounted() {
+    let self = this;
+    let base = this.$root.basePath
+    var apiClient  = new ApiClient(base);
+    apiClient.authentications['OAuth2PasswordBearer'].accessToken = localStorage.getItem('Authorization')
+    self.client = apiClient
+    var usersApi = new UsersApi(apiClient);
+    self.user = usersApi
+    var authApi = new AuthApi(apiClient);
+    this.auth = authApi
+    var tasksApi = new TasksApi(apiClient);
+    self.task = tasksApi;
+    self.user.getMeUsersMeGet((error, data, response) => {
+      if (error == 'Error: Unauthorized') {
+        localStorage.removeItem('Authorization');
+        this.$router.push('/receiverlogin');
+      }
+      let res = JSON.parse(response["text"]);
+      let tasks_claimed = res["tasks_claimed"];
+      if (tasks_claimed.length > 0)
+        document.getElementById("is_empty").remove();
+      console.log(tasks_claimed)
+      for (let i = 0; i < tasks_claimed.length; i++) {
+        let _task_id = tasks_claimed[i];
+        self.task.getTaskTasksTaskIdGet(_task_id, (error, data, response) => {
+          let res = response.body;
+          self.task.getProgressTasksTaskIdProgressGet(res.task_id, (error, data, response) => {
+            let res2 = JSON.parse(response['text']);
+            let task_id_p = res.task_id;
+            self.task.getCoverTasksTaskIdCoverImageGet(task_id_p, (error, data, response) => {
+              // 任务信息
+              let _name = res.name;
+              let _tags = '';
+              let _type = '';
+              let _total_question_num = res.questions.length;
+              let task_tags = res.tags;
+              for (var k = 0; k < task_tags.length; k++) {
+                _tags += task_tags[k];
+                if (k != task_tags.length - 1) {
+                  _tags += ", ";
+                }
+                if (task_tags[k] == "文字分类" || task_tags[k] == "图片分类" || task_tags[k] == "图片打标" || task_tags[k] == "音频分类")
+                  _type = task_tags[k];
+              }
+              // 任务进度
+              console.log(res2)
+              let _progress = "" + parseInt(res2.progress + 1) + " / " + _total_question_num;
+              // 任务封面
+              let _cover = '';
+              if (response.status == 400){
+                _cover = '../default_cover.jpeg'
+              } else {
+                let binaryData = [];
+                binaryData.push(response.body);
+                let imageObjectURL = window.URL.createObjectURL(new Blob(binaryData));
+                _cover = imageObjectURL;
+              }
+              let cur_task = {task_id: _task_id, name: _name, type: _type, tags: _tags, progress: _progress, cover: _cover};
+              self.projectsList.push(cur_task);
+            });
+          });
+        });
+      }
+    })
+    
+    self.user.getPfpUsersMeProfilePictureGet((error, data, response) => {
+      if (response.status == 404){
+        self.profile_pic = '../my_account.svg'
+      } else {
+        let binaryData = [];
+        binaryData.push(response.body);
+        let imageObjectURL = window.URL.createObjectURL(new Blob(binaryData));
+        self.profile_pic = imageObjectURL
+      }
+    })
+  },
   methods: {
-
-  }
+    seeDetails(task_id) {
+      console.log("CLICKED")
+      this.$store.commit('changeTaskID', task_id);
+      this.$router.push({
+        name:'project_detail',
+      })
+    }
+  } 
 }
 </script>
 
@@ -222,23 +224,14 @@ export default {
     min-width: 120px;
     flex: 1;
 }
-.notifications {
-    align-items: center;
-    align-self: center;
-    cursor: pointer;
-    display: flex;
-    justify-content: center;
-    position: relative;
-}
 .my_account {
     align-items: center;
     align-self: center;
     cursor: pointer;
     display: flex;
     justify-content: center;
-    margin-left: 10px;
-    margin-right: 20px;
     position: relative;
+    margin-right: 17px;
 }
 .logo{
   vertical-align: middle;
@@ -422,6 +415,7 @@ export default {
   height: fit-content;
   border-bottom: 1.2px solid rgba(0,0,0,.1);
   flex-direction: row;
+  cursor: pointer;
   display: flex;
   padding: 20px 25px;
 }
@@ -445,5 +439,20 @@ export default {
   width: 100px;
   border-radius: 10%;
   align-self:center;
+}
+
+.profile {
+  height: 28px;
+  width: 28px;
+  border-radius: 50%;
+}
+
+.message {
+  margin: 30px 0px;
+}
+.message_text {
+  font-size: 16px;
+  font-weight: bold;
+  color: rgba(0,0,0,.2)
 }
 </style>

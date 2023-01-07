@@ -33,8 +33,8 @@
           <div class="mainimage"></div>
           <h1 id="front_big">CrowdLabel</h1>
           <el-button type="primary" round @click="chooseType" id="getstarted">开始体验</el-button>
-          <div class="smalltriangle">
-          </div>
+          <!-- <div class="smalltriangle">
+          </div> -->
         </div>
       </el-main>
     </el-container>
@@ -44,36 +44,17 @@
     </div>
     <div class="intro">
       <h1 class="frontinfo">数据标注平台</h1>
-      <p class="infotext">支持计算机视觉、语言工程、自然语言处理多类型数据标注，多重审核，高效高质</p>
+      <p class="infotext">支持计算机视觉、语言工程、自然语言处理多类型数据标注，联系方式：contact@crowdlabel.org</p>
     </div>
 
-    <div class="info_page">
-      <div class="info_page_left">
-        <div class="info_page_box" id="brief_intro">
-          <h2 class="info_page_h2">平台简介</h2>
-          
-        </div>
-        <div class="info_page_box" id="demonstration">
-          <h2 class="info_page_h2">任务示例</h2>
-        </div>
-      </div>
-
-      <div class="info_page_right">
-        <div class="info_page_box" id="team_info">
-          <h2 class="info_page_h2">设计团队</h2>
-
-        </div>
-      </div>
-    </div>
-
-    <div class="footer">
+    <!-- <div class="footer">
       <div id="team_contact">
-        <!--<p>联系方式 | 电话：+86 1xx-xxxx-xxxx</p>-->
+        <p>联系方式 | 电话：+86 1xx-xxxx-xxxx</p>
       </div>
       <div id="team_email">
         <p>邮箱：contact@crowdlabel.org</p>
       </div>
-    </div>
+    </div> -->
 
   </div>
 </template>
@@ -98,6 +79,9 @@ export default {
     receiverType: function () {
       this.$router.push('/receiverlogin')
     },
+  },
+  mounted () {
+
   },
 }
 </script>
@@ -161,7 +145,6 @@ body{
 
 .homepage{
   width:100%;
-  height:1220px;
   min-width: 800px;
 }
 #mid{
@@ -179,7 +162,7 @@ body{
 .mainimage{
   position: absolute;
   height:480px;
-  width: 90%;
+  width: 100%;
   min-width:800px;
   background-image: url("../assets/crowdlabel_templogo2.jpg");
   background-position: center;
@@ -278,13 +261,13 @@ body{
 }
 .frontinfo{
   position:relative;
-  top: 0px;
+  top: -20px;
   font-family: 'PangMenZhengDaoBiaoTi';
   font-size: 55px;
 }
 .infotext{
   position: relative;
-  top: 10px;
+  top: -10px;
   /* font-family: 'SourceHanSansSC'; */
   font-size: 18px;
 }

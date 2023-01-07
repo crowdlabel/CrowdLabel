@@ -20,24 +20,19 @@
                         <p class="list_item_title">个人信息</p>
                     </a>
                 </li>
-                <li>
-                    <a aria-current="page" class="left_nav_list_item" data-external="true" href="/notifications">
-                        <img src="../assets/notifications_2.png" height="20" width="20">
-                        <p class="list_item_title">消息中心</p>
-                    </a>
-                </li>
+                
                 <li tag="li" class="left_nav_spacer">
                 </li>
             </ul>
             <ul class="left_nav_list_bottom">
                 <li>
-                    <a aria-current="page" class="left_nav_list_item" data-external="true" href="/settings">
+                    <a aria-current="page" class="left_nav_list_item" data-external="true" href="/myaccount">
                         <img src="../assets/settings.png" height="20" width="20">
                         <p class="list_item_title">设置</p>
                     </a>
                 </li>
                 <li>
-                    <a aria-current="page" class="left_nav_list_item" data-external="true" href="/about_us">
+                    <a aria-current="page" class="left_nav_list_item" data-external="true" href="https://github.com/crowdlabel">
                         <img src="../assets/about.png" height="20" width="20">
                         <p class="list_item_title">关于我们</p>
                     </a>
@@ -46,7 +41,7 @@
         </div>
         <div class="main_body">
             <div class="user_info_row">
-              <img class="profile_pic" src="../assets/image_placeholder.png"/>
+              <img class="profile_pic" :src="mainProfile"/>
               <div class="user_info_column">
                 <p class="username">{{ username }}</p>
                 <p class="user_info_line">邮箱：{{ email }}</p>
@@ -82,12 +77,14 @@ export default {
       username:'',
       email:'',
       password:'**********',
-      credits:''
+      credits:'',
+      mainProfile:'',
     };
   },
   mounted() {
     let self = this;
-    var apiClient  = new ApiClient('http://localhost:8000');
+    let base = this.$root.basePath
+    var apiClient  = new ApiClient(base);
     apiClient.authentications['OAuth2PasswordBearer'].accessToken = localStorage.getItem('Authorization')
     self.client = apiClient
     var usersApi = new UsersApi(apiClient);
@@ -103,6 +100,16 @@ export default {
       self.username = a.username
       self.email = a.email
       self.credits = a.credits
+    })
+    self.user.getPfpUsersMeProfilePictureGet((error, data, response) => {
+      if (response.status == 404){
+        self.mainProfile = '../my_account.svg'
+      } else {
+        let binaryData = [];
+        binaryData.push(response.body);
+        let imageObjectURL = window.URL.createObjectURL(new Blob(binaryData));
+        self.mainProfile = imageObjectURL
+      }
     })
   },
   methods: {

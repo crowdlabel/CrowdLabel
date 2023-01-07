@@ -98,8 +98,9 @@ export default {
   mounted() {
     this.initCanvas(); // 画布初始化
     let self = this
+    let base = this.$root.basePath
     self.task_id = localStorage.getItem('TaskID')
-    var apiClient  = new ApiClient('http://localhost:8000');
+    var apiClient  = new ApiClient(base);
     apiClient.authentications['OAuth2PasswordBearer'].accessToken = localStorage.getItem('Authorization');
     self.client = apiClient;
     var usersApi = new UsersApi(apiClient);
@@ -168,26 +169,27 @@ export default {
       console.log("Original MARKLIST")
       console.log(self.markList)
       // 如已回答过该题，填充答案
-      if (res.answers.length > 0) {
-        // 待修改：暂时只展示画的第一个框，之后改成整个marklist
-        for (var i = 0; i < res.answers[0].boxes.length; i++) {
+      // 如已回答过该题，填充答案
+      for (var i = 0; i < res.answers.length; i++) {
+        let cur_answer = res.answers[i];
+        console.log(cur_answer)
+        console.log(cur_answer.answer)
+        console.log(cur_answer.respondent)
+        if (cur_answer.respondent == my_username) { // 当前用户已回答
+          console.log("FOUND")
+          for (var i = 0; i < cur_answer.answer.boxes.length; i++) {
           self.markList.push({
-            x: res.answers[0].boxes[i].top_left.x,
-            y: res.answers[0].boxes[i].top_left.y,
-            w: res.answers[0].boxes[i].bottom_right.x - res.answers[0].boxes[i].top_left.x,
-            h: res.answers[0].boxes[i].bottom_right.y - res.answers[0].boxes[i].top_left.y
+            x: cur_answer.answer.boxes[i].top_left.x,
+            y: cur_answer.answer.boxes[i].top_left.y,
+            w: cur_answer.answer.boxes[i].bottom_right.x - cur_answer.answer.boxes[i].top_left.x,
+            h: cur_answer.answer.boxes[i].bottom_right.y - cur_answer.answer.boxes[i].top_left.y
           });
         }
-        console.log(res.answers[0].boxes[0].top_left.x);
         console.log(self.markList)
-        /*
-        self.markList[0].x = res.answers[0].top_left.x;
-        self.markList[0].y = res.answers[0].top_left.y;
-        self.markList[0].w = res.answers[0].bottom_right.x - res.answers[0].top_left.x;
-        self.markList[0].h = res.answers[0].bottom_right.y - res.answers[0].top_left.y;
-        */
         this.initCanvas(); // 画布初始化
+        }
       }
+      
         
     })
     self.question.getQuestionResourceTasksTaskIdQuestionsQuestionIdResourceGet(self.task_id, self.question_id, (error, data, response) => {
@@ -265,8 +267,8 @@ export default {
     },
     prevQuestion() {
       // 传答案
-      // 传答案
-      var answer_list = [];
+      if (this.markList.length > 0) {
+        var answer_list = [];
           for (var i = 0; i < this.markList.length; i++) {
             var x_0 = this.markList[i].x;
             var y_0 = this.markList[i].y;
@@ -279,13 +281,18 @@ export default {
             var answer = {top_left: {x: x_0, y: y_0}, bottom_right: {x: x_1, y: y_1}};
             answer_list.push(answer);
           }
-      var answer_dict = { boxes: answer_list };
-      console.log(answer_dict);
-      this.question.createAnswerTasksTaskIdQuestionsQuestionIdAnswerPut(this.task_id, this.question_id, answer_dict, (error, data, response) => {
+        var answer_dict = { boxes: answer_list };
+        console.log(answer_dict);
+        this.question.createAnswerTasksTaskIdQuestionsQuestionIdAnswerPut(this.task_id, this.question_id, answer_dict, (error, data, response) => {
           // console.log(response);
           this.$store.commit('changeQuestionIndex', this.cur_question - 1);
           document.location.href = '/question_image_identify';
-      })
+        })
+      }
+      else {
+        this.$store.commit('changeQuestionIndex', this.cur_question - 1);
+        document.location.href = '/question_image_identify';
+      }
     },
     nextQuestion() {
       let list = this.markList;
@@ -304,17 +311,25 @@ export default {
           }
           var answer_dict = { boxes: answer_list };
           this.question.createAnswerTasksTaskIdQuestionsQuestionIdAnswerPut(this.task_id, this.question_id, answer_dict, (error, data, response) => {
-              this.$store.commit('changeQuestionIndex', this.cur_question + 1);
-              // 判断跳转到什么页面
-              if (this.cur_question + 1 == this.task_question_num) { // 最后一题
+            // 判断跳转到什么页面
+            if (this.cur_question + 1 == this.task_question_num) { // 最后一题
+              // 弹窗
+              this.$confirm('确认完成任务？', '完成任务', {
+                confirmButtonText: '确定',
+                cancelButtonText: '取消',
+                type: 'info'
+              }).then(() => {
+                this.$store.commit('changeQuestionIndex', this.cur_question + 1);
                 this.task.completeTasksTaskIdCompletePost(this.task_id, (error, data, response) => {
                   document.location.href = '/mission_complete';
                 });
-              } else {
-                document.location.href = '/question_image_identify';
-              }
+              }).catch(() => {
+              });
+            } else {
+              this.$store.commit('changeQuestionIndex', this.cur_question + 1);
+              document.location.href = '/question_image_identify';
+            }
           })
-          
       }
     },
     handleChange(val) {
@@ -323,26 +338,36 @@ export default {
       console.log(this.radio);
     },
     quit() {
-        this.$confirm('是否要保存当前的答题进度?', '退出任务', {
-          confirmButtonText: '是',
-          cancelButtonText: '否',
-          type: 'warning'
+        // 弹窗
+        this.$confirm('确认退出任务？您的答题记录将被自动保存。', '退出任务', {
+          confirmButtonText: '确定',
+          cancelButtonText: '取消',
+          type: 'info'
         }).then(() => {
-          /*
-          this.$message({
-            type: 'success',
-            message: '保存成功!'
+          this.$alert('您的答题记录已保存至草稿箱', '退出成功', {
+            confirmButtonText: '好的',
+            callback: action => {
+              // 上传当前题的答案
+              if (this.markList.length > 0) { // 已回答
+                var answer_list = [];
+                for (var i = 0; i < this.markList.length; i++) {
+                  var x_0 = this.markList[i].x;
+                  var y_0 = this.markList[i].y;
+                  var x_1 = this.markList[i].x + this.markList[i].w;
+                  var y_1 = this.markList[i].y + this.markList[i].h;
+                  var answer = {top_left: {x: x_0, y: y_0}, bottom_right: {x: x_1, y: y_1}};
+                  answer_list.push(answer);
+                }
+                var answer_dict = { boxes: answer_list };
+                this.question.createAnswerTasksTaskIdQuestionsQuestionIdAnswerPut(this.task_id, this.question_id, answer_dict, (error, data, response) => {
+                  document.location.href = '/projects';
+                })
+              } else {
+                document.location.href = '/projects';
+              }
+            }
           });
-          */
-          document.location.href = '/projects';
         }).catch(() => {
-          /*
-          this.$message({
-            type: 'info',
-            message: '已取消保存'
-          });  
-          */     
-          document.location.href = '/projects';   
         });
       }
   }
