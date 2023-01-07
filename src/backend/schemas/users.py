@@ -161,13 +161,13 @@ class EditPasswordRequest(BaseModel):
     old_password: str
     @validator('old_password')
     def old_password_format(cls, password):
-        if not re.fullmatch(Password.__pattern, password):
+        if not re.fullmatch(re.compile(fr'[\x20-\x7e]{{8,64}}'), password):
             raise ValueError('Password format incorrect')
         return password
     new_password: str
     @validator('new_password')
     def new_password_format(cls, password):
-        if not re.fullmatch(Password.__pattern, password):
+        if not re.fullmatch(re.compile(fr'[\x20-\x7e]{{8,64}}'), password):
             raise ValueError('Password format incorrect')
         return password
     class Config:
