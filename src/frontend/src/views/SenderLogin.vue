@@ -251,7 +251,7 @@ export default {
                 // alert('successfully registered!');
                 this.activeName = "first"
             } else {
-                console.log('error registration!!');
+                console.log('注册出错!!');
                 return false;
             }
             });
@@ -271,11 +271,11 @@ export default {
                                 path: '/sendermission',
                             });
                         } else {
-                            alert('wrong username or password!')
+                            alert('用户名错误或者密码错误!')
                         }
                     });
             } else {
-                console.log('error username or password');
+                console.log('请输入用户名或者密码');
                 return false;
             }
             });
