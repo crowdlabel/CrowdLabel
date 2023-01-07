@@ -160,7 +160,7 @@ export default {
         };
         return {
             text: "发送验证码",
-            time: 5,
+            time: 60,
             timer: null,
             disable: true,
             activeName: 'second',
@@ -299,7 +299,7 @@ export default {
                     this.text = this.time + "s后重新发送"
                 } else {
                     clearInterval(this.timer);
-                    this.time = 5
+                    this.time = 60
                     this.disable = false
                     this.text = '发送验证码'
                 }
