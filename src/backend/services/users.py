@@ -40,7 +40,7 @@ class Users:
 
         verification_code = str(random.randint(0, 999999)).rjust(6, '0')
 
-        verification_code = '123456'
+        #verification_code = '123456'
         
         res= await con.execute(select(models.email.Email).where(models.email.Email.email==email))
         target = res.scalars().first()
@@ -54,7 +54,7 @@ class Users:
             con.expunge(target)
         await asyncio.shield(con.close())
         try:
-            return True
+            #return True
             self.__email_sender.send_email(
                 'CrowdLabel 邮箱验证码',
                 verification_code,
