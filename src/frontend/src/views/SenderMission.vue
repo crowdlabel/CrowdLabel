@@ -333,12 +333,12 @@ export default {
       // 
       multipartFile: [],
       form: {
-        // name: '',
-        // brief: '',
-        // details: '',
-        // credits_each: '',
-        // amount: '',
-        // cover: [],
+        name: '',
+        brief: '',
+        details: '',
+        credits_each: '',
+        amount: '',
+        cover: [],
         file: '',
         zipfile: []
       },
@@ -583,7 +583,7 @@ export default {
       this.dialogVisible = true;
     },
     create_new_project () {
-      if(this.zipfile == [] || this.zipfile == null){
+      if(this.file == [] || this.file == null){
         alert('请上传文件');
         return false;
       } else {
@@ -593,10 +593,7 @@ export default {
         // this.multipartFile.append('missioncredits', this.form.credits_each)
         // this.multipartFile.append('missionbrief', this.form.brief);
         // this.multipartFile.append('missiondetails', this.form.details);
-        if (this.file == '' || this.file == null || !this.file){
-          alert('请上传文件')
-          return false;
-        }
+        console.log(this.file)
         this.task.uploadTaskTasksUploadPost(this.file, (error, data, response) => {
           let a = JSON.parse(response['text'])
           if (response.status == 400 && a.error == 'Insufficient credits'){
