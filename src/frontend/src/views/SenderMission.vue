@@ -593,10 +593,6 @@ export default {
         // this.multipartFile.append('missioncredits', this.form.credits_each)
         // this.multipartFile.append('missionbrief', this.form.brief);
         // this.multipartFile.append('missiondetails', this.form.details);
-        console.log(this.file)
-        if (this.file == ''){
-
-        }
         this.task.uploadTaskTasksUploadPost(this.file, (error, data, response) => {
           let a = JSON.parse(response['text'])
           if (response.status == 400 && a.error == 'Insufficient credits'){
@@ -626,6 +622,7 @@ export default {
             this.form.zipfile = [];
           } else if(response.status == 200){
             this.form.zipfile = []
+            this.file = ''
             this.form.cover = []
             alert('上传成功');
             this.dialogVisible = false
