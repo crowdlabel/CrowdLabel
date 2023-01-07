@@ -1,4 +1,5 @@
 <template>
+    
   <div class="all">
     <div class="top_nav">
       <div class="top_nav_trigger">
@@ -158,14 +159,57 @@
             <div class="dabao_title">
               <h3 class="dabao_subtitle">四、文件样例</h3>
               <div class="dabao_content">
-                <img src='../assets/task_json_example.png' style="width: 50%;">
-                <div>
-                  <img src="../assets/zip_file_example.png" style="width: 50%;">
-                </div>
+
+<pre>{
+    "name": "Image",
+    "credits": 2,
+    "introduction": "",
+    "description": "Image",
+    "tags": ["图片分类"],
+    "responses_required": 2,
+    "cover_image": "2.jpg",
+    "questions": [
+        {
+            "question_id": 1,
+            "question_type": "single_choice",
+            "prompt": "What is in the image?",
+            "resource": "1.jpg",
+            "options": ["bike", "dog", "person"]
+        },
+        {
+            "question_id": 5,
+            "question_type": "single_choice",
+            "prompt": "What is in the image?",
+            "resource": "3.jpg",
+            "options": ["bike", "rock", "car", "school"]
+        },
+        {
+            "question_id": 3,
+            "question_type": "single_choice",
+            "prompt": "What is in the image?",
+            "resource": "2.jpg",
+            "options": ["bike", "dog", "car"]
+        }
+    ]
+}</pre>
+<br>
+
+            <div class="dabao_title">
+                <h3 class="dabao_subtitle">五、目录结构</h3>
+                <div class="dabao_content">
+<pre>.
+└── your-folder-name/
+    ├── 1.jpg
+    ├── 2.jpg
+    ├── 3.jpg
+    └── task.json</pre></div>
+            </div>
+
+
               </div>
             </div>
             <div class="dabao_title">
-              <h3 class="dabao_subtitle">五、注意事项</h3>
+              <h3 class="dabao_subtitle">六、注意事项</h3>
               <div class="dabao_content">
                 <p class="dabao_words"> - 一定要按照格式准备文件，然后进行上传，否则会上传失败</p>
                 <p class="dabao_words"> - 相同的资源文件可以即作为题目，也可以作为封面。</p>

@@ -24,6 +24,8 @@ services:
   #   volumes:
   #     - "./letsencrypt:/letsencrypt"
   #     - "/var/run/docker.sock:/var/run/docker.sock:ro"
+  caddy:
+    
   backend:
     build: .
     # labels:
