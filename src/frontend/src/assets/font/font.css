@@ -1,0 +1,24 @@
+@font-face{
+    font-family: 'Lobster';
+    src: url('Lobster.ttf');
+    font-weight: 900;
+    font-style: normal;
+}
+@font-face {
+    font-family: 'YouSheBiaoTiHei';
+    src: url('YouSheBiaoTiHei.ttf');
+    font-style: normal;
+    font-weight: 900;
+}
+@font-face {
+    font-family: 'PangMenZhengDaoBiaoTi';
+    src: url('PangMenZhengDaoBiaoTi.ttf');
+    font-style: normal;
+    font-weight: 900;
+}
+/* @font-face {
+    font-family: 'SourceHanSansSC';
+    src: url('SourceHanSansSC.otf');
+    font-style: normal;
+    font-weight: 900;
+} */
