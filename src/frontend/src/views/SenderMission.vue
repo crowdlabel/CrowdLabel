@@ -117,8 +117,52 @@
           min-width="800px"
           class="UploadInfoClass"
           border-radius="12px">
-          <div>
-
+          <h2>任务文件上传说明</h2>
+          <div class="dabao_body">
+            <div class="dabao_title">
+              <h3 class="dabao_subtitle">一、打包格式</h3>
+              <div class="dabao_content">
+                <p class="dabao_words"> - 最终上传文件要求格式为 zip 或者 rar ，大小不超过10GB</p>
+              </div>
+            </div>
+            <div class="dabao_title">
+              <h3 class="dabao_subtitle">二、文件夹内部格式</h3>
+              <div class="dabao_content">
+                <p class="dabao_words"> - zip文件夹中包括一个 task.json 文件和若干题目资源文件</p>
+                <p class="dabao_words"> - 文字分类的每道题的题干存放在每道题单独对应的 txt 文件中</p>
+                <p class="dabao_words"> - 其他的图片资源格式要求为 jpg 或者 png</p>
+              </div>
+            </div>
+            <div class="dabao_title">
+              <h3 class="dabao_subtitle">三、task.json文件格式</h3>
+              <div class="dabao_content">
+                <p class="dabao_words"> - task.json 文件中包含整个任务的各种设置，是最重要的文件</p>
+                <p class="dabao_words"> - task.json 文件中是一个大的字典</p>
+                <p class="dabao_words"> - 字典中包括"name", "credits", "introduction", "description", "tags", "responses_required", "cover_image", "questions" 这8个不同的key</p>
+                <p class="dabao_words"> - "name"表示任务的名称，是一个字符串</p>
+                <p class="dabao_words"> - "credits"表示提供给每一个答题者的积分数量，是一个int值</p>
+                <p class="dabao_words"> - "introduction"表示任务的简介，是一个字符串</p>
+                <p class="dabao_words"> - "description"表示任务的详情，是一个字符串</p>
+                <p class="dabao_words"> - "tags"表示任务的标签，是一个字符串，但必须包含“图片分类”、“文字分类”、“图片打标”、“音频分类”这四种中的一种（且只有一种）</p>
+                <p class="dabao_words"> - "responses_required"表示任务的份数，是一个int值</p>
+                <p class="dabao_words"> - "cover_image"表示任务的封面，是一个字符串，里面是对应图片资源的完整文件名（和task.json处于同一目录下），比如"cover.jpg"</p>
+                <p class="dabao_words"> - "questions"表示任务的具体信息，是一个数组，每个数组元素信息要求如下：</p>
+                <p class="dabao_subwords"> 1、 每个question数组元素都是一个字典，其中包括5个不同的key</p>
+                <p class="dabao_subwords"> 2、 每个</p>
+              </div>
+            </div>
+            <div class="dabao_title">
+              <h3 class="dabao_subtitle">四、task.json文件样例</h3>
+              <div class="dabao_content">
+                
+              </div>
+            </div>
+            <div class="dabao_title">
+              <h3 class="dabao_subtitle">五、注意事项</h3>
+              <div class="dabao_content">
+                
+              </div>
+            </div>
           </div>
         </el-dialog>
 
@@ -374,8 +418,8 @@ export default {
     },
     handleChange(file, fileList) {
       let self = this;
-      if (file.size / (1024*1024)>1) {
-        self.$message.warning("当前限制文件大小不能大于1M");
+      if (file.size / (1024*1024)>10) {
+        self.$message.warning("当前限制文件大小不能大于10MB");
         self.file = '';
         self.form.cover= [];
         return false;
@@ -398,8 +442,8 @@ export default {
     },
     handleZip(file, fileList) {
       let self = this;
-      if (file.size / (1024*1024)>500) {
-        self.$message.warning("当前限制文件大小不能大于500M");
+      if (file.size / (1024*1024*1024)>10) {
+        self.$message.warning("当前限制文件大小不能大于10GB");
         self.file = '';
         self.form.zipfile= [];
         return false;
