@@ -583,8 +583,8 @@ export default {
       this.dialogVisible = true;
     },
     create_new_project () {
-      if(this.zipfile === '' || this.zipfile === 'null'){
-        alert('You need to upload file');
+      if(this.zipfile == [] || this.zipfile == null){
+        alert('请上传文件');
         return false;
       } else {
         // this.multipartFile.append('username', this.userid);
@@ -593,6 +593,10 @@ export default {
         // this.multipartFile.append('missioncredits', this.form.credits_each)
         // this.multipartFile.append('missionbrief', this.form.brief);
         // this.multipartFile.append('missiondetails', this.form.details);
+        if (this.file == '' || this.file == null || !this.file){
+          alert('请上传文件')
+          return false;
+        }
         this.task.uploadTaskTasksUploadPost(this.file, (error, data, response) => {
           let a = JSON.parse(response['text'])
           if (response.status == 400 && a.error == 'Insufficient credits'){
