@@ -257,6 +257,7 @@ export default {
           let imageObjectURL = window.URL.createObjectURL(new Blob(binaryData));
           this.mainProfile = imageObjectURL
           this.piclist = imageObjectURL
+          this.goBack()
         }
       })
     },
@@ -394,6 +395,7 @@ export default {
             });
           }else if(response.status==200){
             alert("成功修改邮箱")
+            this.goBack()
           }
         });
       }
