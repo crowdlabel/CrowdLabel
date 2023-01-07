@@ -44,7 +44,7 @@ class Tasks:
         if task_request.responses_required <= 0:
             await asyncio.shield(con.close())
             return '`responses_required` must be positive'
-        if task_request.credits < 0:
+        if task_request.credits <= 0:
             await asyncio.shield(con.close())
             return '`credits` must be positive'
 
@@ -258,7 +258,7 @@ class Tasks:
             if task == None:
                 await asyncio.shield(con.close())
                 return None
-            if len(task.respondents_claimed) + len(task.respondents_complete) >= task.responses_required:
+            if len(task.respondents_complete) >= task.responses_required:
                 await asyncio.shield(con.close())
                 return 'Enough respondents have claimed this task'
             user.task_claimed.append(task)

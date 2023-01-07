@@ -136,10 +136,17 @@ class RegistrationError(BaseModel):
             }
         }
 
-class EditEmailRequest(Email, VerificationCode, Password):
+class EditEmailRequest(VerificationCode,Password):
     new_email: str
-    verification_code: str
-    password: str
+    @validator('new_email')
+    def email_format(cls, email):
+        try:
+            if validate_email(email=email, check_deliverability=False):
+                return email
+        except:
+            pass
+
+        raise ValueError('Email format incorrect')
 
     class Config:
         schema_extra = {
@@ -152,7 +159,17 @@ class EditEmailRequest(Email, VerificationCode, Password):
 
 class EditPasswordRequest(BaseModel):
     old_password: str
+    @validator('old_password')
+    def old_password_format(cls, password):
+        if not re.fullmatch(Password.__pattern, password):
+            raise ValueError('Password format incorrect')
+        return password
     new_password: str
+    @validator('new_password')
+    def new_password_format(cls, password):
+        if not re.fullmatch(Password.__pattern, password):
+            raise ValueError('Password format incorrect')
+        return password
     class Config:
         schema_extra = {
             'example': {
