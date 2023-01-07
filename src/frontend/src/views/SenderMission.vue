@@ -50,8 +50,8 @@
 
         <el-dialog
           :visible.sync="dialogVisible"
-          width="30%"
-          min-width="300px"
+          width="40%"
+          min-width="400px"
           class="dialogClass"
           border-radius="12px">
           <div class="type_page">
@@ -333,12 +333,12 @@ export default {
       // 
       multipartFile: [],
       form: {
-        name: '',
-        brief: '',
-        details: '',
-        credits_each: '',
-        amount: '',
-        cover: [],
+        // name: '',
+        // brief: '',
+        // details: '',
+        // credits_each: '',
+        // amount: '',
+        // cover: [],
         file: '',
         zipfile: []
       },
@@ -583,8 +583,8 @@ export default {
       this.dialogVisible = true;
     },
     create_new_project () {
-      if(this.zipfile === '' || this.zipfile === 'null'){
-        alert('You need to upload file');
+      if(this.zipfile == [] || this.zipfile == null){
+        alert('请上传文件');
         return false;
       } else {
         // this.multipartFile.append('username', this.userid);
@@ -593,7 +593,10 @@ export default {
         // this.multipartFile.append('missioncredits', this.form.credits_each)
         // this.multipartFile.append('missionbrief', this.form.brief);
         // this.multipartFile.append('missiondetails', this.form.details);
-        console.log(this.file)
+        if (this.file == '' || this.file == null || !this.file){
+          alert('请上传文件')
+          return false;
+        }
         this.task.uploadTaskTasksUploadPost(this.file, (error, data, response) => {
           let a = JSON.parse(response['text'])
           if (response.status == 400 && a.error == 'Insufficient credits'){
@@ -621,12 +624,15 @@ export default {
               
             });
             this.form.zipfile = [];
-          } if(response.status == 200){
+          } else if(response.status == 200){
             this.form.zipfile = []
+            this.file = ''
             this.form.cover = []
             alert('上传成功');
             this.dialogVisible = false
             this.refresh();
+          } else if(response.status == 422){
+            alert('请上传文件！')
           }
         })
       }
@@ -707,11 +713,11 @@ export default {
 @import '@/assets/font/font.css';
 
 .dialogClass{
-  min-width: 300px !important;
+  min-width: 400px !important;
 }
 ::v-deep .dialogClass .el-dialog{
-  width: 30% !important;
-  min-width: 300px;
+  width: 40% !important;
+  min-width: 400px;
   border-radius: 12px;
 }
 
@@ -1091,7 +1097,7 @@ export default {
 
 .upload_file{
   float: left;
-  width: 80%;
+  width: 100%;
 }
 
 ::v-deep .el-form-item__label{
@@ -1215,7 +1221,7 @@ export default {
 
 .dabao_body{
   width: 100%;
-  height: 1950px;
+  height: 2050px;
   padding-bottom: 50px;
 }
 
