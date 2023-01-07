@@ -8,7 +8,7 @@
       <div class="page_title">
         <h3 class="title">草稿箱</h3>
         <a class="my_account" data-external="true" href="/myaccount">
-            <img src="../assets/my_account.svg" alt="label" height="24"/>
+            <img :src="profile_pic" class="profile" alt="label"/>
         </a>
       </div>
         
@@ -51,7 +51,7 @@
                     </a>
                 </li>
                 <li>
-                    <a aria-current="page" class="left_nav_list_item" data-external="true" href="/about_us">
+                    <a aria-current="page" class="left_nav_list_item" data-external="true" href="https://github.com/crowdlabel">
                         <img src="../assets/about.png" height="20" width="20">
                         <p class="list_item_title">关于我们</p>
                     </a>
@@ -61,6 +61,10 @@
         <div class="main_body">
             <div class="scroll_view">
               <el-scrollbar style="height: 100%">
+                <!-- 如果没有任务 -->
+                <div class="message" id="is_empty">
+                  <p class="message_text">这里空空如也，快去接收任务吧！</p>
+                </div>
                 <!-- 用于展示下拉，填充的内容 -->
                 <div class="scroll_element" v-for="(item, index) in projectsList" :key="index" @click="seeDetails(item.task_id)">
                   <img :src=item.cover class="project_image">
@@ -93,7 +97,8 @@ export default {
       user:'',
       task:'',
       auth:'',
-      projectsList: []
+      projectsList: [],
+      profile_pic: ''
     };
   },
   mounted() {
@@ -114,6 +119,8 @@ export default {
       }
       let res = JSON.parse(response["text"]);
       let tasks_claimed = res["tasks_claimed"];
+      if (tasks_claimed.length > 0)
+        document.getElementById("is_empty").remove();
       console.log(tasks_claimed)
       for (let i = 0; i < tasks_claimed.length; i++) {
         let _task_id = tasks_claimed[i];
@@ -155,6 +162,17 @@ export default {
             });
           });
         });
+      }
+    })
+    
+    self.user.getPfpUsersMeProfilePictureGet((error, data, response) => {
+      if (response.status == 404){
+        self.profile_pic = '../my_account.svg'
+      } else {
+        let binaryData = [];
+        binaryData.push(response.body);
+        let imageObjectURL = window.URL.createObjectURL(new Blob(binaryData));
+        self.profile_pic = imageObjectURL
       }
     })
   },
@@ -420,5 +438,20 @@ export default {
   width: 100px;
   border-radius: 10%;
   align-self:center;
+}
+
+.profile {
+  height: 28px;
+  width: 28px;
+  border-radius: 50%;
+}
+
+.message {
+  margin: 30px 0px;
+}
+.message_text {
+  font-size: 16px;
+  font-weight: bold;
+  color: rgba(0,0,0,.2)
 }
 </style>

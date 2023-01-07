@@ -7,9 +7,9 @@
       </div>
       <div class="page_title">
         <h3 class="title">历史记录</h3>
-          <a class="my_account" data-external="true" href="/myaccount">
-            <img src="../assets/my_account.svg" alt="label" height="24"/>
-          </a>
+        <a class="my_account" data-external="true" href="/myaccount">
+            <img :src="profile_pic" class="profile" alt="label"/>
+        </a>
       </div>
     </div>
     <div class="body">
@@ -50,7 +50,7 @@
                     </a>
                 </li>
                 <li>
-                    <a aria-current="page" class="left_nav_list_item" data-external="true" href="/about_us">
+                    <a aria-current="page" class="left_nav_list_item" data-external="true" href="https://github.com/crowdlabel">
                         <img src="../assets/about.png" height="20" width="20">
                         <p class="list_item_title">关于我们</p>
                     </a>
@@ -72,9 +72,10 @@
           </div>
             <div class="scroll_view">
               <el-scrollbar style="height: 100%">
-                <!-- 用于展示下拉，填充的内容 -->
-                <div class="scroll_view">
-              <el-scrollbar style="height: 100%">
+                <!-- 如果没有任务 -->
+                <div class="message" id="is_empty">
+                  <p class="message_text">这里空空如也，快去接收任务吧！</p>
+                </div>
                 <!-- 用于展示下拉，填充的内容 -->
                 <div class="scroll_element" v-for="(item, index) in projectsList" :key="index" @click="seeDetails(item.task_id)">
                   <img :src=item.cover class="project_image">
@@ -86,8 +87,6 @@
                     <p class="project_detail">获得积分: {{ item.credits }} </p>
                   </div>
                 </div>
-              </el-scrollbar>
-            </div>
               </el-scrollbar>
             </div>
         </div>
@@ -111,7 +110,8 @@ export default {
       user:'',
       task:'',
       auth:'',
-      projectsList: []
+      projectsList: [],
+      profile_pic:''
     };
   },
   mounted() {
@@ -133,6 +133,8 @@ export default {
       let res = JSON.parse(response["text"]);
       let tasks_completed = res["tasks_completed"];
       console.log(tasks_completed)
+      if (tasks_completed.length > 0)
+        document.getElementById("is_empty").remove();
       for (let i = 0; i < tasks_completed.length; i++) {
         let _task_id = tasks_completed[i];
         self.task.getTaskTasksTaskIdGet(_task_id, (error, data, response) => {
@@ -166,6 +168,16 @@ export default {
               self.projectsList.push(cur_task);
             });
           });
+      }
+    })
+    self.user.getPfpUsersMeProfilePictureGet((error, data, response) => {
+      if (response.status == 404){
+        self.profile_pic = '../my_account.svg'
+      } else {
+        let binaryData = [];
+        binaryData.push(response.body);
+        let imageObjectURL = window.URL.createObjectURL(new Blob(binaryData));
+        self.profile_pic = imageObjectURL
       }
     })
   },
@@ -401,7 +413,8 @@ export default {
   flex-direction: row;
   display: flex;
   align-items:center;
-  margin: 30px 60px 10px 40px;
+  padding: 30px 60px 10px 40px;
+  border-bottom: 1.2px solid rgba(0,0,0,.1);
 }
 .title_filter {
   padding: 0px;
@@ -447,7 +460,7 @@ export default {
 }
 
 .scroll_view {
-  border-top: 1.2px solid rgba(0,0,0,.1);
+  /*border-top: 0.5px solid rgba(0,0,0,.1);*/
   height: calc(100vh - 140px);
   min-height: 225px;
 }
@@ -480,5 +493,20 @@ export default {
   width: 100px;
   border-radius: 10%;
   align-self:center;
+}
+
+.profile {
+  height: 28px;
+  width: 28px;
+  border-radius: 50%;
+}
+
+.message {
+  margin: 30px 0px;
+}
+.message_text {
+  font-size: 16px;
+  font-weight: bold;
+  color: rgba(0,0,0,.2)
 }
 </style>
