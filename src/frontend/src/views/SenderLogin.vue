@@ -219,6 +219,7 @@ export default {
     },
     mounted() {
         let base = this.$root.basePath
+        console.log(base)
         var apiClient = new ApiClient(base);
         this.client = apiClient
         var usersApi = new UsersApi(apiClient);

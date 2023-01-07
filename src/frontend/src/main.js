@@ -17,7 +17,8 @@ new Vue({
   store,
   data: function(){
     return {
-      basePath: 'https://api.crowdlabel.org'
+      // basePath: 'https://api.crowdlabel.org'
+      basePath: 'http://localhost:8000'
     }
   },
   render: h => h(App)
