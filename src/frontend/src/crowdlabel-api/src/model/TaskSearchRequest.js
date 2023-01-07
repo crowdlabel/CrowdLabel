@@ -170,9 +170,9 @@ TaskSearchRequest.prototype['questions_max'] = -1;
 
 /**
  * @member {String} sort_criteria
- * @default 'name'
+ * @default 'date'
  */
-TaskSearchRequest.prototype['sort_criteria'] = 'name';
+TaskSearchRequest.prototype['sort_criteria'] = 'date';
 
 /**
  * @member {Boolean} sort_ascending

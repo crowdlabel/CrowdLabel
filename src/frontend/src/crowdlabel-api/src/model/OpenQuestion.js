@@ -12,7 +12,7 @@
  */
 
 import ApiClient from '../ApiClient';
-import OpenAnswer from './OpenAnswer';
+import Answer from './Answer';
 
 /**
  * The OpenQuestion model module.
@@ -65,7 +65,7 @@ class OpenQuestion {
                 obj['resource'] = ApiClient.convertToType(data['resource'], 'String');
             }
             if (data.hasOwnProperty('answers')) {
-                obj['answers'] = ApiClient.convertToType(data['answers'], [OpenAnswer]);
+                obj['answers'] = ApiClient.convertToType(data['answers'], [Answer]);
             }
         }
         return obj;
@@ -102,7 +102,7 @@ class OpenQuestion {
             }
             // validate the optional field `answers` (array)
             for (const item of data['answers']) {
-                OpenAnswer.validateJsonObject(item);
+                Answer.validateJsonObject(item);
             };
         }
 
@@ -136,7 +136,7 @@ OpenQuestion.prototype['prompt'] = undefined;
 OpenQuestion.prototype['resource'] = undefined;
 
 /**
- * @member {Array.<module:model/OpenAnswer>} answers
+ * @member {Array.<module:model/Answer>} answers
  */
 OpenQuestion.prototype['answers'] = undefined;
 

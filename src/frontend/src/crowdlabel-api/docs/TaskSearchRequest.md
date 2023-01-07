@@ -13,7 +13,7 @@ Name | Type | Description | Notes
 **creditsMax** | **Number** |  | [optional] [default to -1]
 **questionsMin** | **Number** |  | [optional] [default to 0]
 **questionsMax** | **Number** |  | [optional] [default to -1]
-**sortCriteria** | **String** |  | [optional] [default to &#39;name&#39;]
+**sortCriteria** | **String** |  | [optional] [default to &#39;date&#39;]
 **sortAscending** | **Boolean** |  | [optional] [default to true]
 
 
