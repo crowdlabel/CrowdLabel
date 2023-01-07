@@ -8,7 +8,7 @@
       <div class="page_title">
         <h3 class="title">任务大厅</h3>
         <a class="my_account" data-external="true" href="/myaccount">
-            <img src="../assets/my_account.svg" alt="label" height="24"/>
+            <img :src="profile_pic" alt="label" height="24"/>
         </a>
       </div>
         
@@ -132,7 +132,8 @@ export default {
       page_num: 100,
       input: '',
       taskType: 'all',
-      sortOrder: 'date'
+      sortOrder: 'date',
+      profile_pic: ''
     };
   },
   methods: {
@@ -320,6 +321,16 @@ export default {
       }
       self.userid = a['username']
       self.usercredits = a['credits']
+    })
+    self.user.getPfpUsersMeProfilePictureGet((error, data, response) => {
+      if (response.status == 404){
+        self.profile_pic = '../assets/my_account.svg'
+      } else {
+        let binaryData = [];
+        binaryData.push(response.body);
+        let imageObjectURL = window.URL.createObjectURL(new Blob(binaryData));
+        self.profile_pic = imageObjectURL
+      }
     })
     self.tasks_total = []
     self.task.searchTasksTasksPut({

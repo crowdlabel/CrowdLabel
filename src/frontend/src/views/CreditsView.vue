@@ -62,19 +62,13 @@
           <h3 class="sub_title">数据概览</h3>
           <div class="row">
             <div class="box_overview">
-              <p class="box_title">近7日收入</p>
+              <p class="box_title">累计总收入</p>
               <div class="box_credits">
                 <p class="box_number">{{ credits_last_week }}</p>
                 <p class="box_unit">积分</p>
               </div> 
             </div>
-            <div class="box_overview">
-              <p class="box_title">累计总收入</p>
-              <div class="box_credits">
-                <p class="box_number">{{credits_total}}</p>
-                <p class="box_unit">积分</p>
-              </div>
-            </div>
+            
           </div>
           <h3 class="sub_title">积分提现</h3>
           <div class="row">
