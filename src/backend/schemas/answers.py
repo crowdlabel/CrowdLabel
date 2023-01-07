@@ -37,7 +37,7 @@ class Answer(AnswerRequest):
 ANSWER_TYPES = {
     'single_choice': SingleChoiceAnswer,
     'multi_choice': MultiChoiceAnswer,
-    'ranking': RankingAnswer,
+    #'ranking': RankingAnswer,
     'bounding_box': BoundingBoxAnswer,
     'open': OpenAnswer,
 }
