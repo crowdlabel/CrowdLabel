@@ -7,13 +7,11 @@
       </div>
       <div class="page_title">
         <h3 class="title">任务大厅</h3>
-          <a class="notifications" data-external="true" href="/notifications">
-            <img src="../assets/notifications.svg" alt="label" height="24"/>
-          </a>
-      </div>
         <a class="my_account" data-external="true" href="/myaccount">
             <img src="../assets/my_account.svg" alt="label" height="24"/>
         </a>
+      </div>
+        
     </div>
     <div class="body">
         <div class="left_nav">
@@ -47,7 +45,7 @@
             </ul>
             <ul class="left_nav_list_bottom">
                 <li>
-                    <a aria-current="page" class="left_nav_list_item" data-external="true" href="/settings">
+                    <a aria-current="page" class="left_nav_list_item" data-external="true" href="/myaccount">
                         <img src="../assets/settings.png" height="20" width="20">
                         <p class="list_item_title">设置</p>
                     </a>
@@ -68,7 +66,7 @@
             <div class="filter">
               <p class="title_filter">筛选：</p>
               <div>
-              <el-radio-group v-model="taskType" size="small" @change="chooseType(taskType)">
+              <el-radio-group v-model="taskType" size="small" @change="chooseType()">
                 <el-radio-button label="all">全部</el-radio-button>
                 <el-radio-button label="text" >文字分类</el-radio-button>
                 <el-radio-button label="img_classify" >图片分类</el-radio-button>
@@ -79,8 +77,8 @@
             </div>
             <div class="order_by">
               <p class="title_order_by">排序：</p>
-              <el-radio-group v-model="sortOrder" size="small" @change="chooseOrder(sortOrder)">
-                <el-radio-button label="time">发布时间</el-radio-button>
+              <el-radio-group v-model="sortOrder" size="small" @change="chooseOrder()">
+                <el-radio-button label="date">发布时间</el-radio-button>
                 <el-radio-button label="credits">积分数量</el-radio-button>
               </el-radio-group>
             </div>
@@ -134,39 +132,12 @@ export default {
       page_num: 100,
       input: '',
       taskType: 'all',
-      sortOrder: 'time'
+      sortOrder: 'date'
     };
   },
   methods: {
     handleCurrentChange(val) {
       this.currentPage=val;
-    },
-    searchAll(){
-      self.tasks_total = []
-      self.task.searchTasksTasksPut({}, (error, data, response) => {
-        if (error == 'Error: Unauthorized') {
-          localStorage.removeItem('Authorization');
-          this.$router.push('/receiverlogin');
-        }
-        let res = JSON.parse(response['text'])
-        let taskslist = res['tasks']
-        taskslist.forEach(function(element) {
-          self.task.getCoverTasksTaskIdCoverImageGet(element['task_id'], (error, data, response) => {
-            if (response.status == 400){
-              var c = { task_id:element['task_id'], name:element['name'], cover:'../default_cover.jpeg'}
-              self.tasks_total.push(c)
-            } else {
-              let binaryData = [];
-              binaryData.push(response.body);
-              let imageObjectURL = window.URL.createObjectURL(new Blob(binaryData));
-              // let imageObjectURL = window.URL.createObjectURL(response.body);
-              self.imageObject = imageObjectURL
-              var c = { task_id:element['task_id'], name:element['name'], cover:self.imageObject}
-              self.tasks_total.push(c)
-            }
-          })
-        })
-      })
     },
     seeDetails(task_id) {
       this.$store.commit('changeTaskID', task_id);
@@ -174,18 +145,147 @@ export default {
         name:'project_detail',
       })
     },
-    searchText(){
-      
+    chooseType() {
+      let self = this
+      self.tasks_total = []
+      var taglist = []
+      if(self.taskType=='text'){
+        taglist.push("文字分类")
+      }else if(self.taskType=='img_classify'){
+        taglist.push("图片分类")
+      }else if(self.taskType=='img_borderbox'){
+        taglist.push("图片打标")
+      }else if(self.taskType=='audio'){
+        taglist.push("音频分类")
+      }
+      self.task.searchTasksTasksPut({
+        "name": self.input,
+        "tags" : taglist,
+        "sort_criteria": self.sortOrder,
+        "sort_ascending": false,
+      }, (error, data, response) => {
+        if (error == 'Error: Unauthorized') {
+          localStorage.removeItem('Authorization');
+          this.$router.push('/receiverlogin');
+        }
+        let res = JSON.parse(response['text'])
+        console.log(res)
+        let taskslist = res['tasks']
+        var counter = 0
+        taskslist.forEach(function(element) {
+          var c = { task_id:element['task_id'], name:element['name'], cover:''}
+          self.tasks_total.push(c)
+          var index = counter;
+          counter++;
+          self.task.getCoverTasksTaskIdCoverImageGet(element['task_id'], (error, data, response) => {
+            if (response.status == 400){
+              self.tasks_total[index].cover = '../default_cover.jpeg'
+            } else {
+              let binaryData = [];
+              binaryData.push(response.body);
+              let imageObjectURL = window.URL.createObjectURL(new Blob(binaryData));
+              // let imageObjectURL = window.URL.createObjectURL(response.body);
+              self.imageObject = imageObjectURL
+              self.tasks_total[index].cover = self.imageObject
+            }
+          })
+        })
+      })
     },
-    searchAudio(){
-      
+    chooseOrder(){
+      let self = this
+      self.tasks_total = []
+      var taglist = []
+      if(self.taskType=='text'){
+        taglist.push("文字分类")
+      }else if(self.taskType=='img_classify'){
+        taglist.push("图片分类")
+      }else if(self.taskType=='img_borderbox'){
+        taglist.push("图片打标")
+      }else if(self.taskType=='audio'){
+        taglist.push("音频分类")
+      }
+      self.task.searchTasksTasksPut({
+        "name": self.input,
+        "tags" : taglist,
+        "sort_criteria": self.sortOrder,
+        "sort_ascending": false,
+      }, (error, data, response) => {
+        if (error == 'Error: Unauthorized') {
+          localStorage.removeItem('Authorization');
+          this.$router.push('/receiverlogin');
+        }
+        let res = JSON.parse(response['text'])
+        console.log(res)
+        let taskslist = res['tasks']
+        var counter = 0
+        taskslist.forEach(function(element) {
+          var c = { task_id:element['task_id'], name:element['name'], cover:''}
+          self.tasks_total.push(c)
+          var index = counter;
+          counter++;
+          self.task.getCoverTasksTaskIdCoverImageGet(element['task_id'], (error, data, response) => {
+            if (response.status == 400){
+              self.tasks_total[index].cover = '../default_cover.jpeg'
+            } else {
+              let binaryData = [];
+              binaryData.push(response.body);
+              let imageObjectURL = window.URL.createObjectURL(new Blob(binaryData));
+              // let imageObjectURL = window.URL.createObjectURL(response.body);
+              self.imageObject = imageObjectURL
+              self.tasks_total[index].cover = self.imageObject
+            }
+          })
+        })
+      })
     },
-    searchImage(){
-      
+    searchWithID(){
+      let self = this
+      self.tasks_total = []
+      var taglist = []
+      if(self.taskType=='text'){
+        taglist.push("文字分类")
+      }else if(self.taskType=='img_classify'){
+        taglist.push("图片分类")
+      }else if(self.taskType=='img_borderbox'){
+        taglist.push("图片打标")
+      }else if(self.taskType=='audio'){
+        taglist.push("音频分类")
+      }
+      self.task.searchTasksTasksPut({
+        "name": self.input,
+        "tags" : taglist,
+        "sort_criteria": self.sortOrder,
+        "sort_ascending": false,
+      }, (error, data, response) => {
+        if (error == 'Error: Unauthorized') {
+          localStorage.removeItem('Authorization');
+          this.$router.push('/receiverlogin');
+        }
+        let res = JSON.parse(response['text'])
+        console.log(res)
+        let taskslist = res['tasks']
+        var counter = 0
+        taskslist.forEach(function(element) {
+          var c = { task_id:element['task_id'], name:element['name'], cover:''}
+          self.tasks_total.push(c)
+          var index = counter;
+          counter++;
+          self.task.getCoverTasksTaskIdCoverImageGet(element['task_id'], (error, data, response) => {
+            if (response.status == 400){
+              self.tasks_total[index].cover = '../default_cover.jpeg'
+            } else {
+              let binaryData = [];
+              binaryData.push(response.body);
+              let imageObjectURL = window.URL.createObjectURL(new Blob(binaryData));
+              // let imageObjectURL = window.URL.createObjectURL(response.body);
+              self.imageObject = imageObjectURL
+              self.tasks_total[index].cover = self.imageObject
+            }
+          })
+        })
+      })
     },
-    searchWithID() {
-
-    }
   },
   directives: {
     focus: {
@@ -222,8 +322,10 @@ export default {
       self.usercredits = a['credits']
     })
     self.tasks_total = []
-    self.task.searchTasksTasksPut({}, (error, data, response) => {
-      console.log(error, data, response)
+    self.task.searchTasksTasksPut({
+      "sort_criteria": "date",
+      "sort_ascending": false
+    }, (error, data, response) => {
       if (error == 'Error: Unauthorized') {
         localStorage.removeItem('Authorization');
         this.$router.push('/receiverlogin');
@@ -231,6 +333,7 @@ export default {
       let res = JSON.parse(response['text'])
       let taskslist = res['tasks']
       var counter = 0
+      console.log(taskslist)
       taskslist.forEach(function(element) {
         var c = { task_id:element['task_id'], name:element['name'], cover:''}
         self.tasks_total.push(c)
@@ -261,7 +364,7 @@ a {
   text-decoration:none;
 }
 .all {
-  min-width: 1250px;
+  min-width: 1150px;
 }
 
 .top_nav {
@@ -292,23 +395,14 @@ a {
     min-width: 120px;
     flex: 1;
 }
-.notifications {
-    align-items: center;
-    align-self: center;
-    cursor: pointer;
-    display: flex;
-    justify-content: center;
-    position: relative;
-}
 .my_account {
     align-items: center;
     align-self: center;
     cursor: pointer;
     display: flex;
     justify-content: center;
-    margin-left: 10px;
-    margin-right: 20px;
     position: relative;
+    margin-right: 17px;
 }
 .logo{
   vertical-align: middle;

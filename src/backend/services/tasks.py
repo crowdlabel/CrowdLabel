@@ -20,7 +20,7 @@ import schemas.answers
 import json
 import patoolib
 import utils.config
-TASK_UPLOAD_DIR = pathlib.Path(utils.config.config['file_locations']['tasks'])
+TASK_UPLOAD_DIR = pathlib.Path(utils.config.config['directories']['tasks'])
 
 from services.users import user_service
 from services.questions import question_service

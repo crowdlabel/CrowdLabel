@@ -1,18 +1,38 @@
 import json
+from fastapi import FastAPI
 from fastapi.openapi.utils import get_openapi
 from fastapi.routing import APIRouter
-from .base import app
+from starlette.middleware.cors import CORSMiddleware
 
-from . import auth, tasks, users, questions
+
+
+origins = [
+    'http://localhost:8082',
+    'https://crowdlabel.org',
+]
+
+app = FastAPI(
+    title='CrowdLabelAPI',
+    description='API for CrowdLabel',
+    version='0.1.0',
+)
+
+
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=origins,
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
+
 
 app_router = APIRouter(prefix='')
-
+from . import auth, tasks, users, questions
 app_router.include_router(auth.router, prefix='', tags=['auth'])
 app_router.include_router(users.router, prefix='/users', tags=['users'])
 app_router.include_router(tasks.router, prefix='/tasks', tags=['tasks'])
 app_router.include_router(questions.router, prefix='', tags=['questions'])
-
-
 
 app.include_router(app_router)
 

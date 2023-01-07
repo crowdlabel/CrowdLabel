@@ -7,13 +7,11 @@
       </div>
       <div class="page_title">
         <h3 class="title">我的积分</h3>
-          <a class="notifications" data-external="true" href="/notifications">
-            <img src="../assets/notifications.svg" alt="label" height="24"/>
-          </a>
-      </div>
         <a class="my_account" data-external="true" href="/myaccount">
             <img src="../assets/my_account.svg" alt="label" height="24"/>
         </a>
+      </div>
+        
     </div>
     <div class="body">
         <div class="left_nav">
@@ -47,7 +45,7 @@
             </ul>
             <ul class="left_nav_list_bottom">
                 <li>
-                    <a aria-current="page" class="left_nav_list_item" data-external="true" href="/settings">
+                    <a aria-current="page" class="left_nav_list_item" data-external="true" href="/myaccount">
                         <img src="../assets/settings.png" height="20" width="20">
                         <p class="list_item_title">设置</p>
                     </a>
@@ -177,23 +175,14 @@ export default {
     min-width: 120px;
     flex: 1;
 }
-.notifications {
-    align-items: center;
-    align-self: center;
-    cursor: pointer;
-    display: flex;
-    justify-content: center;
-    position: relative;
-}
 .my_account {
     align-items: center;
     align-self: center;
     cursor: pointer;
     display: flex;
     justify-content: center;
-    margin-left: 10px;
-    margin-right: 20px;
     position: relative;
+    margin-right: 17px;
 }
 .logo{
   vertical-align: middle;
