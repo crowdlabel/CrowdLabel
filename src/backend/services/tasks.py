@@ -20,7 +20,7 @@ import schemas.answers
 import json
 import patoolib
 import utils.config
-TASK_UPLOAD_DIR = pathlib.Path(utils.config.config['file_locations']['tasks'])
+TASK_UPLOAD_DIR = pathlib.Path(utils.config.config['directories']['tasks'])
 
 from services.users import user_service
 from services.questions import question_service
@@ -378,9 +378,8 @@ Returns: list of `Task`s matching the query within the specified `page` and `pag
         tasks = []
 
         for task in old_tasks:
-            print(parameters.name)
-            print(task.name)
-            if (parameters.name == '' or parameters.name in task.name ) and (len(parameters.tags) == 0 or list(parameters.tags)[0] in task.tags.split('|')):
+
+            if (parameters.name == '' or parameters.name.lower() in task.name.lower() ) and (len(parameters.tags) == 0 or list(parameters.tags)[0] in task.tags.split('|')) and (len(parameters.requesters)==0 or list(parameters.requesters)[0] == user.username):
                 tasks.append(task)
         response_tasks = []
         if parameters.page_size == -1:

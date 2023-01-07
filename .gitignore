@@ -46,3 +46,4 @@ pnpm-debug.log*
 .pytest_cache
 
 dist/
+data/

@@ -12,7 +12,7 @@ import utils.config
 from utils.datetime_str import datetime_now_str
 from utils.filetransfer import download_file, upload_file
 
-TASK_UPLOAD_DIR = pathlib.Path(utils.config.config['file_locations']['tasks'])
+TASK_UPLOAD_DIR = pathlib.Path(utils.config.config['directories']['tasks'])
 router = APIRouter()
 task_service = services.tasks.Tasks()
 
