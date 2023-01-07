@@ -15,7 +15,7 @@
             <img class="preview_img" :src=task_cover height="320" width="450"/>
             <div class="project_description">
               <p class="text_bold">任务简介：</p>
-              <p class="text_normal">
+              <p class="text_normal" id="task_brief">
                 {{ task_brief }}
               </p>
               <!--div class="placeholder_text"></div>-->
@@ -109,6 +109,11 @@ export default {
       // 未知任务类型
       if (self.task_type == '')
         self.task_type = "未知类型";
+      // 填充任务简介
+      if (res.introduction == "")
+        document.getElementById("task_brief").innerHTML = "该发布者暂未提供简介";
+      else
+        document.getElementById("task_brief").innerHTML = self.task_brief;
     })
     self.task.getCoverTasksTaskIdCoverImageGet(self.task_id, (error, data, response) => {
       if (response.status == 400){
