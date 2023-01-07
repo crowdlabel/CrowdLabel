@@ -33,8 +33,8 @@
           <div class="mainimage"></div>
           <h1 id="front_big">CrowdLabel</h1>
           <el-button type="primary" round @click="chooseType" id="getstarted">开始体验</el-button>
-          <!-- <div class="smalltriangle">
-          </div> -->
+          <div class="smalltriangle">
+          </div>
         </div>
       </el-main>
     </el-container>
@@ -44,17 +44,17 @@
     </div>
     <div class="intro">
       <h1 class="frontinfo">数据标注平台</h1>
-      <p class="infotext">支持计算机视觉、语言工程、自然语言处理多类型数据标注，联系方式：contact@crowdlabel.org</p>
+      <p class="infotext">支持计算机视觉、语言工程、自然语言处理多类型数据标注，多重审核，高效高质</p>
     </div>
 
-    <!-- <div class="footer">
+    <div class="footer">
       <div id="team_contact">
         <p>联系方式 | 电话：+86 1xx-xxxx-xxxx</p>
       </div>
       <div id="team_email">
         <p>邮箱：contact@crowdlabel.org</p>
       </div>
-    </div> -->
+    </div>
 
   </div>
 </template>
