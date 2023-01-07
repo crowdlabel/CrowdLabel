@@ -8,6 +8,6 @@ Name | Type | Description | Notes
 **questionType** | **String** |  | [optional] [default to &#39;open&#39;]
 **prompt** | **String** |  | 
 **resource** | **String** |  | [optional] 
-**answers** | [**[OpenAnswer]**](OpenAnswer.md) |  | [optional] 
+**answers** | [**[Answer]**](Answer.md) |  | [optional] 
 
 

@@ -12,7 +12,7 @@
  */
 
 import ApiClient from '../ApiClient';
-import BoundingBoxAnswer from './BoundingBoxAnswer';
+import Answer from './Answer';
 
 /**
  * The BoundingBoxQuestion model module.
@@ -65,7 +65,7 @@ class BoundingBoxQuestion {
                 obj['resource'] = ApiClient.convertToType(data['resource'], 'String');
             }
             if (data.hasOwnProperty('answers')) {
-                obj['answers'] = ApiClient.convertToType(data['answers'], [BoundingBoxAnswer]);
+                obj['answers'] = ApiClient.convertToType(data['answers'], [Answer]);
             }
         }
         return obj;
@@ -102,7 +102,7 @@ class BoundingBoxQuestion {
             }
             // validate the optional field `answers` (array)
             for (const item of data['answers']) {
-                BoundingBoxAnswer.validateJsonObject(item);
+                Answer.validateJsonObject(item);
             };
         }
 
@@ -136,7 +136,7 @@ BoundingBoxQuestion.prototype['prompt'] = undefined;
 BoundingBoxQuestion.prototype['resource'] = undefined;
 
 /**
- * @member {Array.<module:model/BoundingBoxAnswer>} answers
+ * @member {Array.<module:model/Answer>} answers
  */
 BoundingBoxQuestion.prototype['answers'] = undefined;
 

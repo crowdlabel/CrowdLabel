@@ -48,15 +48,6 @@ class Tasks:
             await asyncio.shield(con.close())
             return '`credits` must be positive'
 
-        response = await user_service.handle_transaction(
-            schemas.users.TransactionRequest(amount=- task_request.credits * task_request.responses_required),
-            user=requester
-        )
-        if not isinstance(response, float):
-            await asyncio.shield(con.close())
-            return response
-
-
         info = task_request.dict()
         del info['questions']
         task_schema = schemas.tasks.Task(**info, 
@@ -102,6 +93,13 @@ class Tasks:
             resource_path=str(resource_path)
         )
         
+        response = await user_service.handle_transaction(
+            schemas.users.TransactionRequest(amount =- task_request.credits * task_request.responses_required),
+            user=requester
+        )
+        if not isinstance(response, float):
+            await asyncio.shield(con.close())
+            return response
        
         async with con.begin():
             target = await con.execute(select(models.user.Requester)

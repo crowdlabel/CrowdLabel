@@ -215,16 +215,17 @@ export default {
             this.time = time
             this.verifyEmailbtn();
         }
+        
+    },
+    mounted() {
         let base = this.$root.basePath
+        console.log(base)
         var apiClient = new ApiClient(base);
         this.client = apiClient
         var usersApi = new UsersApi(apiClient);
         this.user = usersApi
         var authApi = new AuthApi(apiClient);
         this.auth = authApi
-    },
-    mounted() {
-
     },
     methods: {
         ...mapMutations(['changeLogin']),
