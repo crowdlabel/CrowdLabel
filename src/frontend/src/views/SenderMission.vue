@@ -1156,7 +1156,7 @@ export default {
 
 .dabao_body{
   width: 100%;
-  height: 2000px;
+  height: 2050px;
 }
 
 .dabao_title{
@@ -1165,22 +1165,30 @@ export default {
 }
 
 .dabao_subtitle{
-  width:100%;
+  width:90%;
+  text-align: left;
+  margin-left:5%;
+  margin-right:5%;
+  margin-top:12px;
+  margin-bottom: 12px;
 }
 
-.dabao_subtitle h3{
-  float:left;
-}
 
 .dabao_content{
+  width:85%;
   float:left;
+  text-align: left;
+  margin-left:10%;
 }
 
 .dabao_words{
-
+  width:100%;
+  float:left;
+  margin-top: 10px;
+  margin-bottom: 10px;
 }
 
 .dabao_subwords{
-
+  margin-left:5%;
 }
 </style>
