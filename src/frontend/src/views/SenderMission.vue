@@ -146,21 +146,31 @@
                 <p class="dabao_words"> - "tags"表示任务的标签，是一个字符串，但必须包含“图片分类”、“文字分类”、“图片打标”、“音频分类”这四种中的一种（且只有一种）</p>
                 <p class="dabao_words"> - "responses_required"表示任务的份数，是一个int值</p>
                 <p class="dabao_words"> - "cover_image"表示任务的封面，是一个字符串，里面是对应图片资源的完整文件名（和task.json处于同一目录下），比如"cover.jpg"</p>
-                <p class="dabao_words"> - "questions"表示任务的具体信息，是一个数组，每个数组元素信息要求如下：</p>
-                <p class="dabao_subwords"> 1、 每个question数组元素都是一个字典，其中包括5个不同的key</p>
-                <p class="dabao_subwords"> 2、 每个</p>
+                <p class="dabao_words"> - "questions"表示任务中问题的具体信息，是一个数组，每个数组元素信息要求如下：</p>
+                <p class="dabao_subwords"> 1、每个question数组元素都是一个字典，对应一道题，其中包括5个不同的key</p>
+                <p class="dabao_subwords"> 2、每道题有唯一的"question_id"，用户可以随意设置，是一个int值</p>
+                <p class="dabao_subwords"> 3、每道题有一个"question_type"，从"open"、"single_choice"、"bounding_box"、"multi_choice"选一个</p>
+                <p class="dabao_subwords"> 4、每道题有一个"prompt"，是问题是描述，是一个字符串</p>
+                <p class="dabao_subwords"> 5、每道题可以有一个"resource"，是一个字符串，存放的是对应资源的完整名称，比如"1.jpg"</p>
+                <p class="dabao_subwords"> 6、如果这道题是一个单选或者多选题，则会有一个"options"，里面是一个字符串数组，存放各种选项，选项数为2-7个</p>
               </div>
             </div>
             <div class="dabao_title">
-              <h3 class="dabao_subtitle">四、task.json文件样例</h3>
+              <h3 class="dabao_subtitle">四、文件样例</h3>
               <div class="dabao_content">
-                
+                <img src='../assets/task_json_example.png' style="width: 50%;">
+                <div>
+                  <img src="../assets/zip_file_example.png" style="width: 50%;">
+                </div>
               </div>
             </div>
             <div class="dabao_title">
               <h3 class="dabao_subtitle">五、注意事项</h3>
               <div class="dabao_content">
-                
+                <p class="dabao_words"> - 一定要按照格式准备文件，然后进行上传，否则会上传失败</p>
+                <p class="dabao_words"> - 相同的资源文件可以即作为题目，也可以作为封面。</p>
+                <p class="dabao_words"> - 假如没有选择封面图片，则会使用系统默认的封面图片，不会影响上传</p>
+                <p class="dabao_words"> - 祝好！</p>
               </div>
             </div>
           </div>
@@ -1144,4 +1154,41 @@ export default {
   color: #fff;
 }
 
+.dabao_body{
+  width: 100%;
+  height: 2050px;
+}
+
+.dabao_title{
+  width:100%;
+  float:left;
+}
+
+.dabao_subtitle{
+  width:90%;
+  text-align: left;
+  margin-left:5%;
+  margin-right:5%;
+  margin-top:12px;
+  margin-bottom: 12px;
+}
+
+
+.dabao_content{
+  width:85%;
+  float:left;
+  text-align: left;
+  margin-left:10%;
+}
+
+.dabao_words{
+  width:100%;
+  float:left;
+  margin-top: 10px;
+  margin-bottom: 10px;
+}
+
+.dabao_subwords{
+  margin-left:5%;
+}
 </style>
