@@ -5,7 +5,6 @@ from fastapi.routing import APIRouter
 from starlette.middleware.cors import CORSMiddleware
 
 
-
 origins = [
     'http://localhost:8082',
     'https://crowdlabel.org',
@@ -16,7 +15,6 @@ app = FastAPI(
     description='API for CrowdLabel',
     version='0.1.0',
 )
-
 
 app.add_middleware(
     CORSMiddleware,
