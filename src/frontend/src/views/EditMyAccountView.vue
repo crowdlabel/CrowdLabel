@@ -34,6 +34,7 @@
                 :on-exceed="handleExceed">
                 <img :src="piclist" class="avatar">
               </el-upload>
+              <p>点击上传</p>
               <el-button type="primary" plain class="fileSelectConfirm" @click="changeProfile">确定</el-button>
             </div>
           </el-dialog>
