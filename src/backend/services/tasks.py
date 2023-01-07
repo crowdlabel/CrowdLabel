@@ -44,17 +44,12 @@ class Tasks:
         if task_request.responses_required <= 0:
             await asyncio.shield(con.close())
             return '`responses_required` must be positive'
-        if task_request.credits < 0:
+        if task_request.credits <= 0:
             await asyncio.shield(con.close())
             return '`credits` must be positive'
 
-        response = await user_service.handle_transaction(
-            schemas.users.TransactionRequest(amount=- task_request.credits * task_request.responses_required),
-            user=requester
-        )
-        if not isinstance(response, float):
-            await asyncio.shield(con.close())
-            return response
+        
+
 
 
         info = task_request.dict()
@@ -102,7 +97,14 @@ class Tasks:
             resource_path=str(resource_path)
         )
         
-       
+        response = await user_service.handle_transaction(
+            schemas.users.TransactionRequest(amount=- task_request.credits * task_request.responses_required),
+            user=requester
+        )
+        if not isinstance(response, float):
+            await asyncio.shield(con.close())
+            return response
+        
         async with con.begin():
             target = await con.execute(select(models.user.Requester)
                 .where(models.user.Requester.username==requester.username).options(selectinload(models.user.Requester.task_requested)))
@@ -260,7 +262,7 @@ class Tasks:
             if task == None:
                 await asyncio.shield(con.close())
                 return None
-            if len(task.respondents_claimed) + len(task.respondents_complete) >= task.responses_required:
+            if len(task.respondents_complete) >= task.responses_required:
                 await asyncio.shield(con.close())
                 return 'Enough respondents have claimed this task'
             user.task_claimed.append(task)
