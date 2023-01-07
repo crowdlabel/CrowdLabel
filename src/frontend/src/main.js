@@ -15,9 +15,9 @@ Vue.config.productionTip = false
 new Vue({
   router,
   store,
-  data: async function(){
+  data: function(){
     return {
-      basePath: 'https://api.crowdlabel.org' // 'http://localhost:8082'
+      basePath:  'http://localhost:8000' //'https://api.crowdlabel.org'
     }
   },
   render: h => h(App)

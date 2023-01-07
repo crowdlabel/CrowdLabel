@@ -136,7 +136,7 @@ class RegistrationError(BaseModel):
             }
         }
 
-class EditEmailRequest(BaseModel):
+class EditEmailRequest(Email, VerificationCode, Password):
     new_email: str
     verification_code: str
     password: str

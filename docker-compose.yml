@@ -13,7 +13,7 @@ services:
       - ./caddy/config:/config
       - ./src/frontend/dist:/var/www/html/crowdlabel
     networks:
-        - web
+      - web
 
   api:
     container_name: api
