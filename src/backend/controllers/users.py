@@ -151,9 +151,7 @@ async def edit_credits(
 
 ###############################################################################
 
-PROFILE_PICTURE_DIR = pathlib.Path(
-    utils.config.config['file_locations']['profile_pictures']
-)
+PROFILE_PICTURE_DIR = pathlib.Path(utils.config.config['directories']['profile_pictures'])
 
 upload_pfp_success_hdr = JSONDocumentedResponse(
     status.HTTP_200_OK,

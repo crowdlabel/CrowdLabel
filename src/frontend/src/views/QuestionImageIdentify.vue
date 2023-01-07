@@ -168,25 +168,27 @@ export default {
       console.log("Original MARKLIST")
       console.log(self.markList)
       // 如已回答过该题，填充答案
-      if (res.answers.length > 0) {
-        // 待修改：暂时只展示画的第一个框，之后改成整个marklist
-        for (var i = 0; i < res.answers[0].boxes.length; i++) {
+      // 如已回答过该题，填充答案
+      for (var i = 0; i < res.answers.length; i++) {
+        let cur_answer = res.answers[i];
+        console.log(cur_answer)
+        console.log(cur_answer.answer)
+        console.log(cur_answer.respondent)
+        if (cur_answer.respondent == my_username) { // 当前用户已回答
+          console.log("FOUND")
+          for (var i = 0; i < cur_answer.answer.boxes.length; i++) {
           self.markList.push({
-            x: res.answers[0].boxes[i].top_left.x,
-            y: res.answers[0].boxes[i].top_left.y,
-            w: res.answers[0].boxes[i].bottom_right.x - res.answers[0].boxes[i].top_left.x,
-            h: res.answers[0].boxes[i].bottom_right.y - res.answers[0].boxes[i].top_left.y
+            x: cur_answer.answer.boxes[i].top_left.x,
+            y: cur_answer.answer.boxes[i].top_left.y,
+            w: cur_answer.answer.boxes[i].bottom_right.x - cur_answer.answer.boxes[i].top_left.x,
+            h: cur_answer.answer.boxes[i].bottom_right.y - cur_answer.answer.boxes[i].top_left.y
           });
         }
         console.log(self.markList)
-        /*
-        self.markList[0].x = res.answers[0].top_left.x;
-        self.markList[0].y = res.answers[0].top_left.y;
-        self.markList[0].w = res.answers[0].bottom_right.x - res.answers[0].top_left.x;
-        self.markList[0].h = res.answers[0].bottom_right.y - res.answers[0].top_left.y;
-        */
         this.initCanvas(); // 画布初始化
+        }
       }
+      
         
     })
     self.question.getQuestionResourceTasksTaskIdQuestionsQuestionIdResourceGet(self.task_id, self.question_id, (error, data, response) => {
@@ -345,7 +347,7 @@ export default {
             confirmButtonText: '好的',
             callback: action => {
               // 上传当前题的答案
-              if (this.markList.length > 0) {
+              if (this.markList.length > 0) { // 已回答
                 var answer_list = [];
                 for (var i = 0; i < this.markList.length; i++) {
                   var x_0 = this.markList[i].x;

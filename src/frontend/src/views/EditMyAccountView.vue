@@ -17,7 +17,7 @@
             </div>       
           </div>
 
-          <el-dialog title="上传头像" :visible.sync="UploadProfilePage"
+          <el-dialog title="点击上传头像" :visible.sync="UploadProfilePage"
             width="50%"
             min-width="420px"
             class="UploadProfileClass"
@@ -237,7 +237,7 @@ export default {
     })
     self.user.getPfpUsersMeProfilePictureGet((error, data, response) => {
       if (response.status == 404){
-        self.mainProfile = '../image_placeholder.png'
+        self.mainProfile = '../my_account.svg'
       } else {
         let binaryData = [];
         binaryData.push(response.body);
@@ -309,7 +309,7 @@ export default {
     openUploadDialog () {
       this.UploadProfilePage = true;
       if(this.piclist == ''){
-        this.piclist = '../image_placeholder.png'
+        this.piclist = '../my_account.svg'
       } else{
         this.piclist = this.mainProfile
       }
@@ -584,6 +584,7 @@ export default {
 
 .user_name{
   height:40px;
+  margin-bottom: 10px;
 }
 
 .tabs{
