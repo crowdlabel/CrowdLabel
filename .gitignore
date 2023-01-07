@@ -16,7 +16,6 @@ node_modules
 /tests/e2e/screenshots/
 
 
-crowdlabel-api
 openapi-generator/
 openapi.json
 
@@ -24,7 +23,6 @@ openapi.json
 .env.local
 .env.*.local
 
-src/frontend/src/assets/
 
 # Log files
 npm-debug.log*
@@ -45,5 +43,4 @@ pnpm-debug.log*
 
 .pytest_cache
 
-dist/
 data/
