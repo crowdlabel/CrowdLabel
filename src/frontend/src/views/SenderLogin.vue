@@ -222,6 +222,9 @@ export default {
         var authApi = new AuthApi(apiClient);
         this.auth = authApi
     },
+    mounted() {
+
+    },
     methods: {
         ...mapMutations(['changeLogin']),
         handleTabClick(tab, event){

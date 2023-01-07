@@ -80,6 +80,9 @@ export default {
       this.$router.push('/receiverlogin')
     },
   },
+  mounted () {
+
+  },
 }
 </script>
 
