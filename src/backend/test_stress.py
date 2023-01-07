@@ -31,6 +31,7 @@ async def test_upload(session):
             data={'tasks_file': f},
         ) as response:
 
+            pass
 
 async def main():
     async with aiohttp.ClientSession() as session:

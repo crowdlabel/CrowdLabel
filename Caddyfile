@@ -1,0 +1,12 @@
+{
+    email acme@crowdlabel.org
+}
+
+crowdlabel.org {
+    root * /var/www/html/crowdlabel
+    file_server
+}
+
+api.crowdlabel.org {
+    reverse_proxy http://api
+}

@@ -5,7 +5,6 @@ from fastapi.routing import APIRouter
 from starlette.middleware.cors import CORSMiddleware
 
 
-
 origins = [
     'http://localhost:8082',
     'https://crowdlabel.org',
@@ -17,14 +16,17 @@ app = FastAPI(
     version='0.1.0',
 )
 
-
 app.add_middleware(
     CORSMiddleware,
     allow_origins=origins,
     allow_credentials=True,
-    allow_methods=["*"],
-    allow_headers=["*"],
+    allow_methods=['*'],
+    allow_headers=['*'],
 )
+
+@app.get(app.root_path + '/openapi.json')
+def custom_swagger_ui_html():
+    return app.openapi()
 
 
 app_router = APIRouter(prefix='')
