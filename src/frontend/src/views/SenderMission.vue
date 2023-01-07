@@ -50,8 +50,8 @@
 
         <el-dialog
           :visible.sync="dialogVisible"
-          width="50%"
-          min-width="800px"
+          width="30%"
+          min-width="300px"
           class="dialogClass"
           border-radius="12px">
           <div class="type_page">
@@ -60,7 +60,7 @@
             </div>
             <div class="create_main">
               <el-form label-width="80px" ref="form" :model="form" :rules="rules">
-                <el-form-item prop="name" class="name_item">
+                <!-- <el-form-item prop="name" class="name_item">
                   <el-input placeholder="请输入任务名称"  class="mission_name" v-model="form.name"></el-input>
                 </el-form-item>
                 <el-form-item label="任务简介:" class="mission_brief" prop="brief">
@@ -81,7 +81,7 @@
                     <el-button type="primary" size="small" class="click_upload_btn">点击上传</el-button>
                     <div slot="tip" class="el-upload__tip">只能上传JPG和PNG文件</div>
                   </el-upload>
-                </el-form-item>
+                </el-form-item> -->
                 <el-form-item label="上传文件:" class="mission_file" required>
                   <el-upload class="upload_file" action="none"
                     :headers="{ 'Content-Type': 'multipart/form-data'}"
@@ -95,12 +95,12 @@
                     <div slot="tip" class="el-upload__tip">只能上传zip或rar文件</div>
                   </el-upload>
                 </el-form-item>
-                <el-form-item prop="amount" label="任务份额:" class="mission_credits">
+                <!-- <el-form-item prop="amount" label="任务份额:" class="mission_credits">
                   <el-input placeholder="请输入任务总份数"  class="credits_input" v-model="form.amount"></el-input>
                 </el-form-item>
                 <el-form-item prop="credits_each" label="积分奖励:" class="mission_credits">
                   <el-input placeholder="请输入每份任务报酬积分"  class="credits_input" v-model="form.credits_each"></el-input>
-                </el-form-item>
+                </el-form-item> -->
                 <el-form-item>
                   <el-button type="primary" class="create_now" @click="create_new_project">立即创建</el-button>
                   <el-button type="default" class="cancel" @click="backToMission">取消</el-button>
@@ -707,11 +707,11 @@ export default {
 @import '@/assets/font/font.css';
 
 .dialogClass{
-  min-width: 800px !important;
+  min-width: 300px !important;
 }
 ::v-deep .dialogClass .el-dialog{
-  width: 50% !important;
-  min-width: 700px;
+  width: 30% !important;
+  min-width: 300px;
   border-radius: 12px;
 }
 
