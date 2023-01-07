@@ -215,7 +215,8 @@ export default {
             this.time = time
             this.verifyEmailbtn();
         }
-        var apiClient = new ApiClient('http://localhost:8000');
+        let base = this.$root.basePath
+        var apiClient = new ApiClient(base);
         this.client = apiClient
         var usersApi = new UsersApi(apiClient);
         this.user = usersApi
