@@ -436,8 +436,9 @@ export default {
     min-width: 300px;
     box-shadow: 1.2px 0 0 0 rgb(0 0 0 / 10%);
     box-sizing: border-box;
+    /* display: flex; */
     flex-direction: column;
-    /* height: calc(100vh - 50px); */
+    height: calc(100vh - 50px);
     min-height: 630px;
 }
 .left_nav_list_top {
@@ -572,7 +573,11 @@ export default {
   margin-right: 10px;
 }
 #answers {
+  display: flex;
+  align-items: center;
+  text-align: center;
   margin: 10px 0px 20px 0px;
+  flex-direction: column;
 }
 ::v-deep .el-radio-group {
   transform:scale(1.2);
