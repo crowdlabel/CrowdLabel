@@ -378,8 +378,7 @@ Returns: list of `Task`s matching the query within the specified `page` and `pag
         tasks = []
 
         for task in old_tasks:
-
-            if (parameters.name == '' or parameters.name in task.name ) and (len(parameters.tags) == 0 or list(parameters.tags)[0] in task.tags.split('|')) and (len(parameters.tags)==0 or list(parameters.requesters)[0] == user.username):
+            if (parameters.name == '' or parameters.name.lower() in task.name.lower() ) and (len(parameters.tags) == 0 or list(parameters.tags)[0] in task.tags.split('|')) and (len(parameters.tags)==0 or list(parameters.requesters)[0] == user.username):
                 tasks.append(task)
         response_tasks = []
         if parameters.page_size == -1:
