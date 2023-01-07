@@ -8,7 +8,7 @@
       <div class="page_title">
         <h3 class="title">我的积分</h3>
         <a class="my_account" data-external="true" href="/myaccount">
-            <img src="../assets/my_account.svg" alt="label" height="24"/>
+            <img :src="profile_pic" class="profile" alt="label"/>
         </a>
       </div>
         
@@ -51,7 +51,7 @@
                     </a>
                 </li>
                 <li>
-                    <a aria-current="page" class="left_nav_list_item" data-external="true" href="/about_us">
+                    <a aria-current="page" class="left_nav_list_item" data-external="true" href="https://github.com/crowdlabel">
                         <img src="../assets/about.png" height="20" width="20">
                         <p class="list_item_title">关于我们</p>
                     </a>
@@ -106,7 +106,8 @@ export default {
       client: '',
       username: '',
       credits_last_week: '',
-      credits_total: ''
+      credits_total: '',
+      profile_pic: ''
     };
   },
   mounted() {
@@ -127,6 +128,16 @@ export default {
         self.credits_total = response.body['credits']
         console.log('credits_total: ' + self.credits_total)
       })
+      self.user.getPfpUsersMeProfilePictureGet((error, data, response) => {
+      if (response.status == 404){
+        self.profile_pic = '../my_account.svg'
+      } else {
+        let binaryData = [];
+        binaryData.push(response.body);
+        let imageObjectURL = window.URL.createObjectURL(new Blob(binaryData));
+        self.profile_pic = imageObjectURL
+      }
+    })
   },
   methods: {
     
@@ -339,7 +350,7 @@ export default {
 	height: 190px;
 	border-radius: 8px;
 	font-size: 14px;
-  cursor: pointer;
+  /*cursor: pointer;*/
 }
 
 .img_alipay {
@@ -349,4 +360,9 @@ export default {
   margin-top: 10px;
 }
 
+.profile {
+  height: 28px;
+  width: 28px;
+  border-radius: 50%;
+}
 </style>

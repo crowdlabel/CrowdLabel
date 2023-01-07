@@ -32,7 +32,7 @@
                     </a>
                 </li>
                 <li>
-                    <a aria-current="page" class="left_nav_list_item" data-external="true" href="/about_us">
+                    <a aria-current="page" class="left_nav_list_item" data-external="true" href="https://github.com/crowdlabel">
                         <img src="../assets/about.png" height="20" width="20">
                         <p class="list_item_title">关于我们</p>
                     </a>
@@ -102,7 +102,7 @@ export default {
     })
     self.user.getPfpUsersMeProfilePictureGet((error, data, response) => {
       if (response.status == 404){
-        self.mainProfile = '../image_placeholder.png'
+        self.mainProfile = '../my_account.svg'
       } else {
         let binaryData = [];
         binaryData.push(response.body);
