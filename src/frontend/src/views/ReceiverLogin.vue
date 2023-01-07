@@ -213,6 +213,9 @@ export default {
             this.time = time
             this.verifyEmailbtn();
         }
+        
+    },
+    mounted () {
         let base = this.$root.basePath
         var apiClient = new ApiClient(base);
         this.client = apiClient
@@ -220,9 +223,6 @@ export default {
         this.user = usersApi
         var authApi = new AuthApi(apiClient);
         this.auth = authApi
-    },
-    mounted () {
-        
     },
     methods: {
         handleTabClick(tab, event){
