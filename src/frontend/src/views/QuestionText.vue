@@ -109,8 +109,9 @@ export default {
   },
   mounted() {
     let self = this
+    let base = this.$root.basePath
     self.task_id = localStorage.getItem('TaskID')
-    var apiClient  = new ApiClient('http://localhost:8000');
+    var apiClient  = new ApiClient(base);
     apiClient.authentications['OAuth2PasswordBearer'].accessToken = localStorage.getItem('Authorization');
     self.client = apiClient;
     var usersApi = new UsersApi(apiClient);

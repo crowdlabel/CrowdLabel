@@ -103,7 +103,8 @@ export default {
   },
   mounted() {
     let self = this;
-    var apiClient  = new ApiClient('http://localhost:8000');
+    let base = this.$root.basePath
+    var apiClient  = new ApiClient(base);
     apiClient.authentications['OAuth2PasswordBearer'].accessToken = localStorage.getItem('Authorization')
     self.client = apiClient
     var usersApi = new UsersApi(apiClient);
