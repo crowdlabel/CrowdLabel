@@ -119,13 +119,15 @@ export default {
                     let ready_email = document.getElementById('registeremail').value;
                     this.user.availabilityUsersAvailabilityPut({'email': ready_email},
                     (error, data, response) => {
-                        if (!data['email']){
+                        if (response.status == 422){
+                            callback(new Error('邮箱格式错误'));
+                        } else if (!data['email']){
                             callback(new Error('邮箱已被占用'));
-                            } else {
-                                this.disable = false;
-                                callback();
-                            }
+                        } else  {
+                            this.disable = false;
+                            callback();
                         }
+                    }
                     );
                 }
             }
