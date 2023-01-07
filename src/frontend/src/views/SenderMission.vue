@@ -1215,6 +1215,7 @@ export default {
 .dabao_body{
   width: 100%;
   height: 2050px;
+  padding-bottom: 50px;
 }
 
 .dabao_title{
