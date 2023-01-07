@@ -58,7 +58,7 @@
                 <el-tab-pane label="修改邮箱" name="changeEmail">
                   <el-form :model="emailForm" status-icon :rules="emailrules" ref="emailForm" label-width="100px" class="demo-ruleForm">
                     <el-form-item prop="newemail">
-                      <el-input placeholder="请输入邮箱地址" v-model="emailForm.newemail" id="newemail" autocomplete="off"></el-input>
+                      <el-input placeholder="请输入新邮箱地址" v-model="emailForm.newemail" id="newemail" autocomplete="off"></el-input>
                       </el-form-item>
                     <el-form-item prop="passforemail">
                       <el-input placeholder="请输入密码" type="password" v-model="emailForm.passforemail" id="oldpasswordforemail" autocomplete="off"></el-input>
@@ -239,6 +239,7 @@ export default {
     self.user.getPfpUsersMeProfilePictureGet((error, data, response) => {
       if (response.status == 404){
         self.mainProfile = '../my_account.svg'
+        self.piclist = '../my_account.svg'
       } else {
         let binaryData = [];
         binaryData.push(response.body);
@@ -266,7 +267,6 @@ export default {
       })
     },
     beforeDialogClose (done) {
-      this.piclist = []
       done()
     },
     getFileType(name){
