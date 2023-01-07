@@ -8,7 +8,7 @@ Name | Type | Description | Notes
 **questionType** | **String** |  | [optional] [default to &#39;single_choice&#39;]
 **prompt** | **String** |  | 
 **resource** | **String** |  | [optional] 
-**answers** | [**[SingleChoiceAnswer]**](SingleChoiceAnswer.md) |  | [optional] 
+**answers** | [**[Answer]**](Answer.md) |  | [optional] 
 **options** | **[String]** |  | 
 
 

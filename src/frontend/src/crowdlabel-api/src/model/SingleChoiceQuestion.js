@@ -12,7 +12,7 @@
  */
 
 import ApiClient from '../ApiClient';
-import SingleChoiceAnswer from './SingleChoiceAnswer';
+import Answer from './Answer';
 
 /**
  * The SingleChoiceQuestion model module.
@@ -67,7 +67,7 @@ class SingleChoiceQuestion {
                 obj['resource'] = ApiClient.convertToType(data['resource'], 'String');
             }
             if (data.hasOwnProperty('answers')) {
-                obj['answers'] = ApiClient.convertToType(data['answers'], [SingleChoiceAnswer]);
+                obj['answers'] = ApiClient.convertToType(data['answers'], [Answer]);
             }
             if (data.hasOwnProperty('options')) {
                 obj['options'] = ApiClient.convertToType(data['options'], ['String']);
@@ -107,7 +107,7 @@ class SingleChoiceQuestion {
             }
             // validate the optional field `answers` (array)
             for (const item of data['answers']) {
-                SingleChoiceAnswer.validateJsonObject(item);
+                Answer.validateJsonObject(item);
             };
         }
         // ensure the json data is an array
@@ -145,7 +145,7 @@ SingleChoiceQuestion.prototype['prompt'] = undefined;
 SingleChoiceQuestion.prototype['resource'] = undefined;
 
 /**
- * @member {Array.<module:model/SingleChoiceAnswer>} answers
+ * @member {Array.<module:model/Answer>} answers
  */
 SingleChoiceQuestion.prototype['answers'] = undefined;
 

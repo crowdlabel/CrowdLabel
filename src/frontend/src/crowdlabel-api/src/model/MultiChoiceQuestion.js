@@ -12,7 +12,7 @@
  */
 
 import ApiClient from '../ApiClient';
-import MultiChoiceAnswer from './MultiChoiceAnswer';
+import Answer from './Answer';
 
 /**
  * The MultiChoiceQuestion model module.
@@ -67,7 +67,7 @@ class MultiChoiceQuestion {
                 obj['resource'] = ApiClient.convertToType(data['resource'], 'String');
             }
             if (data.hasOwnProperty('answers')) {
-                obj['answers'] = ApiClient.convertToType(data['answers'], [MultiChoiceAnswer]);
+                obj['answers'] = ApiClient.convertToType(data['answers'], [Answer]);
             }
             if (data.hasOwnProperty('options')) {
                 obj['options'] = ApiClient.convertToType(data['options'], ['String']);
@@ -107,7 +107,7 @@ class MultiChoiceQuestion {
             }
             // validate the optional field `answers` (array)
             for (const item of data['answers']) {
-                MultiChoiceAnswer.validateJsonObject(item);
+                Answer.validateJsonObject(item);
             };
         }
         // ensure the json data is an array
@@ -145,7 +145,7 @@ MultiChoiceQuestion.prototype['prompt'] = undefined;
 MultiChoiceQuestion.prototype['resource'] = undefined;
 
 /**
- * @member {Array.<module:model/MultiChoiceAnswer>} answers
+ * @member {Array.<module:model/Answer>} answers
  */
 MultiChoiceQuestion.prototype['answers'] = undefined;
 

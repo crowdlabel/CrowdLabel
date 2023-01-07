@@ -52,6 +52,7 @@ import TransactionRequest from './model/TransactionRequest';
 import User from './model/User';
 import ValidationError from './model/ValidationError';
 import AuthApi from './api/AuthApi';
+import DefaultApi from './api/DefaultApi';
 import QuestionsApi from './api/QuestionsApi';
 import TasksApi from './api/TasksApi';
 import UsersApi from './api/UsersApi';
@@ -328,6 +329,12 @@ export {
     * @property {module:api/AuthApi}
     */
     AuthApi,
+
+    /**
+    * The DefaultApi service constructor.
+    * @property {module:api/DefaultApi}
+    */
+    DefaultApi,
 
     /**
     * The QuestionsApi service constructor.

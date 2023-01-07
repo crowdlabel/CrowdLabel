@@ -12,7 +12,7 @@
  */
 
 import ApiClient from '../ApiClient';
-import RankingAnswer from './RankingAnswer';
+import Answer from './Answer';
 
 /**
  * The RankingQuestion model module.
@@ -67,7 +67,7 @@ class RankingQuestion {
                 obj['resource'] = ApiClient.convertToType(data['resource'], 'String');
             }
             if (data.hasOwnProperty('answers')) {
-                obj['answers'] = ApiClient.convertToType(data['answers'], [RankingAnswer]);
+                obj['answers'] = ApiClient.convertToType(data['answers'], [Answer]);
             }
             if (data.hasOwnProperty('options')) {
                 obj['options'] = ApiClient.convertToType(data['options'], ['String']);
@@ -107,7 +107,7 @@ class RankingQuestion {
             }
             // validate the optional field `answers` (array)
             for (const item of data['answers']) {
-                RankingAnswer.validateJsonObject(item);
+                Answer.validateJsonObject(item);
             };
         }
         // ensure the json data is an array
@@ -145,7 +145,7 @@ RankingQuestion.prototype['prompt'] = undefined;
 RankingQuestion.prototype['resource'] = undefined;
 
 /**
- * @member {Array.<module:model/RankingAnswer>} answers
+ * @member {Array.<module:model/Answer>} answers
  */
 RankingQuestion.prototype['answers'] = undefined;
 
