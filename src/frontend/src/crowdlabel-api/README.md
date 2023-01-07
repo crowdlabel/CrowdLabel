@@ -130,6 +130,7 @@ Class | Method | HTTP request | Description
 *CrowdLabelApi.AuthApi* | [**loginLoginPost**](docs/AuthApi.md#loginLoginPost) | **POST** /login | Login
 *CrowdLabelApi.AuthApi* | [**logoutLogoutPost**](docs/AuthApi.md#logoutLogoutPost) | **POST** /logout | Logout
 *CrowdLabelApi.AuthApi* | [**tokenTokenPost**](docs/AuthApi.md#tokenTokenPost) | **POST** /token | Token
+*CrowdLabelApi.DefaultApi* | [**customSwaggerUiHtmlOpenapiJsonGet**](docs/DefaultApi.md#customSwaggerUiHtmlOpenapiJsonGet) | **GET** /openapi.json | Custom Swagger Ui Html
 *CrowdLabelApi.QuestionsApi* | [**createAnswerTasksTaskIdQuestionsQuestionIdAnswerPut**](docs/QuestionsApi.md#createAnswerTasksTaskIdQuestionsQuestionIdAnswerPut) | **PUT** /tasks/{task_id}/questions/{question_id}/answer | Create Answer
 *CrowdLabelApi.QuestionsApi* | [**getQuestionResourceTasksTaskIdQuestionsQuestionIdResourceGet**](docs/QuestionsApi.md#getQuestionResourceTasksTaskIdQuestionsQuestionIdResourceGet) | **GET** /tasks/{task_id}/questions/{question_id}/resource | Get Question Resource
 *CrowdLabelApi.QuestionsApi* | [**getQuestionTasksTaskIdQuestionsQuestionIdGet**](docs/QuestionsApi.md#getQuestionTasksTaskIdQuestionsQuestionIdGet) | **GET** /tasks/{task_id}/questions/{question_id} | Get Question

@@ -8,6 +8,6 @@ Name | Type | Description | Notes
 **questionType** | **String** |  | [optional] [default to &#39;bounding_box&#39;]
 **prompt** | **String** |  | 
 **resource** | **String** |  | [optional] 
-**answers** | [**[BoundingBoxAnswer]**](BoundingBoxAnswer.md) |  | [optional] 
+**answers** | [**[Answer]**](Answer.md) |  | [optional] 
 
 

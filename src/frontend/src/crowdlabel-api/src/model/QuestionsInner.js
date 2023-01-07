@@ -12,7 +12,7 @@
  */
 
 import ApiClient from '../ApiClient';
-import BoundingBoxAnswer from './BoundingBoxAnswer';
+import Answer from './Answer';
 import BoundingBoxQuestion from './BoundingBoxQuestion';
 import MultiChoiceQuestion from './MultiChoiceQuestion';
 import OpenQuestion from './OpenQuestion';
