@@ -1,5 +1,6 @@
 import json
-from fastapi import FastAPI
+from fastapi import FastAPI, Request
+from fastapi.responses import RedirectResponse
 from fastapi.openapi.utils import get_openapi
 from fastapi.routing import APIRouter
 from starlette.middleware.cors import CORSMiddleware
@@ -23,6 +24,10 @@ app.add_middleware(
     allow_methods=['*'],
     allow_headers=['*'],
 )
+
+@app.get('/', response_class=RedirectResponse)
+def index(request: Request):
+    return str(request.url) + 'docs'
 
 @app.get(app.root_path + '/openapi.json')
 def custom_swagger_ui_html():
