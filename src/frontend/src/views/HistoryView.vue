@@ -108,6 +108,7 @@ export default {
       taskType: 'all',
       client:'',
       user:'',
+      username: '',
       task:'',
       auth:'',
       projectsList: [],
@@ -133,6 +134,7 @@ export default {
       }
       let res = JSON.parse(response["text"]);
       let tasks_completed = res["tasks_completed"];
+      self.username = res["username"];
       console.log(tasks_completed)
       if (tasks_completed.length > 0)
         document.getElementById("is_empty").remove();
@@ -208,6 +210,7 @@ export default {
         "tags" : taglist,
         "sort_criteria": self.sortOrder,
         "sort_ascending": false,
+        "respondent": self.username
       }, (error, data, response) => {
         if (error == 'Error: Unauthorized') {
           localStorage.removeItem('Authorization');
