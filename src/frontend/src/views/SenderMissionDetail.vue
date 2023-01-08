@@ -164,6 +164,10 @@ export default {
         type: 'info',
       }).then(() => {
         self.task.deleteTaskTasksTaskIdDelete(self.task_id, (error, data, response) =>{
+          this.$message({
+          type: 'info',
+          message: '成功删除任务'
+        });
           self.$router.push('/sendermission')
         })
       }).catch(() => {
