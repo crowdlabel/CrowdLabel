@@ -56,7 +56,7 @@
           border-radius="12px">
           <div class="type_page">
             <div class="create_h2">
-              <h2 id="create_title">创建您新任务</h2>
+              <h2 id="create_title">创建新任务</h2>
             </div>
             <div class="create_main">
               <el-form label-width="80px" ref="form" :model="form" :rules="rules">
@@ -237,7 +237,7 @@
             </div>
             
             <div class="display_projects">
-              <div class="display_items" v-for="(item, index) in tasks_info.slice((currentPage-1)*pageSize, currentPage*pageSize)">
+              <div class="display_items" v-for="(item, index) in tasks_info.slice((currentPage-1)*pageSize, currentPage*pageSize)" :key="index">
                 <el-card :body-style="{ padding: '0px' }" @click.native="seeDetails(item.task_id)">
                     <img :src=item.cover alt='' class="project_image" >
                     <div style="padding: 0px;">
@@ -379,7 +379,7 @@ export default {
       requesterlist.push(self.userid)
       self.task.searchTasksTasksPut({
         "name": self.search_input,
-        "requester": requesterlist, 
+        "requesters": requesterlist, 
         "tags" : taglist,
         "sort_ascending": false,
       }, (error, data, response) => {
@@ -428,7 +428,7 @@ export default {
       requesterlist.push(self.userid)
       self.task.searchTasksTasksPut({
         "name": self.search_input,
-        "requester": requesterlist, 
+        "requesters": requesterlist, 
         "tags" : taglist,
         "sort_ascending": false,
       }, (error, data, response) => {

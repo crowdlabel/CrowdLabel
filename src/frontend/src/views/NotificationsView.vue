@@ -99,8 +99,6 @@
 
 
 <script>
-// @ is an alias to /src
-// import HelloWorld from '@/components/HelloWorld.vue'
 import { ApiClient } from '@/crowdlabel-api/src';
 import { UsersApi } from '@/crowdlabel-api/src';
 export default {
@@ -122,6 +120,7 @@ export default {
       var usersApi = new UsersApi(apiClient);
       self.user = usersApi
       self.user.getMeUsersMeGet((error, data, response) => {
+        console.log(error, data, response)
         if (error == 'Error: Unauthorized') {
           localStorage.removeItem('Authorization');
           this.$router.push('/receiverlogin');

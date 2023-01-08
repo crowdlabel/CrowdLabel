@@ -6,7 +6,7 @@
         <h2 class="logo">CrowdLabel</h2>
       </div>
       <div class="page_title">
-        <h3 class="title">任务名称</h3>
+        <h3 class="title">{{ task_name }}</h3>
       </div>
     </div>
     <div class="body">
@@ -49,7 +49,7 @@
         <div class="footer">
           <el-button id="quit_button" type="primary" v-on:click="quit()" plain>退出答题</el-button>
           <a>
-            <el-button id="prev_button" type="primary" :disabled="isFirstQuestion" v-on:click="prevQuestion()">&lt 上一题</el-button>
+            <el-button id="prev_button" type="primary" :disabled="isFirstQuestion" v-on:click="prevQuestion()">&lt; 上一题</el-button>
           </a>
           <el-button id="next_button" type="primary" v-on:click="nextQuestion()">下一题 ></el-button>
         </div>
@@ -67,7 +67,6 @@ import { ApiClient } from '@/crowdlabel-api/src';
 import { UsersApi } from '@/crowdlabel-api/src';
 import { TasksApi } from '@/crowdlabel-api/src';
 import { QuestionsApi } from '@/crowdlabel-api/src';
-import { BoundingBoxAnswer } from '@/crowdlabel-api/src';
 import {draw} from "../utils/draw"; // 矩形绘制方法
 export default {
   data() {
@@ -100,25 +99,26 @@ export default {
     let self = this
     let base = this.$root.basePath
     self.task_id = localStorage.getItem('TaskID')
-    var apiClient  = new ApiClient(base);
+    let apiClient  = new ApiClient(base);
     apiClient.authentications['OAuth2PasswordBearer'].accessToken = localStorage.getItem('Authorization');
     self.client = apiClient;
-    var usersApi = new UsersApi(apiClient);
+    let usersApi = new UsersApi(apiClient);
     self.user = usersApi;
-    var tasksApi = new TasksApi(apiClient);
+    let tasksApi = new TasksApi(apiClient);
     self.task = tasksApi;
     self.task_map = JSON.parse(localStorage.getItem('QuestionList'))
     self.task_type = localStorage.getItem('TaskType');
-    var questionsApi = new QuestionsApi(apiClient);
+    let questionsApi = new QuestionsApi(apiClient);
     self.question = questionsApi;
     self.cur_question = parseInt(localStorage.getItem('QuestionIndex'))
     console.log("QUESTION INDEX: " + self.cur_question);
     self.question_id = self.task_map[this.cur_question];
-    var my_username = "";
+    let my_username = "";
     // 判断当前是否是第一题，如是则disable“上一题”按钮
     if (self.cur_question == 0)
       self.isFirstQuestion = true;
     self.user.getMeUsersMeGet((error, data, response) => {
+      console.log(error, data, response)
       let res = JSON.parse(response['text']);
       my_username = res.username;
       if (error == 'Error: Unauthorized') {
@@ -128,6 +128,7 @@ export default {
       }
     })
     self.task.getTaskTasksTaskIdGet(self.task_id, (error, data, response) => {
+      console.log(error, data, response)
       let res = JSON.parse(response['text'])
       self.task_amount = res.responses_required;
       self.task_brief = res.introduction;
@@ -141,8 +142,8 @@ export default {
       else
         document.getElementById("task_brief").innerHTML = self.task_brief;
       // 填充任务标签
-      var tags_str = "";
-      for (var i = 0; i < self.task_tags.length; i++) {
+      let tags_str = "";
+      for (let i = 0; i < self.task_tags.length; i++) {
         tags_str += self.task_tags[i];
         if (i != self.task_tags.length - 1) {
           tags_str += ", ";
@@ -160,6 +161,7 @@ export default {
     console.log("QUESTION ID: " + self.question_id)
     console.log("TASK ID: " + self.task_id)
     self.question.getQuestionTasksTaskIdQuestionsQuestionIdGet(self.task_id, self.question_id, (error, data, response) => {
+      console.log(error, data, response)
       let res = JSON.parse(response['text']);
       // 填充问题
       self.prompt = res.prompt;
@@ -170,14 +172,14 @@ export default {
       console.log(self.markList)
       // 如已回答过该题，填充答案
       // 如已回答过该题，填充答案
-      for (var i = 0; i < res.answers.length; i++) {
+      for (let i = 0; i < res.answers.length; i++) {
         let cur_answer = res.answers[i];
         console.log(cur_answer)
         console.log(cur_answer.answer)
         console.log(cur_answer.respondent)
         if (cur_answer.respondent == my_username) { // 当前用户已回答
           console.log("FOUND")
-          for (var i = 0; i < cur_answer.answer.boxes.length; i++) {
+          for (let i = 0; i < cur_answer.answer.boxes.length; i++) {
           self.markList.push({
             x: cur_answer.answer.boxes[i].top_left.x,
             y: cur_answer.answer.boxes[i].top_left.y,
@@ -193,15 +195,16 @@ export default {
         
     })
     self.question.getQuestionResourceTasksTaskIdQuestionsQuestionIdResourceGet(self.task_id, self.question_id, (error, data, response) => {
-        console.log(response);
+      console.log(error, data, response)
         let binaryData = [];
         binaryData.push(response.body);
         let imageObjectURL = window.URL.createObjectURL(new Blob(binaryData));
         self.question_image = imageObjectURL;
     })
     self.task.getProgressTasksTaskIdProgressGet(self.task_id, (error, data, response) => {
+      console.log(error, data, response)
       let res = JSON.parse(response['text']);
-      var progress = res.progress;
+      let progress = res.progress;
       console.log("TASK PROGRESS: " + progress)
     })
 
@@ -253,7 +256,7 @@ export default {
         let cav = this.$refs.markCanvas;
         this.markList = [];
         // history = [history[0]]
-        var ctx = cav.getContext('2d');
+        let ctx = cav.getContext('2d');
         ctx.clearRect(0, 0, cav.width, cav.height);
         this.initCanvas(); // 画布初始化
         // addHistoy(history, ctx, mycanvas)
@@ -268,23 +271,23 @@ export default {
     prevQuestion() {
       // 传答案
       if (this.markList.length > 0) {
-        var answer_list = [];
-          for (var i = 0; i < this.markList.length; i++) {
-            var x_0 = this.markList[i].x;
-            var y_0 = this.markList[i].y;
-            var x_1 = this.markList[i].x + this.markList[i].w;
-            var y_1 = this.markList[i].y + this.markList[i].h;
+        let answer_list = [];
+          for (let i = 0; i < this.markList.length; i++) {
+            let x_0 = this.markList[i].x;
+            let y_0 = this.markList[i].y;
+            let x_1 = this.markList[i].x + this.markList[i].w;
+            let y_1 = this.markList[i].y + this.markList[i].h;
             console.log("x0: " + x_0);
             console.log("x1: " + x_1);
             console.log("y0: " + y_0);
             console.log("y1: " + y_1);
-            var answer = {top_left: {x: x_0, y: y_0}, bottom_right: {x: x_1, y: y_1}};
+            let answer = {top_left: {x: x_0, y: y_0}, bottom_right: {x: x_1, y: y_1}};
             answer_list.push(answer);
           }
-        var answer_dict = { boxes: answer_list };
+        let answer_dict = { boxes: answer_list };
         console.log(answer_dict);
         this.question.createAnswerTasksTaskIdQuestionsQuestionIdAnswerPut(this.task_id, this.question_id, answer_dict, (error, data, response) => {
-          // console.log(response);
+          console.log(error, data, response)
           this.$store.commit('changeQuestionIndex', this.cur_question - 1);
           document.location.href = '/question_image_identify';
         })
@@ -300,17 +303,18 @@ export default {
         this.alertMessage();
       } else {
           // 传答案
-          var answer_list = [];
-          for (var i = 0; i < this.markList.length; i++) {
-            var x_0 = this.markList[i].x;
-            var y_0 = this.markList[i].y;
-            var x_1 = this.markList[i].x + this.markList[i].w;
-            var y_1 = this.markList[i].y + this.markList[i].h;
-            var answer = {top_left: {x: x_0, y: y_0}, bottom_right: {x: x_1, y: y_1}};
+          let answer_list = [];
+          for (let i = 0; i < this.markList.length; i++) {
+            let x_0 = this.markList[i].x;
+            let y_0 = this.markList[i].y;
+            let x_1 = this.markList[i].x + this.markList[i].w;
+            let y_1 = this.markList[i].y + this.markList[i].h;
+            let answer = {top_left: {x: x_0, y: y_0}, bottom_right: {x: x_1, y: y_1}};
             answer_list.push(answer);
           }
-          var answer_dict = { boxes: answer_list };
+          let answer_dict = { boxes: answer_list };
           this.question.createAnswerTasksTaskIdQuestionsQuestionIdAnswerPut(this.task_id, this.question_id, answer_dict, (error, data, response) => {
+            console.log(error, data, response)
             // 判断跳转到什么页面
             if (this.cur_question + 1 == this.task_question_num) { // 最后一题
               // 弹窗
@@ -321,6 +325,7 @@ export default {
               }).then(() => {
                 this.$store.commit('changeQuestionIndex', this.cur_question + 1);
                 this.task.completeTasksTaskIdCompletePost(this.task_id, (error, data, response) => {
+                  console.log(error, data, response)
                   document.location.href = '/mission_complete';
                 });
               }).catch(() => {
@@ -349,17 +354,18 @@ export default {
             callback: action => {
               // 上传当前题的答案
               if (this.markList.length > 0) { // 已回答
-                var answer_list = [];
-                for (var i = 0; i < this.markList.length; i++) {
-                  var x_0 = this.markList[i].x;
-                  var y_0 = this.markList[i].y;
-                  var x_1 = this.markList[i].x + this.markList[i].w;
-                  var y_1 = this.markList[i].y + this.markList[i].h;
-                  var answer = {top_left: {x: x_0, y: y_0}, bottom_right: {x: x_1, y: y_1}};
+                let answer_list = [];
+                for (let i = 0; i < this.markList.length; i++) {
+                  let x_0 = this.markList[i].x;
+                  let y_0 = this.markList[i].y;
+                  let x_1 = this.markList[i].x + this.markList[i].w;
+                  let y_1 = this.markList[i].y + this.markList[i].h;
+                  let answer = {top_left: {x: x_0, y: y_0}, bottom_right: {x: x_1, y: y_1}};
                   answer_list.push(answer);
                 }
-                var answer_dict = { boxes: answer_list };
+                let answer_dict = { boxes: answer_list };
                 this.question.createAnswerTasksTaskIdQuestionsQuestionIdAnswerPut(this.task_id, this.question_id, answer_dict, (error, data, response) => {
+                  console.log(error, data, response)
                   document.location.href = '/projects';
                 })
               } else {

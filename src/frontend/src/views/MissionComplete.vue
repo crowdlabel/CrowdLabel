@@ -97,7 +97,6 @@ export default {
     self.cur_question = parseInt(localStorage.getItem('QuestionIndex'))
     console.log("QUESTION INDEX: " + self.cur_question);
     self.question_id = self.task_map[this.cur_question];
-    var my_username = "";
     self.task.getTaskTasksTaskIdGet(self.task_id, (error, data, response) => {
       let res = JSON.parse(response['text'])
       self.task_amount = res.responses_required;

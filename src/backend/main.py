@@ -16,6 +16,7 @@ def main():
 
     if args['reset_db']:
         services.database.reset_db()
+        return
 
     if args['docs']:
         import controllers.app

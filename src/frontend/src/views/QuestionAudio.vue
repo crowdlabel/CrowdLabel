@@ -6,7 +6,7 @@
         <h2 class="logo">CrowdLabel</h2>
       </div>
       <div class="page_title">
-        <h3 class="title">任务名称</h3>
+        <h3 class="title">{{ task_name }}</h3>
       </div>
     </div>
     <div class="body">
