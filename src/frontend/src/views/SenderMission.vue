@@ -92,7 +92,7 @@
                     :file-list="form.zipfile"
                     >
                     <el-button type="primary" size="small" class="click_upload_btn">点击上传</el-button>
-                    <div slot="tip" class="el-upload__tip">只能上传zip或rar文件</div>
+                    <div slot="tip" class="el-upload__tip">只能上传一个zip或rar文件</div>
                   </el-upload>
                 </el-form-item>
                 <!-- <el-form-item prop="amount" label="任务份额:" class="mission_credits">
