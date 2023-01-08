@@ -216,6 +216,7 @@ export default {
         
     },
     mounted () {
+        localStorage.setItem('time', '')
         let base = this.$root.basePath
         var apiClient = new ApiClient(base);
         this.client = apiClient
