@@ -160,7 +160,7 @@ export default {
         };
         return {
             text: "发送验证码",
-            time: 60,
+            time: 30,
             timer: null,
             disable: true,
             activeName: 'second',
@@ -211,11 +211,12 @@ export default {
         if (time && time>0) {
             this.text = time + "s后重新发送"
             this.time = time
-            this.verifyEmailbtn();
+            this.emailCounter()
         }
         
     },
     mounted () {
+        localStorage.setItem('time', '')
         let base = this.$root.basePath
         var apiClient = new ApiClient(base);
         this.client = apiClient
@@ -268,7 +269,7 @@ export default {
                                 path: '/projects',
                             });
                         } else {
-                            alert('用户名错误或者密码错误!')
+                            alert('用户类型或者用户名错误或者密码错误!')
                         }
                     });
             } else {
@@ -284,12 +285,15 @@ export default {
             this.$router.push('/');
         },
         verifyEmailbtn () {
-            this.disable=true
             let ready_email = document.getElementById('registeremail').value
             console.log(ready_email);
             this.user.verifyEmailUsersVerifyEmailPost({
                 "email": ready_email
             });
+            this.emailCounter()
+        },
+        emailCounter () {
+            this.disable=true
             this.text = this.time + "s后重新发送"
             localStorage.setItem('time', this.time)
             this.timer = setInterval(() => {
@@ -299,12 +303,12 @@ export default {
                     this.text = this.time + "s后重新发送"
                 } else {
                     clearInterval(this.timer);
-                    this.time = 60
+                    this.time = 30
                     this.disable = false
                     this.text = '发送验证码'
                 }
             }, 1000)
-        },
+        }
     }
 };
 </script>
