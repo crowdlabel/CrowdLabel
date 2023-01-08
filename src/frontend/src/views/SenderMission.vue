@@ -379,7 +379,7 @@ export default {
       requesterlist.push(self.userid)
       self.task.searchTasksTasksPut({
         "name": self.search_input,
-        "requester": requesterlist, 
+        "requesters": requesterlist, 
         "tags" : taglist,
         "sort_ascending": false,
       }, (error, data, response) => {
@@ -428,7 +428,7 @@ export default {
       requesterlist.push(self.userid)
       self.task.searchTasksTasksPut({
         "name": self.search_input,
-        "requester": requesterlist, 
+        "requesters": requesterlist, 
         "tags" : taglist,
         "sort_ascending": false,
       }, (error, data, response) => {
