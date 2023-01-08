@@ -379,12 +379,14 @@ Returns: list of `Task`s matching the query within the specified `page` and `pag
         old_tasks = result.scalars().all()
         tasks = []
         for task in old_tasks:
-            print(parameters.requesters,user.username)
             if (parameters.name == '' or parameters.name.lower() in task.name.lower() ) and (len(parameters.tags) == 0 or list(parameters.tags)[0] in task.tags.split('|')) and (len(parameters.requesters)==0 or list(parameters.requesters)[0] == task.requester):
-                for resp in task.respondents_complete:
-                    if parameters.respondent == '' or resp.username == parameters.respondent:
+                if parameters.respondent == '':
                         tasks.append(task)
-                        break
+                else:
+                    for resp in task.respondents_complete:
+                        if resp.username == parameters.respondent:
+                            tasks.append(task)
+                            break
         response_tasks = []
         if parameters.page_size == -1:
             for task in tasks :
