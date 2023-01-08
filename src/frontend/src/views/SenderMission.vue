@@ -121,7 +121,7 @@
             <div class="dabao_title">
               <h3 class="dabao_subtitle">一、打包格式</h3>
               <div class="dabao_content">
-                <p class="dabao_words"> - 最终上传文件要求格式为 zip 或者 rar ，大小不超过10GB</p>
+                <p class="dabao_words"> - 最终上传文件要求格式为 zip 或者 rar ，大小不超过100MB</p>
               </div>
             </div>
             <div class="dabao_title">
@@ -495,8 +495,8 @@ export default {
     },
     handleZip(file, fileList) {
       let self = this;
-      if (file.size / (1024*1024*1024)>10) {
-        self.$message.warning("当前限制文件大小不能大于10GB");
+      if (file.size / (1024*1024)>100) {
+        self.$message.warning("当前限制文件大小不能大于100MB");
         self.file = '';
         self.form.zipfile= [];
         return false;
