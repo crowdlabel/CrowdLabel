@@ -321,7 +321,7 @@ export default {
       userid: '',
       usercredits: '',
       tasks_info: [],
-      taskslist: '',
+      taskslist: [],
       task_name: [],
       taskType: 'all',
       task_cover_image: [],
@@ -389,9 +389,9 @@ export default {
         }
         let res = JSON.parse(response['text'])
         console.log(res)
-        let taskslist = res['tasks']
+        self.taskslist = res['tasks']
         var counter = 0
-        taskslist.forEach(function(element) {
+        self.taskslist.forEach(function(element) {
           var c = { task_id:element['task_id'], name:element['name'], cover:''}
           self.tasks_info.push(c)
           var index = counter;
@@ -438,9 +438,9 @@ export default {
         }
         let res = JSON.parse(response['text'])
         console.log(res)
-        let taskslist = res['tasks']
+        self.taskslist = res['tasks']
         var counter = 0
-        taskslist.forEach(function(element) {
+        self.taskslist.forEach(function(element) {
           var c = { task_id:element['task_id'], name:element['name'], cover:''}
           self.tasks_info.push(c)
           var index = counter;
