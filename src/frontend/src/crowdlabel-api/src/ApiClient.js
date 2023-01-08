@@ -133,7 +133,7 @@ class ApiClient {
         } catch (err) {
             return false;
         }
-    };
+    }
 
    /**
     * Builds full URL by appending the given path to the base URL and replacing path parameter place-holders with parameter values.
