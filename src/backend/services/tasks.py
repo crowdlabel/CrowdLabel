@@ -48,6 +48,10 @@ class Tasks:
             await asyncio.shield(con.close())
             return '`credits` must be positive'
 
+        
+
+
+
         info = task_request.dict()
         del info['questions']
         task_schema = schemas.tasks.Task(**info, 
@@ -94,13 +98,13 @@ class Tasks:
         )
         
         response = await user_service.handle_transaction(
-            schemas.users.TransactionRequest(amount =- task_request.credits * task_request.responses_required),
+            schemas.users.TransactionRequest(amount=- task_request.credits * task_request.responses_required),
             user=requester
         )
         if not isinstance(response, float):
             await asyncio.shield(con.close())
             return response
-       
+        
         async with con.begin():
             target = await con.execute(select(models.user.Requester)
                 .where(models.user.Requester.username==requester.username).options(selectinload(models.user.Requester.task_requested)))
@@ -374,11 +378,13 @@ Returns: list of `Task`s matching the query within the specified `page` and `pag
                         
         old_tasks = result.scalars().all()
         tasks = []
-
         for task in old_tasks:
-
+            print(parameters.requesters,user.username)
             if (parameters.name == '' or parameters.name.lower() in task.name.lower() ) and (len(parameters.tags) == 0 or list(parameters.tags)[0] in task.tags.split('|')) and (len(parameters.requesters)==0 or list(parameters.requesters)[0] == task.requester):
-                tasks.append(task)
+                for resp in task.respondent_complete:
+                    if parameters.respondent == '' or resp.username == parameters.respondent:
+                        tasks.append(task)
+                        break
         response_tasks = []
         if parameters.page_size == -1:
             for task in tasks :
