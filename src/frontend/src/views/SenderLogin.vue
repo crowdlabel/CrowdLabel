@@ -249,7 +249,7 @@ export default {
                     },
                     (error, data, response) => {
                         console.log(error, data, response);
-                        if(response.status != 200){
+                        if(response.status != 201){
                             this.activeName = "second"
                             alert('验证码错误！')
                         }

@@ -245,7 +245,7 @@ export default {
                     "verification_code": ready_verification
                     },
                     (error, data, response) => {
-                        if(response.status != 200){
+                        if(response.status != 201){
                             this.activeName = "second"
                             alert('验证码错误！')
                         }
