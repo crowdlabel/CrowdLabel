@@ -589,8 +589,13 @@ export default {
 }
 
 #answers {
+  display: flex;
+  align-items: center;
+  text-align: center;
   margin: 10px 0px 20px 0px;
+  flex-direction: column;
 }
+
 ::v-deep .el-radio-group {
   transform:scale(1.2);
   font-size:30px !important;

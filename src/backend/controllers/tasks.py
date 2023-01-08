@@ -23,14 +23,14 @@ search_tasks_success_jdr = JSONDocumentedResponse(
     'Successfully queried tasks.',
     schemas.tasks.TaskSearchResponse
 )
-search_tasks_failed_hdr = JSONDocumentedResponse(
+search_tasks_failed_jdr = JSONDocumentedResponse(
     status.HTTP_400_BAD_REQUEST,
     'Task query failed.',
     schemas.tasks.ErrorResponse
 )
 @router.put('/',
     description=task_service.search.__doc__ + schemas.tasks.TaskSearchRequest.__doc__,
-    **create_documentation([search_tasks_success_jdr, search_tasks_failed_hdr])
+    **create_documentation([search_tasks_success_jdr, search_tasks_failed_jdr])
 )
 async def search_tasks(query: schemas.tasks.TaskSearchRequest, current_user=Depends(get_current_user())):
     """
@@ -39,7 +39,7 @@ async def search_tasks(query: schemas.tasks.TaskSearchRequest, current_user=Depe
     # TODO: complete arguments
     tasks = await task_service.search(current_user, query)
     if isinstance(tasks, str):
-        return search_tasks_failed_hdr.response(schemas.tasks.ErrorResponse(tasks))
+        return search_tasks_failed_jdr.response(schemas.tasks.ErrorResponse(tasks))
 
     # exclude tasks.questions and resource path
     for i in range(len(tasks[0])):
