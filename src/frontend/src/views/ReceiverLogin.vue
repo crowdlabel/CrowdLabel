@@ -95,6 +95,7 @@ export default {
                     let ready_username = document.getElementById('registername').value;
                     this.user.availabilityUsersAvailabilityPut({'username': ready_username},
                     (error, data, response) => {
+                        console.log(error, data, response)
                         if (!data['username']){
                             callback(new Error('用户名已被占用'));
                             } else {
@@ -244,6 +245,10 @@ export default {
                     "verification_code": ready_verification
                     },
                     (error, data, response) => {
+                        if(response.status != 200){
+                            this.activeName = "second"
+                            alert('验证码错误！')
+                        }
                         console.log(error, data, response);
                     });
                 // alert('successfully registered!');
