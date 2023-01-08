@@ -140,6 +140,7 @@ export default {
         type: 'info',
       }).then(() => {
         self.auth.logoutLogoutPost((error, data, response) => {
+          console.log(error, data, response)
           console.log("succesfully logout")
           localStorage.removeItem('Authorization');
           self.$router.push('/');

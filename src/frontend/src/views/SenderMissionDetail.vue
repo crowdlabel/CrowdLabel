@@ -30,7 +30,7 @@
           </div>
           <div class="row row_margin">
             <a href="/sendermission">
-              <el-button type="primary" plain>&lt 返回</el-button>
+              <el-button type="primary" plain>&lt; 返回</el-button>
             </a>
             <div class="button_placeholder"></div>
             <el-button type="primary" @click="downloadTask">下载数据</el-button>
@@ -78,6 +78,7 @@ export default {
     var tasksApi = new TasksApi(apiClient);
     self.task = tasksApi
     self.user.getMeUsersMeGet((error, data, response) => {
+      console.log(error, data, response)
       if (error == 'Error: Unauthorized') {
         localStorage.removeItem('Authorization');
         this.$router.push('/senderlogin');
@@ -93,6 +94,7 @@ export default {
       var task_completed = 0;
       res.respondents_completed.forEach(function(element) {
         task_completed += 1;
+        console.log(element)
       })
       self.percentage = (task_completed / self.task_amount) * 100;
       self.task_brief = res.introduction;
@@ -164,6 +166,7 @@ export default {
         type: 'info',
       }).then(() => {
         self.task.deleteTaskTasksTaskIdDelete(self.task_id, (error, data, response) =>{
+          console.log(error, data, response)
           this.$message({
           type: 'info',
           message: '成功删除任务'

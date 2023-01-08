@@ -250,6 +250,17 @@ export default {
     })
   },
   methods: {
+    goBack(){
+      if (this.usertype == "respondent"){
+        this.$router.push({
+          path: '/myaccount',
+        })
+      } else {
+        this.$router.push({
+          path: '/senderaccount',
+        })
+      }
+    },
     changeProfile () {
       console.log(this.profile)
       this.user.uploadPfpUsersMeProfilePicturePost(this.profile,(error, data, response) => {
@@ -342,17 +353,6 @@ export default {
         }
       }, 1000)
     },
-    goBack(){
-      if (this.usertype == "respondent"){
-        this.$router.push({
-          path: '/myaccount',
-        })
-      } else {
-        this.$router.push({
-          path: '/senderaccount',
-        })
-      }
-    },
     editInformation(){
       let self = this
       if(self.activeName == "changePassword"){
@@ -374,7 +374,7 @@ export default {
             });
           }else if(response.status==200){
             alert('成功修改密码');
-            goBack();
+            this.goBack();
           }
         });
       } else {
