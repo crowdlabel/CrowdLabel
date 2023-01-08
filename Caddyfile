@@ -5,6 +5,7 @@
 crowdlabel.org {
     root * /var/www/html/crowdlabel
     file_server
+    try_files {path} /
 }
 
 api.crowdlabel.org {

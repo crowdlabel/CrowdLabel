@@ -45,7 +45,7 @@
         <div id="answers">
           <!--单选题-->
           <el-radio-group v-model="radio" id="singleChoiceOptions">
-            <el-radio :label="item.value" @change="handleChange_singleChoice" v-for="(item,index) in choicesGiven">{{item.label}}</el-radio>
+            <el-radio :label="item.value" @change="handleChange_singleChoice" v-for="(item,index) in choicesGiven" :key="index">{{item.label}}</el-radio>
           </el-radio-group>
           <!--多选题-->
           <el-checkbox-group v-model="checkList" id="multiChoiceOptions">
@@ -63,7 +63,7 @@
         <div class="footer">
           <el-button id="quit_button" type="primary" v-on:click="quit()" plain>退出答题</el-button>
           <a>
-            <el-button id="prev_button" type="primary" :disabled="isFirstQuestion" v-on:click="prevQuestion()">&lt 上一题</el-button>
+            <el-button id="prev_button" type="primary" :disabled="isFirstQuestion" v-on:click="prevQuestion()">&lt; 上一题</el-button>
           </a>
           <el-button id="next_button" type="primary" v-on:click="nextQuestion()">下一题 ></el-button>
         </div>
@@ -111,25 +111,26 @@ export default {
     let self = this
     let base = this.$root.basePath
     self.task_id = localStorage.getItem('TaskID')
-    var apiClient  = new ApiClient(base);
+    let apiClient  = new ApiClient(base);
     apiClient.authentications['OAuth2PasswordBearer'].accessToken = localStorage.getItem('Authorization');
     self.client = apiClient;
-    var usersApi = new UsersApi(apiClient);
+    let usersApi = new UsersApi(apiClient);
     self.user = usersApi;
-    var tasksApi = new TasksApi(apiClient);
+    let tasksApi = new TasksApi(apiClient);
     self.task = tasksApi;
     self.task_map = JSON.parse(localStorage.getItem('QuestionList'))
     self.task_type = localStorage.getItem('TaskType');
-    var questionsApi = new QuestionsApi(apiClient);
+    let questionsApi = new QuestionsApi(apiClient);
     self.question = questionsApi;
     self.cur_question = parseInt(localStorage.getItem('QuestionIndex'))
     console.log("QUESTION INDEX: " + self.cur_question);
     self.question_id = self.task_map[this.cur_question];
-    var my_username = "";
+    let my_username = "";
     // 判断当前是否是第一题，如是则disable“上一题”按钮
     if (self.cur_question == 0)
       self.isFirstQuestion = true;
     self.user.getMeUsersMeGet((error, data, response) => {
+      console.log(error, data, response)
       let res = JSON.parse(response['text']);
       my_username = res.username;
       if (error == 'Error: Unauthorized') {
@@ -139,6 +140,7 @@ export default {
       }
     })
     self.task.getTaskTasksTaskIdGet(self.task_id, (error, data, response) => {
+      console.log(error, data, response)
       let res = JSON.parse(response['text'])
       self.task_amount = res.responses_required;
       self.task_brief = res.introduction;
@@ -152,8 +154,8 @@ export default {
       else
         document.getElementById("task_brief").innerHTML = self.task_brief;
       // 填充任务标签
-      var tags_str = "";
-      for (var i = 0; i < self.task_tags.length; i++) {
+      let tags_str = "";
+      for (let i = 0; i < self.task_tags.length; i++) {
         tags_str += self.task_tags[i];
         if (i != self.task_tags.length - 1) {
           tags_str += ", ";
@@ -171,6 +173,7 @@ export default {
     console.log("QUESTION ID: " + self.question_id)
     console.log("TASK ID: " + self.task_id)
     self.question.getQuestionTasksTaskIdQuestionsQuestionIdGet(self.task_id, self.question_id, (error, data, response) => {
+      console.log(error, data, response)
       let res = JSON.parse(response['text']);
       // 填充问题
       self.prompt = res.prompt;
@@ -180,9 +183,9 @@ export default {
       self.question_type = res.question_type;
       if (self.question_type == "single_choice") { // 单选题
         console.log("QUESTION TYPE: single_choice")
-        var list_choices = res.options;
-        for (var i = 0; i < list_choices.length; i++) {
-          var k = { label: list_choices[i], value: i };
+        let list_choices = res.options;
+        for (let i = 0; i < list_choices.length; i++) {
+          let k = { label: list_choices[i], value: i };
           self.choicesGiven.push(k);
         }
         document.getElementById("multiChoiceOptions").remove();
@@ -191,9 +194,9 @@ export default {
         console.log("QUESTION TYPE: multi_choice")
         // 调整margin以避免UI错乱
         document.getElementById("answers").style.marginTop = "20px";
-        var list_choices = res.options;
-        for (var i = 0; i < list_choices.length; i++) {
-          var k = { label: list_choices[i], value: i };
+        let list_choices = res.options;
+        for (let i = 0; i < list_choices.length; i++) {
+          let k = { label: list_choices[i], value: i };
           self.choicesGiven.push(k);
         }
         document.getElementById("singleChoiceOptions").remove();
@@ -209,7 +212,7 @@ export default {
       console.log("PREVIOUS ANSWERS:")
       console.log(res.answers)
       // 如已回答过该题，填充答案
-      for (var i = 0; i < res.answers.length; i++) {
+      for (let i = 0; i < res.answers.length; i++) {
         let cur_answer = res.answers[i];
         console.log(cur_answer)
         console.log(cur_answer.answer)
@@ -227,13 +230,15 @@ export default {
         
     })
     self.question.getQuestionResourceTasksTaskIdQuestionsQuestionIdResourceGet(self.task_id, self.question_id, (error, data, response) => {
-        response.body.text().then((text) => {
-            document.getElementById("question_text").innerHTML = text;
-        });
+      console.log(error, data, response)
+      response.body.text().then((text) => {
+          document.getElementById("question_text").innerHTML = text;
+      });
     })
     self.task.getProgressTasksTaskIdProgressGet(self.task_id, (error, data, response) => {
+      console.log(error, data, response)
       let res = JSON.parse(response['text']);
-      var progress = res.progress;
+      let progress = res.progress;
       console.log("TASK PROGRESS: " + progress)
     })
     
@@ -249,7 +254,7 @@ export default {
     },
     prevQuestion() {
       // 上传答案
-      var answer;
+      let answer;
       if (this.question_type == "single_choice") {
         let _radio = this.radio;
         answer = {"choice": _radio};
@@ -264,6 +269,7 @@ export default {
         answer = {"text": _textarea};
       }
       this.question.createAnswerTasksTaskIdQuestionsQuestionIdAnswerPut(this.task_id, this.question_id, answer, (error, data, response) => {
+        console.log(error, data, response)
         this.$store.commit('changeQuestionIndex', this.cur_question - 1);
         document.location.href = '/question_text';
       })
@@ -281,7 +287,7 @@ export default {
         this.alertMessage();
       } else {
           // 上传答案
-          var answer;
+          let answer;
           if (this.question_type == "single_choice") {
             answer = {"choice": _radio};
           }
@@ -292,6 +298,7 @@ export default {
             answer = {"text": _textarea};
           }
           this.question.createAnswerTasksTaskIdQuestionsQuestionIdAnswerPut(this.task_id, this.question_id, answer, (error, data, response) => {
+            console.log(error, data, response)
             // 判断跳转到什么页面
             if (this.cur_question + 1 == this.task_question_num) { // 最后一题
               // 弹窗
@@ -302,6 +309,7 @@ export default {
               }).then(() => {
                 this.$store.commit('changeQuestionIndex', this.cur_question + 1);
                 this.task.completeTasksTaskIdCompletePost(this.task_id, (error, data, response) => {
+                  console.log(error, data, response)
                   document.location.href = '/mission_complete';
                 });
               }).catch(() => {
@@ -330,9 +338,10 @@ export default {
           this.$alert('您的答题记录已保存至草稿箱', '退出成功', {
             confirmButtonText: '好的',
             callback: action => {
+              console.log(action)
               // 上传当前题的答案
-              var answer;
-              var is_answered = false; // 当前题目是否已回答，答了再存
+              let answer;
+              let is_answered = false; // 当前题目是否已回答，答了再存
               if (this.question_type == "single_choice") {
                 let _radio = this.radio;
                 if (_radio != -1) {
@@ -356,6 +365,7 @@ export default {
               }
               if (is_answered) {
                 this.question.createAnswerTasksTaskIdQuestionsQuestionIdAnswerPut(this.task_id, this.question_id, answer, (error, data, response) => {
+                  console.log(error, data, response)
                   document.location.href = '/projects';
                 })
               } else {

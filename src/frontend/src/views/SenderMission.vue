@@ -237,7 +237,7 @@
             </div>
             
             <div class="display_projects">
-              <div class="display_items" v-for="(item, index) in tasks_info.slice((currentPage-1)*pageSize, currentPage*pageSize)">
+              <div class="display_items" v-for="(item, index) in tasks_info.slice((currentPage-1)*pageSize, currentPage*pageSize)" :key="index">
                 <el-card :body-style="{ padding: '0px' }" @click.native="seeDetails(item.task_id)">
                     <img :src=item.cover alt='' class="project_image" >
                     <div style="padding: 0px;">
